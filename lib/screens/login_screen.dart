@@ -118,6 +118,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     foregroundColor: Colors.white,
                   ),
                 ),
+                OutlinedButton.icon(
+                  onPressed: authProvider.isLoading ? null : () => authProvider.signInWithGithub(),
+                  icon: Image.asset(
+                    'assets/github_logo.png',
+                    height: 24,
+                  ),
+                  label: const Text('Continue with GitHub'),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 56),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    side: BorderSide(color: AppTheme.textSecondary.withOpacity(0.3)),
+                    foregroundColor: Colors.white,
+                  ),
+                ),
                 const Spacer(),
                 Center(
                   child: TextButton(

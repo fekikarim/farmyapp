@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import '../models/user_model.dart';
 
 class AuthService {
@@ -84,6 +85,62 @@ class AuthService {
       return null;
     } catch (e) {
       print('Google Sign-In Error: $e');
+      return null;
+    }
+  }
+
+  static Future<AuthResponse?> signInWithGithub() async {
+    try {
+      final String clientId = dotenv.get('GITHUB_CLIENT_ID');
+      final String clientSecret = dotenv.get('GITHUB_CLIENT_SECRET');
+      const String redirectUri = 'farmyapp://auth';
+
+      // 1. Redirect to GitHub OAuth
+      final url = Uri.https('github.com', '/login/oauth/authorize', {
+        'client_id': clientId,
+        'redirect_uri': redirectUri,
+        'scope': 'user:email',
+      });
+
+      final result = await FlutterWebAuth2.authenticate(
+        url: url.toString(),
+        callbackUrlScheme: 'farmyapp',
+      );
+
+      // 2. Extract code
+      final code = Uri.parse(result).queryParameters['code'];
+      if (code == null) return null;
+
+      // 3. Exchange code for access token
+      final tokenResponse = await http.post(
+        Uri.https('github.com', '/login/oauth/access_token'),
+        headers: {'Accept': 'application/json'},
+        body: {
+          'client_id': clientId,
+          'client_secret': clientSecret,
+          'code': code,
+          'redirect_uri': redirectUri,
+        },
+      );
+
+      final String? accessToken = jsonDecode(tokenResponse.body)['access_token'];
+      if (accessToken == null) return null;
+
+      // 4. Send token to our backend
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/v1/auth/github'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'accessToken': accessToken}),
+      );
+
+      if (response.statusCode == 200) {
+        final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
+        await _saveAuthData(authResponse);
+        return authResponse;
+      }
+      return null;
+    } catch (e) {
+      print('GitHub Sign-In Error: $e');
       return null;
     }
   }

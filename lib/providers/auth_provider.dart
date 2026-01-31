@@ -96,6 +96,23 @@ class AuthProvider with ChangeNotifier {
     return false;
   }
 
+  Future<bool> signInWithGithub() async {
+    _isLoading = true;
+    notifyListeners();
+
+    final response = await AuthService.signInWithGithub();
+    if (response != null) {
+      _user = response.user;
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return false;
+  }
+
   Future<void> logout() async {
     await AuthService.logout();
     _user = null;
