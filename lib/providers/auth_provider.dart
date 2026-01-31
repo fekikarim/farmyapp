@@ -18,15 +18,27 @@ class AuthProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // Check for existing session
-    final persistedUser = await AuthService.getUser();
-    if (persistedUser != null) {
-      final refreshSuccess = await AuthService.refreshTokens();
-      if (refreshSuccess) {
-        _user = persistedUser;
-      } else {
-        await AuthService.logout();
+    try {
+      final hasRefreshToken = await AuthService.getAccessToken() != null; // Simple check if we were logged in
+      if (hasRefreshToken) {
+        // Try to refresh tokens first
+        final refreshSuccess = await AuthService.refreshTokens();
+        if (refreshSuccess) {
+          // Sync profile from server to ensure latest data (role, name, etc.)
+          final userProfile = await AuthService.fetchProfile();
+          if (userProfile != null) {
+            _user = userProfile;
+          } else {
+            // If profile fetch fails but refresh succeeded, try to use local data as fallback
+            _user = await AuthService.getUser();
+          }
+        } else {
+          // If refresh fails, session is truly dead
+          await AuthService.logout();
+        }
       }
+    } catch (e) {
+      print('Auto Login Error: $e');
     }
 
     _isLoading = false;

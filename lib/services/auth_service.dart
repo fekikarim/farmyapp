@@ -148,4 +148,54 @@ class AuthService {
     }
     return false;
   }
+
+  // --- Authenticated Requests ---
+
+  static Future<User?> fetchProfile() async {
+    try {
+      final response = await authenticatedRequest('GET', Uri.parse('$_baseUrl/api/v1/auth/me'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)['data'];
+        final user = User.fromJson(data);
+        await _storage.write(key: _userKey, value: jsonEncode(user.toMap()));
+        return user;
+      }
+    } catch (e) {
+      print('Fetch Profile Error: $e');
+    }
+    return null;
+  }
+
+  static Future<http.Response> authenticatedRequest(
+    String method,
+    Uri url, {
+    Map<String, String>? headers,
+    Object? body,
+  }) async {
+    headers ??= {};
+    String? token = await getAccessToken();
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+    headers['Content-Type'] = 'application/json';
+
+    http.Response response;
+    if (method == 'POST') {
+      response = await http.post(url, headers: headers, body: body);
+    } else {
+      response = await http.get(url, headers: headers);
+    }
+
+    if (response.statusCode == 401) {
+      final refreshed = await refreshTokens();
+      if (refreshed) {
+        token = await getAccessToken();
+        headers['Authorization'] = 'Bearer $token';
+        if (method == 'POST') {
+          return await http.post(url, headers: headers, body: body);
+        } else {
+          return await http.get(url, headers: headers);
+        }
+      }
+    }
+    return response;
+  }
 }
