@@ -33,126 +33,145 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Spacer(),
-                Text(
-                  'Welcome Back',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Sign in to your Farmy account',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 48),
-                TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email Address',
-                    prefixIcon: Icon(Icons.email_outlined),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
                   ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                        color: AppTheme.textSecondary,
-                      ),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                ElevatedButton(
-                  onPressed: authProvider.isLoading
-                      ? null
-                      : () async {
-                          final success = await authProvider.login(
-                            _emailController.text,
-                            _passwordController.text,
-                          );
-                          if (!mounted) return;
-                          if (!success) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Login failed. Please check your credentials.')),
-                            );
-                          }
-                        },
-                  child: authProvider.isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Sign In'),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(child: Divider(color: AppTheme.textSecondary.withOpacity(0.3))),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text('OR', style: TextStyle(color: AppTheme.textSecondary)),
-                    ),
-                    Expanded(child: Divider(color: AppTheme.textSecondary.withOpacity(0.3))),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                OutlinedButton.icon(
-                  onPressed: authProvider.isLoading ? null : () => authProvider.signInWithGoogle(),
-                  icon: Image.asset(
-                    'assets/google_logo.png',
-                    height: 24,
-                  ),
-                  label: const Text('Continue with Google'),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    side: BorderSide(color: AppTheme.textSecondary.withOpacity(0.3)),
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-                OutlinedButton.icon(
-                  onPressed: authProvider.isLoading ? null : () => authProvider.signInWithGithub(),
-                  icon: Image.asset(
-                    'assets/github_logo.png',
-                    height: 24,
-                  ),
-                  label: const Text('Continue with GitHub'),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    side: BorderSide(color: AppTheme.textSecondary.withOpacity(0.3)),
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-                const Spacer(),
-                Center(
-                  child: TextButton(
-                    onPressed: () => Navigator.pushNamed(context, '/signup'),
-                    child: RichText(
-                      text: const TextSpan(
-                        text: "Don't have an account? ",
-                        style: TextStyle(color: AppTheme.textSecondary),
-                        children: [
-                          TextSpan(
-                            text: 'Sign Up',
-                            style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 48),
+                        Text(
+                          'Welcome Back',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Sign in to your Farmy account',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: 48),
+                        TextField(
+                          controller: _emailController,
+                          decoration: const InputDecoration(
+                            labelText: 'Email Address',
+                            prefixIcon: Icon(Icons.email_outlined),
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                color: AppTheme.textSecondary,
+                              ),
+                              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        ElevatedButton(
+                          onPressed: authProvider.isLoading
+                              ? null
+                              : () async {
+                                  final success = await authProvider.login(
+                                    _emailController.text,
+                                    _passwordController.text,
+                                  );
+                                  if (!mounted) return;
+                                  if (!success) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Login failed. Please check your credentials.')),
+                                    );
+                                  }
+                                },
+                          child: authProvider.isLoading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text('Sign In'),
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Expanded(child: Divider(color: AppTheme.textSecondary.withOpacity(0.3))),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              child: Text('OR', style: TextStyle(color: AppTheme.textSecondary)),
+                            ),
+                            Expanded(child: Divider(color: AppTheme.textSecondary.withOpacity(0.3))),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        // Only show Google sign-in on mobile
+                        if (Theme.of(context).platform == TargetPlatform.android || 
+                            Theme.of(context).platform == TargetPlatform.iOS)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: OutlinedButton.icon(
+                              onPressed: authProvider.isLoading ? null : () => authProvider.signInWithGoogle(),
+                              icon: Image.asset(
+                                'assets/google_logo.png',
+                                height: 24,
+                              ),
+                              label: const Text('Continue with Google'),
+                              style: OutlinedButton.styleFrom(
+                                minimumSize: const Size(double.infinity, 56),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                side: BorderSide(color: AppTheme.textSecondary.withOpacity(0.3)),
+                                foregroundColor: Colors.white,
+                              ),
+                            ),
+                          ),
+                        OutlinedButton.icon(
+                          onPressed: authProvider.isLoading ? null : () => authProvider.signInWithGithub(),
+                          icon: Image.asset(
+                            'assets/github_logo.png',
+                            height: 24,
+                          ),
+                          label: const Text('Continue with GitHub'),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 56),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            side: BorderSide(color: AppTheme.textSecondary.withOpacity(0.3)),
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 48),
+                        Center(
+                          child: TextButton(
+                            onPressed: () => Navigator.pushNamed(context, '/signup'),
+                            child: RichText(
+                              text: const TextSpan(
+                                text: "Don't have an account? ",
+                                style: TextStyle(color: AppTheme.textSecondary),
+                                children: [
+                                  TextSpan(
+                                    text: 'Sign Up',
+                                    style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),

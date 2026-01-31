@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io' show Platform;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
@@ -10,9 +12,17 @@ class AuthService {
   static final String _baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://localhost:3001');
   static const _storage = FlutterSecureStorage();
   
-  static final GoogleSignIn _googleSignIn = GoogleSignIn(
-    serverClientId: '207350526659-uc61dhrc5htldf5q7dq5293ac9v75cbt.apps.googleusercontent.com',
-  );
+  static GoogleSignIn? get _googleSignInInstance {
+    if (kIsWeb) return GoogleSignIn(serverClientId: '207350526659-uc61dhrc5htldf5q7dq5293ac9v75cbt.apps.googleusercontent.com');
+    try {
+      if (Platform.isAndroid || Platform.isIOS) {
+        return GoogleSignIn(
+          serverClientId: '207350526659-uc61dhrc5htldf5q7dq5293ac9v75cbt.apps.googleusercontent.com',
+        );
+      }
+    } catch (_) {}
+    return null;
+  }
 
   // Persistence keys
   static const String _accessTokenKey = 'access_token';
@@ -63,7 +73,10 @@ class AuthService {
 
   static Future<AuthResponse?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final googleSignIn = _googleSignInInstance;
+      if (googleSignIn == null) return null;
+
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) return null;
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -143,7 +156,7 @@ class AuthService {
       }
     }
     await _storage.deleteAll();
-    await _googleSignIn.signOut();
+    await _googleSignInInstance?.signOut();
   }
 
   // --- Token Management ---
