@@ -99,74 +99,78 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
-              backgroundImage: user?.profilePicture != null 
-                  ? NetworkImage(user!.profilePicture!) 
-                  : null,
-              child: user?.profilePicture == null 
-                  ? const Icon(Icons.person, size: 40, color: AppTheme.primaryColor) 
-                  : null,
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Welcome, ${user?.email ?? 'User'}!',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppTheme.surfaceColor,
-                borderRadius: BorderRadius.circular(20),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 60),
+              CircleAvatar(
+                radius: 40,
+                backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                backgroundImage: user?.profilePicture != null 
+                    ? NetworkImage(user!.profilePicture!) 
+                    : null,
+                child: user?.profilePicture == null 
+                    ? const Icon(Icons.person, size: 40, color: AppTheme.primaryColor) 
+                    : null,
               ),
-              child: Text(
-                'Role: ${user?.role ?? 'N/A'}',
-                style: const TextStyle(color: AppTheme.secondaryColor, fontWeight: FontWeight.bold),
+              const SizedBox(height: 24),
+              Text(
+                'Welcome, ${user?.email ?? 'User'}!',
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppTheme.surfaceColor,
-                borderRadius: BorderRadius.circular(20),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppTheme.surfaceColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  'Role: ${user?.role ?? 'N/A'}',
+                  style: const TextStyle(color: AppTheme.secondaryColor, fontWeight: FontWeight.bold),
+                ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    user?.authProvider == 'google' 
-                        ? Icons.g_mobiledata 
-                        : user?.authProvider == 'github'
-                            ? Icons.code
-                            : Icons.email,
-                    size: 18,
-                    color: AppTheme.primaryColor,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Signed up with ${user?.authProvider ?? 'email'}',
-                    style: const TextStyle(color: AppTheme.textSecondary),
-                  ),
-                ],
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppTheme.surfaceColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      user?.authProvider == 'google' 
+                          ? Icons.g_mobiledata 
+                          : user?.authProvider == 'github'
+                              ? Icons.code
+                              : Icons.email,
+                      size: 18,
+                      color: AppTheme.primaryColor,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Signed up with ${user?.authProvider ?? 'email'}',
+                      style: const TextStyle(color: AppTheme.textSecondary),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 32),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Text(
-                'Your professional auth system is now active. You are securely logged in with JWT persistent tokens.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: AppTheme.textSecondary.withOpacity(0.7)),
+              const SizedBox(height: 32),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Text(
+                  'Your professional auth system is now active. You are securely logged in with JWT persistent tokens.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: AppTheme.textSecondary.withOpacity(0.7)),
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 60),
+            ],
+          ),
         ),
       ),
     );
