@@ -118,8 +118,7 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body)['data'];
-        final authResponse = AuthResponse.fromJson(data);
+        final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
         await _saveAuthData(authResponse);
         return authResponse;
       }
