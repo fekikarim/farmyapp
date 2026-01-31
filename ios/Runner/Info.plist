@@ -55,6 +55,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.207350526659-jm05j7r0lr03hdjn7lmpeiuem090gnj3</string>
+				<string>farmyapp</string>
 			</array>
 		</dict>
 	</array>
