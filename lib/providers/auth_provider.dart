@@ -124,4 +124,16 @@ class AuthProvider with ChangeNotifier {
     _user = null;
     notifyListeners();
   }
+
+  Future<bool> resendVerificationCode() async {
+    if (_user == null) return false;
+    _isLoading = true;
+    notifyListeners();
+    
+    final success = await AuthService.resendVerificationCode(_user!.email);
+    
+    _isLoading = false;
+    notifyListeners();
+    return success;
+  }
 }

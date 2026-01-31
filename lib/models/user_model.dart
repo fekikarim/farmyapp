@@ -4,6 +4,8 @@ class User {
   final String role;
   final String? name;
   final String? profilePicture;
+  final bool isVerified;
+  final bool isBanned;
 
   User({
     required this.id,
@@ -11,6 +13,8 @@ class User {
     required this.role,
     this.name,
     this.profilePicture,
+    this.isVerified = false,
+    this.isBanned = false,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -20,6 +24,8 @@ class User {
       role: json['role'],
       name: json['profile']?['name'],
       profilePicture: json['profile']?['picture'],
+      isVerified: json['is_verified'] ?? false,
+      isBanned: json['is_banned'] ?? false,
     );
   }
 
@@ -32,6 +38,8 @@ class User {
         'name': name,
         'picture': profilePicture,
       },
+      'is_verified': isVerified,
+      'is_banned': isBanned,
     };
   }
 }

@@ -208,6 +208,21 @@ class AuthService {
     await _googleSignInInstance?.signOut();
   }
 
+  static Future<bool> resendVerificationCode(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/v1/auth/resend-verification'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Resend Verification Error: $e');
+      return false;
+    }
+  }
+
   // --- Token Management ---
 
   static Future<void> _saveAuthData(AuthResponse response) async {

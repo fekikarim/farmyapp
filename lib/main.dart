@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
+import 'screens/verify_screen.dart';
+import 'screens/banned_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() async {
@@ -51,6 +53,15 @@ class AuthWrapper extends StatelessWidget {
     }
 
     if (authProvider.isAuthenticated) {
+      final user = authProvider.user;
+      if (user != null) {
+        if (user.isBanned) {
+          return const BannedScreen();
+        }
+        if (!user.isVerified) {
+          return const VerifyScreen();
+        }
+      }
       return const HomeScreen();
     }
 
