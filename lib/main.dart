@@ -118,6 +118,33 @@ class HomeScreen extends StatelessWidget {
                 style: const TextStyle(color: AppTheme.secondaryColor, fontWeight: FontWeight.bold),
               ),
             ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppTheme.surfaceColor,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    user?.authProvider == 'google' 
+                        ? Icons.g_mobiledata 
+                        : user?.authProvider == 'github'
+                            ? Icons.code
+                            : Icons.email,
+                    size: 18,
+                    color: AppTheme.primaryColor,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Signed up with ${user?.authProvider ?? 'email'}',
+                    style: const TextStyle(color: AppTheme.textSecondary),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 32),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),

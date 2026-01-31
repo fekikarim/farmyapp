@@ -133,10 +133,17 @@ class _SignupScreenState extends State<SignupScreen> {
                               if (error == null) {
                                 Navigator.pop(context); // Go back to login
                               } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Signup Failed'),
                                     content: Text(error),
-                                    backgroundColor: Colors.red,
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
                                   ),
                                 );
                               }

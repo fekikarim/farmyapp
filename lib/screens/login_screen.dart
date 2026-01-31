@@ -108,10 +108,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                       );
                                       if (!mounted) return;
                                       if (error != null) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: const Text('Login Failed'),
                                             content: Text(error),
-                                            backgroundColor: Colors.red,
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(context),
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
                                           ),
                                         );
                                       }

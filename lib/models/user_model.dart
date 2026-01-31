@@ -6,6 +6,7 @@ class User {
   final String? profilePicture;
   final bool isVerified;
   final bool isBanned;
+  final String authProvider;
 
   User({
     required this.id,
@@ -15,6 +16,7 @@ class User {
     this.profilePicture,
     this.isVerified = false,
     this.isBanned = false,
+    this.authProvider = 'email',
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class User {
       profilePicture: json['profile']?['picture'],
       isVerified: json['is_verified'] ?? false,
       isBanned: json['is_banned'] ?? false,
+      authProvider: json['auth_provider'] ?? 'email',
     );
   }
 
@@ -40,6 +43,7 @@ class User {
       },
       'is_verified': isVerified,
       'is_banned': isBanned,
+      'auth_provider': authProvider,
     };
   }
 }
