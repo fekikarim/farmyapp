@@ -92,7 +92,6 @@ class AuthService {
   static Future<AuthResponse?> signInWithGithub() async {
     try {
       final String clientId = dotenv.get('GITHUB_CLIENT_ID');
-      final String clientSecret = dotenv.get('GITHUB_CLIENT_SECRET');
       const String redirectUri = 'farmyapp://auth';
 
       // 1. Redirect to GitHub OAuth
@@ -111,30 +110,16 @@ class AuthService {
       final code = Uri.parse(result).queryParameters['code'];
       if (code == null) return null;
 
-      // 3. Exchange code for access token
-      final tokenResponse = await http.post(
-        Uri.https('github.com', '/login/oauth/access_token'),
-        headers: {'Accept': 'application/json'},
-        body: {
-          'client_id': clientId,
-          'client_secret': clientSecret,
-          'code': code,
-          'redirect_uri': redirectUri,
-        },
-      );
-
-      final String? accessToken = jsonDecode(tokenResponse.body)['access_token'];
-      if (accessToken == null) return null;
-
-      // 4. Send token to our backend
+      // 3. Send CODE to backend
       final response = await http.post(
         Uri.parse('$_baseUrl/api/v1/auth/github'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'accessToken': accessToken}),
+        body: jsonEncode({'code': code}),
       );
 
       if (response.statusCode == 200) {
-        final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
+        final data = jsonDecode(response.body)['data'];
+        final authResponse = AuthResponse.fromJson(data);
         await _saveAuthData(authResponse);
         return authResponse;
       }
