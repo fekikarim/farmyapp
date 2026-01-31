@@ -247,6 +247,38 @@ class AuthService {
     }
   }
 
+  static Future<bool> forgotPassword(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/v1/auth/forgot-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Forgot Password Error: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> resetPassword(String email, String code, String newPassword) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/v1/auth/reset-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'code': code.trim(),
+          'newPassword': newPassword,
+        }),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Reset Password Error: $e');
+      return false;
+    }
+  }
+
   // --- Token Management ---
 
   static Future<void> _saveAuthData(AuthResponse response) async {

@@ -6,6 +6,8 @@ import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
 import 'screens/verify_screen.dart';
 import 'screens/banned_screen.dart';
+import 'screens/forgot_password_screen.dart';
+import 'screens/reset_password_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() async {
@@ -34,6 +36,16 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignupScreen(),
+        '/forgot-password': (context) => const ForgotPasswordScreen(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/reset-password') {
+          final email = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) => ResetPasswordScreen(email: email),
+          );
+        }
+        return null;
       },
     );
   }

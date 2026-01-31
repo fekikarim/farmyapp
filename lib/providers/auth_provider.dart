@@ -173,4 +173,34 @@ class AuthProvider with ChangeNotifier {
       return e.toString().replaceAll('Exception: ', '');
     }
   }
+
+  Future<String?> forgotPassword(String email) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final success = await AuthService.forgotPassword(email);
+      _isLoading = false;
+      notifyListeners();
+      return success ? null : 'Failed to send reset code. Please check your email.';
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      return e.toString().replaceAll('Exception: ', '');
+    }
+  }
+
+  Future<String?> resetPassword(String email, String code, String newPassword) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final success = await AuthService.resetPassword(email, code, newPassword);
+      _isLoading = false;
+      notifyListeners();
+      return success ? null : 'Invalid code or failed to reset password.';
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      return e.toString().replaceAll('Exception: ', '');
+    }
+  }
 }

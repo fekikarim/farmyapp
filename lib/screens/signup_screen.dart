@@ -130,9 +130,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                 _passwordController.text,
                               );
                               if (!mounted) return;
-                              if (error == null) {
-                                Navigator.pop(context); // Go back to login
-                              } else {
+                                if (error == null) {
+                                  Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+                                } else {
                                 showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
