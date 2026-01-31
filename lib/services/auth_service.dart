@@ -45,11 +45,13 @@ class AuthService {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
         await _saveAuthData(authResponse);
         return authResponse;
+      } else {
+        final body = jsonDecode(response.body);
+        throw Exception(body['message'] ?? body['error'] ?? 'Registration failed');
       }
-      return null;
     } catch (e) {
       print('Register Error: $e');
-      return null;
+      rethrow;
     }
   }
 
@@ -65,11 +67,13 @@ class AuthService {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
         await _saveAuthData(authResponse);
         return authResponse;
+      } else {
+        final body = jsonDecode(response.body);
+        throw Exception(body['message'] ?? body['error'] ?? 'Login failed');
       }
-      return null;
     } catch (e) {
       print('Login Error: $e');
-      return null;
+      rethrow;
     }
   }
 

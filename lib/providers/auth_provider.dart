@@ -45,38 +45,44 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> login(String email, String password) async {
+  Future<String?> login(String email, String password) async {
     _isLoading = true;
     notifyListeners();
 
-    final response = await AuthService.login(email, password);
-    if (response != null) {
-      _user = response.user;
+    try {
+      final response = await AuthService.login(email, password);
+      if (response != null) {
+        _user = response.user;
+        _isLoading = false;
+        notifyListeners();
+        return null; // Success
+      }
+      return 'Login failed';
+    } catch (e) {
       _isLoading = false;
       notifyListeners();
-      return true;
+      return e.toString().replaceAll('Exception: ', '');
     }
-
-    _isLoading = false;
-    notifyListeners();
-    return false;
   }
 
-  Future<bool> register(String email, String password) async {
+  Future<String?> register(String email, String password) async {
     _isLoading = true;
     notifyListeners();
 
-    final response = await AuthService.register(email, password);
-    if (response != null) {
-      _user = response.user;
+    try {
+      final response = await AuthService.register(email, password);
+      if (response != null) {
+        _user = response.user;
+        _isLoading = false;
+        notifyListeners();
+        return null; // Success
+      }
+      return 'Registration failed';
+    } catch (e) {
       _isLoading = false;
       notifyListeners();
-      return true;
+      return e.toString().replaceAll('Exception: ', '');
     }
-
-    _isLoading = false;
-    notifyListeners();
-    return false;
   }
 
   Future<bool> signInWithGoogle() async {
