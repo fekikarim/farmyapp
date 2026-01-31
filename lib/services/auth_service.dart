@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AuthService {
-  static const String _baseUrl = 'http://10.0.2.2:3001'; // Use localhost for iOS simulator
+  static final String _baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://localhost:3001');
 
   static final GoogleSignIn _googleSignIn = GoogleSignIn(
     serverClientId: '207350526659-uc61dhrc5htldf5q7dq5293ac9v75cbt.apps.googleusercontent.com',
