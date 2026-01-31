@@ -6,6 +6,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+import 'package:uuid/uuid.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/user_model.dart';
 
 class AuthService {
@@ -74,28 +76,45 @@ class AuthService {
   static Future<AuthResponse?> signInWithGoogle() async {
     try {
       String? idToken;
-      String? code;
 
       if (!kIsWeb && Platform.isWindows) {
-        // Windows Desktop Support via Auth Code Flow
-        final String clientId = '207350526659-uc61dhrc5htldf5q7dq5293ac9v75cbt.apps.googleusercontent.com';
-        const String redirectUri = 'farmyapp://auth';
+        // Windows Desktop Support via Polling Strategy
+        final requestId = const Uuid().v4();
+        final url = Uri.parse('$_baseUrl/api/v1/auth/google/login?state=$requestId');
 
-        final url = Uri.https('accounts.google.com', '/o/oauth2/v2/auth', {
-          'client_id': clientId,
-          'redirect_uri': redirectUri,
-          'response_type': 'code',
-          'scope': 'openid email profile',
-          'access_type': 'offline',
-          'prompt': 'select_account',
-        });
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url, mode: LaunchMode.externalApplication);
+        } else {
+          return null;
+        }
 
-        final result = await FlutterWebAuth2.authenticate(
-          url: url.toString(),
-          callbackUrlScheme: 'farmyapp',
-        );
+        // Poll for result (timeout 2 minutes)
+        for (int i = 0; i < 120; i++) {
+          await Future.delayed(const Duration(seconds: 1));
+          
+          try {
+            final checkResponse = await http.get(
+              Uri.parse('$_baseUrl/api/v1/auth/google/status?requestId=$requestId'),
+            );
 
-        code = Uri.parse(result).queryParameters['code'];
+            if (checkResponse.statusCode == 200) {
+              final data = jsonDecode(checkResponse.body);
+              
+              if (data['success'] == true) {
+                // Login successful!
+                final authResponse = AuthResponse.fromJson(data);
+                await _saveAuthData(authResponse);
+                return authResponse;
+              } else if (data['waiting'] == true) {
+                // Still waiting...
+                continue;
+              }
+            }
+          } catch (_) {
+            // Ignore network errors during polling
+          }
+        }
+        return null; // Timeout
       } else {
         // Mobile & Web Support via standard ID Token
         final googleSignIn = _googleSignInInstance;
@@ -108,15 +127,12 @@ class AuthService {
         idToken = googleAuth.idToken;
       }
 
-      if (idToken == null && code == null) return null;
+      if (idToken == null) return null;
 
       final response = await http.post(
         Uri.parse('$_baseUrl/api/v1/auth/google'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          if (idToken != null) 'idToken': idToken,
-          if (code != null) 'code': code,
-        }),
+        body: jsonEncode({'idToken': idToken}),
       );
 
       if (response.statusCode == 200) {
