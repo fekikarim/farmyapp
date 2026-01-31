@@ -144,4 +144,33 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
     return success;
   }
+
+  Future<String?> verifyEmail(String code) async {
+    if (_user == null) return 'No user found';
+    
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final success = await AuthService.verifyEmail(_user!.email, code);
+      if (success) {
+        // Sync profile to get is_verified: true
+        final updatedUser = await AuthService.fetchProfile();
+        if (updatedUser != null) {
+          _user = updatedUser;
+        }
+        _isLoading = false;
+        notifyListeners();
+        return null; // Success
+      } else {
+        _isLoading = false;
+        notifyListeners();
+        return 'Invalid or expired verification code';
+      }
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      return e.toString().replaceAll('Exception: ', '');
+    }
+  }
 }

@@ -223,6 +223,30 @@ class AuthService {
     }
   }
 
+  static Future<bool> verifyEmail(String email, String code) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/v1/auth/verify-email'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'code': code.trim(),
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        final body = jsonDecode(response.body);
+        print('Verify Email Error: ${body['message']}');
+        return false;
+      }
+    } catch (e) {
+      print('Verify Email Exception: $e');
+      return false;
+    }
+  }
+
   // --- Token Management ---
 
   static Future<void> _saveAuthData(AuthResponse response) async {
