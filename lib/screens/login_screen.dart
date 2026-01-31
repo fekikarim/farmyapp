@@ -113,26 +113,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                         const SizedBox(height: 24),
-                        // Only show Google sign-in on mobile
-                        if (Theme.of(context).platform == TargetPlatform.android || 
-                            Theme.of(context).platform == TargetPlatform.iOS)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: OutlinedButton.icon(
-                              onPressed: authProvider.isLoading ? null : () => authProvider.signInWithGoogle(),
-                              icon: Image.asset(
-                                'assets/google_logo.png',
-                                height: 24,
-                              ),
-                              label: const Text('Continue with Google'),
-                              style: OutlinedButton.styleFrom(
-                                minimumSize: const Size(double.infinity, 56),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                side: BorderSide(color: AppTheme.textSecondary.withOpacity(0.3)),
-                                foregroundColor: Colors.white,
-                              ),
-                            ),
+                        OutlinedButton.icon(
+                          onPressed: authProvider.isLoading ? null : () => authProvider.signInWithGoogle(),
+                          icon: Image.asset(
+                            'assets/google_logo.png',
+                            height: 24,
                           ),
+                          label: const Text('Continue with Google'),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 56),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            side: BorderSide(color: AppTheme.textSecondary.withOpacity(0.3)),
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
                         OutlinedButton.icon(
                           onPressed: authProvider.isLoading ? null : () => authProvider.signInWithGithub(),
                           icon: Image.asset(

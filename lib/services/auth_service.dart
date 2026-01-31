@@ -73,21 +73,50 @@ class AuthService {
 
   static Future<AuthResponse?> signInWithGoogle() async {
     try {
-      final googleSignIn = _googleSignInInstance;
-      if (googleSignIn == null) return null;
+      String? idToken;
+      String? code;
 
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if (googleUser == null) return null;
+      if (!kIsWeb && Platform.isWindows) {
+        // Windows Desktop Support via Auth Code Flow
+        final String clientId = '207350526659-uc61dhrc5htldf5q7dq5293ac9v75cbt.apps.googleusercontent.com';
+        const String redirectUri = 'farmyapp://auth';
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final String? idToken = googleAuth.idToken;
+        final url = Uri.https('accounts.google.com', '/o/oauth2/v2/auth', {
+          'client_id': clientId,
+          'redirect_uri': redirectUri,
+          'response_type': 'code',
+          'scope': 'openid email profile',
+          'access_type': 'offline',
+          'prompt': 'select_account',
+        });
 
-      if (idToken == null) return null;
+        final result = await FlutterWebAuth2.authenticate(
+          url: url.toString(),
+          callbackUrlScheme: 'farmyapp',
+        );
+
+        code = Uri.parse(result).queryParameters['code'];
+      } else {
+        // Mobile & Web Support via standard ID Token
+        final googleSignIn = _googleSignInInstance;
+        if (googleSignIn == null) return null;
+
+        final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+        if (googleUser == null) return null;
+
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        idToken = googleAuth.idToken;
+      }
+
+      if (idToken == null && code == null) return null;
 
       final response = await http.post(
         Uri.parse('$_baseUrl/api/v1/auth/google'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'idToken': idToken}),
+        body: jsonEncode({
+          if (idToken != null) 'idToken': idToken,
+          if (code != null) 'code': code,
+        }),
       );
 
       if (response.statusCode == 200) {
