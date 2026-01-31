@@ -106,8 +106,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: List.generate(6, (index) {
                       return SizedBox(
-                        width: 45,
-                        height: 55,
+                        width: 50,
+                        height: 60,
                         child: TextField(
                           controller: _controllers[index],
                           focusNode: _focusNodes[index],
@@ -126,7 +126,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
                               borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
                             ),
                             filled: true,
-                            fillColor: Colors.white.withOpacity(0.05),
+                            fillColor: Colors.white.withOpacity(0.1),
+                            contentPadding: EdgeInsets.zero,
                           ),
                           onChanged: (value) => _onChanged(value, index),
                         ),
