@@ -45,6 +45,8 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>GIDClientID</key>
+	<string>207350526659-jm05j7r0lr03hdjn7lmpeiuem090gnj3.apps.googleusercontent.com</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -53,6 +55,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.207350526659-jm05j7r0lr03hdjn7lmpeiuem090gnj3</string>
+				<string>farmyapp</string>
 			</array>
 		</dict>
 	</array>
