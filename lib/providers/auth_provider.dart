@@ -5,9 +5,11 @@ import '../services/auth_service.dart';
 class AuthProvider with ChangeNotifier {
   User? _user;
   bool _isLoading = false;
+  bool _isInitializing = true;
 
   User? get user => _user;
   bool get isLoading => _isLoading;
+  bool get isInitializing => _isInitializing;
   bool get isAuthenticated => _user != null;
 
   AuthProvider() {
@@ -41,6 +43,7 @@ class AuthProvider with ChangeNotifier {
       print('Auto Login Error: $e');
     }
 
+    _isInitializing = false;
     _isLoading = false;
     notifyListeners();
   }
@@ -57,11 +60,16 @@ class AuthProvider with ChangeNotifier {
         notifyListeners();
         return null; // Success
       }
-      return 'Login failed';
-    } catch (e) {
       _isLoading = false;
       notifyListeners();
-      return e.toString().replaceAll('Exception: ', '');
+      return 'Login failed';
+    } catch (e) {
+      print('AuthProvider caught error: $e');
+      _isLoading = false;
+      final errorMessage = e.toString().replaceAll('Exception: ', '');
+      print('Returning error message: $errorMessage');
+      notifyListeners();
+      return errorMessage;
     }
   }
 

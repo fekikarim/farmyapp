@@ -102,12 +102,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ? null
                                 : () async {
                                     if (_formKey.currentState!.validate()) {
+                                      print('Starting login...');
                                       final error = await authProvider.login(
                                         _emailController.text,
                                         _passwordController.text,
                                       );
-                                      if (!mounted) return;
-                                      if (error != null) {
+                                      print('Login completed. Error: $error');
+                                      if (error != null && mounted) {
+                                        print('Showing error dialog: $error');
                                         showDialog(
                                           context: context,
                                           builder: (context) => AlertDialog(
@@ -121,6 +123,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                             ],
                                           ),
                                         );
+                                      } else if (error == null) {
+                                        print('No error, login successful');
                                       }
                                     }
                                   },

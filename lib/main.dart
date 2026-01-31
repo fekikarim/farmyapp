@@ -46,7 +46,7 @@ class AuthWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
-    if (authProvider.isLoading) {
+    if (authProvider.isInitializing) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
