@@ -22,7 +22,7 @@ class AuthService {
 
       // Send idToken to backend
       final response = await http.post(
-        Uri.parse('$_baseUrl/v1/auth/google'),
+        Uri.parse('$_baseUrl/api/v1/auth/google'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'idToken': idToken}),
       );

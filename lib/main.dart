@@ -116,9 +116,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ElevatedButton.icon(
               onPressed: () async {
                 final Map<String, dynamic>? result = await AuthService.signInWithGoogle();
-                if (result != null) {
+                if (result != null && result['data'] != null) {
+                  final user = result['data']['user'];
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Welcome, ${result['user']['name']}')),
+                    SnackBar(content: Text('Welcome, ${user['email'] ?? 'User'}')),
                   );
                 }
               },
