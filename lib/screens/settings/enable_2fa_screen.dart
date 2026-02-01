@@ -190,6 +190,15 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
                     version: QrVersions.auto,
                     size: 200.0,
                     gapless: false,
+                    backgroundColor: Colors.white,
+                    eyeStyle: const QrEyeStyle(
+                      eyeShape: QrEyeShape.square,
+                      color: Colors.black,
+                    ),
+                    dataModuleStyle: const QrDataModuleStyle(
+                      dataModuleShape: QrDataModuleShape.square,
+                      color: Colors.black,
+                    ),
                   )
                 : const SizedBox(height: 200, width: 200, child: Center(child: CircularProgressIndicator())),
           ),
@@ -203,9 +212,9 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.grey[100],
+            color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[300]!),
+            border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
           ),
           child: Row(
             children: [
@@ -289,7 +298,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
         Center(
           child: TextButton(
             onPressed: () => setState(() => _step = 1),
-            child: Text('Back', style: TextStyle(color: Colors.grey[600])),
+            child: Text('Back', style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
           ),
         ),
         const SizedBox(height: 40),

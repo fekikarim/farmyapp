@@ -131,8 +131,30 @@ class SettingsScreen extends StatelessWidget {
               ),
               _buildSettingsTile(
                 context,
-                icon: Icons.security_outlined,
-                title: 'Enable 2FA',
+                icon: (user?.isTwoFactorEnabled ?? false) ? Icons.security : Icons.security_outlined,
+                title: (user?.isTwoFactorEnabled ?? false) ? 'Disable 2FA' : 'Enable 2FA',
+                subtitle: (user?.isTwoFactorEnabled ?? false) ? 'Strong security active' : 'Add an extra layer of security',
+                trailing: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: (user?.isTwoFactorEnabled ?? false) 
+                        ? Colors.green.withOpacity(0.1) 
+                        : theme.colorScheme.onSurface.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: (user?.isTwoFactorEnabled ?? false) ? Colors.green : Colors.transparent,
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    (user?.isTwoFactorEnabled ?? false) ? 'ENABLED' : 'OFF',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: (user?.isTwoFactorEnabled ?? false) ? Colors.green : theme.colorScheme.onSurface.withOpacity(0.5),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                    ),
+                  ),
+                ),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const Enable2FAScreen()),
@@ -240,6 +262,8 @@ class SettingsScreen extends StatelessWidget {
     BuildContext context, {
     required IconData icon,
     required String title,
+    String? subtitle,
+    Widget? trailing,
     required VoidCallback onTap,
   }) {
     final theme = Theme.of(context);
@@ -271,7 +295,13 @@ class SettingsScreen extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        trailing: Icon(
+        subtitle: subtitle != null ? Text(
+          subtitle,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurface.withOpacity(0.5),
+          ),
+        ) : null,
+        trailing: trailing ?? Icon(
           Icons.arrow_forward_ios_rounded,
           size: 16,
           color: theme.colorScheme.onSurface.withOpacity(0.4),
