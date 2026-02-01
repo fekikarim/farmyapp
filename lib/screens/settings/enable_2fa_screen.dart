@@ -13,7 +13,7 @@ class Enable2FAScreen extends StatefulWidget {
 class _Enable2FAScreenState extends State<Enable2FAScreen> {
   int _step = 1;
   String? _secret;
-  String? _qrCode;
+  String? _otpUri;
   final _codeController = TextEditingController();
   bool _isDisabling = false;
 
@@ -31,7 +31,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
     if (result != null) {
       setState(() {
         _secret = result['secret'];
-        _qrCode = result['qrCode'];
+        _otpUri = result['otpUri'];
         _step = 2;
       });
     } else {
@@ -137,7 +137,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 24),
-        if (_qrCode != null)
+        if (_otpUri != null)
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -146,7 +146,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
               boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
             ),
             child: QrImageView(
-              data: _qrCode!,
+              data: _otpUri!,
               version: QrVersions.auto,
               size: 200.0,
             ),
