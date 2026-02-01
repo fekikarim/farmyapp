@@ -36,28 +36,21 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       extendBodyBehindAppBar: true,
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppTheme.backgroundColor,
-              AppTheme.backgroundColor.withBlue(60),
-            ],
-          ),
-        ),
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -72,12 +65,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
-                            Icons.lock_reset_outlined,
-                            size: 80,
-                            color: AppTheme.primaryColor,
+                          Center(
+                            child: Image.asset(
+                              isDark ? 'assets/logo_dark.png' : 'assets/logo_light.png',
+                              height: 120,
+                            ),
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 48),
                           Text(
                             'Forgot Password?',
                             style: Theme.of(context).textTheme.headlineMedium,

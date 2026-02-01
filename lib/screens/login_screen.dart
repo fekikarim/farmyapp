@@ -20,19 +20,12 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppTheme.backgroundColor,
-              AppTheme.backgroundColor.withBlue(60),
-            ],
-          ),
-        ),
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -50,6 +43,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const SizedBox(height: 48),
+                          Center(
+                            child: Image.asset(
+                              isDark ? 'assets/logo_dark.png' : 'assets/logo_light.png',
+                              height: 120,
+                            ),
+                          ),
                           const SizedBox(height: 48),
                           Text(
                             'Welcome Back',
@@ -84,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                                  color: AppTheme.textSecondary,
+                                  color: Theme.of(context).textTheme.bodyMedium?.color,
                                 ),
                                 onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                               ),
@@ -100,9 +100,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             alignment: Alignment.centerRight,
                             child: TextButton(
                               onPressed: () => Navigator.pushNamed(context, '/forgot-password'),
-                              child: const Text(
+                              child: Text(
                                 'Forgot Password?',
-                                style: TextStyle(color: AppTheme.primaryColor),
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ),
                           ),
@@ -145,12 +145,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 24),
                         Row(
                           children: [
-                            Expanded(child: Divider(color: AppTheme.textSecondary.withOpacity(0.3))),
+                            Expanded(child: Divider(color: Theme.of(context).dividerColor.withOpacity(0.3))),
                             const Padding(
                               padding: EdgeInsets.symmetric(horizontal: 16),
-                              child: Text('OR', style: TextStyle(color: AppTheme.textSecondary)),
+                              child: Text('OR', style: TextStyle(color: AppTheme.secondaryColor)),
                             ),
-                            Expanded(child: Divider(color: AppTheme.textSecondary.withOpacity(0.3))),
+                            Expanded(child: Divider(color: Theme.of(context).dividerColor.withOpacity(0.3))),
                           ],
                         ),
                         const SizedBox(height: 24),
@@ -164,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: OutlinedButton.styleFrom(
                             minimumSize: const Size(double.infinity, 56),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                            side: BorderSide(color: AppTheme.textSecondary.withOpacity(0.3)),
+                            side: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.3)),
                             foregroundColor: Colors.white,
                           ),
                         ),
@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: OutlinedButton.styleFrom(
                             minimumSize: const Size(double.infinity, 56),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                            side: BorderSide(color: AppTheme.textSecondary.withOpacity(0.3)),
+                            side: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.3)),
                             foregroundColor: Colors.white,
                           ),
                         ),
@@ -188,9 +188,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: TextButton(
                             onPressed: () => Navigator.pushNamed(context, '/signup'),
                             child: RichText(
-                              text: const TextSpan(
+                              text: TextSpan(
                                 text: "Don't have an account? ",
-                                style: TextStyle(color: AppTheme.textSecondary),
+                                style: Theme.of(context).textTheme.bodyMedium,
                                 children: [
                                   TextSpan(
                                     text: 'Sign Up',

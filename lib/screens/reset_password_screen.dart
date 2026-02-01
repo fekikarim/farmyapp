@@ -75,21 +75,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
       extendBodyBehindAppBar: true,
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppTheme.backgroundColor,
-              AppTheme.backgroundColor.withBlue(60),
-            ],
-          ),
-        ),
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -98,9 +91,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   const SizedBox(height: 20),
-                  const Icon(Icons.vpn_key_outlined, size: 80, color: AppTheme.primaryColor),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: Image.asset(
+                      isDark ? 'assets/logo_dark.png' : 'assets/logo_light.png',
+                      height: 100,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
                   Text('Reset Password', style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 16),
                   Text('Resetting password for ${widget.email}', style: Theme.of(context).textTheme.bodyMedium),
@@ -119,7 +117,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           textAlign: TextAlign.center,
                           keyboardType: TextInputType.number,
                           maxLength: 1,
-                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                           decoration: InputDecoration(
                             counterText: "",
                             contentPadding: EdgeInsets.zero,

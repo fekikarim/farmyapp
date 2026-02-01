@@ -61,19 +61,12 @@ class _VerifyScreenState extends State<VerifyScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppTheme.backgroundColor,
-              AppTheme.backgroundColor.withBlue(60),
-            ],
-          ),
-        ),
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -81,13 +74,14 @@ class _VerifyScreenState extends State<VerifyScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                   const SizedBox(height: 40),
-                  const Icon(
-                    Icons.mark_email_unread_outlined,
-                    size: 80,
-                    color: AppTheme.primaryColor,
+                   const SizedBox(height: 20),
+                  Center(
+                    child: Image.asset(
+                      isDark ? 'assets/logo_dark.png' : 'assets/logo_light.png',
+                      height: 100,
+                    ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 40),
                   Text(
                     'Verify Your Email',
                     style: Theme.of(context).textTheme.headlineMedium,

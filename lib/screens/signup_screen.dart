@@ -21,28 +21,21 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       extendBodyBehindAppBar: true,
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppTheme.backgroundColor,
-              AppTheme.backgroundColor.withBlue(60),
-            ],
-          ),
-        ),
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -51,7 +44,14 @@ class _SignupScreenState extends State<SignupScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: Image.asset(
+                      isDark ? 'assets/logo_dark.png' : 'assets/logo_light.png',
+                      height: 100,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
                   Text(
                     'Create Account',
                     style: Theme.of(context).textTheme.headlineMedium,
@@ -89,7 +89,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                          color: AppTheme.textSecondary,
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                         ),
                         onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                       ),
@@ -158,9 +158,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: RichText(
-                        text: const TextSpan(
+                        text: TextSpan(
                           text: "Already have an account? ",
-                          style: TextStyle(color: AppTheme.textSecondary),
+                          style: Theme.of(context).textTheme.bodyMedium,
                           children: [
                             TextSpan(
                               text: 'Sign In',
