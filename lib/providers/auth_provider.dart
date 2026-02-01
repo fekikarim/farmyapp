@@ -48,6 +48,9 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  String? _tempUserId; // For 2FA verification
+  String? get tempUserId => _tempUserId;
+
   Future<String?> login(String email, String password) async {
     _isLoading = true;
     notifyListeners();
@@ -55,6 +58,13 @@ class AuthProvider with ChangeNotifier {
     try {
       final response = await AuthService.login(email, password);
       if (response != null) {
+        if (response.require2fa) {
+          _tempUserId = response.userId;
+          _isLoading = false;
+          notifyListeners();
+          return 'requires_2fa';
+        }
+
         _user = response.user;
         _isLoading = false;
         notifyListeners();
@@ -67,9 +77,82 @@ class AuthProvider with ChangeNotifier {
       print('AuthProvider caught error: $e');
       _isLoading = false;
       final errorMessage = e.toString().replaceAll('Exception: ', '');
-      print('Returning error message: $errorMessage');
       notifyListeners();
       return errorMessage;
+    }
+  }
+
+  Future<String?> verify2faLogin(String code) async {
+    if (_tempUserId == null) return 'Session expired';
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final response = await AuthService.verify2faLogin(_tempUserId!, code);
+      if (response != null) {
+        _user = response.user;
+        _tempUserId = null;
+        _isLoading = false;
+        notifyListeners();
+        return null; // Success
+      }
+      return 'Verification failed';
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      return e.toString().replaceAll('Exception: ', '');
+    }
+  }
+
+  Future<Map<String, dynamic>?> setup2fa() async {
+    _isLoading = true;
+    notifyListeners();
+    final result = await AuthService.setup2FA();
+    _isLoading = false;
+    notifyListeners();
+    return result;
+  }
+
+  Future<String?> confirm2fa(String code) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final success = await AuthService.verifyAndEnable2FA(code);
+      if (success) {
+        // Refresh profile to get updated isTwoFactorEnabled
+        _user = await AuthService.fetchProfile();
+        _isLoading = false;
+        notifyListeners();
+        return null;
+      }
+      _isLoading = false;
+      notifyListeners();
+      return 'Invalid code';
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      return e.toString().replaceAll('Exception: ', '');
+    }
+  }
+
+  Future<String?> disable2fa(String code) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final success = await AuthService.disable2FA(code);
+      if (success) {
+        _user = await AuthService.fetchProfile();
+        _isLoading = false;
+        notifyListeners();
+        return null;
+      }
+      _isLoading = false;
+      notifyListeners();
+      return 'Invalid code';
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      return e.toString().replaceAll('Exception: ', '');
     }
   }
 

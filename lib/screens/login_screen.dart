@@ -232,6 +232,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     _emailController.text,
                                                     _passwordController.text,
                                                   );
+
+                                                  if (error == 'requires_2fa') {
+                                                    if (mounted) {
+                                                      Navigator.pushNamed(context, '/verify-2fa');
+                                                    }
+                                                    return;
+                                                  }
+
                                                   if (error != null && mounted) {
                                                     showDialog(
                                                       context: context,

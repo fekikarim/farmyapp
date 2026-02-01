@@ -279,6 +279,73 @@ class AuthService {
     }
   }
 
+  // --- 2FA Methods ---
+
+  static Future<AuthResponse?> verify2faLogin(String userId, String token) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/v1/auth/login/verify-2fa'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'userId': userId, 'token': token}),
+      );
+
+      if (response.statusCode == 200) {
+        final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
+        if (authResponse.tokens != null) {
+          await _saveAuthData(authResponse);
+        }
+        return authResponse;
+      } else {
+        final body = jsonDecode(response.body);
+        throw Exception(body['message'] ?? body['error'] ?? '2FA verification failed');
+      }
+    } catch (e) {
+      print('2FA Verify Login Error: $e');
+      rethrow;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> setup2FA() async {
+    try {
+      final response = await authenticatedRequest('GET', Uri.parse('$_baseUrl/api/v1/auth/2fa/setup'));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      return null;
+    } catch (e) {
+      print('Setup 2FA Error: $e');
+      return null;
+    }
+  }
+
+  static Future<bool> verifyAndEnable2FA(String token) async {
+    try {
+      final response = await authenticatedRequest(
+        'POST',
+        Uri.parse('$_baseUrl/api/v1/auth/2fa/verify'),
+        body: jsonEncode({'token': token}),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Enable 2FA Error: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> disable2FA(String token) async {
+    try {
+      final response = await authenticatedRequest(
+        'POST',
+        Uri.parse('$_baseUrl/api/v1/auth/2fa/disable'),
+        body: jsonEncode({'token': token}),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Disable 2FA Error: $e');
+      return false;
+    }
+  }
+
   // --- Token Management ---
 
   static Future<void> _saveAuthData(AuthResponse response) async {

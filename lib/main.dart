@@ -10,6 +10,7 @@ import 'screens/banned_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/reset_password_screen.dart';
 import 'screens/main_screen.dart';
+import 'screens/auth/verify_2fa_screen.dart';
 import 'theme/app_theme.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,6 +64,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignupScreen(),
         '/forgot-password': (context) => const ForgotPasswordScreen(),
+        '/verify-2fa': (context) => const Verify2FAScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/reset-password') {

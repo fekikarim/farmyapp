@@ -6,6 +6,7 @@ class User {
   final String? profilePicture;
   final bool isVerified;
   final bool isBanned;
+  final bool isTwoFactorEnabled;
   final String authProvider;
 
   User({
@@ -16,6 +17,7 @@ class User {
     this.profilePicture,
     this.isVerified = false,
     this.isBanned = false,
+    this.isTwoFactorEnabled = false,
     this.authProvider = 'email',
   });
 
@@ -28,6 +30,7 @@ class User {
       profilePicture: json['profile']?['picture'],
       isVerified: json['is_verified'] ?? false,
       isBanned: json['is_banned'] ?? false,
+      isTwoFactorEnabled: json['is_two_factor_enabled'] ?? false,
       authProvider: json['auth_provider'] ?? 'email',
     );
   }
@@ -43,6 +46,7 @@ class User {
       },
       'is_verified': isVerified,
       'is_banned': isBanned,
+      'is_two_factor_enabled': isTwoFactorEnabled,
       'auth_provider': authProvider,
     };
   }
@@ -66,16 +70,26 @@ class AuthTokens {
 }
 
 class AuthResponse {
-  final User user;
-  final AuthTokens tokens;
+  final User? user;
+  final AuthTokens? tokens;
+  final bool require2fa;
+  final String? userId;
 
   AuthResponse({
-    required this.user,
-    required this.tokens,
+    this.user,
+    this.tokens,
+    this.require2fa = false,
+    this.userId,
   });
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     final data = json['data'];
+    if (data['require2fa'] == true) {
+      return AuthResponse(
+        require2fa: true,
+        userId: data['userId'],
+      );
+    }
     return AuthResponse(
       user: User.fromJson(data['user']),
       tokens: AuthTokens.fromJson(data),
