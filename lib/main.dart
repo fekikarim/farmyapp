@@ -65,6 +65,7 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => const SignupScreen(),
         '/forgot-password': (context) => const ForgotPasswordScreen(),
         '/verify-2fa': (context) => const Verify2FAScreen(),
+        '/main': (context) => const MainScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/reset-password') {
