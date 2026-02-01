@@ -137,6 +137,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                         controller: _emailController,
                                         style: const TextStyle(fontSize: 14),
                                         decoration: InputDecoration(
+                                          labelText: 'Email',
+                                          labelStyle: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5)),
+                                          prefixIcon: Icon(Icons.mail_outline_rounded, size: 18, color: primaryColor.withOpacity(0.7)),
+                                          contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                                          filled: true,
+                                          fillColor: (isDark ? Colors.black : Colors.white).withOpacity(0.3),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                            borderSide: BorderSide(color: (isDark ? Colors.white : Colors.black).withOpacity(0.05)),
+                                          ),
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(12),
                                             borderSide: BorderSide(color: primaryColor.withOpacity(0.5)),
