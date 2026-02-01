@@ -81,6 +81,14 @@ class _SignupScreenState extends State<SignupScreen> {
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
                       ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.redAccent, width: 2),
+                      ),
                     ),
                     validator: FieldValidators.email,
                   ),
@@ -103,6 +111,14 @@ class _SignupScreenState extends State<SignupScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.redAccent, width: 2),
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -134,6 +150,14 @@ class _SignupScreenState extends State<SignupScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.redAccent, width: 2),
                       ),
                     ),
                     validator: (value) => FieldValidators.confirmPassword(value, _passwordController.text),

@@ -102,6 +102,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
                               ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.redAccent, width: 2),
+                              ),
                             ),
                             validator: FieldValidators.email,
                           ),

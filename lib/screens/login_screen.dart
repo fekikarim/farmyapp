@@ -151,6 +151,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                             borderRadius: BorderRadius.circular(12),
                                             borderSide: BorderSide(color: primaryColor.withOpacity(0.5)),
                                           ),
+                                          errorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                            borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                                          ),
+                                          focusedErrorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                            borderSide: BorderSide(color: Colors.redAccent, width: 2),
+                                          ),
                                         ),
                                         validator: FieldValidators.email,
                                       ),
@@ -173,6 +181,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(12),
                                             borderSide: BorderSide(color: primaryColor.withOpacity(0.5)),
+                                          ),
+                                          errorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                            borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                                          ),
+                                          focusedErrorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                            borderSide: BorderSide(color: Colors.redAccent, width: 2),
                                           ),
                                           suffixIcon: IconButton(
                                             icon: Icon(

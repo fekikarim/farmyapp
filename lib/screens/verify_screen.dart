@@ -120,6 +120,14 @@ class _VerifyScreenState extends State<VerifyScreen> {
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
                             ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.redAccent, width: 2),
+                            ),
                             filled: true,
                             fillColor: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
                             contentPadding: EdgeInsets.zero,

@@ -131,6 +131,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
                               ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.redAccent, width: 2),
+                              ),
                               filled: true,
                               fillColor: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
                             ),
@@ -160,6 +168,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.redAccent, width: 2),
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -191,6 +207,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.redAccent, width: 2),
                       ),
                     ),
                     validator: (value) => FieldValidators.confirmPassword(value, _passwordController.text),
