@@ -77,7 +77,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                    const SizedBox(height: 20),
                   Center(
                     child: Image.asset(
-                      isDark ? 'assets/logo_dark.png' : 'assets/logo_light.png',
+                      'assets/logo-no-bg.png',
                       height: 100,
                     ),
                   ),
