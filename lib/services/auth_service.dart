@@ -43,7 +43,9 @@ class AuthService {
 
       if (response.statusCode == 201) {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
-        await _saveAuthData(authResponse);
+        if (!authResponse.require2fa) {
+          await _saveAuthData(authResponse);
+        }
         return authResponse;
       } else {
         final body = jsonDecode(response.body);
@@ -65,7 +67,9 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
-        await _saveAuthData(authResponse);
+        if (!authResponse.require2fa) {
+          await _saveAuthData(authResponse);
+        }
         return authResponse;
       } else {
         final body = jsonDecode(response.body);
@@ -107,7 +111,9 @@ class AuthService {
               if (data['success'] == true) {
                 // Login successful!
                 final authResponse = AuthResponse.fromJson(data);
-                await _saveAuthData(authResponse);
+                if (!authResponse.require2fa) {
+          await _saveAuthData(authResponse);
+        }
                 return authResponse;
               } else if (data['waiting'] == true) {
                 // Still waiting...
@@ -141,7 +147,9 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
-        await _saveAuthData(authResponse);
+        if (!authResponse.require2fa) {
+          await _saveAuthData(authResponse);
+        }
         return authResponse;
       }
       return null;
@@ -181,7 +189,9 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
-        await _saveAuthData(authResponse);
+        if (!authResponse.require2fa) {
+          await _saveAuthData(authResponse);
+        }
         return authResponse;
       }
       return null;
@@ -292,7 +302,9 @@ class AuthService {
       if (response.statusCode == 200) {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
         if (authResponse.tokens != null) {
+          if (!authResponse.require2fa) {
           await _saveAuthData(authResponse);
+        }
         }
         return authResponse;
       } else {
@@ -349,9 +361,13 @@ class AuthService {
   // --- Token Management ---
 
   static Future<void> _saveAuthData(AuthResponse response) async {
-    await _storage.write(key: _accessTokenKey, value: response.tokens.accessToken);
-    await _storage.write(key: _refreshTokenKey, value: response.tokens.refreshToken);
-    await _storage.write(key: _userKey, value: jsonEncode(response.user.toMap()));
+    if (response.tokens != null) {
+      await _storage.write(key: _accessTokenKey, value: response.tokens!.accessToken);
+      await _storage.write(key: _refreshTokenKey, value: response.tokens!.refreshToken);
+    }
+    if (response.user != null) {
+      await _storage.write(key: _userKey, value: jsonEncode(response.user!.toMap()));
+    }
   }
 
   static Future<User?> getUser() async {
