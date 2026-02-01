@@ -310,4 +310,20 @@ class AuthProvider with ChangeNotifier {
       return e.toString().replaceAll('Exception: ', '');
     }
   }
+
+
+  Future<String?> changePassword(String oldPassword, String newPassword) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final success = await AuthService.changePassword(oldPassword, newPassword);
+      _isLoading = false;
+      notifyListeners();
+      return success ? null : 'Failed to change password. Please verify your old password.';
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      return e.toString().replaceAll('Exception: ', '');
+    }
+  }
 }
