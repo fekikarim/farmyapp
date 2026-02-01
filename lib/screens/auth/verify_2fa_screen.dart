@@ -56,15 +56,47 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 40),
-            TextField(
-              controller: _codeController,
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.center,
-              maxLength: 6,
-              style: const TextStyle(fontSize: 24, letterSpacing: 8),
-              decoration: InputDecoration(
-                hintText: '000 000',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            Theme(
+              data: theme.copyWith(
+                textSelectionTheme: TextSelectionThemeData(
+                  cursorColor: theme.colorScheme.primary,
+                  selectionHandleColor: theme.colorScheme.primary,
+                  selectionColor: theme.colorScheme.primary.withOpacity(0.3),
+                ),
+              ),
+              child: TextField(
+                controller: _codeController,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                maxLength: 6,
+                cursorColor: theme.colorScheme.primary,
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 8,
+                  color: theme.colorScheme.onSurface,
+                ),
+                decoration: InputDecoration(
+                  hintText: '000000',
+                  hintStyle: TextStyle(
+                    color: theme.colorScheme.onSurface.withOpacity(0.2),
+                    letterSpacing: 8,
+                  ),
+                  counterText: '',
+                  filled: true,
+                  fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 24),

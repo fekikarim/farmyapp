@@ -244,34 +244,51 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           'Enter the 6-digit code from your app to confirm:',
-          style: TextStyle(color: Colors.grey),
+          style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)),
         ),
         const SizedBox(height: 24),
-        TextField(
-          controller: _codeController,
-          keyboardType: TextInputType.number,
-          textAlign: TextAlign.center,
-          maxLength: 6,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 8),
-          decoration: InputDecoration(
-            hintText: '000000',
-            hintStyle: TextStyle(color: Colors.grey[300], letterSpacing: 8),
-            counterText: '',
-            filled: true,
-            fillColor: Colors.grey[50],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+        Theme(
+          data: theme.copyWith(
+            textSelectionTheme: TextSelectionThemeData(
+              cursorColor: theme.colorScheme.primary,
+              selectionHandleColor: theme.colorScheme.primary,
+              selectionColor: theme.colorScheme.primary.withOpacity(0.3),
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          child: TextField(
+            controller: _codeController,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            maxLength: 6,
+            cursorColor: theme.colorScheme.primary,
+            style: theme.textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 8,
+              color: theme.colorScheme.onSurface,
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+            decoration: InputDecoration(
+              hintText: '000000',
+              hintStyle: TextStyle(
+                color: theme.colorScheme.onSurface.withOpacity(0.2),
+                letterSpacing: 8,
+              ),
+              counterText: '',
+              filled: true,
+              fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+              ),
             ),
           ),
         ),
@@ -327,32 +344,49 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
         Text(
           'Enter the 6-digit code from your authenticator app to disable two-factor authentication.',
           textAlign: TextAlign.center,
-          style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
+          style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.6)),
         ),
         const SizedBox(height: 48),
-        TextField(
-          controller: _codeController,
-          keyboardType: TextInputType.number,
-          textAlign: TextAlign.center,
-          maxLength: 6,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 8),
-          decoration: InputDecoration(
-            hintText: '000000',
-            hintStyle: TextStyle(color: Colors.grey[300], letterSpacing: 8),
-            counterText: '',
-            filled: true,
-            fillColor: Colors.grey[50],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+        Theme(
+          data: theme.copyWith(
+            textSelectionTheme: TextSelectionThemeData(
+              cursorColor: theme.colorScheme.primary,
+              selectionHandleColor: theme.colorScheme.primary,
+              selectionColor: theme.colorScheme.primary.withOpacity(0.3),
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          child: TextField(
+            controller: _codeController,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            maxLength: 6,
+            cursorColor: theme.colorScheme.primary,
+            style: theme.textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 8,
+              color: theme.colorScheme.onSurface,
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: theme.colorScheme.error, width: 2),
+            decoration: InputDecoration(
+              hintText: '000000',
+              hintStyle: TextStyle(
+                color: theme.colorScheme.onSurface.withOpacity(0.2),
+                letterSpacing: 8,
+              ),
+              counterText: '',
+              filled: true,
+              fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: theme.colorScheme.error, width: 2),
+              ),
             ),
           ),
         ),
