@@ -5,12 +5,10 @@ import '../models/user_model.dart';
 
 // Customer Screens
 import 'customer/home_screen.dart';
-import 'customer/profile_screen.dart';
 import 'customer/subscriptions_screen.dart';
 import 'customer/marketplace_screen.dart';
 
 // Farmer Screens
-import 'farmer/profile_screen.dart';
 import 'farmer/analytics_screen.dart';
 import 'farmer/products_screen.dart';
 import 'farmer/land_management_screen.dart';
@@ -21,7 +19,7 @@ import 'investor/explore_land_screen.dart';
 import 'investor/my_investments_screen.dart';
 import 'investor/farming_activities_screen.dart';
 import 'investor/revenue_screen.dart';
-import 'investor/profile_screen.dart';
+import 'settings_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -53,24 +51,24 @@ class _MainScreenState extends State<MainScreen> {
         const CustomerHomeScreen(),
         const CustomerMarketplaceScreen(),
         const CustomerSubscriptionsScreen(),
-        const CustomerProfileScreen(),
+        const SettingsScreen(),
       ];
       items = const [
         BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Home'),
         BottomNavigationBarItem(icon: Icon(Icons.storefront_outlined), activeIcon: Icon(Icons.storefront), label: 'Marketplace'),
         BottomNavigationBarItem(icon: Icon(Icons.subscriptions_outlined), activeIcon: Icon(Icons.subscriptions), label: 'Subscriptions'),
-        BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: 'Profile'),
+        BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), activeIcon: Icon(Icons.settings), label: 'Settings'),
       ];
     } else if (role == 'farmer') {
       screens = [
-        const FarmerProfileScreen(),
+        const SettingsScreen(),
         const FarmerAnalyticsScreen(),
         const FarmerProductsScreen(),
         const FarmerLandManagementScreen(),
         const FarmerMyFarmsScreen(),
       ];
       items = const [
-        BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: 'Profile'),
+        BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), activeIcon: Icon(Icons.settings), label: 'Settings'),
         BottomNavigationBarItem(icon: Icon(Icons.analytics_outlined), activeIcon: Icon(Icons.analytics), label: 'Analytics'),
         BottomNavigationBarItem(icon: Icon(Icons.inventory_2_outlined), activeIcon: Icon(Icons.inventory_2), label: 'Products'),
         BottomNavigationBarItem(icon: Icon(Icons.landscape_outlined), activeIcon: Icon(Icons.landscape), label: 'Land'),
@@ -82,14 +80,14 @@ class _MainScreenState extends State<MainScreen> {
         const InvestorMyInvestmentsScreen(),
         const InvestorFarmingActivitiesScreen(),
         const InvestorRevenueScreen(),
-        const InvestorProfileScreen(),
+        const SettingsScreen(),
       ];
       items = const [
         BottomNavigationBarItem(icon: Icon(Icons.explore_outlined), activeIcon: Icon(Icons.explore), label: 'Explore'),
         BottomNavigationBarItem(icon: Icon(Icons.monetization_on_outlined), activeIcon: Icon(Icons.monetization_on), label: 'Investments'),
         BottomNavigationBarItem(icon: Icon(Icons.grass_outlined), activeIcon: Icon(Icons.grass), label: 'Activities'),
         BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet_outlined), activeIcon: Icon(Icons.account_balance_wallet), label: 'Revenue'),
-        BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: 'Profile'),
+        BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), activeIcon: Icon(Icons.settings), label: 'Settings'),
       ];
     } else {
       // Fallback for unknown role
