@@ -109,19 +109,19 @@ class _VerifyScreenState extends State<VerifyScreen> {
                           textAlign: TextAlign.center,
                           keyboardType: TextInputType.number,
                           maxLength: 1,
-                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black),
                           decoration: InputDecoration(
                             counterText: "",
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                              borderSide: BorderSide(color: (isDark ? Colors.white : Colors.black).withOpacity(0.1)),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+                              borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
                             ),
                             filled: true,
-                            fillColor: Colors.white.withOpacity(0.1),
+                            fillColor: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
                             contentPadding: EdgeInsets.zero,
                           ),
                           onChanged: (value) => _onChanged(value, index),
@@ -156,36 +156,43 @@ class _VerifyScreenState extends State<VerifyScreen> {
                         : const Text('Verify Account', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(height: 24),
-                  TextButton(
-                    onPressed: authProvider.isLoading
-                        ? null
-                        : () async {
-                            final success = await authProvider.resendVerificationCode();
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(success
-                                      ? 'New verification code sent!'
-                                      : 'Failed to send code. Try again.'),
-                                  backgroundColor: success ? Colors.green : Colors.red,
-                                  behavior: SnackBarBehavior.floating,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                ),
-                              );
-                            }
-                          },
-                    child: const Text('Resend New Code', style: TextStyle(color: AppTheme.primaryColor)),
+                  Center(
+                    child: TextButton(
+                      onPressed: authProvider.isLoading
+                          ? null
+                          : () async {
+                              final success = await authProvider.resendVerificationCode();
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(success
+                                        ? 'New verification code sent!'
+                                        : 'Failed to send code. Try again.'),
+                                    backgroundColor: success ? Colors.green : Colors.red,
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  ),
+                                );
+                              }
+                            },
+                      style: TextButton.styleFrom(
+                        splashFactory: NoSplash.splashFactory,
+                      ),
+                      child: const Text('Resend New Code', style: TextStyle(color: AppTheme.primaryColor)),
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  OutlinedButton(
-                    onPressed: () => authProvider.logout(),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      side: BorderSide(color: Colors.white.withOpacity(0.3)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      foregroundColor: Colors.white70,
+                  Center(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(context).pushReplacementNamed('/login'),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(200, 50),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        side: BorderSide(color: (isDark ? Colors.white : Colors.black).withOpacity(0.1)),
+                        splashFactory: NoSplash.splashFactory,
+                      ),
+                      child: Text('Back to Login', style: TextStyle(color: (isDark ? Colors.white : Colors.black).withOpacity(0.7))),
                     ),
-                    child: const Text('Logout'),
                   ),
                 ],
               ),

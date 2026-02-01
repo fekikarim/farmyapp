@@ -145,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           fillColor: (isDark ? Colors.black : Colors.white).withOpacity(0.3),
                                           enabledBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(12),
-                                            borderSide: BorderSide(color: (isDark ? Colors.white : Colors.black).withOpacity(0.05)),
+                                            borderSide: BorderSide(color: (isDark ? Colors.white : Colors.black).withOpacity(0.1)),
                                           ),
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(12),
@@ -168,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           fillColor: (isDark ? Colors.black : Colors.white).withOpacity(0.3),
                                           enabledBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(12),
-                                            borderSide: BorderSide(color: (isDark ? Colors.white : Colors.black).withOpacity(0.05)),
+                                            borderSide: BorderSide(color: (isDark ? Colors.white : Colors.black).withOpacity(0.1)),
                                           ),
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(12),
@@ -193,6 +193,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                             padding: const EdgeInsets.symmetric(horizontal: 4),
                                             minimumSize: const Size(0, 24),
                                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            splashFactory: NoSplash.splashFactory,
+                                            foregroundColor: primaryColor,
                                           ),
                                           child: Text(
                                             'Forgot Password?',
@@ -298,28 +300,33 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
 
                           const SizedBox(height: 24),
-                          TextButton(
-                            onPressed: () => Navigator.pushNamed(context, '/signup'),
-                            style: TextButton.styleFrom(
-                              minimumSize: const Size(0, 30),
-                              padding: EdgeInsets.zero,
-                            ),
-                            child: RichText(
-                              text: TextSpan(
-                                text: "Don't have an account? ",
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
-                                      fontSize: 13,
+                          Center(
+                            child: TextButton(
+                              onPressed: () => Navigator.pushNamed(context, '/signup'),
+                              style: TextButton.styleFrom(
+                                minimumSize: const Size(0, 30),
+                                padding: EdgeInsets.zero,
+                                splashFactory: NoSplash.splashFactory,
+                                foregroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                              ),
+                              child: RichText(
+                                text: TextSpan(
+                                  text: "Don't have an account? ",
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                                        fontSize: 13,
+                                      ),
+                                  children: [
+                                    TextSpan(
+                                      text: 'Sign Up',
+                                      style: TextStyle(
+                                        color: primaryColor,
+                                        fontWeight: FontWeight.w800,
+                                      ),
                                     ),
-                                children: [
-                                  TextSpan(
-                                    text: 'Sign Up',
-                                    style: TextStyle(
-                                      color: primaryColor,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),
