@@ -176,38 +176,62 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> signInWithGoogle() async {
+  Future<String?> signInWithGoogle() async {
     _isLoading = true;
     notifyListeners();
 
-    final response = await AuthService.signInWithGoogle();
-    if (response != null) {
-      _user = response.user;
+    try {
+      final response = await AuthService.signInWithGoogle();
+      if (response != null) {
+        if (response.require2fa) {
+          _tempUserId = response.userId;
+          _isLoading = false;
+          notifyListeners();
+          return 'requires_2fa';
+        }
+
+        _user = response.user;
+        _isLoading = false;
+        notifyListeners();
+        return null; // Success
+      }
       _isLoading = false;
       notifyListeners();
-      return true;
+      return 'Google sign-in failed';
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      return e.toString().replaceAll('Exception: ', '');
     }
-
-    _isLoading = false;
-    notifyListeners();
-    return false;
   }
 
-  Future<bool> signInWithGithub() async {
+  Future<String?> signInWithGithub() async {
     _isLoading = true;
     notifyListeners();
 
-    final response = await AuthService.signInWithGithub();
-    if (response != null) {
-      _user = response.user;
+    try {
+      final response = await AuthService.signInWithGithub();
+      if (response != null) {
+        if (response.require2fa) {
+          _tempUserId = response.userId;
+          _isLoading = false;
+          notifyListeners();
+          return 'requires_2fa';
+        }
+
+        _user = response.user;
+        _isLoading = false;
+        notifyListeners();
+        return null; // Success
+      }
       _isLoading = false;
       notifyListeners();
-      return true;
+      return 'GitHub sign-in failed';
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      return e.toString().replaceAll('Exception: ', '');
     }
-
-    _isLoading = false;
-    notifyListeners();
-    return false;
   }
 
   Future<void> logout() async {

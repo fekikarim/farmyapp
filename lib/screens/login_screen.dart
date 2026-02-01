@@ -311,14 +311,62 @@ class _LoginScreenState extends State<LoginScreen> {
                               _SocialButton(
                                 icon: 'assets/google_logo.png',
                                 size: 54,
-                                onTap: authProvider.isLoading ? null : () => authProvider.signInWithGoogle(),
+                                onTap: authProvider.isLoading
+                                    ? null
+                                    : () async {
+                                        final result = await authProvider.signInWithGoogle();
+                                        if (result == 'requires_2fa') {
+                                          if (mounted) {
+                                            Navigator.pushNamed(context, '/verify-2fa');
+                                          }
+                                        } else if (result != null && mounted) {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                              title: const Text('Login Failed', style: TextStyle(fontSize: 18)),
+                                              content: Text(result, style: const TextStyle(fontSize: 14)),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () => Navigator.pop(context),
+                                                  child: const Text('OK'),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }
+                                      },
                               ),
                               const SizedBox(width: 20),
                               _SocialButton(
                                 icon: 'assets/github_logo.png',
                                 size: 54,
                                 iconColor: isDark ? Colors.white : Colors.black,
-                                onTap: authProvider.isLoading ? null : () => authProvider.signInWithGithub(),
+                                onTap: authProvider.isLoading
+                                    ? null
+                                    : () async {
+                                        final result = await authProvider.signInWithGithub();
+                                        if (result == 'requires_2fa') {
+                                          if (mounted) {
+                                            Navigator.pushNamed(context, '/verify-2fa');
+                                          }
+                                        } else if (result != null && mounted) {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                              title: const Text('Login Failed', style: TextStyle(fontSize: 18)),
+                                              content: Text(result, style: const TextStyle(fontSize: 14)),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () => Navigator.pop(context),
+                                                  child: const Text('OK'),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }
+                                      },
                               ),
                             ],
                           ),

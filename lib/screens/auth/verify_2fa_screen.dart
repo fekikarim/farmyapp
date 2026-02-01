@@ -39,85 +39,98 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
         title: const Text('Two-Factor Authentication'),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.security, size: 80, color: Colors.green),
-            const SizedBox(height: 24),
-            Text(
-              'Verification Required',
-              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Enter the 6-digit code from your authenticator app to continue.',
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 40),
-            Theme(
-              data: theme.copyWith(
-                textSelectionTheme: TextSelectionThemeData(
-                  cursorColor: theme.colorScheme.primary,
-                  selectionHandleColor: theme.colorScheme.primary,
-                  selectionColor: theme.colorScheme.primary.withOpacity(0.3),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.security, size: 80, color: Colors.green),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Verification Required',
+                      style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Enter the 6-digit code from your authenticator app to continue.',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 40),
+                    Theme(
+                      data: theme.copyWith(
+                        textSelectionTheme: TextSelectionThemeData(
+                          cursorColor: theme.colorScheme.primary,
+                          selectionHandleColor: theme.colorScheme.primary,
+                          selectionColor: theme.colorScheme.primary.withOpacity(0.3),
+                        ),
+                      ),
+                      child: TextField(
+                        controller: _codeController,
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        maxLength: 6,
+                        cursorColor: theme.colorScheme.primary,
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 8,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: '000000',
+                          hintStyle: TextStyle(
+                            color: theme.colorScheme.onSurface.withOpacity(0.2),
+                            letterSpacing: 8,
+                          ),
+                          counterText: '',
+                          filled: true,
+                          fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: isLoading ? null : _verify,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: isLoading 
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            ) 
+                          : const Text('Verify'),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                  ],
                 ),
               ),
-              child: TextField(
-                controller: _codeController,
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                maxLength: 6,
-                cursorColor: theme.colorScheme.primary,
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 8,
-                  color: theme.colorScheme.onSurface,
-                ),
-                decoration: InputDecoration(
-                  hintText: '000000',
-                  hintStyle: TextStyle(
-                    color: theme.colorScheme.onSurface.withOpacity(0.2),
-                    letterSpacing: 8,
-                  ),
-                  counterText: '',
-                  filled: true,
-                  fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: isLoading ? null : _verify,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                child: isLoading 
-                  ? const CircularProgressIndicator() 
-                  : const Text('Verify'),
-              ),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
