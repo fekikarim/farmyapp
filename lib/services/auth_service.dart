@@ -413,6 +413,7 @@ class AuthService {
       final response = await authenticatedRequest('GET', Uri.parse('$_baseUrl/api/v1/auth/me'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body)['data'];
+        print('Fetched Profile Data: $data');
         final user = User.fromJson(data);
         await _storage.write(key: _userKey, value: jsonEncode(user.toMap()));
         return user;
