@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/auth_provider.dart';
+import 'settings/edit_profile_screen.dart';
+import 'settings/change_password_screen.dart';
+import 'settings/enable_2fa_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -112,19 +115,28 @@ class SettingsScreen extends StatelessWidget {
                 context,
                 icon: Icons.edit_outlined,
                 title: 'Edit Profile',
-                onTap: () => _showComingSoonDialog(context),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                ),
               ),
               _buildSettingsTile(
                 context,
                 icon: Icons.lock_outline,
                 title: 'Change Password',
-                onTap: () => _showComingSoonDialog(context),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
+                ),
               ),
               _buildSettingsTile(
                 context,
                 icon: Icons.security_outlined,
                 title: 'Enable 2FA',
-                onTap: () => _showComingSoonDialog(context),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Enable2FAScreen()),
+                ),
               ),
 
               const SizedBox(height: 24),
