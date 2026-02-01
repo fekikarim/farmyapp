@@ -35,6 +35,12 @@ class SettingsScreen extends StatelessWidget {
                 title: 'Change Password',
                 onTap: () => _showComingSoonDialog(context),
               ),
+              _buildSettingsTile(
+                context,
+                icon: Icons.security_outlined,
+                title: 'Enable 2FA',
+                onTap: () => _showComingSoonDialog(context),
+              ),
 
               const SizedBox(height: 24),
               _buildSectionTitle(theme, 'Appearance'),
