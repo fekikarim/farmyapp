@@ -289,6 +289,23 @@ class AuthService {
     }
   }
 
+  static Future<bool> changePassword(String oldPassword, String newPassword) async {
+    try {
+      final response = await authenticatedRequest(
+        'POST',
+        Uri.parse('$_baseUrl/api/v1/auth/change-password'),
+        body: jsonEncode({
+          'oldPassword': oldPassword,
+          'newPassword': newPassword,
+        }),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Change Password Error: $e');
+      return false;
+    }
+  }
+
   // --- 2FA Methods ---
 
   static Future<AuthResponse?> verify2faLogin(String userId, String token) async {
