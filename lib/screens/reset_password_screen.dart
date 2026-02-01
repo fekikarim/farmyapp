@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../utils/validators.dart';
 import '../theme/app_theme.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -150,7 +151,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                       ),
                     ),
-                    validator: (value) => (value == null || value.length < 6) ? 'Password must be at least 6 characters' : null,
+                    validator: FieldValidators.password,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -160,7 +161,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       labelText: 'Confirm New Password',
                       prefixIcon: Icon(Icons.lock_outline),
                     ),
-                    validator: (value) => (value != _passwordController.text) ? 'Passwords do not match' : null,
+                    validator: (value) => FieldValidators.confirmPassword(value, _passwordController.text),
                   ),
                   
                   if (_errorMessage.isNotEmpty) ...[

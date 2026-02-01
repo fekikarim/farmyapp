@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
+import '../utils/validators.dart';
 
 class VerifyScreen extends StatefulWidget {
   const VerifyScreen({super.key});
@@ -41,14 +42,14 @@ class _VerifyScreenState extends State<VerifyScreen> {
   String get _code => _controllers.map((c) => c.text).join();
 
   Future<void> _verify(AuthProvider authProvider) async {
-    if (_code.length < 6) {
-      setState(() {
-        _errorMessage = 'Please enter all 6 digits';
-      });
+    final code = _controllers.map((c) => c.text).toList().join();
+    final otpError = FieldValidators.otp(code);
+    if (otpError != null) {
+      setState(() => _errorMessage = otpError);
       return;
     }
 
-    final error = await authProvider.verifyEmail(_code);
+    final error = await authProvider.verifyEmail(code);
     if (error != null && mounted) {
       setState(() {
         _errorMessage = error;

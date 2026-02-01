@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../utils/validators.dart';
 import '../theme/app_theme.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -68,16 +69,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       labelText: 'Email Address',
                       prefixIcon: Icon(Icons.email_outlined),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                      if (!emailRegex.hasMatch(value)) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
-                    },
+                    validator: FieldValidators.email,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -94,15 +86,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a password';
-                      }
-                      if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
-                      return null;
-                    },
+                    validator: FieldValidators.password,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -112,12 +96,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       labelText: 'Confirm Password',
                       prefixIcon: Icon(Icons.lock_clock_outlined),
                     ),
-                    validator: (value) {
-                      if (value != _passwordController.text) {
-                        return 'Passwords do not match';
-                      }
-                      return null;
-                    },
+                    validator: (value) => FieldValidators.confirmPassword(value, _passwordController.text),
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton(

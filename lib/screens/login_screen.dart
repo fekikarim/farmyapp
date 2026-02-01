@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
+import '../utils/validators.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -136,22 +137,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                         controller: _emailController,
                                         style: const TextStyle(fontSize: 14),
                                         decoration: InputDecoration(
-                                          labelText: 'Email',
-                                          labelStyle: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5)),
-                                          prefixIcon: Icon(Icons.mail_outline_rounded, size: 18, color: primaryColor.withOpacity(0.7)),
-                                          contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                                          filled: true,
-                                          fillColor: (isDark ? Colors.black : Colors.white).withOpacity(0.3),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                            borderSide: BorderSide(color: (isDark ? Colors.white : Colors.black).withOpacity(0.05)),
-                                          ),
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(12),
                                             borderSide: BorderSide(color: primaryColor.withOpacity(0.5)),
                                           ),
                                         ),
-                                        validator: (value) => (value == null || value.isEmpty) ? 'Enter email' : null,
+                                        validator: FieldValidators.email,
                                       ),
                                       const SizedBox(height: 12),
                                       TextFormField(
@@ -182,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                                           ),
                                         ),
-                                        validator: (value) => (value == null || value.isEmpty) ? 'Enter password' : null,
+                                        validator: (value) => FieldValidators.required(value, 'Password'),
                                       ),
                                       Align(
                                         alignment: Alignment.centerRight,

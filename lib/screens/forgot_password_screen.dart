@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../utils/validators.dart';
 import '../theme/app_theme.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -89,15 +90,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               labelText: 'Email Address',
                               prefixIcon: Icon(Icons.email_outlined),
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your email';
-                              }
-                              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                                return 'Please enter a valid email';
-                              }
-                              return null;
-                            },
+                            validator: FieldValidators.email,
                           ),
                           if (_errorMessage.isNotEmpty) ...[
                             const SizedBox(height: 16),
