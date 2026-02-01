@@ -12,11 +12,22 @@ import 'screens/reset_password_screen.dart';
 import 'screens/main_screen.dart';
 import 'theme/app_theme.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+
+  // Load saved theme
+  final prefs = await SharedPreferences.getInstance();
+  final String? savedTheme = prefs.getString('theme_mode');
+  ThemeMode initialTheme = ThemeMode.light; // Default to light
+  if (savedTheme == 'dark') {
+    initialTheme = ThemeMode.dark;
+  } else if (savedTheme == 'system') {
+    initialTheme = ThemeMode.system;
+  }
   
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -26,7 +37,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider(initialThemeMode: initialTheme)),
       ],
       child: const MyApp(),
     ),
