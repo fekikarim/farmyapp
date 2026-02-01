@@ -18,13 +18,6 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Settings'),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.red),
-            onPressed: () => authProvider.logout(),
-            tooltip: 'Logout',
-          ),
-        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -183,7 +176,26 @@ class SettingsScreen extends StatelessWidget {
                 onTap: () => _showComingSoonDialog(context),
               ),
 
-              const SizedBox(height: 48),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => authProvider.logout(),
+                  icon: const Icon(Icons.logout),
+                  label: const Text('Logout'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.error,
+                    foregroundColor: theme.colorScheme.onError,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 32),
               Center(
                 child: Text(
                   '© ${DateTime.now().year} Farmy Team',
