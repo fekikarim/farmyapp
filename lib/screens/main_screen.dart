@@ -37,8 +37,15 @@ class _MainScreenState extends State<MainScreen> {
     final user = authProvider.user;
 
     if (user == null) {
-      // Should not happen if wrapped in AuthWrapper, but safe fallback
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      // If user becomes null (logout), navigate back to the AuthWrapper at '/'
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+        }
+      });
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
 
     final role = user.role.toLowerCase();
@@ -92,10 +99,24 @@ class _MainScreenState extends State<MainScreen> {
     } else {
       // Fallback for unknown role
       return Scaffold(
-        body: Center(child: Text('Unknown role: ${user.role}')),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => authProvider.logout(),
-          child: const Icon(Icons.logout),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Unknown role: ${user.role}'),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                onPressed: () async {
+                  await authProvider.logout();
+                  if (context.mounted) {
+                    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+                  }
+                },
+                icon: const Icon(Icons.logout),
+                label: const Text('Logout'),
+              ),
+            ],
+          ),
         ),
       );
     }
