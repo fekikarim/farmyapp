@@ -34,6 +34,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // Prevent auto-focus on navigation
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).unfocus();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
@@ -49,11 +58,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         ),
       ),
       extendBodyBehindAppBar: true,
-      body: Container(
-        width: double.infinity,
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: SafeArea(
-          child: LayoutBuilder(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Container(
+          width: double.infinity,
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: SafeArea(
+            child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
                 child: ConstrainedBox(
@@ -157,6 +168,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               );
             },
           ),
+        ),
         ),
       ),
     );

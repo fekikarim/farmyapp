@@ -54,15 +54,15 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/logo-no-bg.png"
+  image_path: "assets/logo-app-no-bg.png"
   remove_alpha_ios: true
   app_name: "Farmy"
 
 flutter_native_splash:
   color: "#344955"
-  image: assets/logo-no-bg.png
+  image: assets/logo-app-no-bg.png
   android_12:
-    image: assets/logo-no-bg.png
+    image: assets/logo-app-no-bg.png
     color: "#344955"
   fullscreen: true
 
@@ -82,6 +82,7 @@ flutter:
     - assets/logo_light.png
     - assets/logo_dark.png
     - assets/logo-no-bg.png
+    - assets/logo-app-no-bg.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

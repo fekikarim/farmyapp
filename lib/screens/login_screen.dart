@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/validators.dart';
+import '../main.dart'; // Import for routeObserver
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,11 +13,46 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> with RouteAware {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Prevent auto-focus on initial load
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).unfocus();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Subscribe to route changes
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    // Called when returning to this screen from another route
+    // Reset focus to prevent auto-keyboard
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        FocusScope.of(context).unfocus();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +61,10 @@ class _LoginScreenState extends State<LoginScreen> {
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      body: Stack(
-        children: [
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Stack(
+          children: [
           // Ambient Background Gradients
           Container(
             width: double.infinity,
@@ -135,6 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     children: [
                                       TextFormField(
                                         controller: _emailController,
+                                        autofocus: false,
                                         style: const TextStyle(fontSize: 14),
                                         decoration: InputDecoration(
                                           labelText: 'Email',
@@ -204,7 +243,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       Align(
                                         alignment: Alignment.centerRight,
                                         child: TextButton(
-                                          onPressed: () => Navigator.pushNamed(context, '/forgot-password'),
+                                          onPressed: () {
+                                            FocusScope.of(context).unfocus();
+                                            Navigator.pushNamed(context, '/forgot-password');
+                                          },
                                           style: TextButton.styleFrom(
                                             padding: const EdgeInsets.symmetric(horizontal: 4),
                                             minimumSize: const Size(0, 24),
@@ -374,7 +416,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 24),
                           Center(
                             child: TextButton(
-                              onPressed: () => Navigator.pushNamed(context, '/signup'),
+                              onPressed: () {
+                                FocusScope.of(context).unfocus();
+                                Navigator.pushNamed(context, '/signup');
+                              },
                               style: TextButton.styleFrom(
                                 minimumSize: const Size(0, 30),
                                 padding: EdgeInsets.zero,
@@ -411,6 +456,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ],
+        ),
       ),
     );
   }

@@ -18,6 +18,15 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    // Prevent auto-focus on navigation
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).unfocus();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
@@ -33,11 +42,13 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
       extendBodyBehindAppBar: true,
-      body: Container(
-        width: double.infinity,
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: SafeArea(
-          child: SingleChildScrollView(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Container(
+          width: double.infinity,
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: SafeArea(
+            child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Form(
               key: _formKey,
@@ -64,6 +75,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 48),
                   TextFormField(
                     controller: _emailController,
+                    autofocus: false,
                     style: const TextStyle(fontSize: 14),
                     decoration: InputDecoration(
                       labelText: 'Email',
@@ -198,7 +210,10 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 24),
                   Center(
                     child: TextButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+                        Navigator.pop(context);
+                      },
                       style: TextButton.styleFrom(
                         splashFactory: NoSplash.splashFactory,
                         foregroundColor: Colors.transparent,
@@ -226,6 +241,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
             ),
           ),
+        ),
         ),
       ),
     );

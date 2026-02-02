@@ -16,6 +16,9 @@ import 'theme/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/theme_provider.dart';
 
+// Global RouteObserver for focus management
+final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
@@ -58,6 +61,7 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
+          navigatorObservers: [routeObserver],
           initialRoute: '/',
           routes: {
             '/': (context) => const AuthWrapper(),

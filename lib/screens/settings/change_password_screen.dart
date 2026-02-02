@@ -30,7 +30,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   Future<void> _submit(AuthProvider authProvider) async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => _errorMessage = '');
 
     final error = await authProvider.changePassword(
@@ -57,15 +57,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Change Password'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Change Password'), centerTitle: true),
       body: SafeArea(
         child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           padding: const EdgeInsets.all(24),
           child: Form(
             key: _formKey,
@@ -88,55 +85,81 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 const SizedBox(height: 32),
 
                 // Old Password
-                TextFormField(
-                  controller: _oldPasswordController,
-                  obscureText: _obscureOld,
-                  decoration: InputDecoration(
-                    labelText: 'Current Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(_obscureOld ? Icons.visibility_off : Icons.visibility),
-                      onPressed: () => setState(() => _obscureOld = !_obscureOld),
+                TapRegion(
+                  onTapOutside: (_) =>
+                      FocusManager.instance.primaryFocus?.unfocus(),
+                  child: TextFormField(
+                    controller: _oldPasswordController,
+                    obscureText: _obscureOld,
+                    decoration: InputDecoration(
+                      labelText: 'Current Password',
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureOld ? Icons.visibility_off : Icons.visibility,
+                        ),
+                        onPressed: () =>
+                            setState(() => _obscureOld = !_obscureOld),
+                      ),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your current password';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your current password';
-                    }
-                    return null;
-                  },
                 ),
                 const SizedBox(height: 16),
 
                 // New Password
-                TextFormField(
-                  controller: _newPasswordController,
-                  obscureText: _obscureNew,
-                  decoration: InputDecoration(
-                    labelText: 'New Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(_obscureNew ? Icons.visibility_off : Icons.visibility),
-                      onPressed: () => setState(() => _obscureNew = !_obscureNew),
+                TapRegion(
+                  onTapOutside: (_) =>
+                      FocusManager.instance.primaryFocus?.unfocus(),
+                  child: TextFormField(
+                    controller: _newPasswordController,
+                    obscureText: _obscureNew,
+                    decoration: InputDecoration(
+                      labelText: 'New Password',
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureNew ? Icons.visibility_off : Icons.visibility,
+                        ),
+                        onPressed: () =>
+                            setState(() => _obscureNew = !_obscureNew),
+                      ),
                     ),
+                    validator: FieldValidators.password,
                   ),
-                  validator: FieldValidators.password,
                 ),
                 const SizedBox(height: 16),
 
                 // Confirm Password
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: _obscureConfirm,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm New Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility),
-                      onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                TapRegion(
+                  onTapOutside: (_) =>
+                      FocusManager.instance.primaryFocus?.unfocus(),
+                  child: TextFormField(
+                    controller: _confirmPasswordController,
+                    obscureText: _obscureConfirm,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm New Password',
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureConfirm
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: () =>
+                            setState(() => _obscureConfirm = !_obscureConfirm),
+                      ),
+                    ),
+                    validator: (value) => FieldValidators.confirmPassword(
+                      value,
+                      _newPasswordController.text,
                     ),
                   ),
-                  validator: (value) => FieldValidators.confirmPassword(value, _newPasswordController.text),
                 ),
 
                 if (_errorMessage.isNotEmpty) ...[
@@ -146,11 +169,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     decoration: BoxDecoration(
                       color: theme.colorScheme.error.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: theme.colorScheme.error.withOpacity(0.3)),
+                      border: Border.all(
+                        color: theme.colorScheme.error.withOpacity(0.3),
+                      ),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.error_outline, color: theme.colorScheme.error, size: 20),
+                        Icon(
+                          Icons.error_outline,
+                          color: theme.colorScheme.error,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -171,9 +200,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: authProvider.isLoading ? null : () => _submit(authProvider),
+                    onPressed: authProvider.isLoading
+                        ? null
+                        : () => _submit(authProvider),
                     child: authProvider.isLoading
-                        ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
                         : const Text('Update Password'),
                   ),
                 ),
