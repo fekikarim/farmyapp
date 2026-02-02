@@ -17,7 +17,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/theme_provider.dart';
 
 // Global RouteObserver for focus management
-final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +33,7 @@ void main() async {
   } else if (savedTheme == 'system') {
     initialTheme = ThemeMode.system;
   }
-  
+
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -41,7 +42,9 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider(initialThemeMode: initialTheme)),
+        ChangeNotifierProvider(
+          create: (_) => ThemeProvider(initialThemeMode: initialTheme),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -62,24 +65,34 @@ class MyApp extends StatelessWidget {
           darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
           navigatorObservers: [routeObserver],
+          builder: (context, child) {
+            return GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+                SystemChannels.textInput.invokeMethod('TextInput.hide');
+              },
+              child: child,
+            );
+          },
           initialRoute: '/',
           routes: {
             '/': (context) => const AuthWrapper(),
-        '/login': (context) => const LoginScreen(),
-        '/signup': (context) => const SignupScreen(),
-        '/forgot-password': (context) => const ForgotPasswordScreen(),
-        '/verify-2fa': (context) => const Verify2FAScreen(),
-        '/main': (context) => const MainScreen(),
-      },
-      onGenerateRoute: (settings) {
-        if (settings.name == '/reset-password') {
-          final email = settings.arguments as String;
-          return MaterialPageRoute(
-            builder: (context) => ResetPasswordScreen(email: email),
-          );
-        }
-        return null;
-      },
+            '/login': (context) => const LoginScreen(),
+            '/signup': (context) => const SignupScreen(),
+            '/forgot-password': (context) => const ForgotPasswordScreen(),
+            '/verify-2fa': (context) => const Verify2FAScreen(),
+            '/main': (context) => const MainScreen(),
+          },
+          onGenerateRoute: (settings) {
+            if (settings.name == '/reset-password') {
+              final email = settings.arguments as String;
+              return MaterialPageRoute(
+                builder: (context) => ResetPasswordScreen(email: email),
+              );
+            }
+            return null;
+          },
         );
       },
     );
@@ -94,9 +107,7 @@ class AuthWrapper extends StatelessWidget {
     final authProvider = Provider.of<AuthProvider>(context);
 
     if (authProvider.isInitializing) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (authProvider.isAuthenticated) {
