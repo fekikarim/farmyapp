@@ -93,7 +93,7 @@ class MlKitService {
     }
   }
 
-  /// Validates the BACK of an ID card (less strict - backs often have less text)
+  /// Validates the BACK of an ID card (moderate checks - backs have less text but should have numbers/barcodes)
   Future<ValidationResult> validateIdCardBack(File imageFile) async {
     try {
       final inputImage = InputImage.fromFile(imageFile);
@@ -102,19 +102,31 @@ class MlKitService {
 
       print('[ML Kit] Back ID Text found: ${recognizedText.text.substring(0, recognizedText.text.length.clamp(0, 100))}...');
 
-      // Back of ID is often simpler - just need SOME text or barcode pattern
-      // Much looser check: at least 10 characters of any text
-      if (text.length < 10) {
-        return ValidationResult(false, 'No text detected on back. Please scan the back of your ID.');
+      // Check 1: Must have at least 15 characters
+      if (text.length < 15) {
+        return ValidationResult(false, 'Not enough text detected. Please scan the back of your ID clearly.');
       }
 
-      // Optional: Look for MRZ (Machine Readable Zone) pattern on backs of IDs
-      final hasMrzPattern = RegExp(r'[A-Z<]{10,}').hasMatch(recognizedText.text);
-      final hasNumbers = RegExp(r'\d{4,}').hasMatch(recognizedText.text);
+      // Check 2: Look for MRZ (Machine Readable Zone) pattern - common on ID backs
+      final hasMrzPattern = RegExp(r'[A-Z<]{8,}').hasMatch(recognizedText.text);
       
-      print('[ML Kit] Back has MRZ pattern: $hasMrzPattern, has numbers: $hasNumbers');
+      // Check 3: Must have numbers (serial numbers, barcodes, dates are on all ID backs)
+      final hasNumbers = RegExp(r'\d{3,}').hasMatch(recognizedText.text);
+      
+      // Check 4: Look for any ID-related keywords (even on backs)
+      final backKeywords = ['address', 'signature', 'valid', 'issued', 'expires', 'expiry', 'mrz', 'code', 'no', 'num', 'serial'];
+      int keywordMatches = 0;
+      for (final keyword in backKeywords) {
+        if (text.contains(keyword)) keywordMatches++;
+      }
+      
+      print('[ML Kit] Back - MRZ: $hasMrzPattern, Numbers: $hasNumbers, Keywords: $keywordMatches');
 
-      // Pass if we have any text (already checked above)
+      // Must have at least numbers OR MRZ pattern OR keyword match
+      if (!hasNumbers && !hasMrzPattern && keywordMatches == 0) {
+        return ValidationResult(false, 'This doesn\'t look like an ID card back. Please scan a valid ID.');
+      }
+
       return ValidationResult(true, 'Back of ID validated successfully!');
     } catch (e) {
       print('Error validating ID back: $e');
