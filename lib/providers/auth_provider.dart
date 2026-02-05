@@ -48,6 +48,19 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Public method to refresh user data from server (e.g., after KYC)
+  Future<void> refreshUser() async {
+    try {
+      final userProfile = await AuthService.fetchProfile();
+      if (userProfile != null) {
+        _user = userProfile;
+        notifyListeners();
+      }
+    } catch (e) {
+      print('RefreshUser Error: $e');
+    }
+  }
+
   String? _tempUserId; // For 2FA verification
   String? get tempUserId => _tempUserId;
 

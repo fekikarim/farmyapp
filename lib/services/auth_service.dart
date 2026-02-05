@@ -11,7 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/user_model.dart';
 
 class AuthService {
-  static final String _baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://localhost:3001');
+  static final String _baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.1.21:3001');
   static const _storage = FlutterSecureStorage();
   
   static GoogleSignIn? get _googleSignInInstance {
@@ -448,16 +448,20 @@ class AuthService {
     Object? body,
   }) async {
     headers ??= {};
+    print('AuthRequest: Getting token...');
     String? token = await getAccessToken();
+    print('AuthRequest: Token retrieved: ${token != null}');
     if (token != null) headers['Authorization'] = 'Bearer $token';
     headers['Content-Type'] = 'application/json';
 
     http.Response response;
+    print('AuthRequest: Sending $method to $url');
     if (method == 'POST') {
       response = await http.post(url, headers: headers, body: body);
     } else {
       response = await http.get(url, headers: headers);
     }
+    print('AuthRequest: Received ${response.statusCode}');
 
     if (response.statusCode == 401) {
       final refreshed = await refreshTokens();

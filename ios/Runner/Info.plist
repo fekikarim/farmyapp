@@ -46,6 +46,10 @@
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Used to connect Flutter debug tools to the app.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need access to your camera to scan your ID and take a selfie for verification.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need access to your microphone for video verification (optional).</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

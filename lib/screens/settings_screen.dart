@@ -5,6 +5,9 @@ import '../providers/auth_provider.dart';
 import 'settings/edit_profile_screen.dart';
 import 'settings/change_password_screen.dart';
 import 'settings/enable_2fa_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../services/kyc_service.dart';
+import '../screens/kyc/kyc_flow_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -160,6 +163,25 @@ class SettingsScreen extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const Enable2FAScreen()),
                 ),
               ),
+
+              if (user?.role == 'customer') ...[
+                const SizedBox(height: 24),
+                _buildSectionTitle(theme, 'Verification'),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.agriculture_outlined,
+                  title: 'Become a Farmer',
+                  subtitle: 'Start selling your produce',
+                  onTap: () => _handleKyc(context, 'farmer'),
+                ),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.monetization_on_outlined,
+                  title: 'Become an Investor',
+                  subtitle: 'Invest in sustainable farming',
+                  onTap: () => _handleKyc(context, 'investor'),
+                ),
+              ],
 
               const SizedBox(height: 24),
               _buildSectionTitle(theme, 'Appearance'),
@@ -330,6 +352,15 @@ class SettingsScreen extends StatelessWidget {
             child: const Text('OK'),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _handleKyc(BuildContext context, String role) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => KycFlowScreen(role: role),
       ),
     );
   }
