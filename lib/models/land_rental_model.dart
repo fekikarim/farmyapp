@@ -1,5 +1,6 @@
-enum PaymentStatus { pending, paid, overdue, cancelled }
 import 'land_model.dart';
+
+enum PaymentStatus { pending, paid, overdue, cancelled }
 
 class LandRental {
   final String id;
