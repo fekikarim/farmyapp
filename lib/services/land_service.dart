@@ -11,50 +11,35 @@ class LandService {
   );
 
   static Future<List<Land>> getAllLands() async {
-    try {
-      final response = await http.get(Uri.parse('$_baseUrl/api/v1/lands'));
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> body = jsonDecode(response.body);
-        final List data = body['data'] ?? [];
-        return data.map((item) => Land.fromJson(item)).toList();
-      }
-      return [];
-    } catch (e) {
-      print('GetAllLands Error: $e');
-      return [];
+    final response = await http.get(Uri.parse('$_baseUrl/api/v1/lands'));
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      final List data = body['data'] ?? [];
+      return data.map((item) => Land.fromJson(item)).toList();
     }
+    return [];
   }
 
   static Future<Land?> getLandById(String id) async {
-    try {
-      final response = await http.get(Uri.parse('$_baseUrl/api/v1/lands/$id'));
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> body = jsonDecode(response.body);
-        return Land.fromJson(body['data']);
-      }
-      return null;
-    } catch (e) {
-      print('GetLandById Error: $e');
-      return null;
+    final response = await http.get(Uri.parse('$_baseUrl/api/v1/lands/$id'));
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      return Land.fromJson(body['data']);
     }
+    return null;
   }
 
   static Future<List<Land>> getMyLands() async {
-    try {
-      final response = await AuthService.authenticatedRequest(
-        'GET',
-        Uri.parse('$_baseUrl/api/v1/lands/user/my-lands'),
-      );
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> body = jsonDecode(response.body);
-        final List data = body['data'] ?? [];
-        return data.map((item) => Land.fromJson(item)).toList();
-      }
-      return [];
-    } catch (e) {
-      print('GetMyLands Error: $e');
-      return [];
+    final response = await AuthService.authenticatedRequest(
+      'GET',
+      Uri.parse('$_baseUrl/api/v1/lands/user/my-lands'),
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      final List data = body['data'] ?? [];
+      return data.map((item) => Land.fromJson(item)).toList();
     }
+    return [];
   }
 
   static Future<Land?> createLand(Map<String, dynamic> data) async {
@@ -104,18 +89,13 @@ class LandService {
   }
 
   static Future<Map<String, dynamic>?> getLandGrid(String id) async {
-    try {
-      final response = await AuthService.authenticatedRequest(
-        'GET',
-        Uri.parse('$_baseUrl/api/v1/land-grid/$id/grid'),
-      );
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      }
-      return null;
-    } catch (e) {
-      print('GetLandGrid Error: $e');
-      return null;
+    final response = await AuthService.authenticatedRequest(
+      'GET',
+      Uri.parse('$_baseUrl/api/v1/land-grid/$id/grid'),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
     }
+    return null;
   }
 }

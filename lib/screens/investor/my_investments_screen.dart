@@ -37,6 +37,24 @@ class _InvestorMyInvestmentsScreenState
             return const Center(child: CircularProgressIndicator());
           }
 
+          if (provider.error != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red, size: 60),
+                  const SizedBox(height: 16),
+                  Text(provider.error!),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => provider.fetchMyRentals(true),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
           if (provider.myRentals.isEmpty) {
             return const Center(child: Text('No investments yet.'));
           }

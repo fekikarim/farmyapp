@@ -26,39 +26,29 @@ class LandRentalService {
   }
 
   static Future<List<LandRental>> getMyRentalsAsOwner() async {
-    try {
-      final response = await AuthService.authenticatedRequest(
-        'GET',
-        Uri.parse('$_baseUrl/api/v1/land-rentals/owner/my-rentals'),
-      );
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> body = jsonDecode(response.body);
-        final List data = body['data'] ?? [];
-        return data.map((item) => LandRental.fromJson(item)).toList();
-      }
-      return [];
-    } catch (e) {
-      print('GetMyRentalsAsOwner Error: $e');
-      return [];
+    final response = await AuthService.authenticatedRequest(
+      'GET',
+      Uri.parse('$_baseUrl/api/v1/land-rentals/owner/my-rentals'),
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      final List data = body['data'] ?? [];
+      return data.map((item) => LandRental.fromJson(item)).toList();
     }
+    return [];
   }
 
   static Future<List<LandRental>> getMyRentalsAsInvestor() async {
-    try {
-      final response = await AuthService.authenticatedRequest(
-        'GET',
-        Uri.parse('$_baseUrl/api/v1/land-rentals/investor/my-rentals'),
-      );
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> body = jsonDecode(response.body);
-        final List data = body['data'] ?? [];
-        return data.map((item) => LandRental.fromJson(item)).toList();
-      }
-      return [];
-    } catch (e) {
-      print('GetMyRentalsAsInvestor Error: $e');
-      return [];
+    final response = await AuthService.authenticatedRequest(
+      'GET',
+      Uri.parse('$_baseUrl/api/v1/land-rentals/investor/my-rentals'),
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      final List data = body['data'] ?? [];
+      return data.map((item) => LandRental.fromJson(item)).toList();
     }
+    return [];
   }
 
   static Future<bool> updatePaymentStatus(String id, String status) async {
