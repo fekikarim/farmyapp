@@ -22,20 +22,18 @@ class IsometricGridPainter extends CustomPainter {
     canvas.scale(scale);
 
     final linePaint = Paint()
-      ..color = Colors.white.withOpacity(0.2)
+      ..color = Colors.black.withOpacity(0.1)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
+      ..strokeWidth = 0.5;
 
-    final cellPaint = Paint()
-      ..style = PaintingStyle.fill;
+    final cellPaint = Paint()..style = PaintingStyle.fill;
 
     // Draw grid from back to front
-    // We draw rows from 0 to height and cols from 0 to width
     for (int y = 0; y < grid.height; y++) {
       for (int x = 0; x < grid.width; x++) {
         final screenPos = _isoToScreen(x.toDouble(), y.toDouble());
         
-        _drawTile(canvas, screenPos, linePaint);
+        _drawTile(canvas, screenPos, x, y);
 
         final cell = grid.matrix[y][x];
         if (cell != null) {
@@ -47,14 +45,54 @@ class IsometricGridPainter extends CustomPainter {
     canvas.restore();
   }
 
-  void _drawTile(Canvas canvas, Offset pos, Paint paint) {
-    final path = Path();
-    path.moveTo(pos.dx, pos.dy); // Top
-    path.lineTo(pos.dx + tileSize, pos.dy + tileSize / 2); // Right
-    path.lineTo(pos.dx, pos.dy + tileSize); // Bottom
-    path.lineTo(pos.dx - tileSize, pos.dy + tileSize / 2); // Left
-    path.close();
-    canvas.drawPath(path, paint);
+  void _drawTile(Canvas canvas, Offset pos, int x, int y) {
+    final topPath = Path();
+    topPath.moveTo(pos.dx, pos.dy);
+    topPath.lineTo(pos.dx + tileSize, pos.dy + tileSize / 2);
+    topPath.lineTo(pos.dx, pos.dy + tileSize);
+    topPath.lineTo(pos.dx - tileSize, pos.dy + tileSize / 2);
+    topPath.close();
+
+    // Grass color variation based on x,y
+    final grassColor = Color.lerp(
+      const Color(0xFF7C9070), 
+      const Color(0xFF9CA777), 
+      (math.sin(x * 0.5 + y * 0.3) + 1) / 2
+    )!;
+
+    final topPaint = Paint()
+      ..color = grassColor
+      ..style = PaintingStyle.fill;
+
+    // Draw side faces for depth
+    final sideHeight = tileSize / 4;
+    final leftSide = Path();
+    leftSide.moveTo(pos.dx - tileSize, pos.dy + tileSize / 2);
+    leftSide.lineTo(pos.dx, pos.dy + tileSize);
+    leftSide.lineTo(pos.dx, pos.dy + tileSize + sideHeight);
+    leftSide.lineTo(pos.dx - tileSize, pos.dy + tileSize / 2 + sideHeight);
+    leftSide.close();
+
+    final rightSide = Path();
+    rightSide.moveTo(pos.dx + tileSize, pos.dy + tileSize / 2);
+    rightSide.lineTo(pos.dx, pos.dy + tileSize);
+    rightSide.lineTo(pos.dx, pos.dy + tileSize + sideHeight);
+    rightSide.lineTo(pos.dx + tileSize, pos.dy + tileSize / 2 + sideHeight);
+    rightSide.close();
+
+    final sidePaint = Paint()
+      ..color = grassColor.withBlue(grassColor.blue - 20).withRed(grassColor.red - 20)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawPath(leftSide, sidePaint);
+    canvas.drawPath(rightSide, sidePaint);
+    canvas.drawPath(topPath, topPaint);
+    
+    // Subtle grid lines
+    final linePaint = Paint()
+      ..color = Colors.black.withOpacity(0.05)
+      ..style = PaintingStyle.stroke;
+    canvas.drawPath(topPath, linePaint);
   }
 
   void _drawCellContent(Canvas canvas, Offset pos, FarmCell cell, Paint paint) {

@@ -1,8 +1,10 @@
 enum PaymentStatus { pending, paid, overdue, cancelled }
+import 'land_model.dart';
 
 class LandRental {
   final String id;
   final String landId;
+  final Land? land;
   final String investorId;
   final DateTime rentalStartDate;
   final DateTime? rentalEndDate;
@@ -16,6 +18,7 @@ class LandRental {
   LandRental({
     required this.id,
     required this.landId,
+    this.land,
     required this.investorId,
     required this.rentalStartDate,
     this.rentalEndDate,
@@ -31,6 +34,7 @@ class LandRental {
     return LandRental(
       id: json['id'],
       landId: json['land_id'],
+      land: json['land'] != null ? Land.fromJson(json['land']) : null,
       investorId: json['investor_id'],
       rentalStartDate: DateTime.parse(json['rental_start_date']),
       rentalEndDate: json['rental_end_date'] != null

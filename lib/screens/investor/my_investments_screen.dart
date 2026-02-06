@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/land_provider.dart';
+import '../../features/farm_game/screens/farm_game_screen.dart';
+import '../../models/land_rental_model.dart';
 
 class InvestorMyInvestmentsScreen extends StatefulWidget {
   const InvestorMyInvestmentsScreen({super.key});
@@ -89,6 +91,91 @@ class _InvestorMyInvestmentsScreenState
             ],
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _openFarm(context),
+        backgroundColor: Colors.orange[800],
+        icon: const Icon(Icons.videogame_asset, color: Colors.white),
+        label: const Text('MY FARMS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+      ),
+    );
+  }
+
+  void _openFarm(BuildContext context) {
+    final provider = context.read<LandProvider>();
+    final rentals = provider.myRentals.where((r) => r.land != null).toList();
+
+    if (rentals.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You don\'t have any active farm investments yet.')),
+      );
+      return;
+    }
+
+    if (rentals.length == 1) {
+      final rental = rentals.first;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FarmGameScreen(
+            landId: rental.landId,
+            landName: rental.land!.name,
+          ),
+        ),
+      );
+    } else {
+      _showLandPicker(context, rentals);
+    }
+  }
+
+  void _showLandPicker(BuildContext context, List<LandRental> rentals) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                'Select a Farm',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: rentals.length,
+                itemBuilder: (context, index) {
+                  final rental = rentals[index];
+                  return ListTile(
+                    leading: const Icon(Icons.landscape, color: Colors.green),
+                    title: Text(rental.land?.name ?? 'Plot #${rental.landId.substring(0, 8)}'),
+                    subtitle: Text('ID: ${rental.landId.substring(0, 8)}'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FarmGameScreen(
+                            landId: rental.landId,
+                            landName: rental.land?.name ?? 'Plot #${rental.landId.substring(0, 8)}',
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
