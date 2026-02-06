@@ -268,7 +268,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
             TileLayer(
               urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
               subdomains: const ['a', 'b', 'c'],
-              userAgentPackageName: 'com.farmy.app.v1',
+              userAgentPackageName: 'com.farmy.app',
               tileBuilder: (context, tileWidget, tile) {
                 return ColorFiltered(
                   colorFilter: const ColorFilter.matrix([
@@ -509,7 +509,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                 style: const TextStyle(color: Colors.white70, height: 1.6),
               ),
               const SizedBox(height: 48),
-              _buildActionButtons(),
+              _buildActionButtons(land),
               const SizedBox(height: 32),
             ],
           ),
@@ -543,38 +543,112 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(Land land) {
     return Row(
       children: [
         Expanded(
-          child: ElevatedButton(
-            onPressed: () {},
+          child: ElevatedButton.icon(
+            onPressed: () => _showComingSoonDialog('Manage Assets'),
+            icon: const Icon(Icons.settings_suggest_outlined),
+            label: const Text(
+              'Manage Assets',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 18),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-            ),
-            child: const Text(
-              'Manage Assets',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              elevation: 4,
             ),
           ),
         ),
         const SizedBox(width: 16),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white10,
+            color: Colors.white.withOpacity(0.05),
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white.withOpacity(0.1)),
           ),
           child: IconButton(
-            onPressed: () {},
+            onPressed: () => _showComingSoonDialog('Edit Land'),
             icon: const Icon(Icons.edit_outlined, color: Colors.white),
             padding: const EdgeInsets.all(16),
+            tooltip: 'Edit Land Details',
           ),
         ),
       ],
+    );
+  }
+
+  void _showComingSoonDialog(String feature) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E2125),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Row(
+          children: [
+            const Icon(Icons.auto_awesome, color: Colors.amber, size: 24),
+            const SizedBox(width: 12),
+            const Text(
+              'Coming Soon',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'The "$feature" module is currently being optimized for personal farming management.',
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.green, size: 18),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Stay tuned for advanced spatial asset tracking!',
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'GOT IT',
+              style: TextStyle(
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -604,11 +678,69 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
       padding: const EdgeInsets.all(20),
       itemCount: 3,
       itemBuilder: (context, index) => Container(
-        height: 180,
-        margin: const EdgeInsets.only(bottom: 20),
+        height: 280,
+        margin: const EdgeInsets.only(bottom: 24),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(24),
+          color: const Color(0xFF1A1D21),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              height: 160,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.03),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(
+                      3,
+                      (i) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: Colors.white10,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            width: 60,
+                            height: 14,
+                            decoration: BoxDecoration(
+                              color: Colors.white12,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: Colors.white.withOpacity(0.05)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -718,63 +850,190 @@ class _ModernLandCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate center for mini-map
+    final center = land.boundaries != null && land.boundaries!.isNotEmpty
+        ? LatLng(
+            land.boundaries!.map((p) => p.latitude).reduce((a, b) => a + b) /
+                land.boundaries!.length,
+            land.boundaries!.map((p) => p.longitude).reduce((a, b) => a + b) /
+                land.boundaries!.length,
+          )
+        : const LatLng(36.8065, 10.1815);
+
     return GestureDetector(
       onTap: () => onDetailTap(land),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 20),
+        margin: const EdgeInsets.only(bottom: 24),
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          color: const Color(0xFF1A1D21),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: Colors.white.withOpacity(0.08)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
         ),
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
+            // Map Preview Section
+            SizedBox(
+              height: 160,
+              child: Stack(
                 children: [
-                  _buildThumb(),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  IgnorePointer(
+                    child: FlutterMap(
+                      options: MapOptions(
+                        initialCenter: center,
+                        initialZoom: 16.5,
+                      ),
                       children: [
-                        Text(
-                          land.name,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        TileLayer(
+                          urlTemplate:
+                              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          subdomains: const ['a', 'b', 'c'],
+                          userAgentPackageName: 'com.farmy.app',
+                          tileBuilder: (context, tileWidget, tile) {
+                            return ColorFiltered(
+                              colorFilter: const ColorFilter.matrix([
+                                -1,
+                                0,
+                                0,
+                                0,
+                                255,
+                                0,
+                                -1,
+                                0,
+                                0,
+                                255,
+                                0,
+                                0,
+                                -1,
+                                0,
+                                255,
+                                0,
+                                0,
+                                0,
+                                1,
+                                0,
+                              ]),
+                              child: tileWidget,
+                            );
+                          },
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${land.gridWidth}x${land.gridHeight} Grid Area',
-                          style: const TextStyle(
-                            color: Colors.white54,
-                            fontSize: 13,
+                        if (land.boundaries != null)
+                          PolygonLayer(
+                            polygons: [
+                              Polygon(
+                                points: land.boundaries!,
+                                color: Colors.green.withOpacity(0.4),
+                                borderColor: Colors.green,
+                                borderStrokeWidth: 2,
+                                isFilled: true,
+                              ),
+                            ],
                           ),
-                        ),
                       ],
                     ),
                   ),
-                  _buildStatusTag(land.isActive),
+                  // Glass Overlay for Name & Status
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.7),
+                          ],
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              land.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  Shadow(blurRadius: 8, color: Colors.black),
+                                ],
+                              ),
+                            ),
+                          ),
+                          _buildStatusBadge(land.isActive),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-            const Divider(color: Colors.white10, height: 1),
+            // Info Section
             Padding(
               padding: const EdgeInsets.all(20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
-                  _buildQuickStat('Rentals', '0 Active', Icons.people_outline),
-                  _buildQuickStat(
-                    'Revenue',
-                    '0.0 TND',
-                    Icons.account_balance_wallet_outlined,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildInfoItem(
+                        'Size',
+                        '${land.gridWidth}x${land.gridHeight}',
+                        Icons.grid_3x3_rounded,
+                      ),
+                      _buildInfoItem(
+                        'Rentals',
+                        '0 Active',
+                        Icons.people_alt_rounded,
+                      ),
+                      _buildInfoItem(
+                        'Earnings',
+                        '0 TND',
+                        Icons.monetization_on_rounded,
+                      ),
+                    ],
                   ),
-                  _ActionButton(onTap: () => onDetailTap(land)),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => onDetailTap(land),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                              color: Colors.green.withOpacity(0.5),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: const Text(
+                            'View Details',
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -784,51 +1043,40 @@ class _ModernLandCard extends StatelessWidget {
     );
   }
 
-  Widget _buildThumb() {
+  Widget _buildStatusBadge(bool isActive) {
     return Container(
-      width: 50,
-      height: 50,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.green[400]!, Colors.green[700]!],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+        color: isActive ? Colors.green.withAlpha(50) : Colors.red.withAlpha(50),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isActive
+              ? Colors.green.withOpacity(0.5)
+              : Colors.red.withOpacity(0.5),
+          width: 0.5,
         ),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: const Icon(Icons.terrain_rounded, color: Colors.white, size: 28),
-    );
-  }
-
-  Widget _buildStatusTag(bool isActive) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: isActive
-            ? Colors.green.withOpacity(0.1)
-            : Colors.red.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         isActive ? 'LIVE' : 'INACTIVE',
         style: TextStyle(
-          color: isActive ? Colors.green : Colors.red,
+          color: isActive ? Colors.green[400] : Colors.red[400],
           fontSize: 10,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.2,
         ),
       ),
     );
   }
 
-  Widget _buildQuickStat(String label, String value, IconData icon) {
+  Widget _buildInfoItem(String label, String value, IconData icon) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, size: 14, color: Colors.white38),
-            const SizedBox(width: 4),
+            const SizedBox(width: 6),
             Text(
               label,
               style: const TextStyle(color: Colors.white38, fontSize: 11),
@@ -840,8 +1088,8 @@ class _ModernLandCard extends StatelessWidget {
           value,
           style: const TextStyle(
             color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
@@ -891,34 +1139,6 @@ class _DetailItem extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ActionButton extends StatelessWidget {
-  final VoidCallback onTap;
-  const _ActionButton({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white10,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: Text(
-            'Details',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
       ),
     );
   }
