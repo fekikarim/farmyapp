@@ -104,23 +104,44 @@ class FarmGame extends FlameGame with HasGameRef, ScaleCallbacks, ScrollDetector
     camera.viewfinder.position.y = camera.viewfinder.position.y.clamp(-halfHeight, halfHeight);
   }
 
+  // Gesture tracking for stability
+  double _baseZoom = 1.0;
+  double _baseAngle = 0.0;
+  Vector2 _basePosition = Vector2.zero();
+
+  @override
+  void onScaleStart(ScaleStartEvent event) {
+    _baseZoom = camera.viewfinder.zoom;
+    _baseAngle = camera.viewfinder.angle;
+    _basePosition = camera.viewfinder.position.clone();
+    _velocity = Vector2.zero(); // Stop inertia on touch
+  }
+
   @override
   void onScaleUpdate(ScaleUpdateEvent event) {
-    // Zoom handling - Dampened for mobile
+    // 1-Finger Panning & 2-Finger Rotation/Zoom
+    
+    // 1. Rotation (2-finger) - Apply sensitivity
+    if (event.pointerCount >= 2 && event.rotation != 0) {
+      const rotationSensitivity = 0.5;
+      camera.viewfinder.angle = _baseAngle + (event.rotation * rotationSensitivity);
+    }
+
+    // 2. Zoom handling - Relative to baseZoom
     final scaleFactor = event.scale;
     if (scaleFactor != 1.0) {
-      // Sensitivity factor to make zoom feel less "jumpy" on small screens
-      const zoomSensitivity = 0.5;
+      const zoomSensitivity = 0.4;
       final adjustedScale = 1.0 + (scaleFactor - 1.0) * zoomSensitivity;
-      
-      final newZoom = camera.viewfinder.zoom * adjustedScale;
+      final newZoom = _baseZoom * adjustedScale;
       camera.viewfinder.zoom = newZoom.clamp(0.2, 5.0);
     }
 
-    // Pan handling with velocity tracking
-    // For mobile, we subtract the delta to move the world under the finger
-    camera.viewfinder.position -= event.focalPointDelta;
-    _velocity = event.focalPointDelta / 0.016; 
+    // 3. Pan handling (uses deltas which are already relative to last frame)
+    final panDelta = event.focalPointDelta;
+    camera.viewfinder.position -= panDelta;
+    
+    // Tracking velocity for inertia
+    _velocity = panDelta / 0.016; 
   }
 
   @override

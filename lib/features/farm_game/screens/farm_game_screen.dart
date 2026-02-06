@@ -81,13 +81,81 @@ class _FarmGameScreenState extends State<FarmGameScreen> {
             return const Center(child: Text('No grid data found', style: TextStyle(color: Colors.white)));
           }
 
-          return GameWidget(
-            game: FarmGame(grid: provider.grid!),
-            loadingBuilder: (context) => const Center(
-              child: CircularProgressIndicator(color: Colors.white),
-            ),
+          return Stack(
+            children: [
+              GameWidget(
+                game: FarmGame(grid: provider.grid!),
+                loadingBuilder: (context) => const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
+                ),
+              ),
+              // Floating Tools Bar
+              Positioned(
+                bottom: 20,
+                left: 20,
+                right: 20,
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _ToolButton(
+                          icon: Icons.refresh,
+                          onPressed: () => context.read<FarmGameProvider>().loadLandGrid(widget.landId),
+                        ),
+                        const SizedBox(width: 20),
+                        _ToolButton(
+                          icon: Icons.center_focus_strong,
+                          onPressed: () => context.read<FarmGameProvider>().resetView(),
+                        ),
+                        const SizedBox(width: 20),
+                        _ToolButton(
+                          icon: Icons.shopping_cart,
+                          onPressed: () {}, // Shop placeholder
+                        ),
+                        const SizedBox(width: 20),
+                        _ToolButton(
+                          icon: Icons.grid_on,
+                          onPressed: () {}, // Grid toggle placeholder
+                        ),
+                        const SizedBox(width: 20),
+                        _ToolButton(
+                          icon: Icons.close,
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _ToolButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  const _ToolButton({required this.icon, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(icon, color: Colors.white, size: 28),
+      onPressed: onPressed,
+      style: IconButton.styleFrom(
+        backgroundColor: Colors.white.withOpacity(0.1),
+        padding: const EdgeInsets.all(12),
       ),
     );
   }

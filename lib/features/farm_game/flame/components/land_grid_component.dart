@@ -10,6 +10,18 @@ class LandGridComponent extends Component with HasGameRef {
   double get tileHeight => tileSize;
   Sprite? grassSprite;
 
+  final Paint _linePaint = Paint()
+    ..color = Colors.black.withOpacity(0.05)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 0.5;
+
+  final Paint _fillPaint = Paint()..style = PaintingStyle.fill;
+  final Paint _sidePaint = Paint()..style = PaintingStyle.fill;
+  final Paint _highlightPaint = Paint()
+    ..color = Colors.white
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 2.0;
+
   LandGridComponent({required this.grid});
 
   Vector2 getTileCenter(int x, int y) {
@@ -53,21 +65,19 @@ class LandGridComponent extends Component with HasGameRef {
 
   @override
   void render(Canvas canvas) {
-    final linePaint = Paint()
-      ..color = Colors.black.withOpacity(0.05)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.5;
-
     for (int y = 0; y < grid.height; y++) {
       for (int x = 0; x < grid.width; x++) {
         final screenPos = isoToScreen(x.toDouble(), y.toDouble());
         final isSelected = x == selectedX && y == selectedY;
-        _drawTile(canvas, screenPos, x, y, linePaint, isSelected);
+        _drawTile(canvas, screenPos, x, y, isSelected);
       }
     }
   }
 
-  void _drawTile(Canvas canvas, Vector2 pos, int x, int y, Paint linePaint, [bool isSelected = false]) {
+  void _drawTile(Canvas canvas, Vector2 pos, int x, int y, [bool isSelected = false]) {
+    // Safety check to prevent crashes on invalid camera state
+    if (!pos.x.isFinite || !pos.y.isFinite || tileSize <= 0) return;
+
     final topPath = Path();
     topPath.moveTo(pos.x, pos.y);
     topPath.lineTo(pos.x + tileSize, pos.y + tileSize / 2);
@@ -82,13 +92,11 @@ class LandGridComponent extends Component with HasGameRef {
       (math.sin(x * 0.5 + y * 0.3) + 1) / 2,
     )!;
 
-    final fillPaint = Paint()..color = isSelected ? Colors.yellow.withOpacity(0.5) : grassColor;
+    _fillPaint.color = isSelected ? Colors.yellow.withOpacity(0.5) : grassColor;
 
     // Side faces for 3D effect
     final sideHeight = tileSize / 4;
-    final sidePaint = Paint()
-      ..color = grassColor.withBlue(math.max(0, grassColor.blue - 20)).withRed(math.max(0, grassColor.red - 20))
-      ..style = PaintingStyle.fill;
+    _sidePaint.color = grassColor.withBlue(math.max(0, grassColor.blue - 20)).withRed(math.max(0, grassColor.red - 20));
 
     // Right Side Face
     final rightSide = Path();
@@ -97,7 +105,7 @@ class LandGridComponent extends Component with HasGameRef {
     rightSide.lineTo(pos.x, pos.y + tileSize + sideHeight);
     rightSide.lineTo(pos.x + tileSize, pos.y + tileSize / 2 + sideHeight);
     rightSide.close();
-    canvas.drawPath(rightSide, sidePaint);
+    canvas.drawPath(rightSide, _sidePaint);
 
     // Left Side Face
     final leftSide = Path();
@@ -106,7 +114,7 @@ class LandGridComponent extends Component with HasGameRef {
     leftSide.lineTo(pos.x, pos.y + tileSize + sideHeight);
     leftSide.lineTo(pos.x - tileSize, pos.y + tileSize / 2 + sideHeight);
     leftSide.close();
-    canvas.drawPath(leftSide, sidePaint);
+    canvas.drawPath(leftSide, _sidePaint);
 
     // Draw textured top
     if (grassSprite != null) {
@@ -121,18 +129,14 @@ class LandGridComponent extends Component with HasGameRef {
       );
       canvas.restore();
     } else {
-      canvas.drawPath(topPath, fillPaint);
+      canvas.drawPath(topPath, _fillPaint);
     }
     
     // Draw selection outline
     if (isSelected) {
-      final highlightPaint = Paint()
-        ..color = Colors.white
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.0;
-      canvas.drawPath(topPath, highlightPaint);
+      canvas.drawPath(topPath, _highlightPaint);
     }
 
-    canvas.drawPath(topPath, linePaint);
+    canvas.drawPath(topPath, _linePaint);
   }
 }
