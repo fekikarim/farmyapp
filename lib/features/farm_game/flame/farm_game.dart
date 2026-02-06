@@ -21,30 +21,43 @@ class FarmGame extends FlameGame with HasGameRef, ScaleCallbacks, ScrollDetector
 
   @override
   Future<void> onLoad() async {
-    // Parallax Sky & Clouds
+    // Parallax Sky & Clouds - Optimized for Mobile Scale
     try {
       final skyParallax = await loadParallaxComponent(
         [
           ParallaxImageData('sky_bg.png'),
           ParallaxImageData('cloud_01.png'),
         ],
-        baseVelocity: Vector2(5, 0),
-        velocityMultiplierDelta: Vector2(1.5, 1.0),
+        baseVelocity: Vector2(10, 0), // Faster clouds
+        velocityMultiplierDelta: Vector2(1.8, 1.0),
         repeat: ImageRepeat.repeatX,
-        alignment: Alignment.topCenter,
-        fill: LayerFill.width,
+        alignment: Alignment.center,
+        fill: LayerFill.height, // Fill height for landscape
       );
       camera.backdrop.add(skyParallax);
     } catch (e) {
       debugPrint('Error loading parallax: $e');
-      camera.backdrop.add(
-        RectangleComponent(
-          size: Vector2.all(10000),
-          position: Vector2.all(-5000),
-          paint: Paint()..color = const Color(0xFF1A1A2E),
-        ),
-      );
     }
+
+    // Atmospheric Ground Plane (covers the black void)
+    camera.backdrop.add(
+      RectangleComponent(
+        size: Vector2.all(20000),
+        position: Vector2.zero(),
+        anchor: Anchor.center,
+        paint: Paint()
+          ..shader = const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF1A1A2E), // Dark sky horizon
+              Color(0xFF2D5A27), // Soft grass ground
+              Color(0xFF1E3C1A), // Deep ground
+            ],
+            stops: [0.0, 0.5, 1.0],
+          ).createShader(const Rect.fromLTWH(-10000, -10000, 20000, 20000)),
+      ),
+    );
 
     // Initialize Grid
     landGrid = LandGridComponent(grid: grid);
@@ -83,28 +96,31 @@ class FarmGame extends FlameGame with HasGameRef, ScaleCallbacks, ScrollDetector
   }
 
   void _clampCamera() {
-    // Basic clamping to keep the farm in view
-    // The farm center is roughly at 0,0. 
-    // Max extents: x: grid.width * tileSize, y: grid.height * tileSize
-    final halfWidth = (grid.width * landGrid.tileSize);
-    final halfHeight = (grid.height * landGrid.tileSize);
+    // Clamping optimized for landscape
+    final halfWidth = (grid.width * landGrid.tileSize) * 1.5;
+    final halfHeight = (grid.height * landGrid.tileSize) * 1.5;
 
     camera.viewfinder.position.x = camera.viewfinder.position.x.clamp(-halfWidth, halfWidth);
-    camera.viewfinder.position.y = camera.viewfinder.position.y.clamp(-halfHeight / 2, halfHeight * 1.5);
+    camera.viewfinder.position.y = camera.viewfinder.position.y.clamp(-halfHeight, halfHeight);
   }
 
   @override
   void onScaleUpdate(ScaleUpdateEvent event) {
-    // Zoom handling
+    // Zoom handling - Dampened for mobile
     final scaleFactor = event.scale;
     if (scaleFactor != 1.0) {
-      final newZoom = camera.viewfinder.zoom * scaleFactor;
+      // Sensitivity factor to make zoom feel less "jumpy" on small screens
+      const zoomSensitivity = 0.5;
+      final adjustedScale = 1.0 + (scaleFactor - 1.0) * zoomSensitivity;
+      
+      final newZoom = camera.viewfinder.zoom * adjustedScale;
       camera.viewfinder.zoom = newZoom.clamp(0.2, 5.0);
     }
 
     // Pan handling with velocity tracking
+    // For mobile, we subtract the delta to move the world under the finger
     camera.viewfinder.position -= event.focalPointDelta;
-    _velocity = event.focalPointDelta / 0.016; // Approximate dt 60fps
+    _velocity = event.focalPointDelta / 0.016; 
   }
 
   @override

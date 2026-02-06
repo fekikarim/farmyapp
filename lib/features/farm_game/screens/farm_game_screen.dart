@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flame/game.dart';
 import '../providers/farm_game_provider.dart';
@@ -23,30 +24,35 @@ class _FarmGameScreenState extends State<FarmGameScreen> {
   @override
   void initState() {
     super.initState();
+    // Force Landscape and Fullscreen
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<FarmGameProvider>().loadLandGrid(widget.landId);
     });
   }
 
   @override
+  void dispose() {
+    // Reset to Portrait and show UI on exit
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A2E), // Dark premium background
-      appBar: AppBar(
-        title: Text(widget.landName),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => context.read<FarmGameProvider>().loadLandGrid(widget.landId),
-          ),
-          IconButton(
-            icon: const Icon(Icons.center_focus_strong),
-            onPressed: () => context.read<FarmGameProvider>().resetView(),
-          ),
-        ],
-      ),
       body: Consumer<FarmGameProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
