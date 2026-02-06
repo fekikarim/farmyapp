@@ -52,6 +52,7 @@ dependencies:
   image_picker: ^1.2.1
   path_provider: ^2.1.5
   permission_handler: ^12.0.1
+  flutter_svg: ^2.0.9
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
@@ -91,6 +92,7 @@ flutter:
     - assets/logo_dark.png
     - assets/logo-no-bg.png
     - assets/logo-app-no-bg.png
+    - assets/game_images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

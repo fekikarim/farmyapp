@@ -17,6 +17,9 @@ import 'theme/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/theme_provider.dart';
 
+import 'providers/game_provider.dart';
+import 'widgets/game_bubble.dart';
+
 // Global RouteObserver for focus management
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
@@ -44,6 +47,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => LandProvider()),
+        ChangeNotifierProvider(create: (_) => GameProvider()),
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(initialThemeMode: initialTheme),
         ),
@@ -68,13 +72,15 @@ class MyApp extends StatelessWidget {
           themeMode: themeProvider.themeMode,
           navigatorObservers: [routeObserver],
           builder: (context, child) {
-            return GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () {
-                FocusManager.instance.primaryFocus?.unfocus();
-                SystemChannels.textInput.invokeMethod('TextInput.hide');
-              },
-              child: child,
+            return GameBubbleOverlay(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  SystemChannels.textInput.invokeMethod('TextInput.hide');
+                },
+                child: child,
+              ),
             );
           },
           initialRoute: '/',

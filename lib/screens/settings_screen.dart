@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/game_provider.dart';
 import 'settings/edit_profile_screen.dart';
 import 'settings/change_password_screen.dart';
 import 'settings/enable_2fa_screen.dart';
@@ -16,6 +17,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
+    final gameProvider = Provider.of<GameProvider>(context);
     final user = authProvider.user;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -180,6 +182,51 @@ class SettingsScreen extends StatelessWidget {
                   title: 'Become an Investor',
                   subtitle: 'Invest in sustainable farming',
                   onTap: () => _handleKyc(context, 'investor'),
+                ),
+              ],
+
+              if (user?.role == 'investor') ...[
+                const SizedBox(height: 24),
+                _buildSectionTitle(theme, 'Game Features'),
+                Container(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: SwitchListTile(
+                    secondary: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.videogame_asset, color: Colors.red),
+                    ),
+                    title: Text(
+                      'Show Game Bubble',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Access the 2.5D farm view',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.5),
+                      ),
+                    ),
+                    value: gameProvider.shouldShowBubble,
+                    onChanged: (value) {
+                      gameProvider.setBubbleVisibility(value);
+                    },
+                    activeColor: Colors.red,
+                  ),
                 ),
               ],
 
