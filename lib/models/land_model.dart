@@ -80,7 +80,6 @@ class Land {
         return const LatLng(0, 0);
       }).toList();
     }
-    // Handle PostGIS polygon format if needed (simplified here)
     return [];
   }
 

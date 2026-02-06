@@ -31,8 +31,17 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
   Future<void> _loadData() async {
     if (!mounted) return;
     await context.read<LandProvider>().fetchMyLands();
-    if (_currentMode == ViewMode.ar) {
+    if (_currentMode == ViewMode.ar && mounted) {
+      final count = context.read<LandProvider>().myLands.length;
       _fitMapToLands();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✨ $count Lands Synchronized Successfully!'),
+          backgroundColor: Colors.green.withOpacity(0.9),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -47,14 +56,8 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
 
     if (allPoints.isEmpty) return;
 
-    final center = LatLng(
-      allPoints.map((p) => p.latitude).reduce((a, b) => a + b) /
-          allPoints.length,
-      allPoints.map((p) => p.longitude).reduce((a, b) => a + b) /
-          allPoints.length,
-    );
-
-    _animatedMapMove(center, 15.0);
+    final bounds = LatLngBounds.fromPoints(allPoints);
+    _animatedMapMove(bounds.center, 15.0);
   }
 
   void _animatedMapMove(LatLng destLocation, double destZoom) {
