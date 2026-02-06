@@ -75,67 +75,13 @@ class _FarmGameScreenState extends State<FarmGameScreen> {
             return const Center(child: Text('No grid data found', style: TextStyle(color: Colors.white)));
           }
 
-          return Stack(
-            children: [
-              // Sky Background
-              Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF87CEEB), // Sky Blue
-                      Color(0xFFE0F7FA), // Light Cyan
-                      Color(0xFF1A1A2E), // Transition to dark ground
-                    ],
-                    stops: [0.0, 0.4, 0.7],
-                  ),
-                ),
-              ),
-              // Placeholder Clouds
-              Positioned(
-                top: 50,
-                left: 40,
-                child: _buildCloud(80, 40),
-              ),
-              Positioned(
-                top: 100,
-                right: 60,
-                child: _buildCloud(100, 50),
-              ),
-              Positioned(
-                top: 180,
-                left: 120,
-                child: _buildCloud(60, 30),
-              ),
-              // Game Content
-              GameWidget(
-                game: FarmGame(grid: provider.grid!),
-                loadingBuilder: (context) => const Center(
-                  child: CircularProgressIndicator(color: Colors.white),
-                ),
-              ),
-            ],
+          return GameWidget(
+            game: FarmGame(grid: provider.grid!),
+            loadingBuilder: (context) => const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildCloud(double width, double height) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.4),
-        borderRadius: BorderRadius.all(Radius.elliptical(width / 2, height / 2)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.white.withOpacity(0.2),
-            blurRadius: 20,
-            spreadRadius: 5,
-          ),
-        ],
       ),
     );
   }

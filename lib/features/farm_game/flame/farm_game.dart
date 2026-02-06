@@ -2,6 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/input.dart';
+import 'package:flame/parallax.dart';
 import 'package:flutter/material.dart';
 import '../models/farm_grid_model.dart';
 import 'components/land_grid_component.dart';
@@ -15,14 +16,31 @@ class FarmGame extends FlameGame with HasGameRef, ScaleCallbacks, ScrollDetector
 
   @override
   Future<void> onLoad() async {
-    // Background color
-    camera.backdrop.add(
-      RectangleComponent(
-        size: Vector2.all(10000),
-        position: Vector2.all(-5000),
-        paint: Paint()..color = const Color(0xFF1A1A2E),
-      ),
-    );
+    // Parallax Sky & Clouds
+    try {
+      final skyParallax = await loadParallaxComponent(
+        [
+          ParallaxImageData('sky_bg.png'),
+          ParallaxImageData('cloud_01.png'),
+        ],
+        baseVelocity: Vector2(5, 0),
+        velocityMultiplierDelta: Vector2(1.5, 1.0),
+        repeat: ImageRepeat.repeatX,
+        alignment: Alignment.topCenter,
+        fill: LayerFill.width,
+      );
+      camera.backdrop.add(skyParallax);
+    } catch (e) {
+      debugPrint('Error loading parallax: $e');
+      // Background color fallback
+      camera.backdrop.add(
+        RectangleComponent(
+          size: Vector2.all(10000),
+          position: Vector2.all(-5000),
+          paint: Paint()..color = const Color(0xFF1A1A2E),
+        ),
+      );
+    }
 
     // Initialize Grid
     landGrid = LandGridComponent(grid: grid);
