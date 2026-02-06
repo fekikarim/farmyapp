@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flame/game.dart';
 import '../providers/farm_game_provider.dart';
-import '../widgets/isometric_grid_painter.dart';
+import '../flame/farm_game.dart';
 
 class FarmGameScreen extends StatefulWidget {
   final String landId;
@@ -18,7 +19,6 @@ class FarmGameScreen extends StatefulWidget {
 }
 
 class _FarmGameScreenState extends State<FarmGameScreen> {
-  Offset _lastPosition = Offset.zero;
 
   @override
   void initState() {
@@ -109,29 +109,10 @@ class _FarmGameScreenState extends State<FarmGameScreen> {
                 child: _buildCloud(60, 30),
               ),
               // Game Content
-              GestureDetector(
-                onScaleStart: (details) {
-                  _lastPosition = details.focalPoint;
-                },
-                onScaleUpdate: (details) {
-                  final newScale = provider.scale * details.scale;
-                  final delta = details.focalPoint - _lastPosition;
-                  _lastPosition = details.focalPoint;
-                  
-                  provider.updateView(
-                    scale: newScale.clamp(0.5, 3.0),
-                    offset: provider.offset + delta,
-                  );
-                },
-                child: ClipRect(
-                  child: CustomPaint(
-                    painter: IsometricGridPainter(
-                      grid: provider.grid!,
-                      scale: provider.scale,
-                      offset: provider.offset,
-                    ),
-                    size: Size.infinite,
-                  ),
+              GameWidget(
+                game: FarmGame(grid: provider.grid!),
+                loadingBuilder: (context) => const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
                 ),
               ),
             ],
