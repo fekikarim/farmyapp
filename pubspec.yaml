@@ -93,6 +93,7 @@ flutter:
     - assets/logo-no-bg.png
     - assets/logo-app-no-bg.png
     - assets/game_images/
+    - assets/game_images/textures/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

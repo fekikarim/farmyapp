@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/land_provider.dart';
 import '../models/land_model.dart';
 import '../models/land_rental_model.dart';
+import '../game/game_screen.dart';
 
 class MyLandsBottomSheet extends StatefulWidget {
   const MyLandsBottomSheet({super.key});
@@ -150,10 +151,22 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset(
-                  'assets/game_images/default_farm_collectionView.jpg',
-                  fit: BoxFit.cover,
-                ),
+            GestureDetector(
+              onTap: () {
+                // Determine if we should allow playing (e.g. only if active/owned)
+                // For now, allow all.
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GameScreen(land: land),
+                  ),
+                );
+              },
+              child: Image.asset(
+                'assets/game_images/default_farm_collectionView.jpg',
+                fit: BoxFit.cover,
+              ),
+            ),
                 Positioned(
                   top: 8,
                   right: 8,
