@@ -9,8 +9,8 @@ class Land {
   final int gridHeight;
   final List<LatLng>? boundaries;
   final bool isActive;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   Land({
     required this.id,
@@ -21,8 +21,8 @@ class Land {
     this.gridHeight = 10,
     this.boundaries,
     this.isActive = true,
-    required this.createdAt,
-    required this.updatedAt,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory Land.fromJson(Map<String, dynamic> json) {
@@ -37,8 +37,8 @@ class Land {
           ? _parseBoundaries(json['boundaries'])
           : null,
       isActive: json['is_active'] ?? true,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
     );
   }
 
@@ -52,8 +52,8 @@ class Land {
       'grid_height': gridHeight,
       'boundaries': boundaries != null ? _boundariesToJson(boundaries!) : null,
       'is_active': isActive,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
     };
   }
 

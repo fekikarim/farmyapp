@@ -12,8 +12,8 @@ class LandRental {
   final PaymentStatus paymentStatus;
   final DateTime paymentDueDate;
   final DateTime? paymentDate;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
   final Land? land;
 
   LandRental({
@@ -26,8 +26,8 @@ class LandRental {
     this.paymentStatus = PaymentStatus.pending,
     required this.paymentDueDate,
     this.paymentDate,
-    required this.createdAt,
-    required this.updatedAt,
+    this.createdAt,
+    this.updatedAt,
     this.land,
   });
 
@@ -46,8 +46,8 @@ class LandRental {
       paymentDate: json['payment_date'] != null
           ? DateTime.parse(json['payment_date'])
           : null,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
       land: json['land'] != null ? Land.fromJson(json['land']) : null,
     );
   }
@@ -63,8 +63,8 @@ class LandRental {
       'payment_status': paymentStatus.name,
       'payment_due_date': paymentDueDate.toIso8601String(),
       'payment_date': paymentDate?.toIso8601String(),
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
       'land': land?.toJson(),
     };
   }
