@@ -327,16 +327,26 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
                         strokeWidth: 3,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
                       const Text(
-                        'Syncing Land Data...',
+                        'SYNCHRONIZING BOUNDARIES',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
+                          color: Colors.green,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                          letterSpacing: 2.0,
                           shadows: [
                             Shadow(blurRadius: 10, color: Colors.black),
                           ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Fetching precise spatial data...',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                          letterSpacing: 1.0,
                         ),
                       ),
                     ],

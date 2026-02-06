@@ -15,8 +15,8 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _widthController = TextEditingController(text: '10');
-  final _heightController = TextEditingController(text: '10');
+  final _widthController = TextEditingController(text: '10.0');
+  final _heightController = TextEditingController(text: '10.0');
   bool _isLoading = false;
 
   List<LatLng> _selectedPoints = [];
@@ -104,7 +104,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
             ),
             const SizedBox(height: 32),
             const Text(
-              'Grid Dimensions (meters)',
+              'Dimensions (Meters)',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -114,10 +114,14 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                   child: TextFormField(
                     controller: _widthController,
                     decoration: const InputDecoration(
-                      labelText: 'Width',
+                      labelText: 'Width (m)',
                       border: OutlineInputBorder(),
+                      suffixText: 'm',
                     ),
-                    keyboardType: TextInputType.number,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -125,10 +129,14 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                   child: TextFormField(
                     controller: _heightController,
                     decoration: const InputDecoration(
-                      labelText: 'Height',
+                      labelText: 'Height (m)',
                       border: OutlineInputBorder(),
+                      suffixText: 'm',
                     ),
-                    keyboardType: TextInputType.number,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                   ),
                 ),
               ],
@@ -312,8 +320,8 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
       final success = await context.read<LandProvider>().createLand({
         'name': _nameController.text.trim(),
         'description': _descriptionController.text.trim(),
-        'grid_width': int.parse(_widthController.text),
-        'grid_height': int.parse(_heightController.text),
+        'width_m': double.parse(_widthController.text),
+        'height_m': double.parse(_heightController.text),
         'boundaries': _selectedPoints
             .map((p) => [p.longitude, p.latitude])
             .toList(), // GeoJSON [lng, lat]
