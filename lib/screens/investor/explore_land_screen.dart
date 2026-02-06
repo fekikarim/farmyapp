@@ -213,7 +213,7 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
               urlTemplate: _isSatellite
                   ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                   : "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-              userAgentPackageName: 'com.farmyapp',
+              userAgentPackageName: 'com.farmy.app.v1',
             ),
             PolygonLayer(
               polygons: lands

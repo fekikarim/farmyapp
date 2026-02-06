@@ -211,7 +211,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               urlTemplate: _isSatellite
                   ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                   : "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-              userAgentPackageName: 'com.farmyapp',
+              userAgentPackageName: 'com.farmy.app.v1',
             ),
             if (_selectedPoints.isNotEmpty)
               PolygonLayer(
