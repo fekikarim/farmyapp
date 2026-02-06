@@ -1,12 +1,13 @@
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 import '../models/farm_grid_model.dart';
 import 'components/land_grid_component.dart';
 import 'components/farm_asset_component.dart';
 
-class FarmGame extends FlameGame with HasGameRef, ScaleDetector, ScrollDetector {
+class FarmGame extends FlameGame with HasGameRef, ScaleCallbacks, ScrollDetector {
   final FarmGrid grid;
   late LandGridComponent landGrid;
 
@@ -44,16 +45,16 @@ class FarmGame extends FlameGame with HasGameRef, ScaleDetector, ScrollDetector 
   }
 
   @override
-  void onScaleUpdate(ScaleUpdateInfo info) {
+  void onScaleUpdate(ScaleUpdateEvent event) {
     // Zoom handling
-    final zoomDelta = info.scale.global.y;
-    if (zoomDelta != 0) {
-      final newZoom = camera.viewfinder.zoom * zoomDelta;
+    final scaleFactor = event.scale;
+    if (scaleFactor != 1.0) {
+      final newZoom = camera.viewfinder.zoom * scaleFactor;
       camera.viewfinder.zoom = newZoom.clamp(0.2, 5.0);
     }
 
     // Pan handling
-    camera.viewfinder.position -= info.delta.global;
+    camera.viewfinder.position -= event.focalPointDelta;
   }
 
   @override
