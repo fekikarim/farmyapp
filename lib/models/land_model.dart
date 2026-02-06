@@ -7,6 +7,8 @@ class Land {
   final String? description;
   final int gridWidth;
   final int gridHeight;
+  final double widthM;
+  final double heightM;
   final List<LatLng>? boundaries;
   final bool isActive;
   final DateTime createdAt;
@@ -19,6 +21,8 @@ class Land {
     this.description,
     this.gridWidth = 10,
     this.gridHeight = 10,
+    this.widthM = 10.0,
+    this.heightM = 10.0,
     this.boundaries,
     this.isActive = true,
     required this.createdAt,
@@ -33,6 +37,8 @@ class Land {
       description: json['description'],
       gridWidth: json['grid_width'] ?? 10,
       gridHeight: json['grid_height'] ?? 10,
+      widthM: (json['width_m'] ?? 10.0).toDouble(),
+      heightM: (json['height_m'] ?? 10.0).toDouble(),
       boundaries: json['boundaries'] != null
           ? _parseBoundaries(json['boundaries'])
           : null,
@@ -50,6 +56,8 @@ class Land {
       'description': description,
       'grid_width': gridWidth,
       'grid_height': gridHeight,
+      'width_m': widthM,
+      'height_m': heightM,
       'boundaries': boundaries != null ? _boundariesToJson(boundaries!) : null,
       'is_active': isActive,
       'createdAt': createdAt.toIso8601String(),

@@ -102,4 +102,20 @@ class LandService {
     final errorBody = jsonDecode(response.body);
     throw Exception(errorBody['message'] ?? 'Failed to delete land');
   }
+
+  static Future<Map<String, dynamic>?> getLandGrid(String id) async {
+    try {
+      final response = await AuthService.authenticatedRequest(
+        'GET',
+        Uri.parse('$_baseUrl/api/v1/land-grid/$id/grid'),
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      return null;
+    } catch (e) {
+      print('GetLandGrid Error: $e');
+      return null;
+    }
+  }
 }

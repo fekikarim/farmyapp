@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../models/land_model.dart';
 import 'rental_checkout_screen.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
+import '../../features/farm_game/screens/farm_game_screen.dart';
 
 class LandDetailsScreen extends StatelessWidget {
   final Land land;
@@ -156,29 +159,64 @@ class LandDetailsScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(width: 24),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RentalCheckoutScreen(land: land),
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'RENT NOW',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+            _buildActionButtons(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isOwner = authProvider.user?.id == land.ownerId;
+
+    if (isOwner) {
+      return Expanded(
+        child: ElevatedButton(
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FarmGameScreen(
+                landId: land.id,
+                landName: land.name,
               ),
             ),
-          ],
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF344955), // Theme primary
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: const Text(
+            'VIEW FARM',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
+    }
+
+    return Expanded(
+      child: ElevatedButton(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RentalCheckoutScreen(land: land),
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: const Text(
+          'RENT NOW',
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
     );
