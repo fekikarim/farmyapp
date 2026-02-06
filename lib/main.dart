@@ -20,6 +20,8 @@ import 'providers/theme_provider.dart';
 import 'providers/game_provider.dart';
 import 'widgets/game_bubble.dart';
 
+import 'utils/global_keys.dart';
+
 // Global RouteObserver for focus management
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
@@ -66,6 +68,7 @@ class MyApp extends StatelessWidget {
       builder: (context, themeProvider, child) {
         return MaterialApp(
           title: 'Farmy',
+          navigatorKey: navigatorKey,
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,

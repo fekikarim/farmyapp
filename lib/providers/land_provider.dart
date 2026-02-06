@@ -64,12 +64,12 @@ class LandProvider with ChangeNotifier {
 
   // --- Rental Methods ---
 
-  Future<void> fetchMyRentals(bool asInvestor) async {
+  Future<void> fetchMyRentals(bool asInvestor, {String? paymentStatus}) async {
     _setLoading(true);
     _error = null;
     try {
       if (asInvestor) {
-        _myRentals = await LandRentalService.getMyRentalsAsInvestor();
+        _myRentals = await LandRentalService.getMyRentalsAsInvestor(paymentStatus: paymentStatus);
       } else {
         _myRentals = await LandRentalService.getMyRentalsAsOwner();
       }

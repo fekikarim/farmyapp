@@ -4,6 +4,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../providers/auth_provider.dart';
 import '../providers/game_provider.dart';
 
+import '../utils/global_keys.dart';
+import 'my_lands_sheet.dart';
+
 class GameBubbleOverlay extends StatefulWidget {
   final Widget child;
 
@@ -17,6 +20,7 @@ class _GameBubbleOverlayState extends State<GameBubbleOverlay> {
   Offset? _position; // Null initially, set in post-frame callback
   final double _bubbleSize = 60.0;
   bool _isDragging = false;
+  bool _isHiddenForSheet = false;
 
   @override
   void initState() {
@@ -41,6 +45,7 @@ class _GameBubbleOverlayState extends State<GameBubbleOverlay> {
     final shouldShow = authProvider.user?.role == 'investor' &&
         gameProvider.shouldShowBubble &&
         !gameProvider.isLoading &&
+        !_isHiddenForSheet &&
         _position != null;
 
     return Stack(
@@ -66,9 +71,26 @@ class _GameBubbleOverlayState extends State<GameBubbleOverlay> {
                 });
                 _handleDragEnd(context);
               },
-              onTap: () {
-                // TODO: Handle bubble tap action (open game view)
-                print('Game Bubble Tapped!');
+              onTap: () async {
+                setState(() {
+                  _isHiddenForSheet = true;
+                });
+                
+                // Use navigatorKey.currentContext to access the Navigator
+                if (navigatorKey.currentContext != null) {
+                  await showModalBottomSheet(
+                    context: navigatorKey.currentContext!,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => const MyLandsBottomSheet(),
+                  );
+                }
+
+                if (mounted) {
+                  setState(() {
+                    _isHiddenForSheet = false;
+                  });
+                }
               },
               child: Container(
                 width: _bubbleSize,

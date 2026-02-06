@@ -43,11 +43,14 @@ class LandRentalService {
     }
   }
 
-  static Future<List<LandRental>> getMyRentalsAsInvestor() async {
+  static Future<List<LandRental>> getMyRentalsAsInvestor({String? paymentStatus}) async {
     try {
+      final uri = Uri.parse('$_baseUrl/api/v1/land-rentals/investor/my-rentals').replace(
+          queryParameters: paymentStatus != null ? {'payment_status': paymentStatus} : null);
+
       final response = await AuthService.authenticatedRequest(
         'GET',
-        Uri.parse('$_baseUrl/api/v1/land-rentals/investor/my-rentals'),
+        uri,
       );
       if (response.statusCode == 200) {
         final Map<String, dynamic> body = jsonDecode(response.body);

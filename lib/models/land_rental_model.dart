@@ -1,3 +1,5 @@
+import 'land_model.dart';
+
 enum PaymentStatus { pending, paid, overdue, cancelled }
 
 class LandRental {
@@ -12,6 +14,7 @@ class LandRental {
   final DateTime? paymentDate;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final Land? land;
 
   LandRental({
     required this.id,
@@ -25,6 +28,7 @@ class LandRental {
     this.paymentDate,
     required this.createdAt,
     required this.updatedAt,
+    this.land,
   });
 
   factory LandRental.fromJson(Map<String, dynamic> json) {
@@ -44,6 +48,7 @@ class LandRental {
           : null,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
+      land: json['land'] != null ? Land.fromJson(json['land']) : null,
     );
   }
 
@@ -60,6 +65,7 @@ class LandRental {
       'payment_date': paymentDate?.toIso8601String(),
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
+      'land': land?.toJson(),
     };
   }
 
