@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../models/user_model.dart';
 
 // Customer Screens
 import 'customer/home_screen.dart';
@@ -43,9 +42,7 @@ class _MainScreenState extends State<MainScreen> {
           Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
         }
       });
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final role = user.role.toLowerCase();
@@ -61,10 +58,26 @@ class _MainScreenState extends State<MainScreen> {
         const SettingsScreen(),
       ];
       items = const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.storefront_outlined), activeIcon: Icon(Icons.storefront), label: 'Marketplace'),
-        BottomNavigationBarItem(icon: Icon(Icons.subscriptions_outlined), activeIcon: Icon(Icons.subscriptions), label: 'Subscriptions'),
-        BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), activeIcon: Icon(Icons.settings), label: 'Settings'),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home_outlined),
+          activeIcon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.storefront_outlined),
+          activeIcon: Icon(Icons.storefront),
+          label: 'Marketplace',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.subscriptions_outlined),
+          activeIcon: Icon(Icons.subscriptions),
+          label: 'Subscriptions',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings_outlined),
+          activeIcon: Icon(Icons.settings),
+          label: 'Settings',
+        ),
       ];
     } else if (role == 'farmer') {
       screens = [
@@ -75,11 +88,31 @@ class _MainScreenState extends State<MainScreen> {
         const FarmerMyFarmsScreen(),
       ];
       items = const [
-        BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), activeIcon: Icon(Icons.settings), label: 'Settings'),
-        BottomNavigationBarItem(icon: Icon(Icons.analytics_outlined), activeIcon: Icon(Icons.analytics), label: 'Analytics'),
-        BottomNavigationBarItem(icon: Icon(Icons.inventory_2_outlined), activeIcon: Icon(Icons.inventory_2), label: 'Products'),
-        BottomNavigationBarItem(icon: Icon(Icons.landscape_outlined), activeIcon: Icon(Icons.landscape), label: 'Land'),
-        BottomNavigationBarItem(icon: Icon(Icons.agriculture_outlined), activeIcon: Icon(Icons.agriculture), label: 'My Farms'),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings_outlined),
+          activeIcon: Icon(Icons.settings),
+          label: 'Settings',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.analytics_outlined),
+          activeIcon: Icon(Icons.analytics),
+          label: 'Analytics',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.inventory_2_outlined),
+          activeIcon: Icon(Icons.inventory_2),
+          label: 'Products',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.landscape_outlined),
+          activeIcon: Icon(Icons.landscape),
+          label: 'Land',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.agriculture_outlined),
+          activeIcon: Icon(Icons.agriculture),
+          label: 'My Farms',
+        ),
       ];
     } else if (role == 'investor') {
       screens = [
@@ -90,11 +123,31 @@ class _MainScreenState extends State<MainScreen> {
         const SettingsScreen(),
       ];
       items = const [
-        BottomNavigationBarItem(icon: Icon(Icons.explore_outlined), activeIcon: Icon(Icons.explore), label: 'Explore'),
-        BottomNavigationBarItem(icon: Icon(Icons.monetization_on_outlined), activeIcon: Icon(Icons.monetization_on), label: 'Investments'),
-        BottomNavigationBarItem(icon: Icon(Icons.grass_outlined), activeIcon: Icon(Icons.grass), label: 'Activities'),
-        BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet_outlined), activeIcon: Icon(Icons.account_balance_wallet), label: 'Revenue'),
-        BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), activeIcon: Icon(Icons.settings), label: 'Settings'),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.explore_outlined),
+          activeIcon: Icon(Icons.explore),
+          label: 'Explore',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.monetization_on_outlined),
+          activeIcon: Icon(Icons.monetization_on),
+          label: 'Investments',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.grass_outlined),
+          activeIcon: Icon(Icons.grass),
+          label: 'Activities',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.account_balance_wallet_outlined),
+          activeIcon: Icon(Icons.account_balance_wallet),
+          label: 'Revenue',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings_outlined),
+          activeIcon: Icon(Icons.settings),
+          label: 'Settings',
+        ),
       ];
     } else {
       // Fallback for unknown role
@@ -109,7 +162,9 @@ class _MainScreenState extends State<MainScreen> {
                 onPressed: () async {
                   await authProvider.logout();
                   if (context.mounted) {
-                    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+                    Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil('/', (route) => false);
                   }
                 },
                 icon: const Icon(Icons.logout),
@@ -127,10 +182,7 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [

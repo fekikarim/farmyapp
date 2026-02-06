@@ -74,69 +74,91 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
 
   Widget _buildForm() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'General Information',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'Property Details',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
-            TextFormField(
+            const SizedBox(height: 24),
+            _buildInputField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Land Name',
-                border: OutlineInputBorder(),
-              ),
-              validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+              label: 'Land Name',
+              hint: 'e.g. Sunny Valley Plot',
+              icon: Icons.landscape_rounded,
+              validator: (v) {
+                if (v == null || v.isEmpty) return 'Land name is required';
+                if (v.length < 5) return 'Name must be at least 5 characters';
+                return null;
+              },
             ),
-            const SizedBox(height: 16),
-            TextFormField(
+            const SizedBox(height: 20),
+            _buildInputField(
               controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Description',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 3,
+              label: 'Description',
+              hint: 'Describe the soil, location, and potential...',
+              icon: Icons.description_rounded,
+              maxLines: 4,
+              validator: (v) {
+                if (v == null || v.isEmpty) return 'Description is required';
+                if (v.length < 20)
+                  return 'Please provide more detail (min 20 chars)';
+                return null;
+              },
             ),
             const SizedBox(height: 32),
             const Text(
-              'Dimensions (Meters)',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'Spatial Dimensions',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
-                  child: TextFormField(
+                  child: _buildInputField(
                     controller: _widthController,
-                    decoration: const InputDecoration(
-                      labelText: 'Width (m)',
-                      border: OutlineInputBorder(),
-                      suffixText: 'm',
-                    ),
+                    label: 'Width',
+                    hint: 'Meters',
+                    icon: Icons.straighten_rounded,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+                    validator: (v) {
+                      final val = double.tryParse(v ?? '');
+                      if (val == null) return 'Invalid';
+                      if (val < 10 || val > 500) return '10-500m only';
+                      return null;
+                    },
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 20),
                 Expanded(
-                  child: TextFormField(
+                  child: _buildInputField(
                     controller: _heightController,
-                    decoration: const InputDecoration(
-                      labelText: 'Height (m)',
-                      border: OutlineInputBorder(),
-                      suffixText: 'm',
-                    ),
+                    label: 'Height',
+                    hint: 'Meters',
+                    icon: Icons.square_foot_rounded,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+                    validator: (v) {
+                      final val = double.tryParse(v ?? '');
+                      if (val == null) return 'Invalid';
+                      if (val < 10 || val > 500) return '10-500m only';
+                      return null;
+                    },
                   ),
                 ),
               ],
@@ -146,57 +168,167 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Boundaries Selection',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  'Boundaries',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 TextButton.icon(
                   onPressed: () => setState(() => _isMapView = true),
-                  icon: const Icon(Icons.map_outlined),
-                  label: const Text('OPEN MAP'),
+                  icon: const Icon(
+                    Icons.map_rounded,
+                    color: Colors.green,
+                    size: 20,
+                  ),
+                  label: const Text(
+                    'DEFINE ON MAP',
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 13,
+                    ),
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[300]!),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.layers,
+            GestureDetector(
+              onTap: () => setState(() => _isMapView = true),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A1D21),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
                     color: _selectedPoints.length >= 3
-                        ? Colors.green
-                        : Colors.grey,
+                        ? Colors.green.withOpacity(0.3)
+                        : Colors.white.withOpacity(0.05),
                   ),
-                  const SizedBox(width: 16),
-                  Text(
-                    _selectedPoints.isEmpty
-                        ? 'No boundaries selected'
-                        : '${_selectedPoints.length} points selected',
-                    style: TextStyle(
-                      color: _selectedPoints.length >= 3
-                          ? Colors.green
-                          : Colors.grey[600],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color:
+                            (_selectedPoints.length >= 3
+                                    ? Colors.green
+                                    : Colors.white)
+                                .withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.polyline_rounded,
+                        color: _selectedPoints.length >= 3
+                            ? Colors.green
+                            : Colors.white38,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            if (_selectedPoints.isEmpty)
-              const Padding(
-                padding: EdgeInsets.only(top: 8.0),
-                child: Text(
-                  'Tap on the map to define the perimeter of your land.',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _selectedPoints.isEmpty
+                                ? 'Perimeter not set'
+                                : '${_selectedPoints.length} Points Defined',
+                            style: TextStyle(
+                              color: _selectedPoints.length >= 3
+                                  ? Colors.green
+                                  : Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _selectedPoints.length < 3
+                                ? 'Tap to draw land boundaries'
+                                : 'Geometry verified and valid',
+                            style: TextStyle(
+                              color: Colors.white38,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: Colors.white12,
+                      size: 16,
+                    ),
+                  ],
                 ),
               ),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    int maxLines = 1,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: const TextStyle(
+            color: Colors.white38,
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.2,
+          ),
+        ),
+        const SizedBox(height: 10),
+        TextFormField(
+          controller: controller,
+          maxLines: maxLines,
+          keyboardType: keyboardType,
+          style: const TextStyle(color: Colors.white, fontSize: 16),
+          validator: validator,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: const TextStyle(color: Colors.white24, fontSize: 15),
+            prefixIcon: Icon(icon, color: Colors.white24, size: 20),
+            filled: true,
+            fillColor: const Color(0xFF1A1D21),
+            contentPadding: const EdgeInsets.all(20),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: Colors.white.withOpacity(0.05)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Colors.green, width: 1.5),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Colors.redAccent, width: 2),
+            ),
+            errorStyle: const TextStyle(
+              color: Colors.redAccent,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -219,7 +351,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               urlTemplate: _isSatellite
                   ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                   : "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-              userAgentPackageName: 'com.farmy.app.v1',
+              userAgentPackageName: 'com.farmy.app',
             ),
             if (_selectedPoints.isNotEmpty)
               PolygonLayer(
