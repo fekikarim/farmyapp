@@ -6,13 +6,49 @@ import 'dart:math' as math;
 class LandGridComponent extends Component with HasGameRef {
   final FarmGrid grid;
   final double tileSize = 64.0;
+  double get tileWidth => tileSize * 2;
+  double get tileHeight => tileSize;
   Sprite? grassSprite;
 
   LandGridComponent({required this.grid});
 
+  Vector2 getTileCenter(int x, int y) {
+    return isoToScreen(x.toDouble(), y.toDouble());
+  }
+
   @override
   Future<void> onLoad() async {
     grassSprite = await Sprite.load('tile_grass.png');
+  }
+
+  Vector2 isoToScreen(double x, double y) {
+    return Vector2(
+      (x - y) * tileSize,
+      (x + y) * tileSize / 2,
+    );
+  }
+
+  /// Converts screen/world coordinates to grid coordinates (x, y)
+  Vector2 screenToIso(Vector2 worldPos) {
+    double arg1 = worldPos.x / (tileSize * 2);
+    double arg2 = worldPos.y / tileSize;
+    return Vector2(
+      (arg2 + arg1),
+      (arg2 - arg1),
+    );
+  }
+
+  int? selectedX;
+  int? selectedY;
+
+  void selectTile(int x, int y) {
+    if (x >= 0 && x < grid.width && y >= 0 && y < grid.height) {
+      selectedX = x;
+      selectedY = y;
+    } else {
+      selectedX = null;
+      selectedY = null;
+    }
   }
 
   @override
@@ -25,12 +61,13 @@ class LandGridComponent extends Component with HasGameRef {
     for (int y = 0; y < grid.height; y++) {
       for (int x = 0; x < grid.width; x++) {
         final screenPos = isoToScreen(x.toDouble(), y.toDouble());
-        _drawTile(canvas, screenPos, x, y, linePaint);
+        final isSelected = x == selectedX && y == selectedY;
+        _drawTile(canvas, screenPos, x, y, linePaint, isSelected);
       }
     }
   }
 
-  void _drawTile(Canvas canvas, Vector2 pos, int x, int y, Paint linePaint) {
+  void _drawTile(Canvas canvas, Vector2 pos, int x, int y, Paint linePaint, [bool isSelected = false]) {
     final topPath = Path();
     topPath.moveTo(pos.x, pos.y);
     topPath.lineTo(pos.x + tileSize, pos.y + tileSize / 2);
@@ -45,7 +82,7 @@ class LandGridComponent extends Component with HasGameRef {
       (math.sin(x * 0.5 + y * 0.3) + 1) / 2,
     )!;
 
-    final fillPaint = Paint()..color = grassColor;
+    final fillPaint = Paint()..color = isSelected ? Colors.yellow.withOpacity(0.5) : grassColor;
 
     // Side faces for 3D effect
     final sideHeight = tileSize / 4;
@@ -80,19 +117,22 @@ class LandGridComponent extends Component with HasGameRef {
         canvas,
         position: Vector2(pos.x - tileSize, pos.y),
         size: Vector2(tileSize * 2, tileSize),
+        overridePaint: isSelected ? (Paint()..colorFilter = ColorFilter.mode(Colors.yellow.withOpacity(0.3), BlendMode.srcATop)) : null,
       );
       canvas.restore();
     } else {
       canvas.drawPath(topPath, fillPaint);
     }
     
-    canvas.drawPath(topPath, linePaint);
-  }
+    // Draw selection outline
+    if (isSelected) {
+      final highlightPaint = Paint()
+        ..color = Colors.white
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.0;
+      canvas.drawPath(topPath, highlightPaint);
+    }
 
-  Vector2 isoToScreen(double x, double y) {
-    return Vector2(
-      (x - y) * tileSize,
-      (x + y) * tileSize / 2,
-    );
+    canvas.drawPath(topPath, linePaint);
   }
 }

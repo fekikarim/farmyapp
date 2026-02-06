@@ -1,10 +1,15 @@
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
 import '../../models/farm_grid_model.dart';
+import 'dart:math' as math;
 
-class FarmAssetComponent extends PositionComponent {
+class FarmAssetComponent extends PositionComponent with TapCallbacks {
   final FarmCell cell;
   final double tileSize = 64.0;
+
+  double _scaleFactor = 1.0;
+  double _bounceTimer = 0;
 
   FarmAssetComponent({required this.cell, required Vector2 position}) {
     this.position = position;
@@ -12,7 +17,26 @@ class FarmAssetComponent extends PositionComponent {
   }
 
   @override
+  void update(double dt) {
+    super.update(dt);
+    if (_bounceTimer > 0) {
+      _bounceTimer -= dt;
+      // Oscillate scale based on sine wave for "bounce"
+      _scaleFactor = 1.0 + (math.sin(_bounceTimer * 30) * 0.2 * (_bounceTimer / 0.3));
+    } else {
+      _scaleFactor = 1.0;
+    }
+  }
+
+  @override
+  void onTapDown(TapDownEvent event) {
+    _bounceTimer = 0.3; // Trigger 300ms bounce
+  }
+
+  @override
   void render(Canvas canvas) {
+    canvas.save();
+    canvas.scale(_scaleFactor);
     final paint = Paint()..style = PaintingStyle.fill;
     
     // Placeholder representation based on category
@@ -48,6 +72,8 @@ class FarmAssetComponent extends PositionComponent {
     );
     textPainter.layout();
     textPainter.paint(canvas, Offset(-textPainter.width / 2, -textPainter.height / 2));
+    
+    canvas.restore();
   }
 
   void _drawDiamond(Canvas canvas, Paint paint, double size) {

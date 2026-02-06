@@ -8,9 +8,14 @@ import '../models/farm_grid_model.dart';
 import 'components/land_grid_component.dart';
 import 'components/farm_asset_component.dart';
 
-class FarmGame extends FlameGame with HasGameRef, ScaleCallbacks, ScrollDetector {
+class FarmGame extends FlameGame with HasGameRef, ScaleCallbacks, ScrollDetector, TapCallbacks {
   final FarmGrid grid;
   late LandGridComponent landGrid;
+
+  // Inertia / Momentum properties
+  Vector2 _velocity = Vector2.zero();
+  final double _damping = 0.92; // How fast it slows down
+  final double _minVelocity = 0.1;
 
   FarmGame({required this.grid});
 
@@ -32,7 +37,6 @@ class FarmGame extends FlameGame with HasGameRef, ScaleCallbacks, ScrollDetector
       camera.backdrop.add(skyParallax);
     } catch (e) {
       debugPrint('Error loading parallax: $e');
-      // Background color fallback
       camera.backdrop.add(
         RectangleComponent(
           size: Vector2.all(10000),
@@ -63,6 +67,33 @@ class FarmGame extends FlameGame with HasGameRef, ScaleCallbacks, ScrollDetector
   }
 
   @override
+  void update(double dt) {
+    super.update(dt);
+
+    // Apply inertia
+    if (_velocity.length > _minVelocity) {
+      camera.viewfinder.position -= _velocity * dt;
+      _velocity *= _damping;
+    } else {
+      _velocity = Vector2.zero();
+    }
+
+    // Camera clamping (Grid Bounds)
+    _clampCamera();
+  }
+
+  void _clampCamera() {
+    // Basic clamping to keep the farm in view
+    // The farm center is roughly at 0,0. 
+    // Max extents: x: grid.width * tileSize, y: grid.height * tileSize
+    final halfWidth = (grid.width * landGrid.tileSize);
+    final halfHeight = (grid.height * landGrid.tileSize);
+
+    camera.viewfinder.position.x = camera.viewfinder.position.x.clamp(-halfWidth, halfWidth);
+    camera.viewfinder.position.y = camera.viewfinder.position.y.clamp(-halfHeight / 2, halfHeight * 1.5);
+  }
+
+  @override
   void onScaleUpdate(ScaleUpdateEvent event) {
     // Zoom handling
     final scaleFactor = event.scale;
@@ -71,8 +102,9 @@ class FarmGame extends FlameGame with HasGameRef, ScaleCallbacks, ScrollDetector
       camera.viewfinder.zoom = newZoom.clamp(0.2, 5.0);
     }
 
-    // Pan handling
+    // Pan handling with velocity tracking
     camera.viewfinder.position -= event.focalPointDelta;
+    _velocity = event.focalPointDelta / 0.016; // Approximate dt 60fps
   }
 
   @override
@@ -82,5 +114,17 @@ class FarmGame extends FlameGame with HasGameRef, ScaleCallbacks, ScrollDetector
     final zoomFactor = scrollDelta > 0 ? 0.9 : 1.1;
     final newZoom = camera.viewfinder.zoom * zoomFactor;
     camera.viewfinder.zoom = newZoom.clamp(0.2, 5.0);
+  }
+
+  @override
+  void onTapUp(TapUpEvent event) {
+    // Convert tap to world coordinates
+    final worldPos = camera.viewfinder.position + (event.localPosition - size / 2) / camera.viewfinder.zoom;
+    
+    // Convert world coordinates to isometric grid
+    final gridPos = landGrid.screenToIso(worldPos);
+    
+    // Select the tile
+    landGrid.selectTile(gridPos.x.round(), gridPos.y.round());
   }
 }
