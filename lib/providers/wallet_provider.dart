@@ -57,7 +57,7 @@ class WalletProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body)['data'];
-        _credits = (data['credits'] ?? 0.0).toDouble();
+        _credits = double.parse(data['credits'].toString());
         _paymentMethods = (data['payment_methods'] as List)
             .map((e) => PaymentMethod.fromJson(e))
             .toList();
@@ -129,7 +129,7 @@ class WalletProvider with ChangeNotifier {
       final response = await AuthService.authenticatedRequest(
         'POST',
         Uri.parse('${AuthService.baseUrl}/api/v1/wallet/create-payment-intent'),
-        body: {'amount': amount},
+        body: jsonEncode({'amount': amount}),
       );
 
       if (response.statusCode != 200) {
@@ -170,7 +170,7 @@ class WalletProvider with ChangeNotifier {
       final chargeResponse = await AuthService.authenticatedRequest(
         'POST',
         Uri.parse('${AuthService.baseUrl}/api/v1/wallet/charge'),
-        body: {'amount': amount},
+        body: jsonEncode({'amount': amount}),
       );
 
       if (chargeResponse.statusCode == 200) {
