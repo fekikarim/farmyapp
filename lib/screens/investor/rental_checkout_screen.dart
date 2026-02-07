@@ -6,6 +6,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../../models/land_model.dart';
 import '../../providers/land_provider.dart';
+import '../../providers/wallet_provider.dart'; // Added
 import 'dart:ui';
 
 class RentalCheckoutScreen extends StatefulWidget {
@@ -23,12 +24,33 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   bool _acceptedTerms = false;
   final double _monthlyRent = 1200.0;
   DateTime _startDate = DateTime.now();
+  PaymentMethod? _selectedPaymentMethod; // Added
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch wallet status to get payment methods
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WalletProvider>().fetchWalletStatus();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    print('RentalCheckoutScreen: isDark=$isDark'); // Using it to avoid lint
+    
+    // Auto-select default payment method if available and none selected
+    final walletProvider = context.watch<WalletProvider>();
+    if (_selectedPaymentMethod == null && walletProvider.paymentMethods.isNotEmpty) {
+        try {
+            _selectedPaymentMethod = walletProvider.paymentMethods.firstWhere((p) => p.isDefault);
+        } catch (_) {
+            if (walletProvider.paymentMethods.isNotEmpty) {
+                _selectedPaymentMethod = walletProvider.paymentMethods.first;
+            }
+        }
+    }
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -90,7 +112,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                _buildPaymentMethod(),
+                _buildPaymentMethodSelector(walletProvider), // Modified
                 const SizedBox(height: 32),
                 _buildTotalBreakdown(),
                 const SizedBox(height: 32),
@@ -156,26 +178,10 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                       if (!isDark) return tileWidget;
                       return ColorFiltered(
                         colorFilter: const ColorFilter.matrix([
-                          -1,
-                          0,
-                          0,
-                          0,
-                          255,
-                          0,
-                          -1,
-                          0,
-                          0,
-                          255,
-                          0,
-                          0,
-                          -1,
-                          0,
-                          255,
-                          0,
-                          0,
-                          0,
-                          1,
-                          0,
+                          -1, 0, 0, 0, 255,
+                          0, -1, 0, 0, 255,
+                          0, 0, -1, 0, 255,
+                          0, 0, 0, 1, 0,
                         ]),
                         child: tileWidget,
                       );
@@ -351,6 +357,8 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   Widget _buildPeriodSelector() {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final options = [1, 3, 6, 12]; // Added 1 month option as requested
+
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -361,7 +369,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         ),
       ),
       child: Row(
-        children: [3, 6, 12].map((m) {
+        children: options.map((m) {
           final isSelected = _months == m;
           return Expanded(
             child: GestureDetector(
@@ -376,7 +384,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(
-                  '$m Months',
+                  '$m${m == 1 ? " Mo" : " Mos"}', // Abbreviated to fit
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: isSelected
@@ -385,6 +393,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                     fontWeight: isSelected
                         ? FontWeight.bold
                         : FontWeight.normal,
+                    fontSize: 13,
                   ),
                 ),
               ),
@@ -395,7 +404,30 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
     );
   }
 
-  Widget _buildPaymentMethod() {
+  Widget _buildPaymentMethodSelector(WalletProvider walletProvider) {
+    if (walletProvider.paymentMethods.isEmpty) {
+        return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+                color: const Color(0xFF1A1D21),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
+            ),
+            child: Center(
+                child: TextButton.icon(
+                    icon: Icon(Icons.add_card, color: Colors.green),
+                    label: Text("Add Payment Method", style: TextStyle(color: Colors.green)),
+                    onPressed: () {
+                        // TODO: Navigate to Wallet to add card
+                        Navigator.pop(context); // Go back for now
+                        // Or show snackbar
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please add a card in your Wallet first.")));
+                    },
+                ),
+            ),
+        );
+    }
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -415,33 +447,45 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
           ),
           const SizedBox(width: 20),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  'Visa ending in 4242',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+            child: DropdownButtonHideUnderline(
+                child: DropdownButton<PaymentMethod>(
+                    value: _selectedPaymentMethod,
+                    dropdownColor: const Color(0xFF1A1D21),
+                    isExpanded: true,
+                    icon: Icon(Icons.keyboard_arrow_down, color: Colors.green),
+                    items: walletProvider.paymentMethods.map((method) {
+                        return DropdownMenuItem(
+                            value: method,
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                    Text(
+                                        '${method.brand.toUpperCase()} ending in ${method.last4}',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                        ),
+                                    ),
+                                    if (method.isDefault)
+                                    Text(
+                                        'Default Method',
+                                        style: TextStyle(
+                                            color: Colors.white38,
+                                            fontSize: 12,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        );
+                    }).toList(),
+                    onChanged: (val) {
+                        if (val != null) {
+                            setState(() => _selectedPaymentMethod = val);
+                        }
+                    },
                 ),
-                Text(
-                  'Default Payment Method',
-                  style: TextStyle(color: Colors.white38, fontSize: 13),
-                ),
-              ],
-            ),
-          ),
-          TextButton(
-            onPressed: () {},
-            child: const Text(
-              'EDIT',
-              style: TextStyle(
-                color: Colors.green,
-                fontWeight: FontWeight.w900,
-                fontSize: 12,
-              ),
             ),
           ),
         ],
@@ -556,6 +600,9 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   Widget _buildBottomActionCard() {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    // Check if payment method is selected
+    final canPay = _acceptedTerms && _selectedPaymentMethod != null;
+    
     return Container(
       padding: EdgeInsets.fromLTRB(
         24,
@@ -605,7 +652,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
           const SizedBox(width: 32),
           Expanded(
             child: ElevatedButton(
-              onPressed: _acceptedTerms ? _handlePayment : null,
+              onPressed: canPay ? _handlePayment : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
@@ -686,7 +733,8 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         'monthly_rent': _monthlyRent,
         'payment_due_date': DateTime.now()
             .toIso8601String(), // Due today for immediate lease
-        'payment_status': 'paid',
+        'payment_status': 'paid', // Intention to pay
+        'payment_method_id': _selectedPaymentMethod?.id, // Added
       });
 
       if (success && mounted) {
