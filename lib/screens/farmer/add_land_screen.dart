@@ -26,9 +26,17 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('List New Land'),
+        title: Text(
+          'List New Land',
+          style: TextStyle(color: theme.textTheme.titleLarge?.color),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(color: theme.textTheme.titleLarge?.color),
         actions: [
           if (_isMapView)
             IconButton(
@@ -41,15 +49,16 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
       bottomNavigationBar: _isMapView
           ? null
           : Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _submitForm,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 18),
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
+                  elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
                 child: _isLoading
@@ -65,7 +74,10 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                       )
                     : const Text(
                         'PUBLISH LISTING',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.1,
+                        ),
                       ),
               ),
             ),
@@ -73,6 +85,8 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
   }
 
   Widget _buildForm() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       child: Form(
@@ -80,10 +94,10 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Property Details',
               style: TextStyle(
-                color: Colors.white,
+                color: theme.textTheme.titleLarge?.color,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -115,10 +129,10 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               },
             ),
             const SizedBox(height: 32),
-            const Text(
+            Text(
               'Spatial Dimensions',
               style: TextStyle(
-                color: Colors.white,
+                color: theme.textTheme.titleLarge?.color,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -167,10 +181,10 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Boundaries',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: theme.textTheme.titleLarge?.color,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -199,12 +213,14 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A1D21),
+                  color: theme.cardColor,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: _selectedPoints.length >= 3
                         ? Colors.green.withOpacity(0.3)
-                        : Colors.white.withOpacity(0.05),
+                        : (isDark ? Colors.white : Colors.black).withOpacity(
+                            0.05,
+                          ),
                   ),
                 ),
                 child: Row(
@@ -215,7 +231,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                         color:
                             (_selectedPoints.length >= 3
                                     ? Colors.green
-                                    : Colors.white)
+                                    : (isDark ? Colors.white : Colors.black))
                                 .withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
@@ -223,7 +239,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                         Icons.polyline_rounded,
                         color: _selectedPoints.length >= 3
                             ? Colors.green
-                            : Colors.white38,
+                            : (isDark ? Colors.white38 : Colors.black38),
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -238,7 +254,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                             style: TextStyle(
                               color: _selectedPoints.length >= 3
                                   ? Colors.green
-                                  : Colors.white,
+                                  : theme.textTheme.bodyLarge?.color,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -249,7 +265,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                                 ? 'Tap to draw land boundaries'
                                 : 'Geometry verified and valid',
                             style: TextStyle(
-                              color: Colors.white38,
+                              color: (isDark ? Colors.white38 : Colors.black38),
                               fontSize: 13,
                             ),
                           ),
@@ -280,13 +296,16 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
   }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label.toUpperCase(),
-          style: const TextStyle(
-            color: Colors.white38,
+          style: TextStyle(
+            color: (isDark ? Colors.white : Colors.black).withOpacity(0.38),
             fontSize: 11,
             fontWeight: FontWeight.w900,
             letterSpacing: 1.2,
@@ -297,18 +316,30 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
           controller: controller,
           maxLines: maxLines,
           keyboardType: keyboardType,
-          style: const TextStyle(color: Colors.white, fontSize: 16),
+          style: TextStyle(
+            color: theme.textTheme.bodyLarge?.color,
+            fontSize: 16,
+          ),
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: Colors.white24, fontSize: 15),
-            prefixIcon: Icon(icon, color: Colors.white24, size: 20),
+            hintStyle: TextStyle(
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.24),
+              fontSize: 15,
+            ),
+            prefixIcon: Icon(
+              icon,
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.24),
+              size: 20,
+            ),
             filled: true,
-            fillColor: const Color(0xFF1A1D21),
+            fillColor: theme.cardColor,
             contentPadding: const EdgeInsets.all(20),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.white.withOpacity(0.05)),
+              borderSide: BorderSide(
+                color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
@@ -333,6 +364,8 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
   }
 
   Widget _buildMapPicker() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Stack(
       children: [
         FlutterMap(
@@ -352,6 +385,34 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                   ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                   : "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
               userAgentPackageName: 'com.farmy.app',
+              tileBuilder: (context, tileWidget, tile) {
+                if (_isSatellite || !isDark) return tileWidget;
+                return ColorFiltered(
+                  colorFilter: const ColorFilter.matrix([
+                    -1,
+                    0,
+                    0,
+                    0,
+                    255,
+                    0,
+                    -1,
+                    0,
+                    0,
+                    255,
+                    0,
+                    0,
+                    -1,
+                    0,
+                    255,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                  ]),
+                  child: tileWidget,
+                );
+              },
             ),
             if (_selectedPoints.isNotEmpty)
               PolygonLayer(
@@ -390,6 +451,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.7),
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
             ),
             child: const Text(
               'Tap on the map to add points and define the land boundaries.',
@@ -407,6 +469,8 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
             label: const Text('Clear'),
             icon: const Icon(Icons.clear),
             backgroundColor: Colors.redAccent,
+            foregroundColor: Colors.white,
+            elevation: 2,
           ),
         ),
         Positioned(
@@ -418,11 +482,10 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               FloatingActionButton.small(
                 heroTag: 'map_type_picker',
                 onPressed: () => setState(() => _isSatellite = !_isSatellite),
-                backgroundColor: Colors.white,
-                child: Icon(
-                  _isSatellite ? Icons.map : Icons.satellite_alt,
-                  color: Colors.black,
-                ),
+                backgroundColor: theme.cardColor,
+                foregroundColor: theme.iconTheme.color,
+                elevation: 2,
+                child: Icon(_isSatellite ? Icons.map : Icons.satellite_alt),
               ),
               const SizedBox(height: 8),
               FloatingActionButton.extended(
@@ -431,6 +494,8 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                 label: const Text('Confirm'),
                 icon: const Icon(Icons.check),
                 backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                elevation: 4,
               ),
             ],
           ),
@@ -476,23 +541,54 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(
+          message,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.redAccent,
         behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(20),
       ),
     );
   }
 
-  void _showErrorDialog(String message) {
+  void _showErrorDialog(String error) {
+    final theme = Theme.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Ops! Something went wrong'),
-        content: Text(message),
+        backgroundColor: theme.cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.error_outline_rounded, color: Colors.redAccent),
+            const SizedBox(width: 12),
+            Text(
+              'Publishing Failed',
+              style: TextStyle(color: theme.textTheme.titleLarge?.color),
+            ),
+          ],
+        ),
+        content: Text(
+          error,
+          style: TextStyle(
+            color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text(
+              'RETRY',
+              style: TextStyle(
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -500,25 +596,46 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
   }
 
   void _showSuccessDialog() {
+    final theme = Theme.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: theme.cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.check_circle, color: Colors.green, size: 80),
-            const SizedBox(height: 24),
-            const Text(
-              'Land Listed!',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.check_circle_rounded,
+                color: Colors.green,
+                size: 64,
+              ),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Your land has been successfully listed and is now visible to potential investors.',
+            const SizedBox(height: 24),
+            Text(
+              'Listing Published!',
+              style: TextStyle(
+                color: theme.textTheme.titleLarge?.color,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Your land is now live and visible to potential investors.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(
+                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                fontSize: 14,
+              ),
             ),
             const SizedBox(height: 32),
             SizedBox(
@@ -526,14 +643,15 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context); // Close dialog
-                  Navigator.pop(context); // Return to management
+                  Navigator.pop(context); // Back to management
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
                 child: const Text(
                   'CONTINUE',
