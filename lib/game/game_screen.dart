@@ -123,9 +123,10 @@ class _GameScreenState extends State<GameScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => const FractionallySizedBox(
-        heightFactor: 0.85,
-        child: ShopOverlay(),
+      builder: (context) => SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.85,
+        child: const ShopOverlay(),
       ),
     );
   }

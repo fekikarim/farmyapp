@@ -34,7 +34,9 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
   }
 
   Future<void> _loadItems() async {
+    print('Loading items for category: $_currentCategory');
     final items = await ShopService.getAssetTypes(_currentCategory);
+    print('Loaded ${items?.length ?? 0} items for $_currentCategory');
     if (mounted) {
       setState(() {
         _items = items;
@@ -51,14 +53,17 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A).withOpacity(0.95),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        border: Border.all(color: Colors.white10),
-      ),
-      child: Column(
-        children: [
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF1A1A1A).withOpacity(0.95),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          border: Border.all(color: Colors.white10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
           // Handle
           Container(
             margin: const EdgeInsets.symmetric(vertical: 12),
@@ -118,8 +123,9 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _getCategoryIcon(AssetCategory cat) {
     switch (cat) {
@@ -164,13 +170,21 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
   Widget _buildItemCard(ShopItemType item) {
     return InkWell(
       onTap: () async {
-        setState(() => _isLoading = true);
-        final detailedItem = await ShopService.getAssetTypeWithVariants(_currentCategory, item.id);
-        if (mounted) {
-          setState(() {
-            _selectedItem = detailedItem;
-            _isLoading = false;
-          });
+        try {
+          setState(() => _isLoading = true);
+          print('Selecting item: ${item.name} (${item.id})');
+          final detailedItem = await ShopService.getAssetTypeWithVariants(_currentCategory, item.id);
+          print('Detailed item loaded: ${detailedItem?.name}, Variants: ${detailedItem?.variants?.length}');
+          if (mounted) {
+            setState(() {
+              _selectedItem = detailedItem;
+              _isLoading = false;
+            });
+          }
+        } catch (e, stack) {
+          print('CRITICAL ERROR in ShopOverlay onTap: $e');
+          print(stack);
+          if (mounted) setState(() => _isLoading = false);
         }
       },
       child: Container(
@@ -184,10 +198,7 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Hero(
-                  tag: 'item_${item.id}',
-                  child: _buildAssetImage(item.assetIconPath, isIcon: true),
-                ),
+                child: _buildAssetImage(item.assetIconPath, isIcon: true),
               ),
             ),
             Padding(
@@ -213,7 +224,9 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
 
     final variants = _selectedItem!.variants ?? [];
 
-    return Column(
+    return ListView(
+      key: const ValueKey('variant_selection_list'),
+      padding: const EdgeInsets.all(24),
       children: [
         // Back Button
         Align(
@@ -224,58 +237,73 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
             label: const Text('Back to items', style: TextStyle(color: Colors.greenAccent)),
           ),
         ),
-
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: _buildAssetImage(_selectedItem!.assetIconPath, isIcon: true),
+        const SizedBox(height: 16),
+        
+        // Header Info
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: _buildAssetImage(_selectedItem!.assetIconPath, isIcon: true),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _selectedItem!.name,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 24),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _selectedItem!.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          if (_selectedItem!.description != null)
-                            Text(
-                              _selectedItem!.description!,
-                              style: const TextStyle(color: Colors.white70, fontSize: 14),
-                            ),
-                        ],
+                  ),
+                  if (_selectedItem!.description != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        _selectedItem!.description!,
+                        style: const TextStyle(color: Colors.white70, fontSize: 14),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 32),
-                const Text(
-                  'SELECT VARIANT',
-                  style: TextStyle(
-                    color: Colors.white38,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ...variants.map((v) => _buildVariantCard(v)),
-              ],
+                ],
+              ),
             ),
+          ],
+        ),
+        
+        const SizedBox(height: 32),
+        const Text(
+          'SELECT VARIANT',
+          style: TextStyle(
+            color: Colors.white38,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 2,
+            fontSize: 12,
           ),
         ),
+        const SizedBox(height: 16),
+        
+        if (variants.isEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 40),
+            child: Center(
+              child: Text(
+                'No variants available for this item.',
+                style: TextStyle(color: Colors.white54),
+              ),
+            ),
+          )
+        else
+          ...variants.map((v) => _buildVariantCard(v)),
       ],
     );
   }

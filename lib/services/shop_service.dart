@@ -40,16 +40,42 @@ class ShopService {
   static Future<ShopItemType?> getAssetTypeWithVariants(AssetCategory category, String id) async {
     final categoryStr = category.name;
     try {
-      final response = await AuthService.authenticatedRequest(
+      // 1. Fetch the type details
+      final typeResponse = await AuthService.authenticatedRequest(
         'GET',
-        Uri.parse('$_baseUrl/api/v1/assets/$categoryStr/types/$id/variants'),
+        Uri.parse('$_baseUrl/api/v1/assets/$categoryStr/types/$id'),
       );
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> body = jsonDecode(response.body);
-        return ShopItemType.fromJson(body['data']);
+      if (typeResponse.statusCode != 200) return null;
+      final Map<String, dynamic> typeBody = jsonDecode(typeResponse.body);
+      final typeData = typeBody['data'];
+      if (typeData == null) return null;
+      final shopItemType = ShopItemType.fromJson(typeData);
+
+      // 2. Fetch variants using the working endpoint the user provided
+      final variantsResponse = await AuthService.authenticatedRequest(
+        'GET',
+        Uri.parse('$_baseUrl/api/v1/assets/$categoryStr/variants?typeId=$id'),
+      );
+
+      print('Variants API Status: ${variantsResponse.statusCode}');
+      List<ShopItemVariant> variants = [];
+      if (variantsResponse.statusCode == 200) {
+        final Map<String, dynamic> vBody = jsonDecode(variantsResponse.body);
+        final List vData = vBody['data'] ?? [];
+        variants = vData.map((v) => ShopItemVariant.fromJson(v)).toList();
+        print('Loaded ${variants.length} variants for $id');
       }
-      return null;
+
+      // Return combined result
+      return ShopItemType(
+        id: shopItemType.id,
+        name: shopItemType.name,
+        description: shopItemType.description,
+        iconUrl: shopItemType.iconUrl,
+        isActive: shopItemType.isActive,
+        variants: variants,
+      );
     } catch (e) {
       print('getAssetTypeWithVariants Error ($categoryStr): $e');
       return null;
