@@ -9,6 +9,9 @@ PODS:
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
+  - apple_vision_face_detection (0.0.3):
+    - Flutter
+    - FlutterMacOS
   - desktop_webview_window (0.0.1):
     - FlutterMacOS
   - file_selector_macos (0.0.1):
@@ -56,6 +59,7 @@ PODS:
     - FlutterMacOS
 
 DEPENDENCIES:
+  - apple_vision_face_detection (from `Flutter/ephemeral/.symlinks/plugins/apple_vision_face_detection/darwin`)
   - desktop_webview_window (from `Flutter/ephemeral/.symlinks/plugins/desktop_webview_window/macos`)
   - file_selector_macos (from `Flutter/ephemeral/.symlinks/plugins/file_selector_macos/macos`)
   - flutter_secure_storage_macos (from `Flutter/ephemeral/.symlinks/plugins/flutter_secure_storage_macos/macos`)
@@ -77,6 +81,8 @@ SPEC REPOS:
     - PromisesObjC
 
 EXTERNAL SOURCES:
+  apple_vision_face_detection:
+    :path: Flutter/ephemeral/.symlinks/plugins/apple_vision_face_detection/darwin
   desktop_webview_window:
     :path: Flutter/ephemeral/.symlinks/plugins/desktop_webview_window/macos
   file_selector_macos:
@@ -99,6 +105,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
+  apple_vision_face_detection: cf0f0c986d58f4fe3621bb5af6c6b3b4009adeee
   desktop_webview_window: 7e37af677d6d19294cb433d9b1d878ef78dffa4d
   file_selector_macos: 9e9e068e90ebee155097d00e89ae91edb2374db7
   flutter_secure_storage_macos: 7f45e30f838cf2659862a4e4e3ee1c347c2b3b54

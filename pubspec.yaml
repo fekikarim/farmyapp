@@ -124,3 +124,11 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+dependency_overrides:
+  google_mlkit_face_detection:
+    path: plugins/google_mlkit_face_detection
+  google_mlkit_text_recognition:
+    path: plugins/google_mlkit_text_recognition
+  google_mlkit_commons:
+    path: plugins/google_mlkit_commons
