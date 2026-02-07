@@ -9,6 +9,7 @@ import 'settings/enable_2fa_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/kyc_service.dart';
 import '../screens/kyc/kyc_flow_screen.dart';
+import '../screens/wallet/payment_methods_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -114,6 +115,19 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
               ],
+
+              _buildSectionTitle(theme, 'Payments'),
+              _buildSettingsTile(
+                context,
+                icon: Icons.account_balance_wallet_outlined,
+                title: 'Wallet & Cards',
+                subtitle: 'Manage credits and payment methods',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PaymentMethodsScreen()),
+                ),
+              ),
+              const SizedBox(height: 24),
 
               _buildSectionTitle(theme, 'Security'),
               _buildSettingsTile(

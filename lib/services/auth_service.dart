@@ -15,6 +15,7 @@ class AuthService {
     'API_BASE_URL',
     fallback: 'http://192.168.1.21:3001',
   );
+  static String get baseUrl => _baseUrl;
   static const _storage = FlutterSecureStorage();
 
   static GoogleSignIn? get _googleSignInInstance {

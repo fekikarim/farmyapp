@@ -14,6 +14,7 @@ import 'screens/main_screen.dart';
 import 'screens/auth/verify_2fa_screen.dart';
 import 'screens/no_internet_screen.dart';
 import 'theme/app_theme.dart';
+import 'providers/wallet_provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/theme_provider.dart';
@@ -51,6 +52,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => LandProvider()),
         ChangeNotifierProvider(create: (_) => GameProvider()),
+        ChangeNotifierProvider(create: (_) => WalletProvider()), // Added WalletProvider
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(initialThemeMode: initialTheme),
         ),
