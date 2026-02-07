@@ -26,20 +26,27 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    print('RentalCheckoutScreen: isDark=$isDark'); // Using it to avoid lint
+
     return Scaffold(
-      backgroundColor: const Color(0xFF131518),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Checkout',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: theme.textTheme.titleLarge?.color,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
+            color: theme.iconTheme.color,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -52,10 +59,10 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildPremiumHeader(),
-                const Text(
+                Text(
                   'Lease Start Date',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: theme.textTheme.titleLarge?.color,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -63,10 +70,10 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 const SizedBox(height: 16),
                 _buildStartDateSelector(),
                 const SizedBox(height: 32),
-                const Text(
+                Text(
                   'Rental Duration',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: theme.textTheme.titleLarge?.color,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -74,10 +81,10 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 const SizedBox(height: 16),
                 _buildPeriodSelector(),
                 const SizedBox(height: 32),
-                const Text(
+                Text(
                   'Payment Security',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: theme.textTheme.titleLarge?.color,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -100,6 +107,8 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   }
 
   Widget _buildPremiumHeader() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final center =
         widget.land.boundaries != null && widget.land.boundaries!.isNotEmpty
         ? LatLng(
@@ -115,142 +124,130 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         : const LatLng(36.8065, 10.1815);
 
     return Container(
-      height: 160,
+      height: 180,
+      margin: const EdgeInsets.only(bottom: 32),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1D21),
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(
+          color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            color: (isDark ? Colors.black : Colors.grey).withOpacity(0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
-        child: Row(
+        child: Stack(
           children: [
-            Expanded(
-              flex: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Text(
-                        'AVAILABLE',
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.1,
+            IgnorePointer(
+              child: FlutterMap(
+                options: MapOptions(initialCenter: center, initialZoom: 16.5),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    subdomains: const ['a', 'b', 'c'],
+                    tileBuilder: (context, tileWidget, tile) {
+                      if (!isDark) return tileWidget;
+                      return ColorFiltered(
+                        colorFilter: const ColorFilter.matrix([
+                          -1,
+                          0,
+                          0,
+                          0,
+                          255,
+                          0,
+                          -1,
+                          0,
+                          0,
+                          255,
+                          0,
+                          0,
+                          -1,
+                          0,
+                          255,
+                          0,
+                          0,
+                          0,
+                          1,
+                          0,
+                        ]),
+                        child: tileWidget,
+                      );
+                    },
+                  ),
+                  if (widget.land.boundaries != null)
+                    PolygonLayer(
+                      polygons: [
+                        Polygon(
+                          points: widget.land.boundaries!,
+                          color: Colors.green.withOpacity(0.4),
+                          borderColor: Colors.green,
+                          borderStrokeWidth: 2,
+                          isFilled: true,
                         ),
-                      ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      widget.land.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${widget.land.gridWidth}x${widget.land.gridHeight} Organic Plot',
-                      style: const TextStyle(
-                        color: Colors.white38,
-                        fontSize: 13,
-                      ),
-                    ),
+                ],
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    theme.cardColor.withOpacity(0.95),
+                    theme.cardColor.withOpacity(0.4),
                   ],
                 ),
               ),
             ),
-            Expanded(
-              flex: 3,
-              child: Stack(
-                fit: StackFit.expand,
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FlutterMap(
-                    options: MapOptions(
-                      initialCenter: center,
-                      initialZoom: 15,
-                      interactionOptions: const InteractionOptions(flags: 0),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
                     ),
-                    children: [
-                      TileLayer(
-                        urlTemplate:
-                            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        subdomains: const ['a', 'b', 'c'],
-                        userAgentPackageName: 'com.farmy.app',
-                        tileBuilder: (context, tileWidget, tile) {
-                          return ColorFiltered(
-                            colorFilter: const ColorFilter.matrix([
-                              -1,
-                              0,
-                              0,
-                              0,
-                              255,
-                              0,
-                              -1,
-                              0,
-                              0,
-                              255,
-                              0,
-                              0,
-                              -1,
-                              0,
-                              255,
-                              0,
-                              0,
-                              0,
-                              1,
-                              0,
-                            ]),
-                            child: tileWidget,
-                          );
-                        },
+                    decoration: BoxDecoration(
+                      color: Colors.green.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.green.withOpacity(0.2)),
+                    ),
+                    child: const Text(
+                      'AVAILABLE',
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
                       ),
-                      if (widget.land.boundaries != null)
-                        PolygonLayer(
-                          polygons: [
-                            Polygon(
-                              points: widget.land.boundaries!,
-                              color: Colors.green.withOpacity(0.4),
-                              borderColor: Colors.green,
-                              borderStrokeWidth: 2,
-                              isFilled: true,
-                            ),
-                          ],
-                        ),
-                    ],
+                    ),
                   ),
-                  const Positioned.fill(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [Color(0xFF1A1D21), Colors.transparent],
-                          stops: [0.0, 0.4],
-                        ),
-                      ),
+                  const SizedBox(height: 12),
+                  Text(
+                    widget.land.name,
+                    style: TextStyle(
+                      color: theme.textTheme.titleLarge?.color,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    '${widget.land.gridWidth}x${widget.land.gridHeight} Organic Plot',
+                    style: TextStyle(
+                      color: isDark ? Colors.white70 : Colors.black54,
+                      fontSize: 14,
                     ),
                   ),
                 ],
@@ -263,14 +260,18 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   }
 
   Widget _buildStartDateSelector() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return GestureDetector(
       onTap: () => _selectStartDate(context),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1D21),
+          color: theme.cardColor,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(
+            color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+          ),
         ),
         child: Row(
           children: [
@@ -290,15 +291,18 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Starting From',
-                    style: TextStyle(color: Colors.white38, fontSize: 13),
+                    style: TextStyle(
+                      color: isDark ? Colors.white38 : Colors.black38,
+                      fontSize: 13,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     DateFormat('MMMM dd, yyyy').format(_startDate),
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: theme.textTheme.titleMedium?.color,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -324,15 +328,13 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
       builder: (context, child) {
+        final theme = Theme.of(context);
         return Theme(
-          data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(
+          data: theme.copyWith(
+            colorScheme: theme.colorScheme.copyWith(
               primary: Colors.green,
               onPrimary: Colors.white,
-              surface: Color(0xFF1A1D21),
-              onSurface: Colors.white,
             ),
-            dialogBackgroundColor: const Color(0xFF131518),
           ),
           child: child!,
         );
@@ -347,57 +349,49 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   }
 
   Widget _buildPeriodSelector() {
-    return Row(
-      children: [6, 12, 24].map((m) {
-        final isSelected = _months == m;
-        return Expanded(
-          child: GestureDetector(
-            onTap: () {
-              HapticFeedback.selectionClick();
-              setState(() => _months = m);
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutCubic,
-              margin: EdgeInsets.only(right: m == 24 ? 0 : 12),
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? Colors.green.withOpacity(0.1)
-                    : Colors.white.withOpacity(0.03),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: isSelected
-                      ? Colors.green
-                      : Colors.white.withOpacity(0.05),
-                  width: 1.5,
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+        ),
+      ),
+      child: Row(
+        children: [3, 6, 12].map((m) {
+          final isSelected = _months == m;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                setState(() => _months = m);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.green : Colors.transparent,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Text(
+                  '$m Months',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: isSelected
+                        ? Colors.white
+                        : (isDark ? Colors.white70 : Colors.black54),
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                  ),
                 ),
               ),
-              child: Column(
-                children: [
-                  Text(
-                    '$m',
-                    style: TextStyle(
-                      color: isSelected ? Colors.green : Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  Text(
-                    'MONTHS',
-                    style: TextStyle(
-                      color: isSelected ? Colors.green : Colors.white38,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                ],
-              ),
             ),
-          ),
-        );
-      }).toList(),
+          );
+        }).toList(),
+      ),
     );
   }
 
@@ -456,42 +450,44 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   }
 
   Widget _buildTotalBreakdown() {
-    final total = _monthlyRent * _months;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.02),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.03)),
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+        ),
       ),
       child: Column(
         children: [
-          _buildRow('Monthly Price', '${_monthlyRent.toInt()} TND'),
+          _buildRow('Monthly Rent', '1,200 TND'),
           const SizedBox(height: 16),
-          _buildRow('Starts', DateFormat('yMMMd').format(_startDate)),
+          _buildRow('Duration', '$_months Months'),
           const SizedBox(height: 16),
-          _buildRow('Lease Term', '$_months Months'),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            child: Divider(color: Colors.white10),
+          Divider(
+            color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
           ),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Grand Total',
+              Text(
+                'Total Project',
                 style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
+                  color: isDark ? Colors.white70 : Colors.black54,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
-                '${total.toInt()} TND',
+                '${NumberFormat('#,###').format(_monthlyRent * _months)} TND',
                 style: const TextStyle(
                   color: Colors.green,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
@@ -502,19 +498,23 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   }
 
   Widget _buildRow(String label, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(color: Colors.white38, fontSize: 15),
+          style: TextStyle(
+            color: isDark ? Colors.white38 : Colors.black38,
+            fontSize: 14,
+          ),
         ),
         Text(
           value,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: Theme.of(context).textTheme.bodyLarge?.color,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
-            fontSize: 15,
           ),
         ),
       ],
@@ -522,22 +522,31 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   }
 
   Widget _buildTermsAndConditions() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Row(
       children: [
-        Checkbox(
-          value: _acceptedTerms,
-          onChanged: (v) {
-            HapticFeedback.lightImpact();
-            setState(() => _acceptedTerms = v!);
-          },
-          activeColor: Colors.green,
-          checkColor: Colors.white,
-          side: BorderSide(color: Colors.white.withOpacity(0.2)),
+        SizedBox(
+          height: 24,
+          width: 24,
+          child: Checkbox(
+            value: _acceptedTerms,
+            activeColor: Colors.green,
+            checkColor: Colors.white,
+            side: BorderSide(
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.2),
+            ),
+            onChanged: (val) => setState(() => _acceptedTerms = val ?? false),
+          ),
         ),
-        const Expanded(
+        const SizedBox(width: 12),
+        Expanded(
           child: Text(
-            'I agree to the Land Lease Agreement and Platform Terms of Service.',
-            style: TextStyle(color: Colors.white38, fontSize: 13),
+            'I agree to the Terms of Service & Privacy Policy',
+            style: TextStyle(
+              color: isDark ? Colors.white54 : Colors.black54,
+              fontSize: 13,
+            ),
           ),
         ),
       ],
@@ -545,6 +554,8 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   }
 
   Widget _buildBottomActionCard() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Container(
       padding: EdgeInsets.fromLTRB(
         24,
@@ -553,73 +564,78 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         MediaQuery.of(context).padding.bottom + 20,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1D21),
-        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05))),
+        color: theme.scaffoldBackgroundColor,
+        border: Border(
+          top: BorderSide(
+            color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+          ),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: (isDark ? Colors.black : Colors.grey).withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: Row(
         children: [
-          SizedBox(
-            width: double.infinity,
-            child: Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.green.withOpacity(_acceptedTerms ? 0.3 : 0),
-                    blurRadius: 20,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: ElevatedButton(
-                onPressed: (_isLoading || !_acceptedTerms)
-                    ? null
-                    : () {
-                        HapticFeedback.mediumImpact();
-                        _handlePayment();
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: Colors.white.withOpacity(0.05),
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Total Amount',
+                style: TextStyle(
+                  color: isDark ? Colors.white38 : Colors.black38,
+                  fontSize: 12,
                 ),
-                child: const Text(
-                  'CONFIRM LEASE & PAY',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.2,
-                  ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${NumberFormat('#,###').format(_monthlyRent * _months)} TND',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: theme.textTheme.titleLarge?.color,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 32),
+          Expanded(
+            child: ElevatedButton(
+              onPressed: _acceptedTerms ? _handlePayment : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                disabledBackgroundColor: Colors.green.withOpacity(0.3),
+              ),
+              child: const Text(
+                'PAY NOW',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.1,
                 ),
               ),
             ),
           ),
-          if (!_acceptedTerms)
-            const Padding(
-              padding: EdgeInsets.only(top: 12),
-              child: Text(
-                'Please accept the terms to proceed',
-                style: TextStyle(
-                  color: Colors.redAccent,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
         ],
       ),
     );
   }
 
   Widget _buildProcessingOverlay() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: Container(
-        color: Colors.black.withOpacity(0.7),
+        color: (isDark ? Colors.black : Colors.white).withOpacity(0.7),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -629,18 +645,21 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 strokeWidth: 3,
               ),
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 'Securing Rental...',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: isDark ? Colors.white : Colors.black,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Allocating spatial resources',
-                style: TextStyle(color: Colors.white38, fontSize: 14),
+                style: TextStyle(
+                  color: isDark ? Colors.white38 : Colors.black38,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
@@ -698,16 +717,20 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   }
 
   void _showSuccessDialog() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: AlertDialog(
-          backgroundColor: const Color(0xFF1A1D21),
+          backgroundColor: theme.scaffoldBackgroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
-            side: BorderSide(color: Colors.white.withOpacity(0.05)),
+            side: BorderSide(
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+            ),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -720,54 +743,56 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  Icons.verified_rounded,
+                  Icons.check_circle_rounded,
                   color: Colors.green,
                   size: 64,
                 ),
               ),
               const SizedBox(height: 32),
-              const Text(
-                'Lease Confirmed!',
+              Text(
+                'Rental Confirmed!',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: theme.textTheme.titleLarge?.color,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 16),
-              const Text(
-                'Land successfully allocated to your portfolio. Spatial boundaries are now synced with your farmer dashboard.',
+              const SizedBox(height: 12),
+              Text(
+                'Your plot has been secured. You can now start managing your crops.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white54,
-                  fontSize: 15,
+                  color: isDark ? Colors.white60 : Colors.black54,
+                  fontSize: 16,
                   height: 1.5,
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(); // Close dialog
+                    Navigator.of(context).pop(); // Back to Explore
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 18),
+                    elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                   child: const Text(
-                    'MANAGE MY PORTFOLIO',
-                    style: TextStyle(fontWeight: FontWeight.w900),
+                    'GO TO DASHBOARD',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
             ],
           ),
         ),

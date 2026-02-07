@@ -52,8 +52,9 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFF131518),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: _isLoading && _land.boundaries == null
           ? _buildSkeletonLoader()
           : _error != null
@@ -73,16 +74,19 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
           )
         : const LatLng(36.8065, 10.1815);
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return CustomScrollView(
       slivers: [
         SliverAppBar(
           expandedHeight: 300,
           pinned: true,
-          backgroundColor: const Color(0xFF1A1D21),
+          backgroundColor: theme.scaffoldBackgroundColor,
           leading: IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back_ios_new_rounded,
-              color: Colors.white,
+              color: theme.iconTheme.color,
             ),
             onPressed: () => Navigator.pop(context),
           ),
@@ -99,21 +103,22 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                       subdomains: const ['a', 'b', 'c'],
                       userAgentPackageName: 'com.farmy.app',
                       tileBuilder: (context, tileWidget, tile) {
+                        if (!isDark) return tileWidget;
                         return ColorFiltered(
                           colorFilter: const ColorFilter.matrix([
-                            -1,
+                            -0.9,
                             0,
                             0,
                             0,
                             255,
                             0,
-                            -1,
+                            -0.9,
                             0,
                             0,
                             255,
                             0,
                             0,
-                            -1,
+                            -0.9,
                             0,
                             255,
                             0,
@@ -152,8 +157,8 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          const Color(0xFF131518).withOpacity(0.4),
-                          const Color(0xFF131518),
+                          theme.scaffoldBackgroundColor.withOpacity(0.0),
+                          theme.scaffoldBackgroundColor,
                         ],
                         stops: const [0.0, 1.0],
                       ),
@@ -199,8 +204,8 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                     ),
                     Text(
                       'ID: ${_land.id.substring(0, 8).toUpperCase()}',
-                      style: const TextStyle(
-                        color: Colors.white24,
+                      style: TextStyle(
+                        color: theme.textTheme.bodySmall?.color,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
@@ -210,9 +215,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                 const SizedBox(height: 16),
                 Text(
                   _land.name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
+                  style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -235,48 +238,36 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
-                const Text(
-                  'Description',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                const SizedBox(height: 40),
+                _buildSectionHeader('Description', theme),
                 const SizedBox(height: 12),
                 Text(
-                  _land.description ??
-                      'This premium plot offers exceptional soil quality and established irrigation infrastructure.',
-                  style: const TextStyle(
+                  _land.description ?? 'No description available',
+                  style: TextStyle(
+                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                     fontSize: 16,
-                    color: Colors.white60,
                     height: 1.6,
                   ),
                 ),
-                const SizedBox(height: 32),
-                const Text(
-                  'Location Highlights',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 40),
+                _buildSectionHeader('Location Highlights', theme),
+                const SizedBox(height: 24),
                 _buildLocationItem(
                   Icons.wb_sunny_rounded,
                   'Optimal solar exposure for high-yield crops',
+                  theme,
                 ),
                 _buildLocationItem(
                   Icons.local_shipping_rounded,
                   'Direct access to regional distribution roads',
+                  theme,
                 ),
                 _buildLocationItem(
                   Icons.opacity_rounded,
                   'Secured year-round water access rights',
+                  theme,
                 ),
-                const SizedBox(height: 120), // Spacer for bottom sheet
+                const SizedBox(height: 100), // Spacer for bottom sheet
               ],
             ),
           ),
@@ -285,7 +276,22 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
     );
   }
 
+  Widget _buildSectionHeader(String title, ThemeData theme) {
+    return Text(
+      title,
+      style: TextStyle(
+        color: theme.textTheme.titleLarge?.color,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        letterSpacing: -0.5,
+      ),
+    );
+  }
+
   Widget _buildBottomSheet() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.fromLTRB(
         24,
@@ -294,82 +300,90 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
         MediaQuery.of(context).padding.bottom + 20,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1D21),
-        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05))),
+        color: theme.scaffoldBackgroundColor,
+        border: Border(
+          top: BorderSide(
+            color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+          ),
+        ),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(0),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Row(
+      child: Row(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    'Price per month',
-                    style: TextStyle(color: Colors.white38, fontSize: 12),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    '1,200 TND',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                    ),
-                  ),
-                ],
+              Text(
+                'Price per month',
+                style: TextStyle(
+                  color: isDark ? Colors.white38 : Colors.black38,
+                  fontSize: 12,
+                ),
               ),
-              const SizedBox(width: 32),
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.green.withOpacity(0.3),
-                        blurRadius: 20,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    onPressed: _land.isRented
-                        ? null
-                        : () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  RentalCheckoutScreen(land: _land),
-                            ),
-                          ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _land.isRented
-                          ? Colors.white10
-                          : Colors.green,
-                      foregroundColor: _land.isRented
-                          ? Colors.white24
-                          : Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: Text(
-                      _land.isRented ? 'OCCUPIED' : 'RENT NOW',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1.1,
-                      ),
-                    ),
-                  ),
+              const SizedBox(height: 4),
+              const Text(
+                '1,200 TND',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
                 ),
               ),
             ],
           ),
-        ),
+          const SizedBox(width: 32),
+          Expanded(
+            child: Container(
+              decoration: _land.isRented
+                  ? null
+                  : BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green.withOpacity(0.3),
+                          blurRadius: 20,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+              child: ElevatedButton(
+                onPressed: _land.isRented
+                    ? null
+                    : () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              RentalCheckoutScreen(land: _land),
+                        ),
+                      ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _land.isRented
+                      ? Colors.orange.withOpacity(0.1)
+                      : Colors.green,
+                  foregroundColor: _land.isRented
+                      ? Colors.orange
+                      : Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  elevation: 0,
+                  side: _land.isRented
+                      ? const BorderSide(color: Colors.orange, width: 1.5)
+                      : null,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  disabledBackgroundColor: Colors.orange.withOpacity(0.1),
+                  disabledForegroundColor: Colors.orange,
+                ),
+                child: Text(
+                  _land.isRented ? 'OCCUPIED' : 'RENT NOW',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.1,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -515,12 +529,18 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
   }
 
   Widget _buildInfoChip(IconData icon, String label) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.black.withOpacity(0.05),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(
+          color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -529,8 +549,8 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
           const SizedBox(width: 8),
           Text(
             label,
-            style: const TextStyle(
-              color: Colors.white70,
+            style: TextStyle(
+              color: isDark ? Colors.white70 : Colors.black54,
               fontWeight: FontWeight.w600,
               fontSize: 14,
             ),
@@ -540,7 +560,8 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
     );
   }
 
-  Widget _buildLocationItem(IconData icon, String text) {
+  Widget _buildLocationItem(IconData icon, String text, ThemeData theme) {
+    final isDark = theme.brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -558,8 +579,8 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                color: Colors.white70,
+              style: TextStyle(
+                color: isDark ? Colors.white70 : Colors.black54,
                 fontSize: 15,
                 height: 1.4,
               ),

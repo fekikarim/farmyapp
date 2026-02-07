@@ -43,15 +43,18 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF131518),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Explore Lands',
           style: TextStyle(
-            color: Colors.white,
+            color: theme.textTheme.titleLarge?.color,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -60,7 +63,9 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
           Container(
             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: isDark
+                  ? Colors.white.withOpacity(0.05)
+                  : Colors.black.withOpacity(0.05),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -79,9 +84,9 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
             ),
           ),
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.notifications_none_rounded,
-              color: Colors.white,
+              color: theme.iconTheme.color,
             ),
             onPressed: () {},
           ),
@@ -243,6 +248,7 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
   }
 
   Widget _buildSkeletonLoader() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ListView.builder(
       padding: const EdgeInsets.all(20),
       itemCount: 3,
@@ -250,16 +256,18 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
         height: 280,
         margin: const EdgeInsets.only(bottom: 24),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1D21),
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(
+            color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+          ),
         ),
         child: Column(
           children: [
             Container(
               height: 160,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.03),
+                color: (isDark ? Colors.white : Colors.black).withOpacity(0.03),
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(28),
                 ),
@@ -280,7 +288,8 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                             width: 40,
                             height: 10,
                             decoration: BoxDecoration(
-                              color: Colors.white10,
+                              color: (isDark ? Colors.white : Colors.black)
+                                  .withOpacity(0.05),
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
@@ -289,7 +298,8 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                             width: 60,
                             height: 14,
                             decoration: BoxDecoration(
-                              color: Colors.white12,
+                              color: (isDark ? Colors.white : Colors.black)
+                                  .withOpacity(0.08),
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
@@ -301,7 +311,9 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                   Container(
                     height: 48,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
+                      color: (isDark ? Colors.white : Colors.black).withOpacity(
+                        0.05,
+                      ),
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
@@ -411,6 +423,7 @@ class _ToggleItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -422,7 +435,9 @@ class _ToggleItem extends StatelessWidget {
         child: Icon(
           icon,
           size: 20,
-          color: isSelected ? Colors.white : Colors.white54,
+          color: isSelected
+              ? Colors.white
+              : (isDark ? Colors.white54 : Colors.black45),
         ),
       ),
     );
@@ -442,18 +457,33 @@ class _MapActionBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.green : const Color(0xFF1E2125),
+          color: isSelected
+              ? Colors.green
+              : (isDark ? const Color(0xFF1E2125) : Colors.white),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10),
+            BoxShadow(
+              color: (isDark ? Colors.black : Colors.grey).withOpacity(0.2),
+              blurRadius: 10,
+            ),
           ],
+          border: isDark
+              ? null
+              : Border.all(color: Colors.black.withOpacity(0.05)),
         ),
-        child: Icon(icon, color: Colors.white, size: 20),
+        child: Icon(
+          icon,
+          color: isSelected
+              ? Colors.white
+              : (isDark ? Colors.white : Colors.black87),
+          size: 20,
+        ),
       ),
     );
   }
@@ -476,18 +506,23 @@ class _InvestorLandCard extends StatelessWidget {
           )
         : const LatLng(36.8065, 10.1815);
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: () => onTap(land),
       child: Container(
         margin: const EdgeInsets.only(bottom: 24),
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1D21),
+          color: theme.cardColor,
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withOpacity(0.08)),
+          border: Border.all(
+            color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: (isDark ? Colors.black : Colors.grey).withOpacity(0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -512,6 +547,7 @@ class _InvestorLandCard extends StatelessWidget {
                           subdomains: const ['a', 'b', 'c'],
                           userAgentPackageName: 'com.farmy.app',
                           tileBuilder: (context, tileWidget, tile) {
+                            if (!isDark) return tileWidget;
                             return ColorFiltered(
                               colorFilter: const ColorFilter.matrix([
                                 -1,
@@ -609,11 +645,12 @@ class _InvestorLandCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _buildInfoItem(
+                        context,
                         'Size',
                         '${land.gridWidth}x${land.gridHeight} Plots',
                         Icons.grid_3x3_rounded,
                       ),
-                      _buildPriceInfo(),
+                      _buildPriceInfo(context),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -676,26 +713,31 @@ class _InvestorLandCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoItem(String label, String value, IconData icon) {
+  Widget _buildInfoItem(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon,
+  ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final secondaryColor = isDark ? Colors.white38 : Colors.black38;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 14, color: Colors.white38),
+            Icon(icon, size: 14, color: secondaryColor),
             const SizedBox(width: 6),
-            Text(
-              label,
-              style: const TextStyle(color: Colors.white38, fontSize: 11),
-            ),
+            Text(label, style: TextStyle(color: secondaryColor, fontSize: 11)),
           ],
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: theme.textTheme.bodyLarge?.color,
             fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
@@ -704,13 +746,17 @@ class _InvestorLandCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceInfo() {
+  Widget _buildPriceInfo(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        const Text(
+        Text(
           'Price starting from',
-          style: TextStyle(color: Colors.white38, fontSize: 11),
+          style: TextStyle(
+            color: isDark ? Colors.white38 : Colors.black38,
+            fontSize: 11,
+          ),
         ),
         const SizedBox(height: 4),
         const Text(
