@@ -9,6 +9,9 @@ PODS:
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
+  - apple_vision_face_detection (0.0.3):
+    - Flutter
+    - FlutterMacOS
   - camera_avfoundation (0.0.1):
     - Flutter
   - Flutter (1.0.0)
@@ -112,8 +115,11 @@ PODS:
     - FlutterMacOS
   - url_launcher_ios (0.0.1):
     - Flutter
+  - vision_text_recognition (1.0.0):
+    - Flutter
 
 DEPENDENCIES:
+  - apple_vision_face_detection (from `.symlinks/plugins/apple_vision_face_detection/darwin`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - Flutter (from `Flutter`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
@@ -127,6 +133,7 @@ DEPENDENCIES:
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+  - vision_text_recognition (from `.symlinks/plugins/vision_text_recognition/ios`)
 
 SPEC REPOS:
   trunk:
@@ -149,6 +156,8 @@ SPEC REPOS:
     - PromisesObjC
 
 EXTERNAL SOURCES:
+  apple_vision_face_detection:
+    :path: ".symlinks/plugins/apple_vision_face_detection/darwin"
   camera_avfoundation:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
   Flutter:
@@ -175,10 +184,13 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
+  vision_text_recognition:
+    :path: ".symlinks/plugins/vision_text_recognition/ios"
 
 SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
+  apple_vision_face_detection: cf0f0c986d58f4fe3621bb5af6c6b3b4009adeee
   camera_avfoundation: 5675ca25298b6f81fa0a325188e7df62cc217741
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_native_splash: c32d145d68aeda5502d5f543ee38c192065986cf
@@ -207,7 +219,8 @@ SPEC CHECKSUMS:
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
+  vision_text_recognition: 1f053de60eac0a7491852ea9a5179773585a80c6
 
-PODFILE CHECKSUM: 5ac883b6518d11e8fa02f49573101fabdcb82a8b
+PODFILE CHECKSUM: 3b6db858c2ca83af82c9b1a2a6874fcbed345aaa
 
 COCOAPODS: 1.16.2
