@@ -99,8 +99,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                   children: [
                     TileLayer(
                       urlTemplate:
-                          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      subdomains: const ['a', 'b', 'c'],
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       userAgentPackageName: 'com.farmy.app',
                       tileBuilder: (context, tileWidget, tile) {
                         if (!isDark) return tileWidget;

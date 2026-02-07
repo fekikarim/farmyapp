@@ -168,9 +168,8 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
             TileLayer(
               urlTemplate: _isSatellite
                   ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                  : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  : "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
               userAgentPackageName: 'com.farmy.app',
-              subdomains: const ['a', 'b', 'c'],
             ),
             PolygonLayer(
               polygons: lands
@@ -253,7 +252,7 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
       padding: const EdgeInsets.all(20),
       itemCount: 3,
       itemBuilder: (context, index) => Container(
-        height: 280,
+        height: 320,
         margin: const EdgeInsets.only(bottom: 24),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
@@ -543,8 +542,7 @@ class _InvestorLandCard extends StatelessWidget {
                       children: [
                         TileLayer(
                           urlTemplate:
-                              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          subdomains: const ['a', 'b', 'c'],
+                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                           userAgentPackageName: 'com.farmy.app',
                           tileBuilder: (context, tileWidget, tile) {
                             if (!isDark) return tileWidget;
