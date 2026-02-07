@@ -32,31 +32,107 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   }
 
   Future<void> _handleAddCredits() async {
-    // Show dialog to select amount
-    showDialog(
+    double? selectedAmount;
+    final customAmountController = TextEditingController();
+
+    await showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Credits'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: const Text('\$10.00'),
-              onTap: () => _processCharge(10.0),
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 20,
+              right: 20,
+              top: 20,
             ),
-             ListTile(
-              title: const Text('\$20.00'),
-              onTap: () => _processCharge(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Add Credits',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Select Amount',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: Colors.grey,
+                      ),
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [10, 20, 50, 100].map((amount) {
+                    final isSelected = selectedAmount == amount.toDouble();
+                    return FilterChip(
+                      label: Text('\$${amount.toString()}'),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        setState(() {
+                          selectedAmount = selected ? amount.toDouble() : null;
+                          customAmountController.clear();
+                        });
+                      },
+                      selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                      checkmarkColor: Theme.of(context).primaryColor,
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: customAmountController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Custom Amount',
+                    prefixText: '\$ ',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedAmount = double.tryParse(value);
+                    });
+                  },
+                ),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: selectedAmount != null && selectedAmount! > 0
+                      ? () {
+                          Navigator.pop(context);
+                          _processCharge(selectedAmount!);
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    selectedAmount != null
+                        ? 'Pay \$${selectedAmount!.toStringAsFixed(2)}'
+                        : 'Enter Amount',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
-             ListTile(
-              title: const Text('\$50.00'),
-              onTap: () => _processCharge(50.0),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
+
 
   Future<void> _processCharge(double amount) async {
     Navigator.pop(context); // Close dialog
