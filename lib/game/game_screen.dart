@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/land_model.dart';
 import 'isometric_map.dart';
 import 'land_grid_service.dart';
+import 'shop_overlay.dart';
 
 class GameScreen extends StatefulWidget {
   final Land land;
@@ -94,12 +95,38 @@ class _GameScreenState extends State<GameScreen> {
                   matrix: _gridData!['matrix'],
                 ),
       floatingActionButton: !_isLoading
-          ? FloatingActionButton(
-              child: const Icon(Icons.close),
-              onPressed: () => Navigator.pop(context),
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  heroTag: 'close_game',
+                  child: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                const SizedBox(height: 16),
+                FloatingActionButton(
+                  heroTag: 'open_shop',
+                  backgroundColor: Colors.greenAccent,
+                  foregroundColor: Colors.black,
+                  child: const Icon(Icons.shopping_basket),
+                  onPressed: () => _showShop(context),
+                ),
+              ],
             )
           : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+    );
+  }
+
+  void _showShop(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const FractionallySizedBox(
+        heightFactor: 0.85,
+        child: ShopOverlay(),
+      ),
     );
   }
 
