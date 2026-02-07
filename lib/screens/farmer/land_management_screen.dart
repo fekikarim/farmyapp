@@ -6,6 +6,8 @@ import '../../models/land_model.dart';
 import '../../providers/land_provider.dart';
 import 'add_land_screen.dart';
 import 'rental_requests_screen.dart';
+import '../../services/auth_service.dart';
+import '../../models/user_model.dart';
 
 class FarmerLandManagementScreen extends StatefulWidget {
   const FarmerLandManagementScreen({super.key});
@@ -30,13 +32,14 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
 
   Future<void> _loadData() async {
     if (!mounted) return;
-    await context.read<LandProvider>().fetchMyLands();
+    final provider = context.read<LandProvider>();
+    await Future.wait([provider.fetchMyLands(), provider.fetchAllLands()]);
+
     if (_currentMode == ViewMode.ar && mounted) {
-      final count = context.read<LandProvider>().myLands.length;
       _fitMapToLands();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('✨ $count Lands Synchronized Successfully!'),
+          content: const Text('✨ Land Data Synchronized Successfully!'),
           backgroundColor: Colors.green.withOpacity(0.9),
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 2),
@@ -46,11 +49,16 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
   }
 
   void _fitMapToLands() {
-    final lands = context.read<LandProvider>().myLands;
-    if (lands.isEmpty) return;
+    final provider = context.read<LandProvider>();
+    final myLands = provider.myLands;
+    final allLands = provider.allLands;
+
+    // Prioritize fitting to My Lands, fall back to All Lands if no personal lands
+    final targetLands = myLands.isNotEmpty ? myLands : allLands;
+    if (targetLands.isEmpty) return;
 
     List<LatLng> allPoints = [];
-    for (var land in lands) {
+    for (var land in targetLands) {
       if (land.boundaries != null) allPoints.addAll(land.boundaries!);
     }
 
@@ -136,15 +144,19 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
       ),
       body: Consumer<LandProvider>(
         builder: (context, provider, child) {
-          if (provider.isLoading && provider.myLands.isEmpty) {
+          if (provider.isLoading &&
+              provider.myLands.isEmpty &&
+              provider.allLands.isEmpty) {
             return _buildSkeletonLoader();
           }
 
-          if (provider.error != null && provider.myLands.isEmpty) {
+          if (provider.error != null &&
+              provider.myLands.isEmpty &&
+              provider.allLands.isEmpty) {
             return _buildErrorState(provider.error!);
           }
 
-          if (provider.myLands.isEmpty) {
+          if (provider.myLands.isEmpty && _currentMode == ViewMode.list) {
             return _buildEmptyState();
           }
 
@@ -154,18 +166,15 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                 duration: const Duration(milliseconds: 400),
                 child: _currentMode == ViewMode.list
                     ? _buildListView(provider.myLands)
-                    : _buildARMapView(provider.myLands),
+                    : _buildARMapView(provider.myLands, provider.allLands),
               ),
               // Only show general indicator for list view; Map has its own premium overlay
               if (provider.isLoading && _currentMode == ViewMode.list)
-                const Positioned(
-                  top: 0,
+                Positioned(
+                  top: 20,
                   left: 0,
                   right: 0,
-                  child: LinearProgressIndicator(
-                    backgroundColor: Colors.transparent,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                  ),
+                  child: Center(child: _SyncingIndicator()),
                 ),
             ],
           );
@@ -234,21 +243,30 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
     );
   }
 
-  Widget _buildARMapView(List<Land> lands) {
-    // Collect all points to calculate center
-    List<LatLng> allPoints = [];
-    for (var land in lands) {
-      if (land.boundaries != null) allPoints.addAll(land.boundaries!);
+  Widget _buildARMapView(List<Land> myLands, List<Land> allLands) {
+    // Separate other farmers' lands
+    final myLandIds = myLands.map((l) => l.id).toSet();
+    final otherLands = allLands
+        .where((l) => !myLandIds.contains(l.id))
+        .toList();
+
+    // Collect all points for centering (prioritize my lands)
+    List<LatLng> centerPoints = [];
+    for (var land in (myLands.isNotEmpty ? myLands : allLands)) {
+      if (land.boundaries != null) centerPoints.addAll(land.boundaries!);
     }
 
-    final center = allPoints.isNotEmpty
+    final center = centerPoints.isNotEmpty
         ? LatLng(
-            allPoints.map((p) => p.latitude).reduce((a, b) => a + b) /
-                allPoints.length,
-            allPoints.map((p) => p.longitude).reduce((a, b) => a + b) /
-                allPoints.length,
+            centerPoints.map((p) => p.latitude).reduce((a, b) => a + b) /
+                centerPoints.length,
+            centerPoints.map((p) => p.longitude).reduce((a, b) => a + b) /
+                centerPoints.length,
           )
         : const LatLng(36.8065, 10.1815);
+
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Stack(
       children: [
@@ -260,11 +278,20 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
             initialZoom: 15.0,
             initialRotation: 15.0, // Slight 3D tilt perspective
             onTap: (tapPosition, latLng) {
-              for (var land in lands) {
+              // Priority 1: Check my lands
+              for (var land in myLands) {
                 if (land.boundaries != null &&
                     _isPointInPolygon(latLng, land.boundaries!)) {
                   _showLandDetails(land);
-                  break;
+                  return;
+                }
+              }
+              // Priority 2: Check other lands
+              for (var land in otherLands) {
+                if (land.boundaries != null &&
+                    _isPointInPolygon(latLng, land.boundaries!)) {
+                  _showOtherLandDetails(land);
+                  return;
                 }
               }
             },
@@ -275,6 +302,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
               subdomains: const ['a', 'b', 'c'],
               userAgentPackageName: 'com.farmy.app',
               tileBuilder: (context, tileWidget, tile) {
+                if (!isDark) return tileWidget;
                 return ColorFiltered(
                   colorFilter: const ColorFilter.matrix([
                     -1,
@@ -297,27 +325,46 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                     0,
                     1,
                     0,
-                  ]), // Invert colors for dark mode map
+                  ]),
                   child: tileWidget,
                 );
               },
             ),
             PolygonLayer(
-              polygons: lands.where((l) => l.boundaries != null).map((land) {
-                return Polygon(
-                  points: land.boundaries!,
-                  color: Colors.green.withOpacity(0.4),
-                  borderColor: Colors.white,
-                  borderStrokeWidth: 2,
-                  isFilled: true,
-                  label: land.name,
-                  labelStyle: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    shadows: [Shadow(blurRadius: 8, color: Colors.black)],
-                  ),
-                );
-              }).toList(),
+              polygons: [
+                // Render Other Lands First (so they stay in background)
+                ...otherLands.where((l) => l.boundaries != null).map((land) {
+                  return Polygon(
+                    points: land.boundaries!,
+                    color: Colors.orange.withOpacity(0.3),
+                    borderColor: Colors.orange.withOpacity(0.6),
+                    borderStrokeWidth: 2,
+                    isFilled: true,
+                    label: 'Owner: ${land.ownerId.substring(0, 8)}...',
+                    labelStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                }),
+                // Render My Lands (Green)
+                ...myLands.where((l) => l.boundaries != null).map((land) {
+                  return Polygon(
+                    points: land.boundaries!,
+                    color: Colors.green.withOpacity(0.4),
+                    borderColor: Colors.white,
+                    borderStrokeWidth: 2,
+                    isFilled: true,
+                    label: land.name,
+                    labelStyle: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      shadows: [Shadow(blurRadius: 8, color: Colors.black)],
+                    ),
+                  );
+                }),
+              ],
             ),
           ],
         ),
@@ -335,8 +382,8 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
                         strokeWidth: 3,
                       ),
-                      SizedBox(height: 24),
-                      Text(
+                      const SizedBox(height: 24),
+                      const Text(
                         'SYNCHRONIZING BOUNDARIES',
                         style: TextStyle(
                           color: Colors.green,
@@ -348,8 +395,8 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                           ],
                         ),
                       ),
-                      SizedBox(height: 8),
-                      Text(
+                      const SizedBox(height: 8),
+                      const Text(
                         'Fetching precise spatial data...',
                         style: TextStyle(
                           color: Colors.white70,
@@ -436,6 +483,9 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
   }
 
   void _showLandDetails(Land land) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -445,9 +495,16 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
         maxChildSize: 0.9,
         minChildSize: 0.4,
         builder: (_, controller) => Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFF1A1D21),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 20,
+                offset: const Offset(0, -5),
+              ),
+            ],
           ),
           child: ListView(
             controller: controller,
@@ -458,12 +515,14 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                   width: 40,
                   height: 5,
                   decoration: BoxDecoration(
-                    color: Colors.white12,
+                    color: (isDark ? Colors.white : Colors.black).withOpacity(
+                      0.1,
+                    ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -474,15 +533,19 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                         Text(
                           land.name,
                           style: TextStyle(
-                            color: Colors.white,
+                            color: theme.textTheme.titleLarge?.color,
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           'ID: ${land.id.substring(0, 8)}...',
-                          style: TextStyle(color: Colors.white38, fontSize: 13),
+                          style: TextStyle(
+                            color: theme.textTheme.bodyMedium?.color
+                                ?.withOpacity(0.6),
+                            fontSize: 13,
+                          ),
                         ),
                       ],
                     ),
@@ -490,25 +553,28 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                   _buildStatusTag(land.isActive),
                 ],
               ),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               _buildDetailGrid(land),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               Text(
                 'Description',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: theme.textTheme.titleLarge?.color,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text(
                 land.description ?? 'No description provided for this land.',
-                style: TextStyle(color: Colors.white70, height: 1.6),
+                style: TextStyle(
+                  color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                  height: 1.6,
+                ),
               ),
-              SizedBox(height: 48),
+              const SizedBox(height: 48),
               _buildActionButtons(land),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
             ],
           ),
         ),
@@ -530,9 +596,17 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
           value: '${land.gridWidth}x${land.gridHeight}',
           icon: Icons.grid_4x4,
         ),
-        _DetailItem(label: 'Rentals', value: '2 Active', icon: Icons.people),
-        _DetailItem(label: 'Earnings', value: '2,400 TND', icon: Icons.wallet),
-        _DetailItem(
+        const _DetailItem(
+          label: 'Rentals',
+          value: '2 Active',
+          icon: Icons.people,
+        ),
+        const _DetailItem(
+          label: 'Earnings',
+          value: '2,400 TND',
+          icon: Icons.wallet,
+        ),
+        const _DetailItem(
           label: 'Safety',
           value: 'Verified',
           icon: Icons.verified_user,
@@ -829,6 +903,204 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showOtherLandDetails(Land land) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: theme.scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: FutureBuilder<User?>(
+          future: AuthService.getUserById(land.ownerId),
+          builder: (context, snapshot) {
+            String ownerName = 'Loading...';
+            bool isLoading =
+                snapshot.connectionState == ConnectionState.waiting;
+
+            if (snapshot.hasData && snapshot.data != null) {
+              final user = snapshot.data!;
+              if (user.name != null && user.name!.isNotEmpty) {
+                ownerName = user.name!;
+              } else {
+                ownerName = user.email.split('@')[0];
+                // Capitalize first letter
+                if (ownerName.isNotEmpty) {
+                  ownerName =
+                      ownerName[0].toUpperCase() + ownerName.substring(1);
+                }
+              }
+            } else if (snapshot.hasError ||
+                (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.data == null)) {
+              ownerName = 'Unknown Farmer';
+            }
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 24),
+                    decoration: BoxDecoration(
+                      color: (isDark ? Colors.white : Colors.black).withOpacity(
+                        0.1,
+                      ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'EXTERNAL PROPERTY',
+                            style: TextStyle(
+                              color: Colors.orange,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 10,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            land.name,
+                            style: TextStyle(
+                              color: theme.textTheme.titleLarge?.color,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text(
+                        'NOT YOURS',
+                        style: TextStyle(
+                          color: Colors.orange,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: theme.cardColor,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: (isDark ? Colors.white : Colors.black).withOpacity(
+                        0.05,
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.orange.withOpacity(0.1),
+                        child: isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.orange,
+                                ),
+                              )
+                            : const Icon(
+                                Icons.person_rounded,
+                                color: Colors.orange,
+                                size: 20,
+                              ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Owner',
+                              style: TextStyle(
+                                color: (isDark
+                                    ? Colors.white54
+                                    : Colors.black54),
+                                fontSize: 11,
+                              ),
+                            ),
+                            Text(
+                              ownerName,
+                              style: TextStyle(
+                                color: theme.textTheme.bodyLarge?.color,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: const Text(
+                      'DISMISS',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -1189,6 +1461,45 @@ class _DetailItem extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SyncingIndicator extends StatelessWidget {
+  const _SyncingIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.green.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(
+            width: 14,
+            height: 14,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            'Syncing Data...',
+            style: TextStyle(
+              color: Colors.green,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
           ),
         ],
       ),
