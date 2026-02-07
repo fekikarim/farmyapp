@@ -348,13 +348,18 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
               child: ElevatedButton(
                 onPressed: _land.isRented
                     ? null
-                    : () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              RentalCheckoutScreen(land: _land),
-                        ),
-                      ),
+                    : () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                RentalCheckoutScreen(land: _land),
+                          ),
+                        );
+                        if (result == true) {
+                          _fetchDetails();
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _land.isRented
                       ? Colors.orange.withOpacity(0.1)

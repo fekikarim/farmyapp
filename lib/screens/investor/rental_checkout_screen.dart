@@ -1179,7 +1179,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Close dialog
-                    Navigator.of(context).pop(); // Back to Explore
+                    Navigator.of(context).pop(true); // Back to Explore with success result
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
