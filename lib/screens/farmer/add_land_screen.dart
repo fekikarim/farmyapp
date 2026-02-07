@@ -30,7 +30,6 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
   int _selectedToolIndex = 0; // 0: Draw, 1: Move Point, 2: Move Plot, 3: Delete
   int? _draggingPointIndex;
   bool _isDraggingPlot = false;
-  List<LatLng>? _initialDragPoints;
   bool _hasConflict = false;
 
   @override
@@ -538,7 +537,6 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                       } else if (_selectedToolIndex == 2) {
                         setState(() {
                           _isDraggingPlot = true;
-                          _initialDragPoints = List.from(_selectedPoints);
                         });
                       }
                     },
@@ -560,14 +558,10 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                           _selectedPoints[idx] = newLatLng;
                           _checkConflicts();
                         });
-                      } else if (_selectedToolIndex == 2 &&
-                          _isDraggingPlot &&
-                          _initialDragPoints != null) {
-                        // Move entire plot
+                      } else if (_selectedToolIndex == 2 && _isDraggingPlot) {
+                        // Move entire plot (Incremental)
                         final pointOffset = _mapController.camera
-                            .latLngToScreenPoint(
-                              point,
-                            ); // use current marker as anchor
+                            .latLngToScreenPoint(point);
                         final newScreenPoint = Point<double>(
                           pointOffset.x + details.delta.dx,
                           pointOffset.y + details.delta.dy,
@@ -582,8 +576,8 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                         setState(() {
                           for (int i = 0; i < _selectedPoints.length; i++) {
                             _selectedPoints[i] = LatLng(
-                              _initialDragPoints![i].latitude + latDelta,
-                              _initialDragPoints![i].longitude + lngDelta,
+                              _selectedPoints[i].latitude + latDelta,
+                              _selectedPoints[i].longitude + lngDelta,
                             );
                           }
                           _checkConflicts();
@@ -594,7 +588,6 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                       setState(() {
                         _draggingPointIndex = null;
                         _isDraggingPlot = false;
-                        _initialDragPoints = null;
                         _checkConflicts();
                       });
                     },
