@@ -107,11 +107,21 @@ class WalletProvider with ChangeNotifier {
       // 3. Present Payment Sheet
       await Stripe.instance.presentPaymentSheet();
 
-      // 4. If successful, refresh wallet status (backend webhook would normally handle this, 
-      // but we can also optimistically refresh or manual trigger if needed, 
-      // though SetupIntent confirmation is enough for Stripe to save card)
-      await fetchWalletStatus(); 
-      return true;
+      // 4. Confirm setup with backend to save payment method
+      final setupIntentId = clientSecret.split('_secret_')[0];
+      final confirmResponse = await AuthService.authenticatedRequest(
+        'POST',
+        Uri.parse('${AuthService.baseUrl}/api/v1/wallet/confirm-setup'),
+        body: jsonEncode({'setupIntentId': setupIntentId}),
+      );
+
+      if (confirmResponse.statusCode == 200) {
+        await fetchWalletStatus(); 
+        return true;
+      } else {
+        print('Failed to confirm setup: ${confirmResponse.body}');
+        return false;
+      }
 
     } catch (e) {
       if (e is StripeException) {
