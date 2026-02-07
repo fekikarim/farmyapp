@@ -24,6 +24,17 @@ class AuthProvider with ChangeNotifier {
 
     try {
       _hasConnectionError = false;
+      
+      // Proactively check server health first
+      final isOnline = await AuthService.checkServerHealth();
+      if (!isOnline) {
+        _hasConnectionError = true;
+        _isLoading = false;
+        _isInitializing = false;
+        notifyListeners();
+        return;
+      }
+
       final hasRefreshToken = await AuthService.getAccessToken() != null; // Simple check if we were logged in
       if (hasRefreshToken) {
         // Try to refresh tokens first

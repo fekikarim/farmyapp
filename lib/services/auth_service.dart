@@ -39,6 +39,21 @@ class AuthService {
   static const String _refreshTokenKey = 'refresh_token';
   static const String _userKey = 'user_data';
 
+  // --- Health Check ---
+
+  static Future<bool> checkServerHealth() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/api/v1/health'),
+      ).timeout(const Duration(seconds: 5));
+
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Server Health Check Failed: $e');
+      return false;
+    }
+  }
+
   // --- Auth Actions ---
 
   static Future<AuthResponse?> register(String email, String password) async {
