@@ -298,8 +298,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
           ),
           children: [
             TileLayer(
-              urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-              subdomains: const ['a', 'b', 'c'],
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'com.farmy.app',
               tileBuilder: (context, tileWidget, tile) {
                 if (!isDark) return tileWidget;
