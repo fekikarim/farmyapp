@@ -99,6 +99,7 @@ flutter:
     - assets/game_images/textures/
     - assets/game_images/icons/
     - assets/game_images/images/
+    - assets/game_images/3d/outside_tree/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

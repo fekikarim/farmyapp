@@ -22,6 +22,9 @@ class IsometricMap extends StatelessWidget {
     // We add padding for the background
     const int backgroundPadding = 10;
     
+    // Generate ALL tiles (Background + Foreground)
+    List<Widget> sortedTiles = _buildSortedTiles(backgroundPadding);
+
     return InteractiveViewer(
       constrained: false,
       boundaryMargin: const EdgeInsets.all(500),
@@ -32,81 +35,84 @@ class IsometricMap extends StatelessWidget {
         height: (gridWidth + gridHeight + backgroundPadding * 2) * tileHeight / 2 + 200,
         child: Stack(
           clipBehavior: Clip.none,
-          children: [
-             // Background Tiles (Soil)
-             ..._buildBackgroundTiles(backgroundPadding),
-
-             // Foreground Tiles (Grass/Farm)
-            ..._buildGridTiles(),
-          ],
+          children: sortedTiles,
         ),
       ),
     );
   }
 
-  List<Widget> _buildBackgroundTiles(int padding) {
-    List<Widget> tiles = [];
+  List<Widget> _buildSortedTiles(int padding) {
+    // We need a list of "TileData" to sort before creating Widgets
+    List<_TileEntry> entries = [];
     
-    // We want to draw a larger grid around the main grid.
-    // Main grid is from (0,0) to (gridWidth, gridHeight)
-    // Background grid is from (-padding, -padding) to (gridWidth+padding, gridHeight+padding)
-    
-    // Center offset (same as main grid)
+    // Center offset
     double offsetX = (gridHeight * tileWidth / 2);
     double offsetY = 100;
 
+    // 1. Generate Background Tiles
     for (int y = -padding; y < gridHeight + padding; y++) {
       for (int x = -padding; x < gridWidth + padding; x++) {
         
-        // Skip if inside the main grid (because main grid renders Grass)
-        if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
-          continue;
+        // Skip if inside the main grid (Foreground handled later? No, let's handle everything in one loop if possible, 
+        // OR just add everything to the list and sort.)
+        
+        bool isForeground = (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight);
+        
+        // Determine if this is a "border tree" row (within 2 tiles of the main grid)
+        // Only for background tiles on the TOP sides (x < 0 or y < 0)
+        bool isTreeRow = false;
+        if (!isForeground) {
+          // Top-Left border (x is negative) or Top-Right border (y is negative)
+          bool isTopSide = (x >= -2 && x < 0) || (y >= -2 && y < 0);
+          
+          if (isTopSide) {
+            // Pseudo-random placement based on coordinates to keep it stable
+            // 40% chance of a tree
+            if (((x * 7 + y * 13).abs() % 5) < 2) {
+              isTreeRow = true;
+            }
+          }
         }
 
         double isoX = (x - y) * (tileWidth / 2) + offsetX;
         double isoY = (x + y) * (tileHeight / 2) + offsetY;
 
-        // Add Soil Tile
-         tiles.add(
-          Positioned(
-            left: isoX,
-            top: isoY,
-            child: _buildTile(x, y, isBackground: true),
-          ),
-        );
+        entries.add(_TileEntry(
+          x: x,
+          y: y,
+          isoX: isoX,
+          isoY: isoY,
+          isForeground: isForeground,
+          hasTree: isTreeRow,
+        ));
       }
     }
-    return tiles;
-  }
 
-  List<Widget> _buildGridTiles() {
-    List<Widget> tiles = [];
-
-    // Center offset
-    double offsetX = (gridHeight * tileWidth / 2); // Shift right so (0,0) isn't cut off
-    double offsetY = 100; // Top padding
-
-    // Iterate to build tiles
-    // Painter's algorithm: Draw furest tiles first (low x + y)
-    for (int y = 0; y < gridHeight; y++) {
-      for (int x = 0; x < gridWidth; x++) {
-        // Isometric coordinate transformation
-        double isoX = (x - y) * (tileWidth / 2) + offsetX;
-        double isoY = (x + y) * (tileHeight / 2) + offsetY;
-
-        tiles.add(
-          Positioned(
-            left: isoX,
-            top: isoY,
-            child: _buildTile(x, y, isBackground: false),
-          ),
-        );
+    // 2. Sort by Depth (Painter's Algorithm for Isometric)
+    // In isometric, depth is roughly (x + y). Lower values are "behind" higher values.
+    // We want to draw background first? No, we want to draw back-to-front.
+    // So distinct (x+y) sums.
+    entries.sort((a, b) {
+      int depthA = a.x + a.y;
+      int depthB = b.x + b.y;
+      if (depthA != depthB) {
+        return depthA.compareTo(depthB);
       }
-    }
-    return tiles;
+      // Secondary sort to prevent flickering (arbitrary but consistent)
+      return a.x.compareTo(b.x);
+    });
+
+    // 3. Convert to Widgets
+    return entries.map((e) {
+      return Positioned(
+        left: e.isoX,
+        top: e.isoY,
+        child: _buildTile(e.x, e.y, isBackground: !e.isForeground, hasTree: e.hasTree),
+      );
+    }).toList();
   }
 
-  Widget _buildTile(int x, int y, {required bool isBackground}) {
+  Widget _buildTile(int x, int y, {required bool isBackground, bool hasTree = false}) {
     // Check if there is an item at this position (only for foreground)
     final dynamic cellData = (!isBackground && matrix.length > y && matrix[y].length > x) 
         ? matrix[y][x] 
@@ -118,8 +124,9 @@ class IsometricMap extends StatelessWidget {
 
     return SizedBox(
       width: tileWidth,
-      height: tileHeight,
+      height: tileHeight, // The base tile height
       child: Stack(
+        clipBehavior: Clip.none, // Allow tree to overflow upwards
         alignment: Alignment.center,
         children: [
           // Base Tile - Transformed to look isometric
@@ -133,7 +140,7 @@ class IsometricMap extends StatelessWidget {
             ),
           ),
           
-          // Debug/Border to see grid (Optional, maybe lighter for background)
+          // Debug/Border
           CustomPaint(
             size: const Size(tileWidth, tileHeight),
             painter: _GridBorderPainter(isBackground: isBackground),
@@ -142,9 +149,21 @@ class IsometricMap extends StatelessWidget {
           // Overlay (if item exists)
           if (cellData != null)
              Positioned(
-               bottom: tileHeight / 4, // Adjust for "standing" items
-               child: const Icon(Icons.house, color: Colors.brown, size: 32), // Placeholder
+               bottom: tileHeight / 4,
+               child: const Icon(Icons.house, color: Colors.brown, size: 32),
              ),
+
+          // Tree Overlay (if background border)
+          if (hasTree)
+            Positioned(
+              bottom: tileHeight / 2 - 10, // Adjust vertical position to stand on tile
+              child: Image.asset(
+                'assets/game_images/3d/outside_tree/tree1.png',
+                width: 100, // Adjust size as needed
+                height: 140,
+                fit: BoxFit.contain,
+              ),
+            ),
         ],
       ),
     );
@@ -196,6 +215,24 @@ class _IsoTileClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+}
+
+class _TileEntry {
+  final int x;
+  final int y;
+  final double isoX;
+  final double isoY;
+  final bool isForeground;
+  final bool hasTree;
+
+  _TileEntry({
+    required this.x,
+    required this.y,
+    required this.isoX,
+    required this.isoY,
+    required this.isForeground,
+    required this.hasTree,
+  });
 }
 
 
