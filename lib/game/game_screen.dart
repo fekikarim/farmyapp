@@ -77,6 +77,14 @@ class _GameScreenState extends State<GameScreen> {
         const AssetImage('assets/game_images/3d/outside_tree/tree3.png'),
         context,
       );
+      await precacheImage(
+        const AssetImage('assets/game_images/3d/outside_fance/fance1.png'),
+        context,
+      );
+      await precacheImage(
+        const AssetImage('assets/game_images/3d/outside_fance/fance2.png'),
+        context,
+      );
       return true;
     } catch (e) {
       print('Asset load error: $e');

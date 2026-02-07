@@ -62,21 +62,46 @@ class IsometricMap extends StatelessWidget {
         // Only for background tiles on the TOP sides (x < 0 or y < 0)
         bool isTreeRow = false;
         String? treeAsset;
+        String? fenceAsset;
+
+        double fenceDx = 0;
+        double fenceDy = 0;
 
         if (!isForeground) {
-          // Top-Left border (x is negative) or Top-Right border (y is negative)
+          // 1. Forest Decoration (Top sides only)
           bool isTopSide = (x >= -2 && x < 0) || (y >= -2 && y < 0);
-          
           if (isTopSide) {
-            // Pseudo-random placement based on coordinates to keep it stable
-            // 40% chance of a tree
             int hash = (x * 7 + y * 13).abs();
             if ((hash % 5) < 2) {
               isTreeRow = true;
-              // Pick one of 3 trees
               int variant = (hash % 3) + 1;
               treeAsset = 'assets/game_images/3d/outside_tree/tree$variant.png';
             }
+          }
+
+          // 2. Fence Boundary Detection
+          // Fence 1: Top-Right (y=-1) and Bottom-Left (y=gridHeight)
+          // Fence 2: Top-Left (x=-1) and Bottom-Right (x=gridWidth)
+          
+          bool isInXRange = (x >= 0 && x < gridWidth);
+          bool isInYRange = (y >= 0 && y < gridHeight);
+
+          if (y == -1 && isInXRange) {
+             fenceAsset = 'assets/game_images/3d/outside_fance/fance1.png';
+             fenceDx = -tileWidth / 4;
+             fenceDy = -tileHeight / 4 - 12; // Shifting significantly down
+          } else if (y == gridHeight && isInXRange) {
+             fenceAsset = 'assets/game_images/3d/outside_fance/fance1.png';
+             fenceDx = tileWidth / 4;
+             fenceDy = tileHeight / 4 - 12; 
+          } else if (x == -1 && isInYRange) {
+             fenceAsset = 'assets/game_images/3d/outside_fance/fance2.png';
+             fenceDx = tileWidth / 4;
+             fenceDy = -tileHeight / 4 - 12;
+          } else if (x == gridWidth && isInYRange) {
+             fenceAsset = 'assets/game_images/3d/outside_fance/fance2.png';
+             fenceDx = -tileWidth / 4;
+             fenceDy = tileHeight / 4 - 12;
           }
         }
 
@@ -91,6 +116,9 @@ class IsometricMap extends StatelessWidget {
           isForeground: isForeground,
           hasTree: isTreeRow,
           treeAsset: treeAsset,
+          fenceAsset: fenceAsset,
+          fenceDx: fenceDx,
+          fenceDy: fenceDy,
         ));
       }
     }
@@ -114,12 +142,20 @@ class IsometricMap extends StatelessWidget {
       return Positioned(
         left: e.isoX,
         top: e.isoY,
-        child: _buildTile(e.x, e.y, isBackground: !e.isForeground, hasTree: e.hasTree, treeAsset: e.treeAsset),
+        child: _buildTile(
+          e.x, e.y, 
+          isBackground: !e.isForeground, 
+          hasTree: e.hasTree, 
+          treeAsset: e.treeAsset, 
+          fenceAsset: e.fenceAsset,
+          fenceDx: e.fenceDx,
+          fenceDy: e.fenceDy,
+        ),
       );
     }).toList();
   }
 
-  Widget _buildTile(int x, int y, {required bool isBackground, bool hasTree = false, String? treeAsset}) {
+  Widget _buildTile(int x, int y, {required bool isBackground, bool hasTree = false, String? treeAsset, String? fenceAsset, double fenceDx = 0, double fenceDy = 0}) {
     // Check if there is an item at this position (only for foreground)
     final dynamic cellData = (!isBackground && matrix.length > y && matrix[y].length > x) 
         ? matrix[y][x] 
@@ -171,6 +207,19 @@ class IsometricMap extends StatelessWidget {
                 fit: BoxFit.contain,
               ),
             ),
+
+          // Fence Overlay
+          if (fenceAsset != null)
+             Positioned(
+               bottom: (tileHeight / 2) + fenceDy,
+               left: fenceDx,
+               width: tileWidth,
+               child: Image.asset(
+                 fenceAsset!,
+                 height: tileHeight * 2, // Fences are usually taller than tiles
+                 fit: BoxFit.contain,
+               ),
+             ),
         ],
       ),
     );
@@ -232,6 +281,9 @@ class _TileEntry {
   final bool isForeground;
   final bool hasTree;
   final String? treeAsset;
+  final String? fenceAsset;
+  final double fenceDx;
+  final double fenceDy;
 
   _TileEntry({
     required this.x,
@@ -241,6 +293,9 @@ class _TileEntry {
     required this.isForeground,
     required this.hasTree,
     this.treeAsset,
+    this.fenceAsset,
+    this.fenceDx = 0,
+    this.fenceDy = 0,
   });
 }
 
