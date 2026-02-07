@@ -496,8 +496,11 @@ class AuthService {
         final user = User.fromJson(data);
         await _storage.write(key: _userKey, value: jsonEncode(user.toMap()));
         return user;
+      } else if (response.statusCode == 403) {
+        throw Exception('Banned');
       }
     } catch (e) {
+      if (e.toString().contains('Banned')) rethrow;
       print('Fetch Profile Error: $e');
     }
     return null;

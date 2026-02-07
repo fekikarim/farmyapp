@@ -38,6 +38,32 @@ class User {
     );
   }
 
+  User copyWith({
+    String? id,
+    String? email,
+    String? role,
+    String? name,
+    String? profilePicture,
+    bool? isVerified,
+    bool? isBanned,
+    bool? isTwoFactorEnabled,
+    String? authProvider,
+    double? credits,
+  }) {
+    return User(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      role: role ?? this.role,
+      name: name ?? this.name,
+      profilePicture: profilePicture ?? this.profilePicture,
+      isVerified: isVerified ?? this.isVerified,
+      isBanned: isBanned ?? this.isBanned,
+      isTwoFactorEnabled: isTwoFactorEnabled ?? this.isTwoFactorEnabled,
+      authProvider: authProvider ?? this.authProvider,
+      credits: credits ?? this.credits,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,

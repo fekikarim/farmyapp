@@ -55,7 +55,14 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       print('Auto Login Error: $e');
-      if (e.toString().contains('Server connection failed')) {
+      if (e.toString().contains('Banned')) {
+        // User is Banned on server!
+        // Load local user data (so we have ID/Role etc) but force correct status
+        final localUser = await AuthService.getUser();
+        if (localUser != null) {
+          _user = localUser.copyWith(isBanned: true);
+        }
+      } else if (e.toString().contains('Server connection failed')) {
         _hasConnectionError = true;
       }
     }
