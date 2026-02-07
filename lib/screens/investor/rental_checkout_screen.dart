@@ -19,13 +19,16 @@ class RentalCheckoutScreen extends StatefulWidget {
 }
 
 class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
-  int _months = 12;
+  int _months = 1; // Default to 1 month
+
   bool _isLoading = false;
   bool _acceptedTerms = false;
   final double _monthlyRent = 1200.0;
   DateTime _startDate = DateTime.now();
   PaymentMethod? _selectedPaymentMethod; 
   bool _highlightTerms = false;
+  final ScrollController _scrollController = ScrollController();
+
 
 
   @override
@@ -69,8 +72,10 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
       body: Stack(
         children: [
           SingleChildScrollView(
+            controller: _scrollController,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             child: Column(
+
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildPremiumHeader(),
@@ -853,6 +858,13 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
               onPressed: () {
                   if (!_acceptedTerms) {
                       setState(() => _highlightTerms = true);
+                      // Auto-scroll to bottom to show checkbox
+                      _scrollController.animateTo(
+                        _scrollController.position.maxScrollExtent,
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeOut,
+                      );
+                      
                       Future.delayed(const Duration(milliseconds: 800), () {
                           if (mounted) setState(() => _highlightTerms = false);
                       });
