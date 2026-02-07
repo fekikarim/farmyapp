@@ -22,26 +22,32 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
     _tabController = TabController(length: AssetCategory.values.length, vsync: this);
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
-        setState(() {
-          _currentCategory = AssetCategory.values[_tabController.index];
-          _isLoading = true;
-          _selectedItem = null;
-        });
-        _loadItems();
+        _onCategoryChanged();
       }
     });
     _loadItems();
   }
 
+  void _onCategoryChanged() {
+    setState(() {
+      _currentCategory = AssetCategory.values[_tabController.index];
+      _isLoading = true;
+      _selectedItem = null;
+    });
+    _loadItems();
+  }
+
   Future<void> _loadItems() async {
-    print('Loading items for category: $_currentCategory');
-    final items = await ShopService.getAssetTypes(_currentCategory);
-    print('Loaded ${items?.length ?? 0} items for $_currentCategory');
-    if (mounted) {
-      setState(() {
-        _items = items;
-        _isLoading = false;
-      });
+    try {
+      final items = await ShopService.getAssetTypes(_currentCategory);
+      if (mounted) {
+        setState(() {
+          _items = items;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -53,165 +59,63 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    // Force a Material context and a background
     return Material(
-      color: Colors.transparent,
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1A).withOpacity(0.95),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-          border: Border.all(color: Colors.white10),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-          // Handle
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 12),
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.white24,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-
-          // Header
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'FARM SHOP',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white54),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            ),
-          ),
-
-          // Tabs
-          TabBar(
-            controller: _tabController,
-            isScrollable: true,
-            indicatorColor: Colors.greenAccent,
-            labelColor: Colors.greenAccent,
-            unselectedLabelColor: Colors.white54,
-            tabs: AssetCategory.values.map((cat) {
-              return Tab(
-                text: cat.name.toUpperCase(),
-                icon: _getCategoryIcon(cat),
-              );
-            }).toList(),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Content
-          Expanded(
-            child: _selectedItem != null 
-                ? _buildVariantSelection() 
-                : _buildGrid(),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-  Widget _getCategoryIcon(AssetCategory cat) {
-    switch (cat) {
-      case AssetCategory.animal: return const Icon(Icons.pets, size: 20);
-      case AssetCategory.vegetation: return const Icon(Icons.grass, size: 20);
-      case AssetCategory.tree: return const Icon(Icons.park, size: 20);
-      case AssetCategory.structure: return const Icon(Icons.home, size: 20);
-      case AssetCategory.machine: return const Icon(Icons.settings, size: 20);
-    }
-  }
-
-  Widget _buildGrid() {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Colors.greenAccent));
-    }
-
-    if (_items == null || _items!.isEmpty) {
-      return const Center(
-        child: Text(
-          'No items found in this category.',
-          style: TextStyle(color: Colors.white54),
-        ),
-      );
-    }
-
-    return GridView.builder(
-      padding: const EdgeInsets.all(24),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.85,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-      ),
-      itemCount: _items!.length,
-      itemBuilder: (context, index) {
-        final item = _items![index];
-        return _buildItemCard(item);
-      },
-    );
-  }
-
-  Widget _buildItemCard(ShopItemType item) {
-    return InkWell(
-      onTap: () async {
-        try {
-          setState(() => _isLoading = true);
-          print('Selecting item: ${item.name} (${item.id})');
-          final detailedItem = await ShopService.getAssetTypeWithVariants(_currentCategory, item.id);
-          print('Detailed item loaded: ${detailedItem?.name}, Variants: ${detailedItem?.variants?.length}');
-          if (mounted) {
-            setState(() {
-              _selectedItem = detailedItem;
-              _isLoading = false;
-            });
-          }
-        } catch (e, stack) {
-          print('CRITICAL ERROR in ShopOverlay onTap: $e');
-          print(stack);
-          if (mounted) setState(() => _isLoading = false);
-        }
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white10),
-        ),
+      color: Colors.black.withOpacity(0.85),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+      child: SafeArea(
+        bottom: false,
         child: Column(
           children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: _buildAssetImage(item.assetIconPath, isIcon: true),
+            // Drag Handle
+            Container(
+              margin: const EdgeInsets.only(top: 12, bottom: 8),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
+
+            // Header Row
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
-              child: Text(
-                item.name,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'FARM SHOP',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white70),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
               ),
+            ),
+
+            // Tabs
+            TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              indicatorColor: Colors.greenAccent,
+              labelColor: Colors.greenAccent,
+              unselectedLabelColor: Colors.white38,
+              tabs: AssetCategory.values.map((cat) => Tab(text: cat.name.toUpperCase())).toList(),
+            ),
+
+            const SizedBox(height: 10),
+
+            // Main Content Area
+            Expanded(
+              child: _selectedItem == null ? _buildMainCategoryView() : _buildDetailView(),
             ),
           ],
         ),
@@ -219,171 +123,185 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildVariantSelection() {
-    if (_selectedItem == null) return const SizedBox();
+  Widget _buildMainCategoryView() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(color: Colors.greenAccent));
+    }
 
+    if (_items == null || _items!.isEmpty) {
+      return const Center(child: Text('Nothing found here yet', style: TextStyle(color: Colors.white38)));
+    }
+
+    return GridView.builder(
+      padding: const EdgeInsets.all(20),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.8,
+        mainAxisSpacing: 15,
+        crossAxisSpacing: 15,
+      ),
+      itemCount: _items!.length,
+      itemBuilder: (context, index) {
+        final item = _items![index];
+        return GestureDetector(
+          onTap: () async {
+            setState(() => _isLoading = true);
+            final detailed = await ShopService.getAssetTypeWithVariants(_currentCategory, item.id);
+            if (mounted) {
+              setState(() {
+                _selectedItem = detailed;
+                _isLoading = false;
+              });
+            }
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white10),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: _safeAssetImage(item.assetIconPath),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  item.name,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDetailView() {
+    if (_selectedItem == null) return const SizedBox();
     final variants = _selectedItem!.variants ?? [];
 
     return ListView(
-      key: const ValueKey('variant_selection_list'),
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       children: [
-        // Back Button
-        Align(
-          alignment: Alignment.centerLeft,
-          child: TextButton.icon(
-            onPressed: () => setState(() => _selectedItem = null),
-            icon: const Icon(Icons.arrow_back, color: Colors.greenAccent),
-            label: const Text('Back to items', style: TextStyle(color: Colors.greenAccent)),
-          ),
+        TextButton.icon(
+          onPressed: () => setState(() => _selectedItem = null),
+          icon: const Icon(Icons.arrow_back, color: Colors.greenAccent),
+          label: const Text('Back to items', style: TextStyle(color: Colors.greenAccent)),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
         
-        // Header Info
+        // Item Info Header
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 100,
-              height: 100,
+              width: 90,
+              height: 90,
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: _buildAssetImage(_selectedItem!.assetIconPath, isIcon: true),
+              child: _safeAssetImage(_selectedItem!.assetIconPath),
             ),
             const SizedBox(width: 20),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     _selectedItem!.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   if (_selectedItem!.description != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        _selectedItem!.description!,
-                        style: const TextStyle(color: Colors.white70, fontSize: 14),
-                      ),
+                    Text(
+                      _selectedItem!.description!,
+                      style: const TextStyle(color: Colors.white60, fontSize: 13),
                     ),
                 ],
               ),
             ),
           ],
         ),
-        
-        const SizedBox(height: 32),
+
+        const SizedBox(height: 30),
         const Text(
-          'SELECT VARIANT',
-          style: TextStyle(
-            color: Colors.white38,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
-            fontSize: 12,
-          ),
+          'AVAILABLE VARIANTS',
+          style: TextStyle(color: Colors.white24, fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 2),
         ),
-        const SizedBox(height: 16),
-        
+        const SizedBox(height: 15),
+
         if (variants.isEmpty)
           const Padding(
-            padding: EdgeInsets.symmetric(vertical: 40),
-            child: Center(
-              child: Text(
-                'No variants available for this item.',
-                style: TextStyle(color: Colors.white54),
-              ),
-            ),
-          )
-        else
-          ...variants.map((v) => _buildVariantCard(v)),
+            padding: EdgeInsets.only(top: 20),
+            child: Text('No variations for this species.', style: TextStyle(color: Colors.white38)),
+          ),
+
+        ...variants.map((v) => _buildVariantCard(v)),
       ],
     );
   }
 
   Widget _buildVariantCard(ShopItemVariant variant) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withOpacity(0.03),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white10),
       ),
       child: Row(
         children: [
           Container(
-            width: 64,
-            height: 64,
+            width: 50,
+            height: 50,
+            padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               color: Colors.black26,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: _buildAssetImage(variant.assetImagePath),
+            child: _safeAssetImage(variant.assetImagePath),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 15),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text(variant.variantCode, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 Text(
-                  variant.variantCode,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                Text(
-                  '\$${variant.basePrice.toStringAsFixed(2)}',
-                  style: const TextStyle(color: Colors.greenAccent, fontSize: 16),
+                  '\$${variant.basePrice.toStringAsFixed(0)}',
+                  style: const TextStyle(color: Colors.greenAccent, fontSize: 14),
                 ),
               ],
             ),
           ),
           ElevatedButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Buying ${variant.variantCode}... Coming Soon!')),
-              );
-            },
+            onPressed: () {},
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.greenAccent,
               foregroundColor: Colors.black,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              minimumSize: const Size(60, 36),
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
-            child: const Text('BUY'),
+            child: const Text('BUY', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildAssetImage(String path, {bool isIcon = false}) {
-    if (path.isEmpty) {
-      return Icon(
-        isIcon ? Icons.image_not_supported : Icons.broken_image, 
-        color: Colors.white24, 
-        size: isIcon ? 40 : 24,
-      );
-    }
-
+  Widget _safeAssetImage(String path) {
+    if (path.isEmpty) return const Icon(Icons.image, color: Colors.white10);
     return Image.asset(
       path,
       fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) {
-        return Icon(
-          isIcon ? Icons.image_not_supported : Icons.broken_image, 
-          color: Colors.white24,
-        );
-      },
+      errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, color: Colors.white10),
     );
   }
 }
