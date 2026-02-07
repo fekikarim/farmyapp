@@ -527,31 +527,35 @@ class AuthService {
     Object? body,
   }) async {
     headers ??= {};
-    print('AuthRequest: Getting token...');
     String? token = await getAccessToken();
-    print('AuthRequest: Token retrieved: ${token != null}');
     if (token != null) headers['Authorization'] = 'Bearer $token';
     headers['Content-Type'] = 'application/json';
 
-    try {
-      http.Response response;
-      if (method == 'POST') {
-        response = await http.post(url, headers: headers, body: body);
-      } else {
-        response = await http.get(url, headers: headers);
-      }
-      print('AuthRequest: Received ${response.statusCode}');
+    final safeHeaders = headers ?? {};
+    Future<http.Response> performRequest(String tokenToUse) async {
+       safeHeaders['Authorization'] = 'Bearer $tokenToUse';
+       
+       final request = http.Request(method, url);
+       request.headers.addAll(safeHeaders);
+       
+       if (body != null) {
+         request.body = body is String ? body : jsonEncode(body);
+       }
 
+       final streamResponse = await request.send();
+       return await http.Response.fromStream(streamResponse);
+    }
+
+    try {
+      // 1. Initial Request
+      http.Response response = await performRequest(token ?? '');
+
+      // 2. Token Refresh Logic
       if (response.statusCode == 401) {
         final refreshed = await refreshTokens();
         if (refreshed) {
-          token = await getAccessToken();
-          headers['Authorization'] = 'Bearer $token';
-          if (method == 'POST') {
-            return await http.post(url, headers: headers, body: body);
-          } else {
-            return await http.get(url, headers: headers);
-          }
+           token = await getAccessToken();
+           response = await performRequest(token!);
         }
       }
       return response;
