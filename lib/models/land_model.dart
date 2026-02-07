@@ -1,44 +1,72 @@
 import 'package:latlong2/latlong.dart';
+import 'land_rental_model.dart';
 
 class Land {
   final String id;
   final String ownerId;
   final String name;
   final String? description;
+  final double widthM;
+  final double heightM;
   final int gridWidth;
   final int gridHeight;
   final List<LatLng>? boundaries;
   final bool isActive;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final List<LandRental> rentals;
 
   Land({
     required this.id,
     required this.ownerId,
     required this.name,
     this.description,
+    this.widthM = 10.0,
+    this.heightM = 10.0,
     this.gridWidth = 10,
     this.gridHeight = 10,
     this.boundaries,
     this.isActive = true,
     this.createdAt,
     this.updatedAt,
+    this.rentals = const [],
   });
 
+  bool get isRented {
+    if (rentals.isEmpty) return false;
+    final now = DateTime.now();
+    return rentals.any(
+      (r) =>
+          r.paymentStatus != PaymentStatus.cancelled &&
+          (r.rentalEndDate == null || r.rentalEndDate!.isAfter(now)),
+    );
+  }
+
   factory Land.fromJson(Map<String, dynamic> json) {
+    final wM = (json['width_m'] ?? 10.0).toDouble();
+    final hM = (json['height_m'] ?? 10.0).toDouble();
+
     return Land(
       id: json['id'],
       ownerId: json['owner_id'],
       name: json['name'],
       description: json['description'],
-      gridWidth: json['grid_width'] ?? 10,
-      gridHeight: json['grid_height'] ?? 10,
+      widthM: wM,
+      heightM: hM,
+      gridWidth:
+          json['grid_width'] ?? (wM / 1.0).ceil(), // 1.0 = METERS_PER_CELL
+      gridHeight: json['grid_height'] ?? (hM / 1.0).ceil(),
       boundaries: json['boundaries'] != null
           ? _parseBoundaries(json['boundaries'])
           : null,
       isActive: json['is_active'] ?? true,
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      rentals: json['rentals'] != null
+          ? (json['rentals'] as List)
+                .map((r) => LandRental.fromJson(r))
+                .toList()
+          : [],
     );
   }
 
@@ -48,6 +76,8 @@ class Land {
       'owner_id': ownerId,
       'name': name,
       'description': description,
+      'width_m': widthM,
+      'height_m': heightM,
       'grid_width': gridWidth,
       'grid_height': gridHeight,
       'boundaries': boundaries != null ? _boundariesToJson(boundaries!) : null,
@@ -68,7 +98,6 @@ class Land {
         return const LatLng(0, 0);
       }).toList();
     }
-    // Handle PostGIS polygon format if needed (simplified here)
     return [];
   }
 

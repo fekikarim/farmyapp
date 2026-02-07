@@ -18,10 +18,11 @@ class LandService {
         final List data = body['data'] ?? [];
         return data.map((item) => Land.fromJson(item)).toList();
       }
-      return [];
+      final errorBody = jsonDecode(response.body);
+      throw Exception(errorBody['message'] ?? 'Failed to fetch lands');
     } catch (e) {
       print('GetAllLands Error: $e');
-      return [];
+      rethrow;
     }
   }
 
@@ -32,10 +33,11 @@ class LandService {
         final Map<String, dynamic> body = jsonDecode(response.body);
         return Land.fromJson(body['data']);
       }
-      return null;
+      final errorBody = jsonDecode(response.body);
+      throw Exception(errorBody['message'] ?? 'Failed to fetch land details');
     } catch (e) {
       print('GetLandById Error: $e');
-      return null;
+      rethrow;
     }
   }
 
