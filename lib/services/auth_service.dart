@@ -62,6 +62,9 @@ class AuthService {
         );
       }
     } catch (e) {
+      if (e is http.ClientException || e.toString().contains('SocketException')) {
+        throw Exception('Server connection failed. Please check your internet.');
+      }
       print('Register Error: $e');
       rethrow;
     }
@@ -86,6 +89,9 @@ class AuthService {
         throw Exception(body['message'] ?? body['error'] ?? 'Login failed');
       }
     } catch (e) {
+      if (e is http.ClientException || e.toString().contains('SocketException')) {
+        throw Exception('Server connection failed. Please check your internet.');
+      }
       print('Login Error: $e');
       rethrow;
     }
@@ -511,27 +517,37 @@ class AuthService {
     if (token != null) headers['Authorization'] = 'Bearer $token';
     headers['Content-Type'] = 'application/json';
 
-    http.Response response;
-    print('AuthRequest: Sending $method to $url');
-    if (method == 'POST') {
-      response = await http.post(url, headers: headers, body: body);
-    } else {
-      response = await http.get(url, headers: headers);
-    }
-    print('AuthRequest: Received ${response.statusCode}');
+    try {
+      http.Response response;
+      if (method == 'POST') {
+        response = await http.post(url, headers: headers, body: body);
+      } else {
+        response = await http.get(url, headers: headers);
+      }
+      print('AuthRequest: Received ${response.statusCode}');
 
-    if (response.statusCode == 401) {
-      final refreshed = await refreshTokens();
-      if (refreshed) {
-        token = await getAccessToken();
-        headers['Authorization'] = 'Bearer $token';
-        if (method == 'POST') {
-          return await http.post(url, headers: headers, body: body);
-        } else {
-          return await http.get(url, headers: headers);
+      if (response.statusCode == 401) {
+        final refreshed = await refreshTokens();
+        if (refreshed) {
+          token = await getAccessToken();
+          headers['Authorization'] = 'Bearer $token';
+          if (method == 'POST') {
+            return await http.post(url, headers: headers, body: body);
+          } else {
+            return await http.get(url, headers: headers);
+          }
         }
       }
+      return response;
+    } catch (e) {
+      if (e is http.ClientException || e.toString().contains('SocketException')) {
+        return http.Response(
+          jsonEncode({'message': 'Server connection failed'}),
+          503,
+          headers: {'content-type': 'application/json'},
+        );
+      }
+      rethrow;
     }
-    return response;
   }
 }

@@ -6,10 +6,12 @@ class AuthProvider with ChangeNotifier {
   User? _user;
   bool _isLoading = false;
   bool _isInitializing = true;
+  bool _hasConnectionError = false;
 
   User? get user => _user;
   bool get isLoading => _isLoading;
   bool get isInitializing => _isInitializing;
+  bool get hasConnectionError => _hasConnectionError;
   bool get isAuthenticated => _user != null;
 
   AuthProvider() {
@@ -21,6 +23,7 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      _hasConnectionError = false;
       final hasRefreshToken = await AuthService.getAccessToken() != null; // Simple check if we were logged in
       if (hasRefreshToken) {
         // Try to refresh tokens first
@@ -41,11 +44,19 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       print('Auto Login Error: $e');
+      if (e.toString().contains('Server connection failed')) {
+        _hasConnectionError = true;
+      }
     }
 
     _isInitializing = false;
     _isLoading = false;
     notifyListeners();
+  }
+
+  void retryLoadUser() {
+    _isInitializing = true;
+    _loadUser();
   }
 
   /// Public method to refresh user data from server (e.g., after KYC)
@@ -78,7 +89,9 @@ class AuthProvider with ChangeNotifier {
           return 'requires_2fa';
         }
 
-        _user = response.user;
+        // Fetch full profile after login
+        final userProfile = await AuthService.fetchProfile();
+        _user = userProfile ?? response.user;
         _isLoading = false;
         notifyListeners();
         return null; // Success
@@ -103,7 +116,9 @@ class AuthProvider with ChangeNotifier {
     try {
       final response = await AuthService.verify2faLogin(_tempUserId!, code);
       if (response != null) {
-        _user = response.user;
+        // Fetch full profile after 2FA verification
+        final userProfile = await AuthService.fetchProfile();
+        _user = userProfile ?? response.user;
         _tempUserId = null;
         _isLoading = false;
         notifyListeners();
@@ -176,7 +191,9 @@ class AuthProvider with ChangeNotifier {
     try {
       final response = await AuthService.register(email, password);
       if (response != null) {
-        _user = response.user;
+        // Fetch full profile after registration
+        final userProfile = await AuthService.fetchProfile();
+        _user = userProfile ?? response.user;
         _isLoading = false;
         notifyListeners();
         return null; // Success
@@ -203,7 +220,9 @@ class AuthProvider with ChangeNotifier {
           return 'requires_2fa';
         }
 
-        _user = response.user;
+        // Fetch full profile after Google login
+        final userProfile = await AuthService.fetchProfile();
+        _user = userProfile ?? response.user;
         _isLoading = false;
         notifyListeners();
         return null; // Success
@@ -232,7 +251,9 @@ class AuthProvider with ChangeNotifier {
           return 'requires_2fa';
         }
 
-        _user = response.user;
+        // Fetch full profile after GitHub login
+        final userProfile = await AuthService.fetchProfile();
+        _user = userProfile ?? response.user;
         _isLoading = false;
         notifyListeners();
         return null; // Success

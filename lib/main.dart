@@ -12,6 +12,7 @@ import 'screens/forgot_password_screen.dart';
 import 'screens/reset_password_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/auth/verify_2fa_screen.dart';
+import 'screens/no_internet_screen.dart';
 import 'theme/app_theme.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -119,6 +120,10 @@ class AuthWrapper extends StatelessWidget {
 
     if (authProvider.isInitializing) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (authProvider.hasConnectionError) {
+      return NoInternetScreen(onRetry: authProvider.retryLoadUser);
     }
 
     if (authProvider.isAuthenticated) {
