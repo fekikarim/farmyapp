@@ -8,6 +8,7 @@ class User {
   final bool isBanned;
   final bool isTwoFactorEnabled;
   final String authProvider;
+  final double credits;
 
   User({
     required this.id,
@@ -19,6 +20,7 @@ class User {
     this.isBanned = false,
     this.isTwoFactorEnabled = false,
     this.authProvider = 'email',
+    this.credits = 0.0,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,7 @@ class User {
       isBanned: json['is_banned'] ?? false,
       isTwoFactorEnabled: json['is_two_factor_enabled'] ?? false,
       authProvider: json['auth_provider'] ?? 'email',
+      credits: (json['credits'] ?? 0.0).toDouble(),
     );
   }
 
@@ -48,6 +51,7 @@ class User {
       'is_banned': isBanned,
       'is_two_factor_enabled': isTwoFactorEnabled,
       'auth_provider': authProvider,
+      'credits': credits,
     };
   }
 }
