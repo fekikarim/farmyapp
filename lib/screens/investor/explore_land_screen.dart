@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -15,7 +16,7 @@ class InvestorExploreLandScreen extends StatefulWidget {
 }
 
 class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
-  bool _isMapView = false;
+  ViewMode _currentMode = ViewMode.list;
   bool _isSatellite = true;
   bool _is3D = false;
   final MapController _mapController = MapController();
@@ -24,173 +25,113 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<LandProvider>().fetchAllLands();
+      _loadData();
     });
+  }
+
+  Future<void> _loadData() async {
+    if (!mounted) return;
+    try {
+      await context.read<LandProvider>().fetchAllLands();
+      if (mounted && _currentMode == ViewMode.list) {
+        // Success feedback if needed
+      }
+    } catch (e) {
+      // Error handled by consumer
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
           'Explore Lands',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: theme.textTheme.titleLarge?.color,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(_isMapView ? Icons.list : Icons.map),
-            onPressed: () => setState(() => _isMapView = !_isMapView),
-          ),
-        ],
-      ),
-      body: Consumer<LandProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (provider.error != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Error: ${provider.error}',
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => provider.fetchAllLands(),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (provider.allLands.isEmpty) {
-            return const Center(
-              child: Text('No lands available at the moment.'),
-            );
-          }
-
-          return _isMapView
-              ? _buildMapView(provider.allLands)
-              : _buildListView(provider.allLands);
-        },
-      ),
-    );
-  }
-
-  Widget _buildListView(List<Land> lands) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: lands.length,
-      itemBuilder: (context, index) {
-        final land = lands[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: InkWell(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LandDetailsScreen(land: land),
-              ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withOpacity(0.05)
+                  : Colors.black.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12),
             ),
-            borderRadius: BorderRadius.circular(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Container(
-                  height: 180,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(16),
-                    ),
-                    image: const DecorationImage(
-                      image: NetworkImage(
-                        'https://images.unsplash.com/photo-1500382017468-9049fee74a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-                      ),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                _ToggleItem(
+                  icon: Icons.list_rounded,
+                  isSelected: _currentMode == ViewMode.list,
+                  onTap: () => setState(() => _currentMode = ViewMode.list),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            land.name,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Text(
-                              'Available',
-                              style: TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        land.description ?? 'No description provided.',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.grid_on,
-                            size: 16,
-                            color: Colors.grey[600],
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${land.gridWidth}x${land.gridHeight} Plots',
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                          const Spacer(),
-                          const Text(
-                            'Price starting from 1,200 TND',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                _ToggleItem(
+                  icon: Icons.layers_rounded,
+                  isSelected: _currentMode == ViewMode.ar,
+                  onTap: () => setState(() => _currentMode = ViewMode.ar),
                 ),
               ],
             ),
           ),
-        );
-      },
+          IconButton(
+            icon: Icon(
+              Icons.notifications_none_rounded,
+              color: theme.iconTheme.color,
+            ),
+            onPressed: () {},
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: Consumer<LandProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading && provider.allLands.isEmpty) {
+            return _buildSkeletonLoader();
+          }
+
+          if (provider.error != null && provider.allLands.isEmpty) {
+            return _buildErrorState(provider.error!);
+          }
+
+          if (provider.allLands.isEmpty) {
+            return _buildEmptyState();
+          }
+
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 400),
+            child: _currentMode == ViewMode.list
+                ? RefreshIndicator(
+                    onRefresh: _loadData,
+                    backgroundColor: Colors.green,
+                    color: Colors.white,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(20),
+                      itemCount: provider.allLands.length,
+                      itemBuilder: (context, index) => _InvestorLandCard(
+                        land: provider.allLands[index],
+                        onTap: (land) => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LandDetailsScreen(land: land),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                : _buildMapView(provider.allLands),
+          );
+        },
+      ),
     );
   }
 
@@ -207,13 +148,29 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                 ? lands[0].boundaries![0]
                 : const LatLng(36.8065, 10.1815),
             initialZoom: 13.0,
+            onTap: (tapPosition, point) {
+              for (var land in lands) {
+                if (land.boundaries != null &&
+                    _isPointInPolygon(point, land.boundaries!)) {
+                  HapticFeedback.lightImpact();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LandDetailsScreen(land: land),
+                    ),
+                  );
+                  return;
+                }
+              }
+            },
           ),
           children: [
             TileLayer(
               urlTemplate: _isSatellite
                   ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                  : "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-              userAgentPackageName: 'com.farmyapp',
+                  : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+              userAgentPackageName: 'com.farmy.app',
+              subdomains: const ['a', 'b', 'c'],
             ),
             PolygonLayer(
               polygons: lands
@@ -223,62 +180,17 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                   .map(
                     (land) => Polygon(
                       points: land.boundaries!,
-                      color: Colors.green.withOpacity(0.3),
-                      borderColor: Colors.white,
+                      color: land.isRented
+                          ? Colors.orange.withOpacity(0.3)
+                          : Colors.green.withOpacity(0.3),
+                      borderColor: land.isRented ? Colors.orange : Colors.green,
                       borderStrokeWidth: 2,
                       isFilled: true,
                       label: land.name,
-                    ),
-                  )
-                  .toList(),
-            ),
-            MarkerLayer(
-              markers: lands
-                  .where(
-                    (l) => l.boundaries != null && l.boundaries!.isNotEmpty,
-                  )
-                  .map(
-                    (land) => Marker(
-                      point: land.boundaries![0],
-                      width: 120,
-                      height: 60,
-                      child: GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LandDetailsScreen(land: land),
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(4),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
-                                    blurRadius: 4,
-                                  ),
-                                ],
-                              ),
-                              child: Text(
-                                land.name,
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const Icon(
-                              Icons.location_on,
-                              color: Colors.green,
-                              size: 30,
-                            ),
-                          ],
-                        ),
+                      labelStyle: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
                       ),
                     ),
                   )
@@ -287,35 +199,572 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
           ],
         ),
         Positioned(
-          bottom: 20,
-          right: 20,
+          bottom: 24,
+          right: 24,
           child: Column(
             children: [
-              FloatingActionButton.small(
-                heroTag: 'map_type',
-                onPressed: () => setState(() => _isSatellite = !_isSatellite),
-                backgroundColor: Colors.white,
-                child: Icon(
-                  _isSatellite ? Icons.map : Icons.satellite_alt,
-                  color: Colors.black,
-                ),
+              _MapActionBtn(
+                icon: _isSatellite
+                    ? Icons.map_outlined
+                    : Icons.satellite_alt_rounded,
+                onTap: () => setState(() => _isSatellite = !_isSatellite),
               ),
-              const SizedBox(height: 8),
-              FloatingActionButton.small(
-                heroTag: '3d_view',
-                onPressed: () {
+              const SizedBox(height: 12),
+              _MapActionBtn(
+                icon: Icons.view_in_ar_rounded,
+                isSelected: _is3D,
+                onTap: () {
                   setState(() {
                     _is3D = !_is3D;
                     _mapController.rotate(_is3D ? 45.0 : 0.0);
                   });
                 },
-                backgroundColor: _is3D ? Colors.green : Colors.white,
-                child: Icon(
-                  Icons.view_in_ar,
-                  color: _is3D ? Colors.white : Colors.black,
-                ),
               ),
             ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  bool _isPointInPolygon(LatLng point, List<LatLng> polygon) {
+    var isInside = false;
+    var j = polygon.length - 1;
+    for (var i = 0; i < polygon.length; i++) {
+      if ((polygon[i].latitude < point.latitude &&
+                  polygon[j].latitude >= point.latitude ||
+              polygon[j].latitude < point.latitude &&
+                  polygon[i].latitude >= point.latitude) &&
+          (polygon[i].longitude +
+                  (point.latitude - polygon[i].latitude) /
+                      (polygon[j].latitude - polygon[i].latitude) *
+                      (polygon[j].longitude - polygon[i].longitude) <
+              point.longitude)) {
+        isInside = !isInside;
+      }
+      j = i;
+    }
+    return isInside;
+  }
+
+  Widget _buildSkeletonLoader() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return ListView.builder(
+      padding: const EdgeInsets.all(20),
+      itemCount: 3,
+      itemBuilder: (context, index) => Container(
+        height: 280,
+        margin: const EdgeInsets.only(bottom: 24),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(
+            color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+          ),
+        ),
+        child: Column(
+          children: [
+            Container(
+              height: 160,
+              decoration: BoxDecoration(
+                color: (isDark ? Colors.white : Colors.black).withOpacity(0.03),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(
+                      3,
+                      (i) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: (isDark ? Colors.white : Colors.black)
+                                  .withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            width: 60,
+                            height: 14,
+                            decoration: BoxDecoration(
+                              color: (isDark ? Colors.white : Colors.black)
+                                  .withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: (isDark ? Colors.white : Colors.black).withOpacity(
+                        0.05,
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.error_outline_rounded,
+                color: Colors.red,
+                size: 48,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Sync Failed',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              error,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white38),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: _loadData,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white.withOpacity(0.05),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: const Text('Try Again'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.landscape_rounded, size: 100, color: Colors.white12),
+          const SizedBox(height: 16),
+          const Text(
+            'No lands found',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Check back later for new opportunities.',
+            style: TextStyle(color: Colors.white38),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+enum ViewMode { list, ar }
+
+class _ToggleItem extends StatelessWidget {
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _ToggleItem({
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.green : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(
+          icon,
+          size: 20,
+          color: isSelected
+              ? Colors.white
+              : (isDark ? Colors.white54 : Colors.black45),
+        ),
+      ),
+    );
+  }
+}
+
+class _MapActionBtn extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  final bool isSelected;
+
+  const _MapActionBtn({
+    required this.icon,
+    required this.onTap,
+    this.isSelected = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Colors.green
+              : (isDark ? const Color(0xFF1E2125) : Colors.white),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: (isDark ? Colors.black : Colors.grey).withOpacity(0.2),
+              blurRadius: 10,
+            ),
+          ],
+          border: isDark
+              ? null
+              : Border.all(color: Colors.black.withOpacity(0.05)),
+        ),
+        child: Icon(
+          icon,
+          color: isSelected
+              ? Colors.white
+              : (isDark ? Colors.white : Colors.black87),
+          size: 20,
+        ),
+      ),
+    );
+  }
+}
+
+class _InvestorLandCard extends StatelessWidget {
+  final Land land;
+  final Function(Land) onTap;
+
+  const _InvestorLandCard({required this.land, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final center = land.boundaries != null && land.boundaries!.isNotEmpty
+        ? LatLng(
+            land.boundaries!.map((p) => p.latitude).reduce((a, b) => a + b) /
+                land.boundaries!.length,
+            land.boundaries!.map((p) => p.longitude).reduce((a, b) => a + b) /
+                land.boundaries!.length,
+          )
+        : const LatLng(36.8065, 10.1815);
+
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return GestureDetector(
+      onTap: () => onTap(land),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 24),
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(
+            color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: (isDark ? Colors.black : Colors.grey).withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 160,
+              child: Stack(
+                children: [
+                  IgnorePointer(
+                    child: FlutterMap(
+                      options: MapOptions(
+                        initialCenter: center,
+                        initialZoom: 16.5,
+                      ),
+                      children: [
+                        TileLayer(
+                          urlTemplate:
+                              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          subdomains: const ['a', 'b', 'c'],
+                          userAgentPackageName: 'com.farmy.app',
+                          tileBuilder: (context, tileWidget, tile) {
+                            if (!isDark) return tileWidget;
+                            return ColorFiltered(
+                              colorFilter: const ColorFilter.matrix([
+                                -1,
+                                0,
+                                0,
+                                0,
+                                255,
+                                0,
+                                -1,
+                                0,
+                                0,
+                                255,
+                                0,
+                                0,
+                                -1,
+                                0,
+                                255,
+                                0,
+                                0,
+                                0,
+                                1,
+                                0,
+                              ]),
+                              child: tileWidget,
+                            );
+                          },
+                        ),
+                        if (land.boundaries != null)
+                          PolygonLayer(
+                            polygons: [
+                              Polygon(
+                                points: land.boundaries!,
+                                color: land.isRented
+                                    ? Colors.orange.withOpacity(0.4)
+                                    : Colors.green.withOpacity(0.4),
+                                borderColor: land.isRented
+                                    ? Colors.orange
+                                    : Colors.green,
+                                borderStrokeWidth: 2,
+                                isFilled: true,
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.7),
+                          ],
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              land.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  Shadow(blurRadius: 8, color: Colors.black),
+                                ],
+                              ),
+                            ),
+                          ),
+                          _buildStatusBadge(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildInfoItem(
+                        context,
+                        'Size',
+                        '${land.gridWidth}x${land.gridHeight} Plots',
+                        Icons.grid_3x3_rounded,
+                      ),
+                      _buildPriceInfo(context),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => onTap(land),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                              color: Colors.green.withOpacity(0.5),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: const Text(
+                            'View Details',
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: (land.isRented ? Colors.orange : Colors.green).withAlpha(50),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: (land.isRented ? Colors.orange : Colors.green).withOpacity(
+            0.5,
+          ),
+          width: 0.5,
+        ),
+      ),
+      child: Text(
+        land.isRented ? 'RENTED' : 'AVAILABLE',
+        style: TextStyle(
+          color: land.isRented ? Colors.orange : Colors.green,
+          fontSize: 10,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoItem(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon,
+  ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final secondaryColor = isDark ? Colors.white38 : Colors.black38;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: secondaryColor),
+            const SizedBox(width: 6),
+            Text(label, style: TextStyle(color: secondaryColor, fontSize: 11)),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            color: theme.textTheme.bodyLarge?.color,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPriceInfo(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          'Price starting from',
+          style: TextStyle(
+            color: isDark ? Colors.white38 : Colors.black38,
+            fontSize: 11,
+          ),
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          '1,200 TND',
+          style: TextStyle(
+            color: Colors.green,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ],

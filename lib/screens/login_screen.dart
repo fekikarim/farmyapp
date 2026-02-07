@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../theme/app_theme.dart';
 import '../utils/validators.dart';
 import '../main.dart'; // Import for routeObserver
 
@@ -572,8 +571,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                             }
                                           } else if (result == null) {
                                             _dismissKeyboard();
-                                          } else if (result != null &&
-                                              mounted) {
+                                          } else if (mounted) {
                                             showDialog(
                                               context: context,
                                               builder: (context) => AlertDialog(
@@ -627,8 +625,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                             }
                                           } else if (result == null) {
                                             _dismissKeyboard();
-                                          } else if (result != null &&
-                                              mounted) {
+                                          } else if (mounted) {
                                             showDialog(
                                               context: context,
                                               builder: (context) => AlertDialog(

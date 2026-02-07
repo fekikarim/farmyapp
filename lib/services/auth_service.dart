@@ -11,15 +11,23 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/user_model.dart';
 
 class AuthService {
-  static final String _baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.1.21:3001');
+  static final String _baseUrl = dotenv.get(
+    'API_BASE_URL',
+    fallback: 'http://192.168.1.21:3001',
+  );
   static const _storage = FlutterSecureStorage();
-  
+
   static GoogleSignIn? get _googleSignInInstance {
-    if (kIsWeb) return GoogleSignIn(serverClientId: '207350526659-uc61dhrc5htldf5q7dq5293ac9v75cbt.apps.googleusercontent.com');
+    if (kIsWeb)
+      return GoogleSignIn(
+        serverClientId:
+            '207350526659-uc61dhrc5htldf5q7dq5293ac9v75cbt.apps.googleusercontent.com',
+      );
     try {
       if (Platform.isAndroid || Platform.isIOS) {
         return GoogleSignIn(
-          serverClientId: '207350526659-uc61dhrc5htldf5q7dq5293ac9v75cbt.apps.googleusercontent.com',
+          serverClientId:
+              '207350526659-uc61dhrc5htldf5q7dq5293ac9v75cbt.apps.googleusercontent.com',
         );
       }
     } catch (_) {}
@@ -49,7 +57,9 @@ class AuthService {
         return authResponse;
       } else {
         final body = jsonDecode(response.body);
-        throw Exception(body['message'] ?? body['error'] ?? 'Registration failed');
+        throw Exception(
+          body['message'] ?? body['error'] ?? 'Registration failed',
+        );
       }
     } catch (e) {
       print('Register Error: $e');
@@ -88,7 +98,9 @@ class AuthService {
       if (!kIsWeb && Platform.isWindows) {
         // Windows Desktop Support via Polling Strategy
         final requestId = const Uuid().v4();
-        final url = Uri.parse('$_baseUrl/api/v1/auth/google/login?state=$requestId');
+        final url = Uri.parse(
+          '$_baseUrl/api/v1/auth/google/login?state=$requestId',
+        );
 
         if (await canLaunchUrl(url)) {
           await launchUrl(url, mode: LaunchMode.externalApplication);
@@ -99,21 +111,23 @@ class AuthService {
         // Poll for result (timeout 2 minutes)
         for (int i = 0; i < 120; i++) {
           await Future.delayed(const Duration(seconds: 1));
-          
+
           try {
             final checkResponse = await http.get(
-              Uri.parse('$_baseUrl/api/v1/auth/google/status?requestId=$requestId'),
+              Uri.parse(
+                '$_baseUrl/api/v1/auth/google/status?requestId=$requestId',
+              ),
             );
 
             if (checkResponse.statusCode == 200) {
               final data = jsonDecode(checkResponse.body);
-              
+
               if (data['success'] == true) {
                 // Login successful!
                 final authResponse = AuthResponse.fromJson(data);
                 if (!authResponse.require2fa) {
-          await _saveAuthData(authResponse);
-        }
+                  await _saveAuthData(authResponse);
+                }
                 return authResponse;
               } else if (data['waiting'] == true) {
                 // Still waiting...
@@ -133,7 +147,8 @@ class AuthService {
         final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
         if (googleUser == null) return null;
 
-        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
         idToken = googleAuth.idToken;
       }
 
@@ -238,10 +253,7 @@ class AuthService {
       final response = await http.post(
         Uri.parse('$_baseUrl/api/v1/auth/verify-email'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'code': code.trim(),
-        }),
+        body: jsonEncode({'email': email, 'code': code.trim()}),
       );
 
       if (response.statusCode == 200) {
@@ -271,7 +283,11 @@ class AuthService {
     }
   }
 
-  static Future<bool> resetPassword(String email, String code, String newPassword) async {
+  static Future<bool> resetPassword(
+    String email,
+    String code,
+    String newPassword,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/api/v1/auth/reset-password'),
@@ -289,7 +305,10 @@ class AuthService {
     }
   }
 
-  static Future<bool> changePassword(String oldPassword, String newPassword) async {
+  static Future<bool> changePassword(
+    String oldPassword,
+    String newPassword,
+  ) async {
     try {
       final response = await authenticatedRequest(
         'POST',
@@ -308,7 +327,10 @@ class AuthService {
 
   // --- 2FA Methods ---
 
-  static Future<AuthResponse?> verify2faLogin(String userId, String token) async {
+  static Future<AuthResponse?> verify2faLogin(
+    String userId,
+    String token,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/api/v1/auth/login/verify-2fa'),
@@ -320,13 +342,15 @@ class AuthService {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
         if (authResponse.tokens != null) {
           if (!authResponse.require2fa) {
-          await _saveAuthData(authResponse);
-        }
+            await _saveAuthData(authResponse);
+          }
         }
         return authResponse;
       } else {
         final body = jsonDecode(response.body);
-        throw Exception(body['message'] ?? body['error'] ?? '2FA verification failed');
+        throw Exception(
+          body['message'] ?? body['error'] ?? '2FA verification failed',
+        );
       }
     } catch (e) {
       print('2FA Verify Login Error: $e');
@@ -336,7 +360,10 @@ class AuthService {
 
   static Future<Map<String, dynamic>?> setup2FA() async {
     try {
-      final response = await authenticatedRequest('GET', Uri.parse('$_baseUrl/api/v1/auth/2fa/setup'));
+      final response = await authenticatedRequest(
+        'GET',
+        Uri.parse('$_baseUrl/api/v1/auth/2fa/setup'),
+      );
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       }
@@ -379,11 +406,20 @@ class AuthService {
 
   static Future<void> _saveAuthData(AuthResponse response) async {
     if (response.tokens != null) {
-      await _storage.write(key: _accessTokenKey, value: response.tokens!.accessToken);
-      await _storage.write(key: _refreshTokenKey, value: response.tokens!.refreshToken);
+      await _storage.write(
+        key: _accessTokenKey,
+        value: response.tokens!.accessToken,
+      );
+      await _storage.write(
+        key: _refreshTokenKey,
+        value: response.tokens!.refreshToken,
+      );
     }
     if (response.user != null) {
-      await _storage.write(key: _userKey, value: jsonEncode(response.user!.toMap()));
+      await _storage.write(
+        key: _userKey,
+        value: jsonEncode(response.user!.toMap()),
+      );
     }
   }
 
@@ -397,7 +433,8 @@ class AuthService {
     }
   }
 
-  static Future<String?> getAccessToken() async => await _storage.read(key: _accessTokenKey);
+  static Future<String?> getAccessToken() async =>
+      await _storage.read(key: _accessTokenKey);
 
   static Future<bool> refreshTokens() async {
     final refreshToken = await _storage.read(key: _refreshTokenKey);
@@ -427,7 +464,10 @@ class AuthService {
 
   static Future<User?> fetchProfile() async {
     try {
-      final response = await authenticatedRequest('GET', Uri.parse('$_baseUrl/api/v1/auth/me'));
+      final response = await authenticatedRequest(
+        'GET',
+        Uri.parse('$_baseUrl/api/v1/auth/me'),
+      );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body)['data'];
         print('Fetched Profile Data: $data');
@@ -437,6 +477,23 @@ class AuthService {
       }
     } catch (e) {
       print('Fetch Profile Error: $e');
+    }
+    return null;
+  }
+
+  static Future<User?> getUserById(String id) async {
+    try {
+      final response = await authenticatedRequest(
+        'GET',
+        Uri.parse('$_baseUrl/api/v1/auth/users/$id'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)['data'];
+        return User.fromJson(data);
+      }
+    } catch (e) {
+      print('Fetch UserById Error: $e');
     }
     return null;
   }

@@ -5,8 +5,14 @@ class FarmerProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Products Screen')),
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Center(
+        child: Text(
+          'Products Screen',
+          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
+        ),
+      ),
     );
   }
 }

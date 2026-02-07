@@ -86,6 +86,8 @@ class LandProvider with ChangeNotifier {
       final rental = await LandRentalService.createRental(data);
       if (rental != null) {
         _myRentals.add(rental);
+        // Refresh all lands to update availability status globally
+        await fetchAllLands();
         notifyListeners();
         return true;
       }
