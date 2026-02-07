@@ -15,18 +15,19 @@ class KycFlowScreen extends StatefulWidget {
   State<KycFlowScreen> createState() => _KycFlowScreenState();
 }
 
-class _KycFlowScreenState extends State<KycFlowScreen> with SingleTickerProviderStateMixin {
+class _KycFlowScreenState extends State<KycFlowScreen>
+    with SingleTickerProviderStateMixin {
   CameraController? _controller;
   late final MlKitService _mlKitService;
   late AnimationController _animController;
   late Animation<double> _fadeAnimation;
-  
+
   int _currentStep = 0; // 0: Front, 1: Back, 2: Selfie
   bool _isProcessing = false;
   bool _showTransition = false;
   String _transitionMessage = '';
   IconData _transitionIcon = Icons.credit_card;
-  
+
   final Map<String, File> _capturedFiles = {};
 
   @override
@@ -45,10 +46,29 @@ class _KycFlowScreenState extends State<KycFlowScreen> with SingleTickerProvider
 
   Future<void> _initializeCamera() async {
     final cameras = await availableCameras();
+    if (cameras.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No cameras found on this device.')),
+        );
+      }
+      return;
+    }
+
     // Use front camera for selfie (step 2), back for ID (step 0, 1)
-    final cameraDescription = _currentStep == 2 
-        ? cameras.firstWhere((c) => c.lensDirection == CameraLensDirection.front)
-        : cameras.firstWhere((c) => c.lensDirection == CameraLensDirection.back);
+    CameraDescription cameraDescription;
+    try {
+      cameraDescription = _currentStep == 2
+          ? cameras.firstWhere(
+              (c) => c.lensDirection == CameraLensDirection.front,
+            )
+          : cameras.firstWhere(
+              (c) => c.lensDirection == CameraLensDirection.back,
+            );
+    } catch (_) {
+      // Fallback to first camera if preferred direction not found
+      cameraDescription = cameras.first;
+    }
 
     _controller = CameraController(
       cameraDescription,
@@ -87,7 +107,10 @@ class _KycFlowScreenState extends State<KycFlowScreen> with SingleTickerProvider
   }
 
   Future<void> _takePicture() async {
-    if (_controller == null || !_controller!.value.isInitialized || _isProcessing) return;
+    if (_controller == null ||
+        !_controller!.value.isInitialized ||
+        _isProcessing)
+      return;
 
     setState(() => _isProcessing = true);
 
@@ -97,7 +120,6 @@ class _KycFlowScreenState extends State<KycFlowScreen> with SingleTickerProvider
 
       // Show processing screen
       await _showProcessingScreen(file);
-
     } catch (e) {
       print('Capture Error: $e');
       setState(() => _isProcessing = false);
@@ -125,11 +147,17 @@ class _KycFlowScreenState extends State<KycFlowScreen> with SingleTickerProvider
       if (_currentStep < 2) {
         // Show transition animation
         if (_currentStep == 0) {
-          await _showTransitionScreen('Great! Now flip your ID over', Icons.flip);
+          await _showTransitionScreen(
+            'Great! Now flip your ID over',
+            Icons.flip,
+          );
         } else if (_currentStep == 1) {
-          await _showTransitionScreen('Perfect! Now let\'s take a selfie', Icons.face);
+          await _showTransitionScreen(
+            'Perfect! Now let\'s take a selfie',
+            Icons.face,
+          );
         }
-        
+
         setState(() {
           _currentStep++;
           _isProcessing = false;
@@ -168,10 +196,12 @@ class _KycFlowScreenState extends State<KycFlowScreen> with SingleTickerProvider
         await authProvider.refreshUser();
 
         // Show success and navigate to main screen
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Success! You are now a ${widget.role}!'),
-          backgroundColor: Colors.green,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Success! You are now a ${widget.role}!'),
+            backgroundColor: Colors.green,
+          ),
+        );
 
         // Navigate back to main screen
         Navigator.of(context).popUntil((route) => route.isFirst);
@@ -179,10 +209,9 @@ class _KycFlowScreenState extends State<KycFlowScreen> with SingleTickerProvider
     } catch (e) {
       if (mounted) {
         setState(() => _showTransition = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
       }
       setState(() => _isProcessing = false);
     }
@@ -190,19 +219,27 @@ class _KycFlowScreenState extends State<KycFlowScreen> with SingleTickerProvider
 
   String get _instruction {
     switch (_currentStep) {
-      case 0: return 'Scan Front of ID';
-      case 1: return 'Scan Back of ID';
-      case 2: return 'Take a Selfie';
-      default: return '';
+      case 0:
+        return 'Scan Front of ID';
+      case 1:
+        return 'Scan Back of ID';
+      case 2:
+        return 'Take a Selfie';
+      default:
+        return '';
     }
   }
 
   String get _hint {
     switch (_currentStep) {
-      case 0: return 'Position your ID within the frame';
-      case 1: return 'Flip your ID and scan the back';
-      case 2: return 'Look directly at the camera with eyes open';
-      default: return '';
+      case 0:
+        return 'Position your ID within the frame';
+      case 1:
+        return 'Flip your ID and scan the back';
+      case 2:
+        return 'Look directly at the camera with eyes open';
+      default:
+        return '';
     }
   }
 
@@ -244,7 +281,7 @@ class _KycFlowScreenState extends State<KycFlowScreen> with SingleTickerProvider
         children: [
           // Camera Preview
           Center(child: CameraPreview(_controller!)),
-          
+
           // Overlay (Darken outside)
           _buildOverlay(),
 
@@ -259,8 +296,8 @@ class _KycFlowScreenState extends State<KycFlowScreen> with SingleTickerProvider
                   _instruction,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    color: Colors.white, 
-                    fontSize: 24, 
+                    color: Colors.white,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                     shadows: [Shadow(blurRadius: 4, color: Colors.black)],
                   ),
@@ -270,8 +307,8 @@ class _KycFlowScreenState extends State<KycFlowScreen> with SingleTickerProvider
                   _hint,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8), 
-                    fontSize: 14, 
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: 14,
                     shadows: const [Shadow(blurRadius: 4, color: Colors.black)],
                   ),
                 ),
@@ -302,24 +339,28 @@ class _KycFlowScreenState extends State<KycFlowScreen> with SingleTickerProvider
             left: 0,
             right: 0,
             child: Center(
-              child: _isProcessing 
-                ? const CircularProgressIndicator(color: Colors.white)
-                : GestureDetector(
-                    onTap: _takePicture,
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 4),
-                        color: Colors.white.withOpacity(0.3)
+              child: _isProcessing
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : GestureDetector(
+                      onTap: _takePicture,
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 4),
+                          color: Colors.white.withOpacity(0.3),
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt,
+                          color: Colors.white,
+                          size: 36,
+                        ),
                       ),
-                      child: const Icon(Icons.camera_alt, color: Colors.white, size: 36),
                     ),
-                  ),
             ),
           ),
-          
+
           // Back Button
           Positioned(
             top: 40,
@@ -342,18 +383,19 @@ class _KycFlowScreenState extends State<KycFlowScreen> with SingleTickerProvider
       height: 12,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isCompleted ? Colors.green : (isActive ? Colors.white : Colors.white30),
+        color: isCompleted
+            ? Colors.green
+            : (isActive ? Colors.white : Colors.white30),
       ),
-      child: isCompleted ? const Icon(Icons.check, size: 10, color: Colors.white) : null,
+      child: isCompleted
+          ? const Icon(Icons.check, size: 10, color: Colors.white)
+          : null,
     );
   }
 
   Widget _buildOverlay() {
     return ColorFiltered(
-      colorFilter: const ColorFilter.mode(
-        Colors.black54,
-        BlendMode.srcOut,
-      ),
+      colorFilter: const ColorFilter.mode(Colors.black54, BlendMode.srcOut),
       child: Stack(
         children: [
           Container(
@@ -364,11 +406,15 @@ class _KycFlowScreenState extends State<KycFlowScreen> with SingleTickerProvider
           ),
           Center(
             child: Container(
-              width: _currentStep == 2 ? 280 : MediaQuery.of(context).size.width * 0.85,
+              width: _currentStep == 2
+                  ? 280
+                  : MediaQuery.of(context).size.width * 0.85,
               height: _currentStep == 2 ? 360 : 220,
               decoration: BoxDecoration(
                 color: Colors.black,
-                borderRadius: BorderRadius.circular(_currentStep == 2 ? 140 : 16),
+                borderRadius: BorderRadius.circular(
+                  _currentStep == 2 ? 140 : 16,
+                ),
               ),
             ),
           ),
@@ -394,7 +440,8 @@ class _ValidationScreen extends StatefulWidget {
   State<_ValidationScreen> createState() => _ValidationScreenState();
 }
 
-class _ValidationScreenState extends State<_ValidationScreen> with SingleTickerProviderStateMixin {
+class _ValidationScreenState extends State<_ValidationScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   bool _isValidating = true;
   ValidationResult? _result;
@@ -458,8 +505,8 @@ class _ValidationScreenState extends State<_ValidationScreen> with SingleTickerP
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: _result == null 
-                        ? Colors.white30 
+                    color: _result == null
+                        ? Colors.white30
                         : (_result!.isValid ? Colors.green : Colors.red),
                     width: 3,
                   ),
@@ -484,7 +531,11 @@ class _ValidationScreenState extends State<_ValidationScreen> with SingleTickerP
                   if (_isValidating) ...[
                     RotationTransition(
                       turns: _controller,
-                      child: const Icon(Icons.sync, color: Colors.white, size: 50),
+                      child: const Icon(
+                        Icons.sync,
+                        color: Colors.white,
+                        size: 50,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     const Text(
@@ -515,7 +566,10 @@ class _ValidationScreenState extends State<_ValidationScreen> with SingleTickerP
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: Colors.black,
-                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 12,
+                          ),
                         ),
                       ),
                     ],
