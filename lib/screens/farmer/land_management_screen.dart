@@ -637,16 +637,28 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
             ),
           ),
         ),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(
+              color: Theme.of(context).dividerColor.withOpacity(0.1),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: IconButton(
             onPressed: () => _showComingSoonDialog('Edit Land'),
-            icon: Icon(Icons.edit_outlined, color: Colors.white),
+            icon: Icon(
+              Icons.edit_outlined,
+              color: Theme.of(context).iconTheme.color,
+            ),
             padding: const EdgeInsets.all(16),
             tooltip: 'Edit Land Details',
           ),
@@ -1187,16 +1199,35 @@ class _ModernLandCard extends StatelessWidget {
               height: 160,
               child: Stack(
                 children: [
+                  // Background placeholder for loading/error resilience
+                  Container(
+                    color: (isDark ? Colors.white : Colors.black).withOpacity(
+                      0.05,
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.map_rounded,
+                        color: (isDark ? Colors.white : Colors.black)
+                            .withOpacity(0.1),
+                        size: 40,
+                      ),
+                    ),
+                  ),
                   IgnorePointer(
                     child: FlutterMap(
                       options: MapOptions(
                         initialCenter: center,
                         initialZoom: 16.5,
+                        // Fix for "Access blocked" error by compliant User-Agent
+                        interactionOptions: const InteractionOptions(
+                          flags: InteractiveFlag.none,
+                        ),
                       ),
                       children: [
                         TileLayer(
                           urlTemplate:
                               'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          userAgentPackageName: 'com.farmy.app',
                           subdomains: const ['a', 'b', 'c'],
                           tileBuilder: (context, tileWidget, tile) {
                             if (!isDark) return tileWidget;
