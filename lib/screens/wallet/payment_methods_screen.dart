@@ -135,7 +135,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
 
 
   Future<void> _processCharge(double amount) async {
-    Navigator.pop(context); // Close dialog
+    // Navigator.pop(context); // Already closed by caller
     final success = await context.read<WalletProvider>().chargeCredits(amount);
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
