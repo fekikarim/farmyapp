@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'dart:math';
 import 'package:latlong2/latlong.dart';
 import '../../providers/land_provider.dart';
+import '../../utils/geometry_utils.dart';
 
 class FarmerAddLandScreen extends StatefulWidget {
   const FarmerAddLandScreen({super.key});
@@ -23,6 +25,46 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
   bool _isMapView = false;
   bool _isSatellite = true;
   final MapController _mapController = MapController();
+
+  // Advanced Map Tools
+  int _selectedToolIndex = 0; // 0: Draw, 1: Move Point, 2: Move Plot, 3: Delete
+  int? _draggingPointIndex;
+  bool _isDraggingPlot = false;
+  List<LatLng>? _initialDragPoints;
+  bool _hasConflict = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch all lands to check for conflicts
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<LandProvider>().fetchAllLands();
+    });
+  }
+
+  void _checkConflicts() {
+    final allLands = context.read<LandProvider>().allLands;
+    bool conflict = false;
+
+    if (_selectedPoints.length >= 3) {
+      for (var existingLand in allLands) {
+        if (existingLand.boundaries != null &&
+            existingLand.boundaries!.length >= 3) {
+          if (GeometryUtils.doPolygonsIntersect(
+            _selectedPoints,
+            existingLand.boundaries!,
+          )) {
+            conflict = true;
+            break;
+          }
+        }
+      }
+    }
+
+    if (_hasConflict != conflict) {
+      setState(() => _hasConflict = conflict);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -213,14 +255,17 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: theme.cardColor,
+                  color: _hasConflict
+                      ? Colors.red.withOpacity(0.05)
+                      : theme.cardColor,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: _selectedPoints.length >= 3
-                        ? Colors.green.withOpacity(0.3)
-                        : (isDark ? Colors.white : Colors.black).withOpacity(
-                            0.05,
-                          ),
+                    color: _hasConflict
+                        ? Colors.red
+                        : (_selectedPoints.length >= 3
+                              ? Colors.green.withOpacity(0.3)
+                              : (isDark ? Colors.white : Colors.black)
+                                    .withOpacity(0.05)),
                   ),
                 ),
                 child: Row(
@@ -228,18 +273,23 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color:
-                            (_selectedPoints.length >= 3
-                                    ? Colors.green
-                                    : (isDark ? Colors.white : Colors.black))
-                                .withOpacity(0.1),
+                        color: _hasConflict
+                            ? Colors.red.withOpacity(0.1)
+                            : (_selectedPoints.length >= 3
+                                      ? Colors.green
+                                      : (isDark ? Colors.white : Colors.black))
+                                  .withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        Icons.polyline_rounded,
-                        color: _selectedPoints.length >= 3
-                            ? Colors.green
-                            : (isDark ? Colors.white38 : Colors.black38),
+                        _hasConflict
+                            ? Icons.warning_rounded
+                            : Icons.polyline_rounded,
+                        color: _hasConflict
+                            ? Colors.red
+                            : (_selectedPoints.length >= 3
+                                  ? Colors.green
+                                  : (isDark ? Colors.white38 : Colors.black38)),
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -248,24 +298,32 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _selectedPoints.isEmpty
-                                ? 'Perimeter not set'
-                                : '${_selectedPoints.length} Points Defined',
+                            _hasConflict
+                                ? 'Conflict Detected'
+                                : (_selectedPoints.isEmpty
+                                      ? 'Perimeter not set'
+                                      : '${_selectedPoints.length} Points Defined'),
                             style: TextStyle(
-                              color: _selectedPoints.length >= 3
-                                  ? Colors.green
-                                  : theme.textTheme.bodyLarge?.color,
+                              color: _hasConflict
+                                  ? Colors.red
+                                  : (_selectedPoints.length >= 3
+                                        ? Colors.green
+                                        : theme.textTheme.bodyLarge?.color),
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            _selectedPoints.length < 3
-                                ? 'Tap to draw land boundaries'
-                                : 'Geometry verified and valid',
+                            _hasConflict
+                                ? 'Overlaps with existing land'
+                                : (_selectedPoints.length < 3
+                                      ? 'Tap to draw land boundaries'
+                                      : 'Geometry verified and valid'),
                             style: TextStyle(
-                              color: (isDark ? Colors.white38 : Colors.black38),
+                              color: _hasConflict
+                                  ? Colors.red.withOpacity(0.7)
+                                  : (isDark ? Colors.white38 : Colors.black38),
                               fontSize: 13,
                             ),
                           ),
@@ -366,6 +424,8 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
   Widget _buildMapPicker() {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final allLands = context.watch<LandProvider>().allLands;
+
     return Stack(
       children: [
         FlutterMap(
@@ -374,10 +434,26 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
             initialCenter: const LatLng(36.8065, 10.1815),
             initialZoom: 15.0,
             onTap: (tapPosition, latLng) {
-              setState(() {
-                _selectedPoints.add(latLng);
-              });
+              if (_selectedToolIndex == 0) {
+                // DRAW MODE
+                setState(() {
+                  _selectedPoints.add(latLng);
+                  _checkConflicts();
+                });
+              } else if (_selectedToolIndex == 1) {
+                // MOVE POINT MODE - Tap empty space deselects
+                setState(() => _draggingPointIndex = null);
+              }
             },
+            interactionOptions: InteractionOptions(
+              flags:
+                  _selectedToolIndex ==
+                      2 // If moving plot, disable map drag
+                  ? InteractiveFlag.rotate |
+                        InteractiveFlag.pinchZoom |
+                        InteractiveFlag.doubleTapZoom
+                  : InteractiveFlag.all,
+            ),
           ),
           children: [
             TileLayer(
@@ -414,58 +490,266 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                 );
               },
             ),
+
+            // Render Existing Lands
+            PolygonLayer(
+              polygons: allLands.where((l) => l.boundaries != null).map((land) {
+                return Polygon(
+                  points: land.boundaries!,
+                  color: Colors.red.withOpacity(0.15), // Conflict zones
+                  borderColor: Colors.red.withOpacity(0.5),
+                  borderStrokeWidth: 1,
+                  isFilled: true,
+                );
+              }).toList(),
+            ),
+
+            // Render Current Polygon
             if (_selectedPoints.isNotEmpty)
               PolygonLayer(
                 polygons: [
                   Polygon(
                     points: _selectedPoints,
-                    color: Colors.green.withOpacity(0.4),
-                    borderColor: Colors.white,
+                    color: _hasConflict
+                        ? Colors.red.withOpacity(0.4)
+                        : Colors.green.withOpacity(0.4),
+                    borderColor: _hasConflict ? Colors.red : Colors.white,
                     borderStrokeWidth: 3,
                     isFilled: true,
                   ),
                 ],
               ),
+
+            // Interactive Markers
             MarkerLayer(
-              markers: _selectedPoints
-                  .map(
-                    (p) => Marker(
-                      point: p,
-                      child: const Icon(
-                        Icons.circle,
-                        color: Colors.white,
-                        size: 10,
-                      ),
+              markers: _selectedPoints.asMap().entries.map((entry) {
+                final idx = entry.key;
+                final point = entry.value;
+                final isSelected = _draggingPointIndex == idx;
+
+                return Marker(
+                  point: point,
+                  width: 40,
+                  height: 40,
+                  child: GestureDetector(
+                    onPanStart: (details) {
+                      if (_selectedToolIndex == 1) {
+                        setState(() => _draggingPointIndex = idx);
+                      } else if (_selectedToolIndex == 2) {
+                        setState(() {
+                          _isDraggingPlot = true;
+                          _initialDragPoints = List.from(_selectedPoints);
+                        });
+                      }
+                    },
+                    onPanUpdate: (details) {
+                      if (_selectedToolIndex == 1 &&
+                          _draggingPointIndex != null) {
+                        // Move single point
+                        final pointOffset = _mapController.camera
+                            .latLngToScreenPoint(point);
+                        final newScreenPoint = Point<double>(
+                          pointOffset.x + details.delta.dx,
+                          pointOffset.y + details.delta.dy,
+                        );
+                        final newLatLng = _mapController.camera.pointToLatLng(
+                          newScreenPoint,
+                        );
+
+                        setState(() {
+                          _selectedPoints[idx] = newLatLng;
+                          _checkConflicts();
+                        });
+                      } else if (_selectedToolIndex == 2 &&
+                          _isDraggingPlot &&
+                          _initialDragPoints != null) {
+                        // Move entire plot
+                        final pointOffset = _mapController.camera
+                            .latLngToScreenPoint(
+                              point,
+                            ); // use current marker as anchor
+                        final newScreenPoint = Point<double>(
+                          pointOffset.x + details.delta.dx,
+                          pointOffset.y + details.delta.dy,
+                        );
+                        final newLatLng = _mapController.camera.pointToLatLng(
+                          newScreenPoint,
+                        );
+
+                        final latDelta = newLatLng.latitude - point.latitude;
+                        final lngDelta = newLatLng.longitude - point.longitude;
+
+                        setState(() {
+                          for (int i = 0; i < _selectedPoints.length; i++) {
+                            _selectedPoints[i] = LatLng(
+                              _initialDragPoints![i].latitude + latDelta,
+                              _initialDragPoints![i].longitude + lngDelta,
+                            );
+                          }
+                          _checkConflicts();
+                        });
+                      }
+                    },
+                    onPanEnd: (_) {
+                      setState(() {
+                        _draggingPointIndex = null;
+                        _isDraggingPlot = false;
+                        _initialDragPoints = null;
+                        _checkConflicts();
+                      });
+                    },
+                    onTap: () {
+                      if (_selectedToolIndex == 3) {
+                        // DELETE TOOL
+                        setState(() {
+                          _selectedPoints.removeAt(idx);
+                          _checkConflicts();
+                        });
+                      }
+                    },
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: 20, // Hitbox
+                          height: 20,
+                          decoration: BoxDecoration(
+                            color: _selectedToolIndex == 3
+                                ? Colors.red
+                                : (_selectedToolIndex == 1 && isSelected
+                                      ? Colors.yellow
+                                      : Colors.white),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: _hasConflict ? Colors.red : Colors.green,
+                              width: 2,
+                            ),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: _selectedToolIndex == 3
+                              ? const Icon(
+                                  Icons.close,
+                                  size: 12,
+                                  color: Colors.white,
+                                )
+                              : null,
+                        ),
+                      ],
                     ),
-                  )
-                  .toList(),
+                  ),
+                );
+              }).toList(),
             ),
           ],
         ),
+
+        // Tool Palette
         Positioned(
           top: 20,
           left: 20,
           right: 20,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.7),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              color: theme.cardColor,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            child: const Text(
-              'Tap on the map to add points and define the land boundaries.',
-              style: TextStyle(color: Colors.white, fontSize: 13),
-              textAlign: TextAlign.center,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildToolButton(0, Icons.edit_location_alt_rounded, 'Draw'),
+                _buildToolButton(1, Icons.open_with_rounded, 'Move Point'),
+                _buildToolButton(2, Icons.drag_indicator_rounded, 'Move All'),
+                _buildToolButton(3, Icons.delete_outline_rounded, 'Delete'),
+              ],
             ),
           ),
         ),
+
+        // Instructions
+        Positioned(
+          top: 100,
+          left: 40,
+          right: 40,
+          child: AnimatedOpacity(
+            opacity: _selectedPoints.isEmpty ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 300),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.6),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                'Select "Draw" and tap map to add points',
+                style: TextStyle(color: Colors.white, fontSize: 12),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+
+        // Validation Warning
+        if (_hasConflict)
+          Positioned(
+            bottom: 100,
+            left: 20,
+            right: 20,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.warning_amber_rounded, color: Colors.white),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Boundary Conflict! Overlaps with an existing property.',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
         Positioned(
           bottom: 20,
           left: 20,
           child: FloatingActionButton.extended(
             heroTag: 'clear_points',
-            onPressed: () => setState(() => _selectedPoints.clear()),
+            onPressed: () {
+              setState(() {
+                _selectedPoints.clear();
+                _checkConflicts();
+              });
+            },
             label: const Text('Clear'),
             icon: const Icon(Icons.clear),
             backgroundColor: Colors.redAccent,
@@ -490,10 +774,12 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               const SizedBox(height: 8),
               FloatingActionButton.extended(
                 heroTag: 'confirm_map',
-                onPressed: () => setState(() => _isMapView = false),
+                onPressed: _hasConflict
+                    ? null
+                    : () => setState(() => _isMapView = false),
                 label: const Text('Confirm'),
                 icon: const Icon(Icons.check),
-                backgroundColor: Colors.green,
+                backgroundColor: _hasConflict ? Colors.grey : Colors.green,
                 foregroundColor: Colors.white,
                 elevation: 4,
               ),
@@ -504,10 +790,57 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
     );
   }
 
+  Widget _buildToolButton(int index, IconData icon, String label) {
+    final isSelected = _selectedToolIndex == index;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedToolIndex = index),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Colors.green.withOpacity(0.1)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? Colors.green : Colors.transparent,
+            width: 1.5,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 24,
+              color: isSelected
+                  ? Colors.green
+                  : Theme.of(context).disabledColor,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected
+                    ? Colors.green
+                    : Theme.of(context).disabledColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedPoints.length < 3) {
       _showErrorSnackBar('Please select at least 3 points on the map.');
+      return;
+    }
+    if (_hasConflict) {
+      _showErrorSnackBar('Cannot publish: Boundary conflicts detected.');
       return;
     }
 
