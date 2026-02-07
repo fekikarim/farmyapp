@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/land_provider.dart';
+import '../../models/land_rental_model.dart'; 
+import 'package:intl/intl.dart';
 
 class InvestorMyInvestmentsScreen extends StatefulWidget {
   const InvestorMyInvestmentsScreen({super.key});
@@ -41,7 +43,7 @@ class _InvestorMyInvestmentsScreenState
 
           return Column(
             children: [
-              _buildOverviewCard(),
+              _buildOverviewCard(provider.myRentals),
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.all(16),
@@ -56,9 +58,25 @@ class _InvestorMyInvestmentsScreenState
                           child: Icon(Icons.landscape, color: Colors.white),
                         ),
                         title: Text(
-                          'Land Plot #${rental.landId.substring(0, 8)}',
+                          rental.land?.name ?? 'Land Plot #${rental.landId.substring(0, 8)}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        subtitle: Text('Monthly: ${rental.monthlyRent} TND'),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 4),
+                            Text('Rent: ${NumberFormat('#,###').format(rental.monthlyRent)} TND/mo'),
+                            if (rental.rentalEndDate != null)
+                              Text(
+                                'Ends: ${DateFormat('MMM dd, yyyy').format(rental.rentalEndDate!)}',
+                                style: TextStyle(
+                                    color: (rental.rentalEndDate!.difference(DateTime.now()).inDays <= 30) 
+                                        ? Colors.orange 
+                                        : Colors.grey
+                                ),
+                              ),
+                          ],
+                        ),
                         trailing: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 10,
@@ -93,7 +111,42 @@ class _InvestorMyInvestmentsScreenState
     );
   }
 
-  Widget _buildOverviewCard() {
+  Widget _buildOverviewCard(List<LandRental> rentals) {
+    // Calculate metrics
+    double totalCapital = 0;
+    int activeLands = 0;
+    int expiringSoon = 0;
+    final now = DateTime.now();
+
+    for (var rental in rentals) {
+      // Calculate total contract value
+      if (rental.rentalEndDate != null) {
+         final durationInMonths = (rental.rentalEndDate!.year - rental.rentalStartDate.year) * 12 + 
+                                  (rental.rentalEndDate!.month - rental.rentalStartDate.month);
+         // Adjust for partial months if needed, but simple diff is fine for now
+         // Actually, let's just use monthlyRent * duration roughly
+         // Or if paymentStatus is paid, we assume it's fully paid? 
+         // Let's assume Total Capital = sum of all rental contracts (monthly * months)
+         if (durationInMonths > 0) {
+            totalCapital += rental.monthlyRent * durationInMonths;
+         } else {
+            totalCapital += rental.monthlyRent; // At least 1 month
+         }
+      }
+
+      if (rental.paymentStatus == PaymentStatus.paid) { // Assuming enum match
+         activeLands++;
+         
+         // Check expiry
+         if (rental.rentalEndDate != null) {
+             final daysUntilExpiry = rental.rentalEndDate!.difference(now).inDays;
+             if (daysUntilExpiry > 0 && daysUntilExpiry <= 30) {
+                 expiringSoon++;
+             }
+         }
+      }
+    }
+
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.all(16),
@@ -117,9 +170,9 @@ class _InvestorMyInvestmentsScreenState
             style: TextStyle(color: Colors.white70, fontSize: 16),
           ),
           const SizedBox(height: 8),
-          const Text(
-            '14,400 TND',
-            style: TextStyle(
+          Text(
+            '${totalCapital.toStringAsFixed(0)} TND', // Formatted
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 32,
               fontWeight: FontWeight.bold,
@@ -129,9 +182,9 @@ class _InvestorMyInvestmentsScreenState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildMetric('Active Lands', '3'),
-              _buildMetric('Expiring Soon', '1'),
-              _buildMetric('ROI Est.', '12%'),
+              _buildMetric('Active Lands', activeLands.toString()),
+              _buildMetric('Expiring Soon', expiringSoon.toString()),
+              _buildMetric('ROI Est.', '12%'), // Still static for now
             ],
           ),
         ],
