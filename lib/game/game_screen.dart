@@ -62,11 +62,19 @@ class _GameScreenState extends State<GameScreen> {
         context,
       );
       await precacheImage(
-        const AssetImage('assets/game_images/textures/soil_background.png'),
+        const AssetImage('assets/game_images/textures/soil_background.jpg'),
         context,
       );
       await precacheImage(
         const AssetImage('assets/game_images/3d/outside_tree/tree1.png'),
+        context,
+      );
+      await precacheImage(
+        const AssetImage('assets/game_images/3d/outside_tree/tree2.png'),
+        context,
+      );
+      await precacheImage(
+        const AssetImage('assets/game_images/3d/outside_tree/tree3.png'),
         context,
       );
       return true;

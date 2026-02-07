@@ -61,6 +61,8 @@ class IsometricMap extends StatelessWidget {
         // Determine if this is a "border tree" row (within 2 tiles of the main grid)
         // Only for background tiles on the TOP sides (x < 0 or y < 0)
         bool isTreeRow = false;
+        String? treeAsset;
+
         if (!isForeground) {
           // Top-Left border (x is negative) or Top-Right border (y is negative)
           bool isTopSide = (x >= -2 && x < 0) || (y >= -2 && y < 0);
@@ -68,8 +70,12 @@ class IsometricMap extends StatelessWidget {
           if (isTopSide) {
             // Pseudo-random placement based on coordinates to keep it stable
             // 40% chance of a tree
-            if (((x * 7 + y * 13).abs() % 5) < 2) {
+            int hash = (x * 7 + y * 13).abs();
+            if ((hash % 5) < 2) {
               isTreeRow = true;
+              // Pick one of 3 trees
+              int variant = (hash % 3) + 1;
+              treeAsset = 'assets/game_images/3d/outside_tree/tree$variant.png';
             }
           }
         }
@@ -84,6 +90,7 @@ class IsometricMap extends StatelessWidget {
           isoY: isoY,
           isForeground: isForeground,
           hasTree: isTreeRow,
+          treeAsset: treeAsset,
         ));
       }
     }
@@ -107,19 +114,19 @@ class IsometricMap extends StatelessWidget {
       return Positioned(
         left: e.isoX,
         top: e.isoY,
-        child: _buildTile(e.x, e.y, isBackground: !e.isForeground, hasTree: e.hasTree),
+        child: _buildTile(e.x, e.y, isBackground: !e.isForeground, hasTree: e.hasTree, treeAsset: e.treeAsset),
       );
     }).toList();
   }
 
-  Widget _buildTile(int x, int y, {required bool isBackground, bool hasTree = false}) {
+  Widget _buildTile(int x, int y, {required bool isBackground, bool hasTree = false, String? treeAsset}) {
     // Check if there is an item at this position (only for foreground)
     final dynamic cellData = (!isBackground && matrix.length > y && matrix[y].length > x) 
         ? matrix[y][x] 
         : null;
 
     final String asset = isBackground 
-        ? 'assets/game_images/textures/soil_background.png'
+        ? 'assets/game_images/textures/soil_background.jpg'
         : 'assets/game_images/textures/grass_land.jpg';
 
     return SizedBox(
@@ -154,11 +161,11 @@ class IsometricMap extends StatelessWidget {
              ),
 
           // Tree Overlay (if background border)
-          if (hasTree)
+          if (hasTree && treeAsset != null)
             Positioned(
               bottom: tileHeight / 2 - 10, // Adjust vertical position to stand on tile
               child: Image.asset(
-                'assets/game_images/3d/outside_tree/tree1.png',
+                treeAsset!,
                 width: 100, // Adjust size as needed
                 height: 140,
                 fit: BoxFit.contain,
@@ -224,6 +231,7 @@ class _TileEntry {
   final double isoY;
   final bool isForeground;
   final bool hasTree;
+  final String? treeAsset;
 
   _TileEntry({
     required this.x,
@@ -232,6 +240,7 @@ class _TileEntry {
     required this.isoY,
     required this.isForeground,
     required this.hasTree,
+    this.treeAsset,
   });
 }
 
