@@ -131,8 +131,12 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                         polygons: [
                           Polygon(
                             points: _land.boundaries!,
-                            color: Colors.green.withOpacity(0.4),
-                            borderColor: Colors.green,
+                            color: _land.isRented
+                                ? Colors.orange.withOpacity(0.4)
+                                : Colors.green.withOpacity(0.4),
+                            borderColor: _land.isRented
+                                ? Colors.orange
+                                : Colors.green,
                             borderStrokeWidth: 3,
                             isFilled: true,
                           ),
@@ -175,16 +179,18 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1),
+                        color: (_land.isRented ? Colors.orange : Colors.green)
+                            .withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Colors.green.withOpacity(0.2),
+                          color: (_land.isRented ? Colors.orange : Colors.green)
+                              .withOpacity(0.2),
                         ),
                       ),
-                      child: const Text(
-                        'PREMIUM FARMLAND',
+                      child: Text(
+                        _land.isRented ? 'ALREADY RENTED' : 'PREMIUM FARMLAND',
                         style: TextStyle(
-                          color: Colors.green,
+                          color: _land.isRented ? Colors.orange : Colors.green,
                           fontSize: 10,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1.2,
@@ -329,24 +335,31 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                     ],
                   ),
                   child: ElevatedButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RentalCheckoutScreen(land: _land),
-                      ),
-                    ),
+                    onPressed: _land.isRented
+                        ? null
+                        : () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  RentalCheckoutScreen(land: _land),
+                            ),
+                          ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
+                      backgroundColor: _land.isRented
+                          ? Colors.white10
+                          : Colors.green,
+                      foregroundColor: _land.isRented
+                          ? Colors.white24
+                          : Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 18),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: const Text(
-                      'RENT NOW',
-                      style: TextStyle(
+                    child: Text(
+                      _land.isRented ? 'OCCUPIED' : 'RENT NOW',
+                      style: const TextStyle(
                         fontWeight: FontWeight.w900,
                         letterSpacing: 1.1,
                       ),

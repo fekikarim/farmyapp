@@ -1,4 +1,5 @@
 import 'package:latlong2/latlong.dart';
+import 'land_rental_model.dart';
 
 class Land {
   final String id;
@@ -13,6 +14,7 @@ class Land {
   final bool isActive;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final List<LandRental> rentals;
 
   Land({
     required this.id,
@@ -27,7 +29,18 @@ class Land {
     this.isActive = true,
     required this.createdAt,
     required this.updatedAt,
+    this.rentals = const [],
   });
+
+  bool get isRented {
+    if (rentals.isEmpty) return false;
+    final now = DateTime.now();
+    return rentals.any(
+      (r) =>
+          r.paymentStatus != PaymentStatus.cancelled &&
+          (r.rentalEndDate == null || r.rentalEndDate!.isAfter(now)),
+    );
+  }
 
   factory Land.fromJson(Map<String, dynamic> json) {
     final wM = (json['width_m'] ?? 10.0).toDouble();
@@ -49,6 +62,11 @@ class Land {
       isActive: json['is_active'] ?? true,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
+      rentals: json['rentals'] != null
+          ? (json['rentals'] as List)
+                .map((r) => LandRental.fromJson(r))
+                .toList()
+          : [],
     );
   }
 

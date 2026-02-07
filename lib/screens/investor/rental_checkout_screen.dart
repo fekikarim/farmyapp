@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../../models/land_model.dart';
@@ -20,6 +22,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   bool _isLoading = false;
   bool _acceptedTerms = false;
   final double _monthlyRent = 1200.0;
+  DateTime _startDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +52,16 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildPremiumHeader(),
+                const Text(
+                  'Lease Start Date',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _buildStartDateSelector(),
                 const SizedBox(height: 32),
                 const Text(
                   'Rental Duration',
@@ -249,13 +262,100 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
     );
   }
 
+  Widget _buildStartDateSelector() {
+    return GestureDetector(
+      onTap: () => _selectStartDate(context),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1A1D21),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.calendar_today_rounded,
+                color: Colors.green,
+              ),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Starting From',
+                    style: TextStyle(color: Colors.white38, fontSize: 13),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    DateFormat('MMMM dd, yyyy').format(_startDate),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.edit_calendar_rounded,
+              color: Colors.green,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _selectStartDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _startDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Colors.green,
+              onPrimary: Colors.white,
+              surface: Color(0xFF1A1D21),
+              onSurface: Colors.white,
+            ),
+            dialogBackgroundColor: const Color(0xFF131518),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != _startDate) {
+      HapticFeedback.lightImpact();
+      setState(() {
+        _startDate = picked;
+      });
+    }
+  }
+
   Widget _buildPeriodSelector() {
     return Row(
       children: [6, 12, 24].map((m) {
         final isSelected = _months == m;
         return Expanded(
           child: GestureDetector(
-            onTap: () => setState(() => _months = m),
+            onTap: () {
+              HapticFeedback.selectionClick();
+              setState(() => _months = m);
+            },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeOutCubic,
@@ -368,6 +468,8 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         children: [
           _buildRow('Monthly Price', '${_monthlyRent.toInt()} TND'),
           const SizedBox(height: 16),
+          _buildRow('Starts', DateFormat('yMMMd').format(_startDate)),
+          const SizedBox(height: 16),
           _buildRow('Lease Term', '$_months Months'),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20),
@@ -424,7 +526,10 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
       children: [
         Checkbox(
           value: _acceptedTerms,
-          onChanged: (v) => setState(() => _acceptedTerms = v!),
+          onChanged: (v) {
+            HapticFeedback.lightImpact();
+            setState(() => _acceptedTerms = v!);
+          },
           activeColor: Colors.green,
           checkColor: Colors.white,
           side: BorderSide(color: Colors.white.withOpacity(0.2)),
@@ -469,7 +574,10 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
               child: ElevatedButton(
                 onPressed: (_isLoading || !_acceptedTerms)
                     ? null
-                    : _handlePayment,
+                    : () {
+                        HapticFeedback.mediumImpact();
+                        _handlePayment();
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
@@ -545,10 +653,21 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
     setState(() => _isLoading = true);
 
     try {
+      final startDate = _startDate;
+      final endDate = DateTime(
+        startDate.year,
+        startDate.month + _months,
+        startDate.day,
+      );
+
       final success = await context.read<LandProvider>().rentLand({
         'land_id': widget.land.id,
-        'months': _months,
-        'rental_start_date': DateTime.now().toIso8601String(),
+        'rental_start_date': startDate.toIso8601String(),
+        'rental_end_date': endDate.toIso8601String(),
+        'monthly_rent': _monthlyRent,
+        'payment_due_date': DateTime.now()
+            .toIso8601String(), // Due today for immediate lease
+        'payment_status': 'paid',
       });
 
       if (success && mounted) {

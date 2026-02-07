@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -142,6 +143,21 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                 ? lands[0].boundaries![0]
                 : const LatLng(36.8065, 10.1815),
             initialZoom: 13.0,
+            onTap: (tapPosition, point) {
+              for (var land in lands) {
+                if (land.boundaries != null &&
+                    _isPointInPolygon(point, land.boundaries!)) {
+                  HapticFeedback.lightImpact();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LandDetailsScreen(land: land),
+                    ),
+                  );
+                  return;
+                }
+              }
+            },
           ),
           children: [
             TileLayer(
@@ -159,8 +175,10 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                   .map(
                     (land) => Polygon(
                       points: land.boundaries!,
-                      color: Colors.green.withOpacity(0.3),
-                      borderColor: Colors.green,
+                      color: land.isRented
+                          ? Colors.orange.withOpacity(0.3)
+                          : Colors.green.withOpacity(0.3),
+                      borderColor: land.isRented ? Colors.orange : Colors.green,
                       borderStrokeWidth: 2,
                       isFilled: true,
                       label: land.name,
@@ -202,6 +220,26 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
         ),
       ],
     );
+  }
+
+  bool _isPointInPolygon(LatLng point, List<LatLng> polygon) {
+    var isInside = false;
+    var j = polygon.length - 1;
+    for (var i = 0; i < polygon.length; i++) {
+      if ((polygon[i].latitude < point.latitude &&
+                  polygon[j].latitude >= point.latitude ||
+              polygon[j].latitude < point.latitude &&
+                  polygon[i].latitude >= point.latitude) &&
+          (polygon[i].longitude +
+                  (point.latitude - polygon[i].latitude) /
+                      (polygon[j].latitude - polygon[i].latitude) *
+                      (polygon[j].longitude - polygon[i].longitude) <
+              point.longitude)) {
+        isInside = !isInside;
+      }
+      j = i;
+    }
+    return isInside;
   }
 
   Widget _buildSkeletonLoader() {
@@ -506,8 +544,12 @@ class _InvestorLandCard extends StatelessWidget {
                             polygons: [
                               Polygon(
                                 points: land.boundaries!,
-                                color: Colors.green.withOpacity(0.4),
-                                borderColor: Colors.green,
+                                color: land.isRented
+                                    ? Colors.orange.withOpacity(0.4)
+                                    : Colors.green.withOpacity(0.4),
+                                borderColor: land.isRented
+                                    ? Colors.orange
+                                    : Colors.green,
                                 borderStrokeWidth: 2,
                                 isFilled: true,
                               ),
@@ -613,14 +655,19 @@ class _InvestorLandCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.green.withAlpha(50),
+        color: (land.isRented ? Colors.orange : Colors.green).withAlpha(50),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.green.withOpacity(0.5), width: 0.5),
+        border: Border.all(
+          color: (land.isRented ? Colors.orange : Colors.green).withOpacity(
+            0.5,
+          ),
+          width: 0.5,
+        ),
       ),
-      child: const Text(
-        'AVAILABLE',
+      child: Text(
+        land.isRented ? 'RENTED' : 'AVAILABLE',
         style: TextStyle(
-          color: Colors.green,
+          color: land.isRented ? Colors.orange : Colors.green,
           fontSize: 10,
           fontWeight: FontWeight.w900,
           letterSpacing: 1.2,
