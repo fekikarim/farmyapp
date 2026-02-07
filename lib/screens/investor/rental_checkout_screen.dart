@@ -6,7 +6,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../../models/land_model.dart';
 import '../../providers/land_provider.dart';
-import '../../providers/wallet_provider.dart'; // Added
+import '../../providers/wallet_provider.dart'; 
+import '../wallet/payment_methods_screen.dart'; // Added
 import 'dart:ui';
 
 class RentalCheckoutScreen extends StatefulWidget {
@@ -961,21 +962,88 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         'payment_status': 'paid', // Intention to pay
         'payment_method_id': _selectedPaymentMethod?.id, // Added
       });
+      
+      // Wait for loading to finish
+      if (mounted) setState(() => _isLoading = false);
 
-      if (success && mounted) {
-        _showSuccessDialog();
-      } else if (mounted) {
-        _showErrorSnackBar(
-          context.read<LandProvider>().error ??
-              'Payment failed, please try again.',
-        );
+      if (success) {
+        if (mounted) _showSuccessDialog();
+      } else {
+        // This block might not be reached if provider throws exception, 
+        // but if it returns false, we show error.
+        if (mounted) {
+           _showErrorSnackBar(
+            context.read<LandProvider>().error ??
+                'Payment failed, please try again.',
+          );
+        }
       }
     } catch (e) {
-      if (mounted) _showErrorSnackBar(e.toString());
-    } finally {
       if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+          final errorMsg = e.toString();
+          // Check for payment-related errors
+          if (errorMsg.contains("PaymentMethod") || errorMsg.contains("payment") || errorMsg.contains("Stripe")) {
+               _showPaymentFailureDialog(errorMsg);
+          } else {
+               _showErrorSnackBar(errorMsg);
+          }
+      }
     }
   }
+
+  void _showPaymentFailureDialog(String errorMsg) {
+       final isDark = Theme.of(context).brightness == Brightness.dark;
+       showDialog(
+           context: context,
+           builder: (context) => AlertDialog(
+               backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+               title: Text("Payment Failed", style: TextStyle(color: isDark ? Colors.white : Colors.black)),
+               content: Column(
+                   mainAxisSize: MainAxisSize.min,
+                   children: [
+                       Text(
+                           "There was an issue with your payment method.",
+                           style: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
+                       ),
+                       const SizedBox(height: 8),
+                       Text(
+                           errorMsg.replaceAll("Exception: ", ""),
+                           style: const TextStyle(color: Colors.redAccent, fontSize: 12),
+                           maxLines: 3,
+                           overflow: TextOverflow.ellipsis,
+                       ),
+                   ],
+               ),
+               actions: [
+                   TextButton(
+                       onPressed: () => Navigator.pop(context),
+                       child: const Text("Cancel"),
+                   ),
+                   ElevatedButton(
+                       style: ElevatedButton.styleFrom(
+                           backgroundColor: Colors.green,
+                           foregroundColor: Colors.white,
+                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                       ),
+                       onPressed: () {
+                           Navigator.pop(context); // Close dialog
+                           Navigator.push(
+                               context, 
+                               MaterialPageRoute(builder: (_) => const PaymentMethodsScreen())
+                           ).then((_) {
+                               // Refresh wallet when coming back
+                               context.read<WalletProvider>().fetchWalletStatus();
+                           });
+                       },
+                       child: const Text("Manage Cards"),
+                   ),
+               ],
+           ),
+       );
+  }
+
 
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
