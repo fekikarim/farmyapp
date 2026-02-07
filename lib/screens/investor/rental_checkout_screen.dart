@@ -475,12 +475,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                     TextButton.icon(
                         icon: Icon(Icons.add_card, color: Colors.green),
                         label: Text("Add Payment Method", style: TextStyle(color: Colors.green)),
-                        onPressed: () {
-                             // TODO: Navigate to Wallet to add card
-                            Navigator.pop(context); // Go back for now
-                            // Or show snackbar
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please add a card in your Wallet first.")));
-                        },
+                        onPressed: () => _handleAddCard(context),
                     ),
                 ],
             ),
@@ -609,6 +604,41 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                               ),
                           ),
                           const SizedBox(height: 24),
+                          // "Add New Card" Button
+                           Padding(
+                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                               child: InkWell(
+                                   onTap: () {
+                                       Navigator.pop(context); // Close sheet
+                                       _handleAddCard(context); // Trigger add card
+                                   },
+                                   borderRadius: BorderRadius.circular(16),
+                                   child: Container(
+                                       padding: const EdgeInsets.all(16),
+                                       decoration: BoxDecoration(
+                                           color: Colors.white.withOpacity(0.05),
+                                           borderRadius: BorderRadius.circular(16),
+                                           border: Border.all(color: Colors.white.withOpacity(0.1)),
+                                       ),
+                                       child: Row(
+                                           mainAxisAlignment: MainAxisAlignment.center,
+                                           children: [
+                                               Icon(Icons.add_circle_outline_rounded, color: Colors.green),
+                                               const SizedBox(width: 12),
+                                               Text(
+                                                   "Add New Card",
+                                                   style: TextStyle(
+                                                       color: Colors.white,
+                                                       fontWeight: FontWeight.bold,
+                                                       fontSize: 16,
+                                                   ),
+                                               ),
+                                           ],
+                                       ),
+                                   ),
+                               ),
+                           ),
+                           const SizedBox(height: 12),
                           Expanded(
                               child: ListView.separated(
                                   padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -1044,6 +1074,41 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
        );
   }
 
+
+  
+  Future<void> _handleAddCard(BuildContext context) async {
+    setState(() => _isLoading = true);
+    try {
+      final success = await context.read<WalletProvider>().addCard();
+      if (success && mounted) {
+           ScaffoldMessenger.of(context).showSnackBar(
+               const SnackBar(content: Text("Card added successfully"))
+           );
+           // Auto-select the new card (logic relies on provider list update)
+           // We can assume the last added card is the one we want, or just let the user pick it.
+           // But better to find the one that wasn't there before? 
+           // For simplicity, we just refresh. build() will pick it up or user can select it.
+           
+           // Force select if it's the only one or default logic handles it
+           final provider = context.read<WalletProvider>();
+           if (provider.paymentMethods.isNotEmpty) {
+               setState(() {
+                   // Prefer the one that is default, or just the first one if we can't tell which is new
+                   // Usually Stripe newly added card becomes default or is just added.
+                   _selectedPaymentMethod = provider.paymentMethods.firstWhere((p) => p.isDefault, orElse: () => provider.paymentMethods.first);
+               });
+           }
+      } else if (mounted) {
+           ScaffoldMessenger.of(context).showSnackBar(
+               const SnackBar(content: Text("Cancelled or failed to add card"), backgroundColor: Colors.orange)
+           );
+      }
+    } catch (e) {
+        if(mounted) _showErrorSnackBar(e.toString());
+    } finally {
+        if(mounted) setState(() => _isLoading = false);
+    }
+  }
 
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
