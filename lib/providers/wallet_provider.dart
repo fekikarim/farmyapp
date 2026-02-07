@@ -34,6 +34,15 @@ class PaymentMethod {
       isDefault: json['is_default'] ?? false,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is PaymentMethod && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class WalletProvider with ChangeNotifier {

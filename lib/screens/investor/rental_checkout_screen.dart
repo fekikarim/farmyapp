@@ -40,17 +40,8 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     
-    // Auto-select default payment method if available and none selected
-    final walletProvider = context.watch<WalletProvider>();
-    if (_selectedPaymentMethod == null && walletProvider.paymentMethods.isNotEmpty) {
-        try {
-            _selectedPaymentMethod = walletProvider.paymentMethods.firstWhere((p) => p.isDefault);
-        } catch (_) {
-            if (walletProvider.paymentMethods.isNotEmpty) {
-                _selectedPaymentMethod = walletProvider.paymentMethods.first;
-            }
-        }
-    }
+    // Auto-select logic is now inside _buildPaymentMethodSelector to react to state changes and credits
+    final walletProvider = context.watch<WalletProvider>(); // Keep watcher here
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -405,7 +396,46 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   }
 
   Widget _buildPaymentMethodSelector(WalletProvider walletProvider) {
-    if (walletProvider.paymentMethods.isEmpty) {
+    // 1. Check if credits are sufficient
+    final totalAmount = _monthlyRent * _months;
+    final canUseCredits = walletProvider.credits >= totalAmount;
+
+    // Define a "Credits" payment method placeholder
+    final creditsMethod = PaymentMethod(
+        id: 'WALLET_CREDITS',
+        type: 'credits',
+        last4: '',
+        brand: 'Wallet Credits',
+        expiryMonth: '',
+        expiryYear: '',
+        isDefault: false,
+    );
+
+    // Auto-select credits if available and sufficient, AND no other method explicitly selected yet
+    if (_selectedPaymentMethod == null) {
+        if (canUseCredits) {
+            _selectedPaymentMethod = creditsMethod;
+        } else if (walletProvider.paymentMethods.isNotEmpty) {
+             try {
+                _selectedPaymentMethod = walletProvider.paymentMethods.firstWhere((p) => p.isDefault);
+            } catch (_) {
+                _selectedPaymentMethod = walletProvider.paymentMethods.first;
+            }
+        }
+    }
+
+    // Pass the combined list to dropdown
+    final allMethods = [
+        if (canUseCredits) creditsMethod,
+        ...walletProvider.paymentMethods
+    ];
+    
+    // Safety check: Ensure selected method exists in the current list
+    if (_selectedPaymentMethod != null && !allMethods.contains(_selectedPaymentMethod)) {
+        _selectedPaymentMethod = null;
+    }
+
+    if (allMethods.isEmpty) {
         return Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -413,17 +443,23 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.white.withOpacity(0.05)),
             ),
-            child: Center(
-                child: TextButton.icon(
-                    icon: Icon(Icons.add_card, color: Colors.green),
-                    label: Text("Add Payment Method", style: TextStyle(color: Colors.green)),
-                    onPressed: () {
-                        // TODO: Navigate to Wallet to add card
-                        Navigator.pop(context); // Go back for now
-                        // Or show snackbar
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please add a card in your Wallet first.")));
-                    },
-                ),
+            child: Column(
+                children: [
+                    Text(
+                        'Insufficient Credits (${NumberFormat('#,###').format(walletProvider.credits)} TND)',
+                        style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    TextButton.icon(
+                        icon: Icon(Icons.add_card, color: Colors.green),
+                        label: Text("Add Payment Method", style: TextStyle(color: Colors.green)),
+                        onPressed: () {
+                            // TODO: Navigate to Wallet to add card
+                            Navigator.pop(context); 
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please add a card in your Wallet first.")));
+                        },
+                    ),
+                ],
             ),
         );
     }
@@ -440,10 +476,13 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1),
+              color: (_selectedPaymentMethod?.id == 'WALLET_CREDITS' ? Colors.amber : Colors.blue).withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.credit_card_rounded, color: Colors.blue),
+            child: Icon(
+                _selectedPaymentMethod?.id == 'WALLET_CREDITS' ? Icons.account_balance_wallet_rounded : Icons.credit_card_rounded, 
+                color: _selectedPaymentMethod?.id == 'WALLET_CREDITS' ? Colors.amber : Colors.blue
+            ),
           ),
           const SizedBox(width: 20),
           Expanded(
@@ -453,7 +492,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                     dropdownColor: const Color(0xFF1A1D21),
                     isExpanded: true,
                     icon: Icon(Icons.keyboard_arrow_down, color: Colors.green),
-                    items: walletProvider.paymentMethods.map((method) {
+                    items: allMethods.map((method) {
                         return DropdownMenuItem(
                             value: method,
                             child: Column(
@@ -461,16 +500,19 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                     Text(
-                                        '${method.brand.toUpperCase()} ending in ${method.last4}',
+                                        method.id == 'WALLET_CREDITS' 
+                                            ? 'Wallet Credits' 
+                                            : '${method.brand.toUpperCase()} ending in ${method.last4}',
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16,
                                         ),
                                     ),
-                                    if (method.isDefault)
                                     Text(
-                                        'Default Method',
+                                        method.id == 'WALLET_CREDITS'
+                                            ? 'Balance: ${NumberFormat('#,###').format(walletProvider.credits)} TND'
+                                            : (method.isDefault ? 'Default Method' : 'Saved Card'),
                                         style: TextStyle(
                                             color: Colors.white38,
                                             fontSize: 12,
