@@ -7,8 +7,12 @@ import 'package:image/image.dart' as img;
 import '../../providers/product_provider.dart';
 import '../../models/product_type_model.dart';
 
+import '../../models/product_model.dart';
+
 class AddProductScreen extends StatefulWidget {
-  const AddProductScreen({super.key});
+  final Product? product;
+
+  const AddProductScreen({super.key, this.product});
 
   @override
   State<AddProductScreen> createState() => _AddProductScreenState();
@@ -21,7 +25,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _priceController = TextEditingController();
   final _quantityController = TextEditingController();
   final _unitController = TextEditingController();
-  
+
   File? _selectedImage;
   String? _selectedProductTypeId;
 
@@ -29,6 +33,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
   void initState() {
     super.initState();
     Future.microtask(() => context.read<ProductProvider>().fetchProductTypes());
+
+    if (widget.product != null) {
+      _titleController.text = widget.product!.title;
+      _descriptionController.text = widget.product!.description ?? '';
+      _priceController.text = widget.product!.price.toString();
+      _quantityController.text = widget.product!.quantity.toString();
+      _unitController.text = widget.product!.unit;
+      _selectedProductTypeId = widget.product!.productTypeId;
+      // Note: Image handling for edit needs care (showing existing image vs new selection)
+    }
   }
 
   @override
@@ -70,10 +84,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
         // Compress to JPG with 85% quality
         final compressedBytes = img.encodeJpg(resized, quality: 85);
-        
+
         // Save to temp file
         final tempDir = Directory.systemTemp;
-        
+
         // Ensure unique filename
         final uniqueId = DateTime.now().millisecondsSinceEpoch;
         final tempFile = File('${tempDir.path}/compressed_$uniqueId.jpg');
@@ -109,18 +123,41 @@ class _AddProductScreenState extends State<AddProductScreen> {
       'product_type_id': _selectedProductTypeId,
     };
 
-    final success = await context.read<ProductProvider>().addProduct(data, imageFile: _selectedImage);
+    final provider = context.read<ProductProvider>();
+    bool success;
+
+    if (widget.product != null) {
+      success = await provider.updateProduct(
+        widget.product!.id,
+        data,
+        imageFile: _selectedImage,
+      );
+    } else {
+      success = await provider.addProduct(data, imageFile: _selectedImage);
+    }
 
     if (!mounted) return;
 
     if (success) {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Product listed successfully!')),
+        SnackBar(
+          content: Text(
+            widget.product != null
+                ? 'Product updated!'
+                : 'Product listed successfully!',
+          ),
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to list product.')),
+        SnackBar(
+          content: Text(
+            widget.product != null
+                ? 'Failed to update product.'
+                : 'Failed to list product.',
+          ),
+        ),
       );
     }
   }
@@ -132,7 +169,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
     final productTypes = provider.productTypes;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Product')),
+      appBar: AppBar(
+        title: Text(widget.product != null ? 'Edit Product' : 'Add Product'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -153,12 +192,28 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           borderRadius: BorderRadius.circular(12),
                           child: Image.file(_selectedImage!, fit: BoxFit.cover),
                         )
+                      : (widget.product != null &&
+                            widget.product!.images.isNotEmpty)
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            widget.product!.fullImages[0],
+                            fit: BoxFit.cover,
+                          ),
+                        )
                       : const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.add_a_photo, size: 40, color: Colors.grey),
+                            Icon(
+                              Icons.add_a_photo,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
                             SizedBox(height: 8),
-                            Text('Tap to add image', style: TextStyle(color: Colors.grey)),
+                            Text(
+                              'Tap to add image',
+                              style: TextStyle(color: Colors.grey),
+                            ),
                           ],
                         ),
                 ),
@@ -180,8 +235,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   );
                 }).toList(),
                 onChanged: (val) {
-                   final type = productTypes.firstWhere((t) => t.id == val);
-                   _onProductTypeChanged(type);
+                  final type = productTypes.firstWhere((t) => t.id == val);
+                  _onProductTypeChanged(type);
                 },
                 validator: (v) => v == null ? 'Required' : null,
               ),
@@ -231,7 +286,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 ),
                 child: isLoading
                     ? const CircularProgressIndicator()
-                    : const Text('List Product'),
+                    : Text(
+                        widget.product != null
+                            ? 'Update Product'
+                            : 'List Product',
+                      ),
               ),
             ],
           ),

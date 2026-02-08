@@ -98,9 +98,37 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                             '${product.quantity} ${product.unit} - ${product.price} Credits\nStatus: ${product.status.name}',
                           ),
                           isThreeLine: true,
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => _deleteProduct(product),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.edit,
+                                  color: Colors.blue,
+                                ),
+                                onPressed: () async {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          AddProductScreen(product: product),
+                                    ),
+                                  );
+                                  if (mounted) {
+                                    context
+                                        .read<ProductProvider>()
+                                        .fetchMyProducts();
+                                  }
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () => _deleteProduct(product),
+                              ),
+                            ],
                           ),
                         );
                       },

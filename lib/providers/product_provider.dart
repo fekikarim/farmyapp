@@ -157,7 +157,71 @@ class ProductProvider with ChangeNotifier {
         return false;
       }
     } catch (e) {
-      print('Error adding product: $e');
+      print('Add Product Error: $e');
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> updateProduct(
+    String id,
+    Map<String, dynamic> productData, {
+    File? imageFile,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final token = await AuthService.getAccessToken();
+      final uri = Uri.parse('${AuthService.baseUrl}/api/v1/products/$id');
+
+      var request = http.MultipartRequest('PATCH', uri);
+      request.headers['Authorization'] = 'Bearer $token';
+
+      // Add fields
+      productData.forEach((key, value) {
+        if (key != 'images') {
+          request.fields[key] = value.toString();
+        }
+      });
+
+      // Add file
+      if (imageFile != null) {
+        final mimeTypeData = lookupMimeType(
+          imageFile.path,
+          headerBytes: [0xFF, 0xD8],
+        )?.split('/');
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'images',
+            imageFile.path,
+            contentType: mimeTypeData != null
+                ? MediaType(mimeTypeData[0], mimeTypeData[1])
+                : MediaType('image', 'jpeg'),
+          ),
+        );
+      }
+
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(responseBody)['data'];
+        final updatedProduct = Product.fromJson(data);
+        final index = _myProducts.indexWhere((p) => p.id == id);
+        if (index != -1) {
+          _myProducts[index] = updatedProduct;
+        }
+        notifyListeners();
+        return true;
+      } else {
+        print('Failed to update product: $responseBody');
+        return false;
+      }
+    } catch (e) {
+      print('Update Product Error: $e');
       return false;
     } finally {
       _isLoading = false;
