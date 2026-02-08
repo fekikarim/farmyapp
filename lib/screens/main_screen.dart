@@ -81,27 +81,17 @@ class _MainScreenState extends State<MainScreen> {
       ];
     } else if (role == 'farmer') {
       screens = [
-        const SettingsScreen(),
         const FarmerAnalyticsScreen(),
-        const FarmerProductsScreen(),
         const FarmerLandManagementScreen(),
+        const FarmerProductsScreen(),
         const FarmerMyFarmsScreen(),
+        const SettingsScreen(),
       ];
       items = const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings_outlined),
-          activeIcon: Icon(Icons.settings),
-          label: 'Settings',
-        ),
         BottomNavigationBarItem(
           icon: Icon(Icons.analytics_outlined),
           activeIcon: Icon(Icons.analytics),
           label: 'Analytics',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.inventory_2_outlined),
-          activeIcon: Icon(Icons.inventory_2),
-          label: 'Products',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.landscape_outlined),
@@ -109,9 +99,19 @@ class _MainScreenState extends State<MainScreen> {
           label: 'Land',
         ),
         BottomNavigationBarItem(
+          icon: Icon(Icons.inventory_2_outlined),
+          activeIcon: Icon(Icons.inventory_2),
+          label: 'Products',
+        ),
+        BottomNavigationBarItem(
           icon: Icon(Icons.agriculture_outlined),
           activeIcon: Icon(Icons.agriculture),
           label: 'My Farms',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings_outlined),
+          activeIcon: Icon(Icons.settings),
+          label: 'Settings',
         ),
       ];
     } else if (role == 'investor') {
