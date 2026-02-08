@@ -43,19 +43,20 @@ class Land {
   }
 
   factory Land.fromJson(Map<String, dynamic> json) {
-    final wM = double.tryParse(json['width_m']?.toString() ?? '10.0') ?? 10.0;
-    final hM = double.tryParse(json['height_m']?.toString() ?? '10.0') ?? 10.0;
+    final wM = double.tryParse(json['width_m']?.toString() ?? '') ?? 10.0;
+    final hM = double.tryParse(json['height_m']?.toString() ?? '') ?? 10.0;
 
     return Land(
-      id: json['id'],
-      ownerId: json['owner_id'],
-      name: json['name'],
-      description: json['description'],
+      id: json['id']?.toString() ?? '',
+      ownerId: json['owner_id']?.toString() ?? '',
+      name: json['name']?.toString() ?? 'Untitled',
+      description: json['description']?.toString(),
       widthM: wM,
       heightM: hM,
-      gridWidth:
-          json['grid_width'] ?? (wM / 1.0).ceil(), // 1.0 = METERS_PER_CELL
-      gridHeight: json['grid_height'] ?? (hM / 1.0).ceil(),
+      gridWidth: int.tryParse(json['grid_width']?.toString() ?? '') ??
+          (wM / 1.0).ceil(), // 1.0 = METERS_PER_CELL
+      gridHeight: int.tryParse(json['grid_height']?.toString() ?? '') ??
+          (hM / 1.0).ceil(),
       boundaries: json['boundaries'] != null
           ? _parseBoundaries(json['boundaries'])
           : null,
@@ -91,9 +92,13 @@ class Land {
     if (boundaries is List) {
       return boundaries.map((point) {
         if (point is Map) {
-          return LatLng(point['latitude'], point['longitude']);
+          final lat = double.tryParse(point['latitude']?.toString() ?? '') ?? 0.0;
+          final lng = double.tryParse(point['longitude']?.toString() ?? '') ?? 0.0;
+          return LatLng(lat, lng);
         } else if (point is List && point.length >= 2) {
-          return LatLng(point[1], point[0]); // GeoJSON is [lng, lat]
+          final lng = double.tryParse(point[0]?.toString() ?? '') ?? 0.0;
+          final lat = double.tryParse(point[1]?.toString() ?? '') ?? 0.0;
+          return LatLng(lat, lng); // GeoJSON is [lng, lat]
         }
         return const LatLng(0, 0);
       }).toList();
