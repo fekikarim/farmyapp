@@ -605,6 +605,9 @@ class _InventoryOverlayState extends State<InventoryOverlay>
   }
 
   void _showItemActions(BuildContext context, dynamic item) {
+    final itemLandId = (item['land_id'] ?? item['land']?['id'])?.toString();
+    final isMatchingLand = widget.initialLandId != null && itemLandId == widget.initialLandId;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -638,13 +641,18 @@ class _InventoryOverlayState extends State<InventoryOverlay>
               const SizedBox(height: 24),
               _buildActionButton(
                 context,
-                'Add to Land',
+                isMatchingLand ? 'Add to Land' : 'Wrong Land',
                 Icons.landscape_rounded,
-                () {
-                  Navigator.pop(context); // Close sheet FIRST
-                  _showComingSoonDialog(context); // Then show dialog
-                },
-                isPrimary: true,
+                isMatchingLand
+                    ? () {
+                        Navigator.pop(context); // Close sheet FIRST
+                        _showComingSoonDialog(context); // Then show dialog
+                      }
+                    : null, // Disabled
+                isPrimary: isMatchingLand,
+                subtitle: isMatchingLand
+                    ? null
+                    : 'This item belongs to another land.',
               ),
               const SizedBox(height: 12),
               _buildActionButton(
@@ -678,38 +686,61 @@ class _InventoryOverlayState extends State<InventoryOverlay>
     BuildContext context,
     String label,
     IconData icon,
-    VoidCallback onTap, {
+    VoidCallback? onTap, {
     bool isPrimary = true,
+    String? subtitle,
   }) {
+    final bool isDisabled = onTap == null;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         decoration: BoxDecoration(
           color: isPrimary
-              ? const Color(0xFF4ADE80)
+              ? (isDisabled ? Colors.grey.withOpacity(0.1) : const Color(0xFF4ADE80))
               : Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(12),
           border: isPrimary ? null : Border.all(color: Colors.white12),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Column(
           children: [
-            Icon(
-              icon,
-              color: isPrimary ? const Color(0xFF0F172A) : Colors.white,
-              size: 20,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  color: isPrimary
+                      ? (isDisabled ? Colors.white38 : const Color(0xFF0F172A))
+                      : Colors.white,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: isPrimary
+                        ? (isDisabled ? Colors.white38 : const Color(0xFF0F172A))
+                        : Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: isPrimary ? const Color(0xFF0F172A) : Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+            if (subtitle != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  color: Colors.white38,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
+            ],
           ],
         ),
       ),
