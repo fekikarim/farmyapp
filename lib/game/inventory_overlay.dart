@@ -207,146 +207,160 @@ class _InventoryOverlayState extends State<InventoryOverlay>
         final details = item['details'] ?? {};
         final status = (item['status'] ?? 'PENDING').toString().toUpperCase();
 
-        return Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF1E293B), // Slate-800
-                const Color(0xFF0F172A), // Slate-900
+        return GestureDetector(
+          onTap: () {
+            if (status == 'APPROVED') {
+              _showItemActions(context, item);
+            }
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color(0xFF1E293B), // Slate-800
+                  const Color(0xFF0F172A), // Slate-900
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16), // More formal radius
+              border: Border.all(
+                color: status == 'APPROVED'
+                    ? const Color(0xFF4ADE80).withOpacity(0.5)
+                    : Colors.white.withOpacity(0.08),
+                width: status == 'APPROVED' ? 1.5 : 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.4),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
               ],
             ),
-            borderRadius: BorderRadius.circular(16), // More formal radius
-            border: Border.all(color: Colors.white.withOpacity(0.08)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.4),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Image Section with Status Badge
-              Expanded(
-                flex: 4, // Give more prominence to the image area
-                child: Stack(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(24), // More breathing room
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.2),
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(16),
-                        ),
-                      ),
-                      child: _buildItemImage(details['image_url']),
-                    ),
-                    Positioned(
-                      top: 10,
-                      right: 10,
-                      child: _buildStatusBadge(status),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Info Section
-              Expanded(
-                flex: 3, // Adjusted ratio
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 12,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Image Section with Status Badge
+                Expanded(
+                  flex: 4, // Give more prominence to the image area
+                  child: Stack(
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            (details['name'] ??
-                                    item['asset_category'] ??
-                                    'Item')
-                                .toString()
-                                .toUpperCase(),
-                            style: const TextStyle(
-                              color: Color(0xFF4ADE80), // Green-400
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            _formatVariantName(
-                              details['variant_name'] ??
-                                  item['variant_id'] ??
-                                  'Unknown',
-                            ),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize:
-                                  14, // Reduced from 16 to prevent overflow
-                              fontWeight: FontWeight.w600,
-                              height: 1.2,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      // Location / Footer
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 6,
-                        ),
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(
+                          24,
+                        ), // More breathing room
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.04),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.05),
+                          color: Colors.black.withOpacity(0.2),
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(16),
                           ),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.location_on_rounded,
-                              size: 12,
-                              color: Colors.white.withOpacity(0.5),
-                            ),
-                            const SizedBox(width: 4),
-                            Flexible(
-                              child: Text(
-                                land['name'] ?? 'Unplaced',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.7),
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
+                        child: _buildItemImage(details['image_url']),
+                      ),
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: _buildStatusBadge(status),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+
+                // Info Section
+                Expanded(
+                  flex: 3, // Adjusted ratio
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              (details['name'] ??
+                                      item['asset_category'] ??
+                                      'Item')
+                                  .toString()
+                                  .toUpperCase(),
+                              style: const TextStyle(
+                                color: Color(0xFF4ADE80), // Green-400
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              _formatVariantName(
+                                details['variant_name'] ??
+                                    item['variant_id'] ??
+                                    'Unknown',
+                              ),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize:
+                                    14, // Reduced from 16 to prevent overflow
+                                fontWeight: FontWeight.w600,
+                                height: 1.2,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        // Location / Footer
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.04),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.05),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.location_on_rounded,
+                                size: 12,
+                                color: Colors.white.withOpacity(0.5),
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  land['name'] ?? 'Unplaced',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.7),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -473,6 +487,132 @@ class _InventoryOverlayState extends State<InventoryOverlay>
         Icons.inventory_2_outlined,
         size: 64,
         color: Colors.white24,
+      ),
+    );
+  }
+
+  void _showItemActions(BuildContext context, dynamic item) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF1E293B),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Item Actions',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 24),
+              _buildActionButton(
+                context,
+                'Add to Land',
+                Icons.landscape_rounded,
+                () {
+                  Navigator.pop(context); // Close sheet FIRST
+                  _showComingSoonDialog(context); // Then show dialog
+                },
+                isPrimary: true,
+              ),
+              const SizedBox(height: 12),
+              _buildActionButton(
+                context,
+                'Buy More',
+                Icons.shopping_cart_outlined,
+                () {
+                  Navigator.pop(context);
+                  Navigator.pop(
+                    context,
+                  ); // Close inventory to reveal shop below
+                },
+                isPrimary: false,
+              ),
+              const SizedBox(height: 32),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildActionButton(
+    BuildContext context,
+    String label,
+    IconData icon,
+    VoidCallback onTap, {
+    bool isPrimary = true,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: isPrimary
+              ? const Color(0xFF4ADE80)
+              : Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(12),
+          border: isPrimary ? null : Border.all(color: Colors.white12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: isPrimary ? const Color(0xFF0F172A) : Colors.white,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: isPrimary ? const Color(0xFF0F172A) : Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showComingSoonDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF0F172A),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Coming Soon', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'This feature is under development. You will be able to place items on your land soon!',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK', style: TextStyle(color: Color(0xFF4ADE80))),
+          ),
+        ],
       ),
     );
   }
