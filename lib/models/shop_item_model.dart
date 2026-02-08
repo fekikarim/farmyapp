@@ -83,4 +83,29 @@ class ShopItemVariant {
     }
     return 'assets/game_images/$path';
   }
+
+  Map<String, String> get formattedAttributes {
+    if (attributes == null) return {};
+    final Map<String, String> formatted = {};
+    
+    attributes!.forEach((key, value) {
+      final String label = key.split('_').map((word) {
+        if (word.isEmpty) return '';
+        return word[0].toUpperCase() + word.substring(1);
+      }).join(' ');
+      
+      String displayValue = value.toString();
+      if (key.contains('price') || key.contains('cost')) {
+        displayValue = '\$$displayValue';
+      } else if (key.contains('efficiency')) {
+        displayValue = '$displayValue%';
+      } else if (key.contains('days') || key.contains('years')) {
+        displayValue = '$displayValue ${key.split('_').last}';
+      }
+      
+      formatted[label] = displayValue;
+    });
+    
+    return formatted;
+  }
 }

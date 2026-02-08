@@ -139,14 +139,11 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _showShop(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.85,
-        child: const ShopOverlay(),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => const ShopOverlay(),
       ),
     );
   }
