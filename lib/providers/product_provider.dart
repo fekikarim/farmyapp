@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../models/product_model.dart';
 import '../models/product_type_model.dart';
 import '../services/auth_service.dart';
@@ -96,16 +98,44 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> addProduct(Map<String, dynamic> productData) async {
+  Future<bool> addProduct(
+    Map<String, dynamic> productData, {
+    File? imageFile,
+  }) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final response = await AuthService.authenticatedRequest(
-        'POST',
-        Uri.parse('${AuthService.baseUrl}/api/v1/products'),
-        body: jsonEncode(productData),
-      );
+      final token = await AuthService.getToken();
+      final uri = Uri.parse('${AuthService.baseUrl}/api/v1/products');
+
+      var request = http.MultipartRequest('POST', uri);
+      request.headers['Authorization'] = 'Bearer $token';
+
+      // Add fields
+      productData.forEach((key, value) {
+        if (key != 'images') {
+          // Skip images array as we handle file separately
+          request.fields[key] = value.toString();
+        }
+      });
+
+      // Add file
+      if (imageFile != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'images', // Field name matches backend upload.array('images')
+            imageFile.path,
+          ),
+        );
+      } else if (productData['images'] != null &&
+          (productData['images'] as List).isNotEmpty) {
+        // Fallback for URL string if entered manually
+        request.fields['image'] = (productData['images'] as List).first;
+      }
+
+      final streamResponse = await request.send();
+      final response = await http.Response.fromStream(streamResponse);
 
       if (response.statusCode == 201) {
         final data = jsonDecode(response.body)['data'];
@@ -157,7 +187,6 @@ class ProductProvider with ChangeNotifier {
 
       final data = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        // Optimistically remove from available list or refresh
         _products.removeWhere((p) => p.id == id);
         return {'success': true, 'message': data['message']};
       } else {

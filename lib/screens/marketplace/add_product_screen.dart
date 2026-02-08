@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import '../../providers/product_provider.dart';
 import '../../models/product_type_model.dart';
@@ -17,8 +19,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _priceController = TextEditingController();
   final _quantityController = TextEditingController();
   final _unitController = TextEditingController();
-  final _imageController = TextEditingController();
 
+  File? _selectedImage;
   String? _selectedProductTypeId;
 
   @override
@@ -34,7 +36,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
     _priceController.dispose();
     _quantityController.dispose();
     _unitController.dispose();
-    _imageController.dispose();
     super.dispose();
   }
 
@@ -43,6 +44,19 @@ class _AddProductScreenState extends State<AddProductScreen> {
       setState(() {
         _selectedProductTypeId = type.id;
         _unitController.text = type.unit;
+      });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: false,
+    );
+
+    if (result != null && result.files.single.path != null) {
+      setState(() {
+        _selectedImage = File(result.files.single.path!);
       });
     }
   }
@@ -63,10 +77,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
       'quantity': double.parse(_quantityController.text),
       'unit': _unitController.text,
       'product_type_id': _selectedProductTypeId,
-      'images': _imageController.text.isNotEmpty ? [_imageController.text] : [],
     };
 
-    final success = await context.read<ProductProvider>().addProduct(data);
+    final success = await context.read<ProductProvider>().addProduct(
+      data,
+      imageFile: _selectedImage,
+    );
 
     if (!mounted) return;
 
@@ -96,6 +112,38 @@ class _AddProductScreenState extends State<AddProductScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              GestureDetector(
+                onTap: _pickImage,
+                child: Container(
+                  height: 150,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey[400]!),
+                  ),
+                  child: _selectedImage != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(_selectedImage!, fit: BoxFit.cover),
+                        )
+                      : const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_a_photo,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Tap to add image',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                ),
+              ),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(labelText: 'Title'),
@@ -154,13 +202,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   labelText: 'Unit (e.g., kg, liter, piece)',
                 ),
                 validator: (v) => v!.isEmpty ? 'Please enter a unit' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _imageController,
-                decoration: const InputDecoration(
-                  labelText: 'Image URL (Optional)',
-                ),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
