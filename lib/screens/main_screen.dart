@@ -86,9 +86,8 @@ class _MainScreenState extends State<MainScreen> {
     } else if (role == 'farmer') {
       screens = [
         const FarmerAnalyticsScreen(),
-        const MyProductsScreen(), // Updated
         const FarmerLandManagementScreen(),
-        const FarmerProductsScreen(),
+        const MyProductsScreen(),
         const FarmerMyFarmsScreen(),
         const SettingsScreen(),
       ];

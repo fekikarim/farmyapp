@@ -34,7 +34,7 @@ class User {
       isBanned: json['is_banned'] ?? false,
       isTwoFactorEnabled: json['is_two_factor_enabled'] ?? false,
       authProvider: json['auth_provider'] ?? 'email',
-      credits: (double.tryParse(json['credits'].toString()) ?? 0.0),
+      credits: (double.tryParse(json['credits']?.toString() ?? '0.0') ?? 0.0),
     );
   }
 
