@@ -37,25 +37,29 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'],
-      title: json['title'],
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? 'Untitled',
       description: json['description'],
-      price: (json['price'] ?? 0).toDouble(),
-      quantity: (json['quantity'] ?? 0).toDouble(),
+      price: double.tryParse(json['price'].toString()) ?? 0.0,
+      quantity: double.tryParse(json['quantity'].toString()) ?? 0.0,
       unit: json['unit'] ?? '',
-      status: _parseStatus(json['status']),
-      images: List<String>.from(json['images'] ?? []),
-      ownerId: json['owner_id'],
+      status: _parseStatus(json['status']?.toString() ?? ''),
+      images: json['images'] != null ? List<String>.from(json['images']) : [],
+      ownerId: json['owner_id']?.toString() ?? '',
       owner: json['owner'] != null ? User.fromJson(json['owner']) : null,
-      productTypeId: json['product_type_id'],
-      landId: json['land_id'],
-      landRentalId: json['land_rental_id'],
-      createdAt: DateTime.parse(json['created_at']),
+      productTypeId: json['product_type_id']?.toString() ?? '',
+      landId: json['land_id']?.toString(),
+      landRentalId: json['land_rental_id']?.toString(),
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : DateTime.now(),
     );
   }
 
   static ProductStatus _parseStatus(String status) {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'sold':
         return ProductStatus.sold;
       case 'hidden':

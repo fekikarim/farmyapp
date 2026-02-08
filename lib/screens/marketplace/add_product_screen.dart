@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/product_provider.dart';
+import '../../models/product_type_model.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -16,11 +17,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _priceController = TextEditingController();
   final _quantityController = TextEditingController();
   final _unitController = TextEditingController();
-  // Simplified image input for now (URL string)
   final _imageController = TextEditingController();
 
-  // Hardcoded for now, should come from API
-  final String _defaultProductTypeId = 'e2b5d4e6-d5e3-45f5-bd7d-c9ea94bc9819';
+  String? _selectedProductTypeId;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => context.read<ProductProvider>().fetchProductTypes());
+  }
 
   @override
   void dispose() {
@@ -33,8 +38,23 @@ class _AddProductScreenState extends State<AddProductScreen> {
     super.dispose();
   }
 
+  void _onProductTypeChanged(ProductType? type) {
+    if (type != null) {
+      setState(() {
+        _selectedProductTypeId = type.id;
+        _unitController.text = type.unit;
+      });
+    }
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_selectedProductTypeId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a product type')),
+      );
+      return;
+    }
 
     final data = {
       'title': _titleController.text,
@@ -42,7 +62,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       'price': double.parse(_priceController.text),
       'quantity': double.parse(_quantityController.text),
       'unit': _unitController.text,
-      'product_type_id': _defaultProductTypeId, // Needs to be dynamic ideally
+      'product_type_id': _selectedProductTypeId,
       'images': _imageController.text.isNotEmpty ? [_imageController.text] : [],
     };
 
@@ -64,7 +84,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.watch<ProductProvider>().isLoading;
+    final provider = context.watch<ProductProvider>();
+    final isLoading = provider.isLoading;
+    final productTypes = provider.productTypes;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Add Product')),
@@ -78,6 +100,22 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 controller: _titleController,
                 decoration: const InputDecoration(labelText: 'Title'),
                 validator: (v) => v!.isEmpty ? 'Please enter a title' : null,
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _selectedProductTypeId,
+                decoration: const InputDecoration(labelText: 'Product Type'),
+                items: productTypes.map((type) {
+                  return DropdownMenuItem(
+                    value: type.id,
+                    child: Text(type.name),
+                  );
+                }).toList(),
+                onChanged: (val) {
+                  final type = productTypes.firstWhere((t) => t.id == val);
+                  _onProductTypeChanged(type);
+                },
+                validator: (v) => v == null ? 'Required' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(

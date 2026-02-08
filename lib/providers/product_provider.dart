@@ -1,16 +1,36 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../models/product_model.dart';
+import '../models/product_type_model.dart';
 import '../services/auth_service.dart';
 
 class ProductProvider with ChangeNotifier {
   List<Product> _products = [];
-  List<Product> _myProducts = []; // Products owned by the current user
+  List<Product> _myProducts = [];
+  List<ProductType> _productTypes = [];
   bool _isLoading = false;
 
   List<Product> get products => _products;
   List<Product> get myProducts => _myProducts;
+  List<ProductType> get productTypes => _productTypes;
   bool get isLoading => _isLoading;
+
+  Future<void> fetchProductTypes() async {
+    try {
+      final response = await AuthService.authenticatedRequest(
+        'GET',
+        Uri.parse('${AuthService.baseUrl}/api/v1/product-types'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)['data'] as List;
+        _productTypes = data.map((e) => ProductType.fromJson(e)).toList();
+        notifyListeners();
+      }
+    } catch (e) {
+      print('Error fetching product types: $e');
+    }
+  }
 
   Future<void> fetchProducts({
     String? ownerId,
@@ -88,7 +108,10 @@ class ProductProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 201) {
-        await fetchMyProducts(); // Refresh list
+        final data = jsonDecode(response.body)['data'];
+        final newProduct = Product.fromJson(data);
+        _myProducts.add(newProduct);
+        notifyListeners();
         return true;
       } else {
         print('Failed to add product: ${response.body}');

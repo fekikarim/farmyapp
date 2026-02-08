@@ -62,11 +62,14 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('My Products')),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AddProductScreen()),
           );
+          if (mounted) {
+            context.read<ProductProvider>().fetchMyProducts();
+          }
         },
         child: const Icon(Icons.add),
       ),
