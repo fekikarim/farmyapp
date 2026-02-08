@@ -98,7 +98,18 @@ flutter:
     - assets/game_images/
     - assets/game_images/textures/
     - assets/game_images/icons/
+    - assets/game_images/icons/animals/
+    - assets/game_images/icons/machins/
+    - assets/game_images/icons/products/
+    - assets/game_images/icons/structure/
+    - assets/game_images/icons/trees/
+    - assets/game_images/icons/vegetation/
     - assets/game_images/images/
+    - assets/game_images/images/animals/
+    - assets/game_images/images/machins/
+    - assets/game_images/images/structure/
+    - assets/game_images/images/trees/
+    - assets/game_images/images/vegetation/
     - assets/game_images/3d/outside_tree/
     - assets/game_images/3d/outside_fance/
 
