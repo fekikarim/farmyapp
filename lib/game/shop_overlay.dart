@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/shop_item_model.dart';
 import '../services/shop_service.dart';
+import '../providers/wallet_provider.dart';
 
 class ShopOverlay extends StatefulWidget {
   const ShopOverlay({super.key});
@@ -26,6 +28,9 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
       }
     });
     _loadItems();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WalletProvider>().fetchWalletStatus();
+    });
   }
 
   void _onCategoryChanged() {
@@ -82,7 +87,6 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
                     'FARM SHOP',
@@ -93,6 +97,40 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
                       letterSpacing: 1,
                     ),
                   ),
+                  const Spacer(),
+                  // Credit Display
+                  Consumer<WalletProvider>(
+                    builder: (context, wallet, child) {
+                      return GestureDetector(
+                        onTap: _handleAddCredits,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.greenAccent.withOpacity(0.3)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.account_balance_wallet, color: Colors.greenAccent, size: 16),
+                              const SizedBox(width: 8),
+                              Text(
+                                '\$${wallet.credits.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.add_circle, color: Colors.greenAccent, size: 16),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 10),
                   IconButton(
                     icon: const Icon(Icons.close, color: Colors.white70),
                     onPressed: () => Navigator.pop(context),
@@ -303,5 +341,165 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
       fit: BoxFit.contain,
       errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, color: Colors.white10),
     );
+  }
+
+  Future<void> _handleAddCredits() async {
+    double? selectedAmount;
+    final customAmountController = TextEditingController();
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1A1A1A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return Padding(
+            padding: EdgeInsets.all(24).copyWith(
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.white24,
+                      borderRadius: BorderRadius.all(Radius.circular(2)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'TOP UP CREDITS',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Select Amount',
+                  style: TextStyle(color: Colors.white60, fontSize: 14),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [10, 20, 50, 100].map((amount) {
+                    final isSelected = selectedAmount == amount.toDouble();
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedAmount = amount.toDouble();
+                          customAmountController.clear();
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.greenAccent : Colors.white.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isSelected ? Colors.greenAccent : Colors.white10,
+                          ),
+                        ),
+                        child: Text(
+                          '\$${amount.toString()}',
+                          style: TextStyle(
+                            color: isSelected ? Colors.black : Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: customAmountController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Custom Amount',
+                    labelStyle: const TextStyle(color: Colors.white38),
+                    prefixText: '\$ ',
+                    prefixStyle: const TextStyle(color: Colors.greenAccent),
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.05),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: Colors.greenAccent),
+                    ),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedAmount = double.tryParse(value);
+                    });
+                  },
+                ),
+                const SizedBox(height: 32),
+                ElevatedButton(
+                  onPressed: selectedAmount != null && selectedAmount! > 0
+                      ? () {
+                          Navigator.pop(context);
+                          _processCharge(selectedAmount!);
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.greenAccent,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    selectedAmount != null
+                        ? 'PAY \$${selectedAmount!.toStringAsFixed(2)}'
+                        : 'ENTER AMOUNT',
+                    style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _processCharge(double amount) async {
+    final success = await context.read<WalletProvider>().chargeCredits(amount);
+    if (!mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Successfully added \$$amount!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Payment failed or cancelled.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
   }
 }
