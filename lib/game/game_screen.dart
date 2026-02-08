@@ -23,10 +23,10 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
-    // Force landscape for game
+    // Force portrait for vertical shop as requested
     SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
     ]);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeApp();
@@ -234,7 +234,7 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void dispose() {
-    // Restore portrait when leaving game
+    // Keep portrait when leaving (app default)
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
