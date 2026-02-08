@@ -1,4 +1,5 @@
 import 'user_model.dart';
+import '../services/auth_service.dart';
 
 enum ProductStatus { available, sold, hidden }
 
@@ -82,5 +83,12 @@ class Product {
       'land_rental_id': landRentalId,
       'images': images,
     };
+  }
+
+  List<String> get fullImages {
+    return images.map((image) {
+      if (image.startsWith('http')) return image;
+      return '${AuthService.baseUrl}$image';
+    }).toList();
   }
 }

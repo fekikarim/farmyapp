@@ -119,7 +119,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                               ),
                               image: product.images.isNotEmpty
                                   ? DecorationImage(
-                                      image: NetworkImage(product.images[0]),
+                                      image: NetworkImage(
+                                        product.fullImages[0],
+                                      ),
                                       fit: BoxFit.cover,
                                     )
                                   : null,

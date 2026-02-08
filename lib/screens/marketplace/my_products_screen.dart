@@ -87,7 +87,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                         return ListTile(
                           leading: product.images.isNotEmpty
                               ? Image.network(
-                                  product.images[0],
+                                  product.fullImages[0],
                                   width: 50,
                                   height: 50,
                                   fit: BoxFit.cover,
