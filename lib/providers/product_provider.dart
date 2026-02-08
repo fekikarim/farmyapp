@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
 import '../models/product_model.dart';
 import '../models/product_type_model.dart';
 import '../services/auth_service.dart';
@@ -122,10 +124,17 @@ class ProductProvider with ChangeNotifier {
 
       // Add file
       if (imageFile != null) {
+        final mimeTypeData = lookupMimeType(
+          imageFile.path,
+          headerBytes: [0xFF, 0xD8],
+        )?.split('/');
         request.files.add(
           await http.MultipartFile.fromPath(
             'images', // Field name matches backend upload.array('images')
             imageFile.path,
+            contentType: mimeTypeData != null
+                ? MediaType(mimeTypeData[0], mimeTypeData[1])
+                : MediaType('image', 'jpeg'),
           ),
         );
       } else if (productData['images'] != null &&
