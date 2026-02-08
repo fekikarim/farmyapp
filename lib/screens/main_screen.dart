@@ -5,20 +5,24 @@ import '../providers/auth_provider.dart';
 // Customer Screens
 import 'customer/home_screen.dart';
 import 'customer/subscriptions_screen.dart';
-import 'customer/marketplace_screen.dart';
+// import 'customer/marketplace_screen.dart'; // Replaced by new implementation
+import 'marketplace/marketplace_screen.dart';
 
 // Farmer Screens
 import 'farmer/analytics_screen.dart';
-import 'farmer/products_screen.dart';
+// import 'farmer/products_screen.dart'; // Replaced by new implementation
 import 'farmer/land_management_screen.dart';
 import 'farmer/my_farms_screen.dart';
 
 // Investor Screens
 import 'investor/explore_land_screen.dart';
 import 'investor/my_investments_screen.dart';
-import 'investor/farming_activities_screen.dart';
+// import 'investor/farming_activities_screen.dart';
 import 'investor/revenue_screen.dart';
 import 'settings_screen.dart';
+
+// Shared
+import 'marketplace/my_products_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -53,7 +57,7 @@ class _MainScreenState extends State<MainScreen> {
     if (role == 'customer') {
       screens = [
         const CustomerHomeScreen(),
-        const CustomerMarketplaceScreen(),
+        const MarketplaceScreen(), // Updated
         const CustomerSubscriptionsScreen(),
         const SettingsScreen(),
       ];
@@ -83,7 +87,7 @@ class _MainScreenState extends State<MainScreen> {
       screens = [
         const SettingsScreen(),
         const FarmerAnalyticsScreen(),
-        const FarmerProductsScreen(),
+        const MyProductsScreen(), // Updated
         const FarmerLandManagementScreen(),
         const FarmerMyFarmsScreen(),
       ];
@@ -118,7 +122,7 @@ class _MainScreenState extends State<MainScreen> {
       screens = [
         const InvestorExploreLandScreen(),
         const InvestorMyInvestmentsScreen(),
-        const InvestorFarmingActivitiesScreen(),
+        const MyProductsScreen(), // Updated: Replaced Activities with Products
         const InvestorRevenueScreen(),
         const SettingsScreen(),
       ];
@@ -134,9 +138,9 @@ class _MainScreenState extends State<MainScreen> {
           label: 'Investments',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.grass_outlined),
-          activeIcon: Icon(Icons.grass),
-          label: 'Activities',
+          icon: Icon(Icons.inventory_2_outlined), // Changed icon
+          activeIcon: Icon(Icons.inventory_2),
+          label: 'Products', // Changed label
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_balance_wallet_outlined),
