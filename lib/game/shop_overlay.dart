@@ -1,8 +1,11 @@
 import 'dart:ui';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/shop_item_model.dart';
 import '../services/shop_service.dart';
+import '../services/land_rental_service.dart';
+import '../models/land_rental_model.dart';
 import '../providers/wallet_provider.dart';
 
 class ShopOverlay extends StatefulWidget {
@@ -352,7 +355,7 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
                 ),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () => _handleBuyItem(variant),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.greenAccent,
                   foregroundColor: Colors.black,
@@ -385,6 +388,81 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
         ],
       ),
     );
+  }
+
+  Future<void> _handleBuyItem(ShopItemVariant variant) async {
+    setState(() => _isLoading = true);
+    try {
+      final rentals = await LandRentalService.getMyRentalsAsInvestor(paymentStatus: 'paid');
+      
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+
+      if (rentals.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('You must rent a land to buy items.'), backgroundColor: Colors.redAccent)
+        );
+        return;
+      }
+
+      LandRental? selectedRental;
+      if (rentals.length == 1) {
+        selectedRental = rentals.first;
+      } else {
+        selectedRental = await showDialog<LandRental>(
+          context: context,
+          builder: (context) => SimpleDialog(
+            backgroundColor: const Color(0xFF1E293B),
+            title: const Text('Select Land', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            children: rentals.map((r) => SimpleDialogOption(
+              onPressed: () => Navigator.pop(context, r),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(r.land?.name ?? 'Unknown Land', style: const TextStyle(color: Colors.white70)),
+              ),
+            )).toList(),
+          ),
+        );
+      }
+
+      if (selectedRental == null) return;
+
+      setState(() => _isLoading = true);
+
+
+// ... existing imports
+
+// ... inside _handleBuyItem or nearby
+
+      // Process Purchase
+      final random = Random();
+      final success = await ShopService.buyItem(
+        landId: selectedRental.landId,
+        variantId: variant.id,
+        category: _currentCategory,
+        positionX: random.nextInt(10), 
+        positionY: random.nextInt(10),
+      );
+
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Request sent to Farmer!'), backgroundColor: Colors.green)
+        );
+        context.read<WalletProvider>().fetchWalletStatus();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Purchase failed. Insufficient credits?'), backgroundColor: Colors.redAccent)
+        );
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.redAccent)
+      );
+    }
   }
 
   Widget _safeAssetImage(String path) {

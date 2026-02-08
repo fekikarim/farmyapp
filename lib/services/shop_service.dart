@@ -48,6 +48,7 @@ class ShopService {
 
       if (typeResponse.statusCode != 200) return null;
       final Map<String, dynamic> typeBody = jsonDecode(typeResponse.body);
+      
       final typeData = typeBody['data'];
       if (typeData == null) return null;
       final shopItemType = ShopItemType.fromJson(typeData);
@@ -81,4 +82,105 @@ class ShopService {
       return null;
     }
   }
+
+  static Future<bool> buyItem({
+    required String landId,
+    required String variantId,
+    required AssetCategory category,
+    String? paymentMethodId,
+    int positionX = 0,
+    int positionY = 0,
+  }) async {
+    try {
+      final response = await AuthService.authenticatedRequest(
+        'POST',
+        Uri.parse('$_baseUrl/api/v1/item-requests'),
+        body: jsonEncode({
+          'land_id': landId,
+          'variant_id': variantId,
+          'asset_category': category.name,
+          'position_x': positionX,
+          'position_y': positionY,
+          if (paymentMethodId != null) 'payment_method_id': paymentMethodId,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print('buyItem Error: $e');
+      return false;
+    }
+  }
+
+
+  static Future<List<dynamic>> getIncomingItemRequests() async {
+    try {
+      final response = await AuthService.authenticatedRequest(
+        'GET',
+        Uri.parse('$_baseUrl/api/v1/item-requests/farmer/incoming'),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        return body['data'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      print('getIncomingItemRequests Error: $e');
+      return [];
+    }
+  }
+
+  static Future<String?> approveItemRequest(String requestId) async {
+    try {
+      final response = await AuthService.authenticatedRequest(
+        'POST',
+        Uri.parse('$_baseUrl/api/v1/item-requests/$requestId/approve'),
+      );
+      if (response.statusCode == 200) {
+        return null;
+      }
+      final body = jsonDecode(response.body);
+      return body['message'] ?? 'Failed to approve request';
+    } catch (e) {
+      print('approveItemRequest Error: $e');
+      return 'Network error: $e';
+    }
+  }
+
+  static Future<bool> rejectItemRequest(String requestId, String reason) async {
+    try {
+      final response = await AuthService.authenticatedRequest(
+        'POST',
+        Uri.parse('$_baseUrl/api/v1/item-requests/$requestId/reject'),
+        body: jsonEncode({'reason': reason}),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print('rejectItemRequest Error: $e');
+      return false;
+    }
+  }
+
+  static Future<List<dynamic>> getInvestorInventory() async {
+    try {
+      final response = await AuthService.authenticatedRequest(
+        'GET',
+        Uri.parse('$_baseUrl/api/v1/item-requests/investor/inventory'),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        return body['data'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      print('getInvestorInventory Error: $e');
+      return [];
+    }
+  }
 }
+
