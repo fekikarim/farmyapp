@@ -196,6 +196,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'land_management_fab',
         onPressed: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const FarmerAddLandScreen()),

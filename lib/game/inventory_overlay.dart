@@ -157,74 +157,80 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 12),
-              const Text(
-                'MY INVENTORY',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.5,
+              Expanded(
+                child: Text(
+                  'MY INVENTORY',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.5,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ),
-              const Spacer(),
-              // Land Selector
               if (_rentedLands.isNotEmpty)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Colors.greenAccent.withOpacity(0.3),
+                Flexible(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
                     ),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<LandRental>(
-                      value: _selectedLand,
-                      hint: const Text(
-                        'All Lands',
-                        style: TextStyle(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.greenAccent.withOpacity(0.3),
+                      ),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<LandRental>(
+                        isExpanded: true,
+                        value: _selectedLand,
+                        hint: const Text(
+                          'All Lands',
+                          style: TextStyle(
+                            color: Colors.greenAccent,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        icon: const Icon(
+                          Icons.arrow_drop_down,
                           color: Colors.greenAccent,
+                        ),
+                        dropdownColor: const Color(0xFF1E293B),
+                        style: const TextStyle(
+                          color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
+                        items: [
+                          const DropdownMenuItem<LandRental>(
+                            value: null,
+                            child: Text('All Lands'),
+                          ),
+                          ..._rentedLands.map((land) {
+                            return DropdownMenuItem<LandRental>(
+                              value: land,
+                              child: Text(
+                                land.land?.name ?? 'Unknown',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          }),
+                        ],
+                        onChanged: (LandRental? newValue) {
+                          if (_selectedLand != newValue) {
+                            setState(() {
+                              _selectedLand = newValue;
+                            });
+                            _loadInventory();
+                          }
+                        },
                       ),
-                      icon: const Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.greenAccent,
-                      ),
-                      dropdownColor: const Color(0xFF1E293B),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      items: [
-                        const DropdownMenuItem<LandRental>(
-                          value: null,
-                          child: Text('All Lands'),
-                        ),
-                        ..._rentedLands.map((land) {
-                          return DropdownMenuItem<LandRental>(
-                            value: land,
-                            child: Text(
-                              land.land?.name ?? 'Unknown',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          );
-                        }),
-                      ],
-                      onChanged: (LandRental? newValue) {
-                        if (_selectedLand != newValue) {
-                          setState(() {
-                            _selectedLand = newValue;
-                          });
-                          _loadInventory();
-                        }
-                      },
                     ),
                   ),
                 ),

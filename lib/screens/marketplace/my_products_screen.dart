@@ -62,6 +62,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('My Products')),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'add_product_fab',
         onPressed: () async {
           await Navigator.push(
             context,
