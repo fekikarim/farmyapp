@@ -183,7 +183,7 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.grid_on,
                           size: 12,
                           color: Theme.of(context).colorScheme.onSurface,
