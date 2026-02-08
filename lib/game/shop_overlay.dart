@@ -1,18 +1,24 @@
 import 'dart:ui';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/shop_item_model.dart';
 import '../services/shop_service.dart';
+import '../services/land_rental_service.dart';
+import '../models/land_rental_model.dart';
 import '../providers/wallet_provider.dart';
 
 class ShopOverlay extends StatefulWidget {
-  const ShopOverlay({super.key});
+  final LandRental? preSelectedLand;
+
+  const ShopOverlay({super.key, this.preSelectedLand});
 
   @override
   State<ShopOverlay> createState() => _ShopOverlayState();
 }
 
-class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStateMixin {
+class _ShopOverlayState extends State<ShopOverlay>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   AssetCategory _currentCategory = AssetCategory.animal;
   List<ShopItemType>? _items;
@@ -22,7 +28,10 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: AssetCategory.values.length, vsync: this);
+    _tabController = TabController(
+      length: AssetCategory.values.length,
+      vsync: this,
+    );
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         _onCategoryChanged();
@@ -90,7 +99,9 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
                 Expanded(
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
-                    child: _selectedItem == null ? _buildMainGrid() : _buildDetailView(),
+                    child: _selectedItem == null
+                        ? _buildMainGrid()
+                        : _buildDetailView(),
                   ),
                 ),
               ],
@@ -109,7 +120,11 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
           IconButton(
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
-            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              color: Colors.white,
+              size: 18,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
           const SizedBox(width: 12),
@@ -131,23 +146,40 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
               return GestureDetector(
                 onTap: _handleAddCredits,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.greenAccent.withOpacity(0.3)),
+                    border: Border.all(
+                      color: Colors.greenAccent.withOpacity(0.3),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.account_balance_wallet, color: Colors.greenAccent, size: 14),
+                      const Icon(
+                        Icons.account_balance_wallet,
+                        color: Colors.greenAccent,
+                        size: 14,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         '\$${wallet.credits.toStringAsFixed(2)}',
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                       ),
                       const SizedBox(width: 4),
-                      const Icon(Icons.add_circle, color: Colors.greenAccent, size: 14),
+                      const Icon(
+                        Icons.add_circle,
+                        color: Colors.greenAccent,
+                        size: 14,
+                      ),
                     ],
                   ),
                 ),
@@ -167,24 +199,40 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
         controller: _tabController,
         isScrollable: true,
         indicator: UnderlineTabIndicator(
-          borderSide: BorderSide(width: 3.0, color: Colors.greenAccent.withOpacity(0.8)),
+          borderSide: BorderSide(
+            width: 3.0,
+            color: Colors.greenAccent.withOpacity(0.8),
+          ),
           insets: const EdgeInsets.symmetric(horizontal: 16.0),
         ),
         labelColor: Colors.greenAccent,
         unselectedLabelColor: Colors.white38,
-        labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1),
-        tabs: AssetCategory.values.map((cat) => Tab(text: cat.name.toUpperCase())).toList(),
+        labelStyle: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 11,
+          letterSpacing: 1,
+        ),
+        tabs: AssetCategory.values
+            .map((cat) => Tab(text: cat.name.toUpperCase()))
+            .toList(),
       ),
     );
   }
 
   Widget _buildMainGrid() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Colors.greenAccent));
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.greenAccent),
+      );
     }
 
     if (_items == null || _items!.isEmpty) {
-      return const Center(child: Text('Nothing found here', style: TextStyle(color: Colors.white38)));
+      return const Center(
+        child: Text(
+          'Nothing found here',
+          style: TextStyle(color: Colors.white38),
+        ),
+      );
     }
 
     return GridView.builder(
@@ -202,7 +250,10 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
         return GestureDetector(
           onTap: () async {
             setState(() => _isLoading = true);
-            final detailed = await ShopService.getAssetTypeWithVariants(_currentCategory, item.id);
+            final detailed = await ShopService.getAssetTypeWithVariants(
+              _currentCategory,
+              item.id,
+            );
             if (mounted) {
               setState(() {
                 _selectedItem = detailed;
@@ -219,7 +270,11 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(width: 45, height: 45, child: _safeAssetImage(item.assetIconPath)),
+                SizedBox(
+                  width: 45,
+                  height: 45,
+                  child: _safeAssetImage(item.assetIconPath),
+                ),
                 const SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -228,7 +283,11 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
                     textAlign: TextAlign.center,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],
@@ -252,15 +311,29 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
               GestureDetector(
                 onTap: () => setState(() => _selectedItem = null),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Row(
                     children: [
-                      Icon(Icons.chevron_left, color: Colors.greenAccent, size: 16),
-                      Text('BACK', style: TextStyle(color: Colors.greenAccent, fontSize: 11, fontWeight: FontWeight.bold)),
+                      Icon(
+                        Icons.chevron_left,
+                        color: Colors.greenAccent,
+                        size: 16,
+                      ),
+                      Text(
+                        'BACK',
+                        style: TextStyle(
+                          color: Colors.greenAccent,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -268,7 +341,7 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
             ],
           ),
         ),
-        
+
         Expanded(
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -285,9 +358,13 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
                 child: Row(
                   children: [
                     Container(
-                      width: 70, height: 70,
+                      width: 70,
+                      height: 70,
                       padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(16)),
+                      decoration: BoxDecoration(
+                        color: Colors.white10,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       child: _safeAssetImage(_selectedItem!.assetIconPath),
                     ),
                     const SizedBox(width: 16),
@@ -295,10 +372,25 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(_selectedItem!.name, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900)),
+                          Text(
+                            _selectedItem!.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
                           const SizedBox(height: 4),
                           if (_selectedItem!.description != null)
-                            Text(_selectedItem!.description!, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white60, fontSize: 12)),
+                            Text(
+                              _selectedItem!.description!,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white60,
+                                fontSize: 12,
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -307,7 +399,15 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
               ),
 
               const SizedBox(height: 20),
-              const Text('VARIANTS', style: TextStyle(color: Colors.white24, fontWeight: FontWeight.w900, fontSize: 10, letterSpacing: 2)),
+              const Text(
+                'VARIANTS',
+                style: TextStyle(
+                  color: Colors.white24,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 10,
+                  letterSpacing: 2,
+                ),
+              ),
               const SizedBox(height: 12),
 
               ...variants.map((v) => _buildCompactVariantCard(v)),
@@ -335,9 +435,13 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
           Row(
             children: [
               Container(
-                width: 50, height: 50,
+                width: 50,
+                height: 50,
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(
+                  color: Colors.black26,
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: _safeAssetImage(variant.assetImagePath),
               ),
               const SizedBox(width: 12),
@@ -345,22 +449,44 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(variant.variantCode, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                    Text(
+                      variant.variantCode,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
                     const SizedBox(height: 2),
-                    Text('\$${variant.basePrice.toStringAsFixed(0)}', style: const TextStyle(color: Colors.greenAccent, fontSize: 13, fontWeight: FontWeight.bold)),
+                    Text(
+                      '\$${variant.basePrice.toStringAsFixed(0)}',
+                      style: const TextStyle(
+                        color: Colors.greenAccent,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () => _handleBuyItem(variant),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.greenAccent,
                   foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   minimumSize: Size.zero,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-                child: const Text('BUY', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
+                child: const Text(
+                  'BUY',
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11),
+                ),
               ),
             ],
           ),
@@ -369,16 +495,38 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: Colors.black12, borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                color: Colors.black12,
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Wrap(
-                spacing: 8, runSpacing: 4,
-                children: attributes.entries.map((e) => Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(e.key + ': ', style: const TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold)),
-                    Text(e.value, style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
-                  ],
-                )).toList(),
+                spacing: 8,
+                runSpacing: 4,
+                children: attributes.entries
+                    .map(
+                      (e) => Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            e.key + ': ',
+                            style: const TextStyle(
+                              color: Colors.white38,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            e.value,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                    .toList(),
               ),
             ),
           ],
@@ -387,9 +535,117 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
     );
   }
 
+  Future<void> _handleBuyItem(ShopItemVariant variant) async {
+    setState(() => _isLoading = true);
+    try {
+      final rentals = await LandRentalService.getMyRentalsAsInvestor(
+        paymentStatus: 'paid',
+      );
+
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+
+      if (rentals.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('You must rent a land to buy items.'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        return;
+      }
+
+      LandRental? selectedRental;
+
+      // Use pre-selected land if available and valid
+      if (widget.preSelectedLand != null &&
+          rentals.any((r) => r.id == widget.preSelectedLand!.id)) {
+        selectedRental = widget.preSelectedLand;
+      } else if (rentals.length == 1) {
+        selectedRental = rentals.first;
+      } else {
+        selectedRental = await showDialog<LandRental>(
+          context: context,
+          builder: (context) => SimpleDialog(
+            backgroundColor: const Color(0xFF1E293B),
+            title: const Text(
+              'Select Land',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            children: rentals
+                .map(
+                  (r) => SimpleDialogOption(
+                    onPressed: () => Navigator.pop(context, r),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Text(
+                        r.land?.name ?? 'Unknown Land',
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        );
+      }
+
+      if (selectedRental == null) return;
+
+      setState(() => _isLoading = true);
+
+      // ... existing imports
+
+      // ... inside _handleBuyItem or nearby
+
+      // Process Purchase
+      final random = Random();
+      final success = await ShopService.buyItem(
+        landId: selectedRental.landId,
+        variantId: variant.id,
+        category: _currentCategory,
+        positionX: random.nextInt(10),
+        positionY: random.nextInt(10),
+      );
+
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Request sent to Farmer!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        context.read<WalletProvider>().fetchWalletStatus();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Purchase failed. Insufficient credits?'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.redAccent),
+      );
+    }
+  }
+
   Widget _safeAssetImage(String path) {
     if (path.isEmpty) return const Icon(Icons.image, color: Colors.white10);
-    return Image.asset(path, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, color: Colors.white10));
+    return Image.asset(
+      path,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) =>
+          const Icon(Icons.broken_image, color: Colors.white10),
+    );
   }
 
   Future<void> _handleAddCredits() async {
@@ -400,29 +656,76 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
       context: context,
       isScrollControlled: true,
       backgroundColor: const Color(0xFF1A1A1A),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(32))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      ),
       builder: (context) => StatefulBuilder(
         builder: (context, setState) {
           return Padding(
-            padding: EdgeInsets.all(24).copyWith(bottom: MediaQuery.of(context).viewInsets.bottom + 24),
+            padding: EdgeInsets.all(
+              24,
+            ).copyWith(bottom: MediaQuery.of(context).viewInsets.bottom + 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Center(child: Container(width: 40, height: 4, decoration: const BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.all(Radius.circular(2))))),
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: const BoxDecoration(
+                      color: Colors.white24,
+                      borderRadius: BorderRadius.all(Radius.circular(2)),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 24),
-                const Text('TOP UP CREDITS', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 1), textAlign: TextAlign.center),
+                const Text(
+                  'TOP UP CREDITS',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: 20),
                 Wrap(
-                  spacing: 12, runSpacing: 12,
+                  spacing: 12,
+                  runSpacing: 12,
                   children: [10, 20, 50, 100].map((amount) {
                     final isSelected = selectedAmount == amount.toDouble();
                     return GestureDetector(
-                      onTap: () { setState(() { selectedAmount = amount.toDouble(); customAmountController.clear(); }); },
+                      onTap: () {
+                        setState(() {
+                          selectedAmount = amount.toDouble();
+                          customAmountController.clear();
+                        });
+                      },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        decoration: BoxDecoration(color: isSelected ? Colors.greenAccent : Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(16), border: Border.all(color: isSelected ? Colors.greenAccent : Colors.white10)),
-                        child: Text('\$${amount.toString()}', style: TextStyle(color: isSelected ? Colors.black : Colors.white, fontWeight: FontWeight.bold)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? Colors.greenAccent
+                              : Colors.white.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isSelected
+                                ? Colors.greenAccent
+                                : Colors.white10,
+                          ),
+                        ),
+                        child: Text(
+                          '\$${amount.toString()}',
+                          style: TextStyle(
+                            color: isSelected ? Colors.black : Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     );
                   }).toList(),
@@ -430,25 +733,65 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
                 const SizedBox(height: 20),
                 TextField(
                   controller: customAmountController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: 'Custom Amount', labelStyle: const TextStyle(color: Colors.white38, fontSize: 13),
-                    prefixText: '\$ ', prefixStyle: const TextStyle(color: Colors.greenAccent),
-                    filled: true, fillColor: Colors.white.withOpacity(0.05),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Colors.greenAccent)),
+                    labelText: 'Custom Amount',
+                    labelStyle: const TextStyle(
+                      color: Colors.white38,
+                      fontSize: 13,
+                    ),
+                    prefixText: '\$ ',
+                    prefixStyle: const TextStyle(color: Colors.greenAccent),
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.05),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: Colors.greenAccent),
+                    ),
                   ),
-                  onChanged: (value) { setState(() { selectedAmount = double.tryParse(value); }); },
+                  onChanged: (value) {
+                    setState(() {
+                      selectedAmount = double.tryParse(value);
+                    });
+                  },
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: selectedAmount != null && selectedAmount! > 0
-                      ? () { Navigator.pop(context); _processCharge(selectedAmount!); }
+                      ? () {
+                          Navigator.pop(context);
+                          _processCharge(selectedAmount!);
+                        }
                       : null,
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.greenAccent, foregroundColor: Colors.black, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 0),
-                  child: Text(selectedAmount != null ? 'PAY \$${selectedAmount!.toStringAsFixed(2)}' : 'ENTER AMOUNT', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.greenAccent,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    selectedAmount != null
+                        ? 'PAY \$${selectedAmount!.toStringAsFixed(2)}'
+                        : 'ENTER AMOUNT',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -462,9 +805,19 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
     final success = await context.read<WalletProvider>().chargeCredits(amount);
     if (!mounted) return;
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Successfully added \$$amount!'), backgroundColor: Colors.green));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Successfully added \$$amount!'),
+          backgroundColor: Colors.green,
+        ),
+      );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment failed or cancelled.'), backgroundColor: Colors.redAccent));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Payment failed or cancelled.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
     }
   }
 }

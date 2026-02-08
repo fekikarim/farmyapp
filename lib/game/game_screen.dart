@@ -4,6 +4,7 @@ import '../../models/land_model.dart';
 import 'isometric_map.dart';
 import 'land_grid_service.dart';
 import 'shop_overlay.dart';
+import 'inventory_overlay.dart';
 
 class GameScreen extends StatefulWidget {
   final Land land;
@@ -36,7 +37,7 @@ class _GameScreenState extends State<GameScreen> {
   Future<void> _initializeApp() async {
     // 1. Fetch Grid Data
     _updateLoading('Fetching Farm Data...', null);
-    
+
     try {
       final futures = await Future.wait([
         LandGridService.fetchLandGrid(widget.land.id),
@@ -114,12 +115,12 @@ class _GameScreenState extends State<GameScreen> {
       body: _isLoading
           ? _buildLoadingScreen()
           : _gridData == null
-              ? _buildErrorScreen()
-              : IsometricMap(
-                  gridWidth: _gridData!['grid_width'],
-                  gridHeight: _gridData!['grid_height'],
-                  matrix: _gridData!['matrix'],
-                ),
+          ? _buildErrorScreen()
+          : IsometricMap(
+              gridWidth: _gridData!['grid_width'],
+              gridHeight: _gridData!['grid_height'],
+              matrix: _gridData!['matrix'],
+            ),
       floatingActionButton: !_isLoading
           ? Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -136,6 +137,14 @@ class _GameScreenState extends State<GameScreen> {
                   foregroundColor: Colors.black,
                   child: const Icon(Icons.shopping_basket),
                   onPressed: () => _showShop(context),
+                ),
+                const SizedBox(height: 16),
+                FloatingActionButton(
+                  heroTag: 'open_inventory',
+                  backgroundColor: Colors.orangeAccent,
+                  foregroundColor: Colors.black,
+                  child: const Icon(Icons.inventory_2),
+                  onPressed: () => _showInventory(context),
                 ),
               ],
             )
@@ -154,6 +163,16 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  void _showInventory(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => const InventoryOverlay(),
+      ),
+    );
+  }
+
   Widget _buildLoadingScreen() {
     return Container(
       width: double.infinity,
@@ -165,7 +184,7 @@ class _GameScreenState extends State<GameScreen> {
           // Logo or Icon
           const Icon(Icons.landscape, size: 80, color: Colors.greenAccent),
           const SizedBox(height: 20),
-          
+
           Text(
             'FARMY',
             style: TextStyle(
@@ -189,7 +208,7 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           Text(
             _loadingMessage,
             style: TextStyle(
@@ -224,9 +243,9 @@ class _GameScreenState extends State<GameScreen> {
             child: const Text('Retry'),
           ),
           TextButton(
-             onPressed: () => Navigator.pop(context),
-             child: const Text('Go Back'),
-          )
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Go Back'),
+          ),
         ],
       ),
     );
