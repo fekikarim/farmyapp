@@ -9,9 +9,9 @@ import '../models/land_rental_model.dart';
 import '../providers/wallet_provider.dart';
 
 class ShopOverlay extends StatefulWidget {
-  final LandRental? preSelectedLand;
+  final String? preSelectedLandId;
 
-  const ShopOverlay({super.key, this.preSelectedLand});
+  const ShopOverlay({super.key, this.preSelectedLandId});
 
   @override
   State<ShopOverlay> createState() => _ShopOverlayState();
@@ -558,15 +558,20 @@ class _ShopOverlayState extends State<ShopOverlay>
       LandRental? selectedRental;
 
       // Use pre-selected land if available and valid
-      if (widget.preSelectedLand != null &&
-          rentals.any((r) => r.id == widget.preSelectedLand!.id)) {
-        selectedRental = widget.preSelectedLand;
-      } else if (rentals.length == 1) {
-        selectedRental = rentals.first;
-      } else {
-        selectedRental = await showDialog<LandRental>(
-          context: context,
-          builder: (context) => SimpleDialog(
+      if (widget.preSelectedLandId != null) {
+        final preMatch = rentals.where((r) => r.landId == widget.preSelectedLandId);
+        if (preMatch.isNotEmpty) {
+          selectedRental = preMatch.first;
+        }
+      }
+
+      if (selectedRental == null) {
+        if (rentals.length == 1) {
+          selectedRental = rentals.first;
+        } else {
+          selectedRental = await showDialog<LandRental>(
+            context: context,
+            builder: (context) => SimpleDialog(
             backgroundColor: const Color(0xFF1E293B),
             title: const Text(
               'Select Land',
@@ -592,8 +597,9 @@ class _ShopOverlayState extends State<ShopOverlay>
           ),
         );
       }
+    }
 
-      if (selectedRental == null) return;
+    if (selectedRental == null) return;
 
       setState(() => _isLoading = true);
 

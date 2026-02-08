@@ -7,7 +7,8 @@ import '../models/land_rental_model.dart';
 import 'shop_overlay.dart';
 
 class InventoryOverlay extends StatefulWidget {
-  const InventoryOverlay({super.key});
+  final String? initialLandId;
+  const InventoryOverlay({super.key, this.initialLandId});
 
   @override
   State<InventoryOverlay> createState() => _InventoryOverlayState();
@@ -35,13 +36,20 @@ class _InventoryOverlayState extends State<InventoryOverlay>
       // 1. Fetch Rented Lands
       final lands = await LandRentalService.getMyRentalsAsInvestor();
 
-      // 2. Set Default Land (if any) or 'All' (null)
+      // 2. Set Default Land
       if (mounted) {
         setState(() {
           _rentedLands = lands;
-          // Optionally auto-select the first land if desired,
-          // or leave null to show "All Lands" by default
-          // _selectedLand = lands.isNotEmpty ? lands.first : null;
+          if (widget.initialLandId != null) {
+            _selectedLand = _rentedLands.firstWhere(
+              (r) => r.landId == widget.initialLandId,
+              orElse: () => _rentedLands.isNotEmpty ? _rentedLands.first : _rentedLands.first, // Placeholder fallback
+            );
+            // Re-check if firstWhere found something or fallback to null (All Lands)
+            if (_selectedLand?.landId != widget.initialLandId) {
+              _selectedLand = null;
+            }
+          }
         });
       }
 
@@ -650,7 +658,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                   showDialog(
                     context: context,
                     builder: (context) =>
-                        ShopOverlay(preSelectedLand: _selectedLand),
+                        ShopOverlay(preSelectedLandId: _selectedLand?.landId),
                   ).then((_) {
                     // Refresh inventory when returning from shop
                     _loadInventory();

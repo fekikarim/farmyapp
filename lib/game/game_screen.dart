@@ -158,7 +158,7 @@ class _GameScreenState extends State<GameScreen> {
       context,
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (context) => const ShopOverlay(),
+        builder: (context) => ShopOverlay(preSelectedLandId: widget.land.id),
       ),
     );
   }
@@ -168,7 +168,7 @@ class _GameScreenState extends State<GameScreen> {
       context,
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (context) => const InventoryOverlay(),
+        builder: (context) => InventoryOverlay(initialLandId: widget.land.id),
       ),
     );
   }
