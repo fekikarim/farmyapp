@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 
-class IsometricMap extends StatelessWidget {
+class IsometricMap extends StatefulWidget {
   final int gridWidth;
   final int gridHeight;
   final List<dynamic> matrix;
-
-  // Constants
-  static const double tileWidth = 64.0;
-  static const double tileHeight = 32.0;
 
   const IsometricMap({
     super.key,
@@ -15,6 +11,19 @@ class IsometricMap extends StatelessWidget {
     required this.gridHeight,
     required this.matrix,
   });
+
+  @override
+  State<IsometricMap> createState() => _IsometricMapState();
+}
+
+class _IsometricMapState extends State<IsometricMap> {
+  // Constants
+  static const double tileWidth = 64.0;
+  static const double tileHeight = 32.0;
+
+  // Track selected tile
+  int? _selectedX;
+  int? _selectedY;
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +40,8 @@ class IsometricMap extends StatelessWidget {
       minScale: 0.1,
       maxScale: 4.0,
       child: SizedBox(
-        width: (gridWidth + gridHeight + backgroundPadding * 2) * tileWidth / 2 + 200,
-        height: (gridWidth + gridHeight + backgroundPadding * 2) * tileHeight / 2 + 200,
+        width: (widget.gridWidth + widget.gridHeight + backgroundPadding * 2) * tileWidth / 2 + 200,
+        height: (widget.gridWidth + widget.gridHeight + backgroundPadding * 2) * tileHeight / 2 + 200,
         child: Stack(
           clipBehavior: Clip.none,
           children: sortedTiles,
@@ -46,17 +55,14 @@ class IsometricMap extends StatelessWidget {
     List<_TileEntry> entries = [];
     
     // Center offset
-    double offsetX = (gridHeight * tileWidth / 2);
+    double offsetX = (widget.gridHeight * tileWidth / 2);
     double offsetY = 100;
 
     // 1. Generate Background Tiles
-    for (int y = -padding; y < gridHeight + padding; y++) {
-      for (int x = -padding; x < gridWidth + padding; x++) {
+    for (int y = -padding; y < widget.gridHeight + padding; y++) {
+      for (int x = -padding; x < widget.gridWidth + padding; x++) {
         
-        // Skip if inside the main grid (Foreground handled later? No, let's handle everything in one loop if possible, 
-        // OR just add everything to the list and sort.)
-        
-        bool isForeground = (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight);
+        bool isForeground = (x >= 0 && x < widget.gridWidth && y >= 0 && y < widget.gridHeight);
         
         // Determine if this is a "border tree" row (within 2 tiles of the main grid)
         // Only for background tiles on the TOP sides (x < 0 or y < 0)
@@ -83,14 +89,14 @@ class IsometricMap extends StatelessWidget {
           // Fence 1: Top-Right (y=-1) and Bottom-Left (y=gridHeight)
           // Fence 2: Top-Left (x=-1) and Bottom-Right (x=gridWidth)
           
-          bool isInXRange = (x >= 0 && x < gridWidth);
-          bool isInYRange = (y >= 0 && y < gridHeight);
+          bool isInXRange = (x >= 0 && x < widget.gridWidth);
+          bool isInYRange = (y >= 0 && y < widget.gridHeight);
 
           if (y == -1 && isInXRange) {
              fenceAsset = 'assets/game_images/3d/outside_fance/fance1.png';
              fenceDx = -tileWidth / 4;
-             fenceDy = -tileHeight / 4 - 12; // Shifting significantly down
-          } else if (y == gridHeight && isInXRange) {
+             fenceDy = -tileHeight / 4 - 12; 
+          } else if (y == widget.gridHeight && isInXRange) {
              fenceAsset = 'assets/game_images/3d/outside_fance/fance1.png';
              fenceDx = tileWidth / 4;
              fenceDy = tileHeight / 4 - 12; 
@@ -98,7 +104,7 @@ class IsometricMap extends StatelessWidget {
              fenceAsset = 'assets/game_images/3d/outside_fance/fance2.png';
              fenceDx = tileWidth / 4;
              fenceDy = -tileHeight / 4 - 12;
-          } else if (x == gridWidth && isInYRange) {
+          } else if (x == widget.gridWidth && isInYRange) {
              fenceAsset = 'assets/game_images/3d/outside_fance/fance2.png';
              fenceDx = -tileWidth / 4;
              fenceDy = tileHeight / 4 - 12;
@@ -123,17 +129,13 @@ class IsometricMap extends StatelessWidget {
       }
     }
 
-    // 2. Sort by Depth (Painter's Algorithm for Isometric)
-    // In isometric, depth is roughly (x + y). Lower values are "behind" higher values.
-    // We want to draw background first? No, we want to draw back-to-front.
-    // So distinct (x+y) sums.
+    // 2. Sort by Depth
     entries.sort((a, b) {
       int depthA = a.x + a.y;
       int depthB = b.x + b.y;
       if (depthA != depthB) {
         return depthA.compareTo(depthB);
       }
-      // Secondary sort to prevent flickering (arbitrary but consistent)
       return a.x.compareTo(b.x);
     });
 
@@ -157,70 +159,111 @@ class IsometricMap extends StatelessWidget {
 
   Widget _buildTile(int x, int y, {required bool isBackground, bool hasTree = false, String? treeAsset, String? fenceAsset, double fenceDx = 0, double fenceDy = 0}) {
     // Check if there is an item at this position (only for foreground)
-    final dynamic cellData = (!isBackground && matrix.length > y && matrix[y].length > x) 
-        ? matrix[y][x] 
+    final dynamic cellData = (!isBackground && widget.matrix.length > y && widget.matrix[y].length > x) 
+        ? widget.matrix[y][x] 
         : null;
 
     final String asset = isBackground 
         ? 'assets/game_images/textures/soil_background.jpg'
         : 'assets/game_images/textures/grass_land.jpg';
 
-    return SizedBox(
-      width: tileWidth,
-      height: tileHeight, // The base tile height
-      child: Stack(
-        clipBehavior: Clip.none, // Allow tree to overflow upwards
-        alignment: Alignment.center,
-        children: [
-          // Base Tile - Transformed to look isometric
-          ClipPath(
-            clipper: _IsoTileClipper(),
-            child: Image.asset(
-              asset,
-              width: tileWidth,
-              height: tileWidth, // Square source
-              fit: BoxFit.cover,
-            ),
-          ),
-          
-          // Debug/Border
-          CustomPaint(
-            size: const Size(tileWidth, tileHeight),
-            painter: _GridBorderPainter(isBackground: isBackground),
-          ),
+    // Selection Visibility Logic for Fences (Hide 3 segments: closest + left + right)
+    bool hideFence = false;
+    if (fenceAsset != null && _selectedX != null && _selectedY != null) {
+      // If this is a Fence 1 (Horizontal borders: Top-Right or Bottom-Left)
+      // Check if the selected tile's X is close to this fence's X
+      if (y == -1 && (_selectedX! - x).abs() <= 1 && _selectedY == 0) hideFence = true;
+      if (y == widget.gridHeight && (_selectedX! - x).abs() <= 1 && _selectedY == widget.gridHeight - 1) hideFence = true;
+      
+      // If this is a Fence 2 (Vertical borders: Top-Left or Bottom-Right)
+      // Check if the selected tile's Y is close to this fence's Y
+      if (x == -1 && (_selectedY! - y).abs() <= 1 && _selectedX == 0) hideFence = true;
+      if (x == widget.gridWidth && (_selectedY! - y).abs() <= 1 && _selectedX == widget.gridWidth - 1) hideFence = true;
+    }
 
-          // Overlay (if item exists)
-          if (cellData != null)
-             Positioned(
-               bottom: tileHeight / 4,
-               child: const Icon(Icons.house, color: Colors.brown, size: 32),
-             ),
+    final bool isSelected = _selectedX == x && _selectedY == y;
 
-          // Tree Overlay (if background border)
-          if (hasTree && treeAsset != null)
-            Positioned(
-              bottom: tileHeight / 2 - 10, // Adjust vertical position to stand on tile
-              child: Image.asset(
-                treeAsset!,
-                width: 100, // Adjust size as needed
-                height: 140,
-                fit: BoxFit.contain,
+    return GestureDetector(
+      onTap: isBackground ? null : () {
+        setState(() {
+          if (_selectedX == x && _selectedY == y) {
+            _selectedX = null;
+            _selectedY = null;
+          } else {
+            _selectedX = x;
+            _selectedY = y;
+          }
+        });
+      },
+      child: SizedBox(
+        width: tileWidth,
+        height: tileHeight,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            // Base Tile
+            ClipPath(
+              clipper: _IsoTileClipper(),
+              child: Stack(
+                children: [
+                   Image.asset(
+                    asset,
+                    width: tileWidth,
+                    height: tileWidth,
+                    fit: BoxFit.cover,
+                  ),
+                  if (isSelected)
+                    Container(
+                      color: Colors.white.withOpacity(0.3),
+                    ),
+                ],
               ),
             ),
-
-          // Fence Overlay
-          if (fenceAsset != null)
-             Positioned(
-               bottom: (tileHeight / 2) + fenceDy,
-               left: fenceDx,
-               width: tileWidth,
-               child: Image.asset(
-                 fenceAsset!,
-                 height: tileHeight * 2, // Fences are usually taller than tiles
-                 fit: BoxFit.contain,
+            
+            // Debug/Border
+            CustomPaint(
+              size: const Size(tileWidth, tileHeight),
+              painter: _GridBorderPainter(isBackground: isBackground, isSelected: isSelected),
+            ),
+    
+            // Overlay (if item exists)
+            if (cellData != null)
+               Positioned(
+                 bottom: tileHeight / 4,
+                 child: const Icon(Icons.house, color: Colors.brown, size: 32),
                ),
-             ),
-        ],
+    
+            // Tree Overlay
+            if (hasTree && treeAsset != null)
+              Positioned(
+                bottom: tileHeight / 2 - 10,
+                child: Image.asset(
+                  treeAsset!,
+                  width: 100,
+                  height: 140,
+                  fit: BoxFit.contain,
+                ),
+              ),
+    
+            // Fence Overlay (Hides when adjacent grass is selected)
+            if (fenceAsset != null)
+               Positioned(
+                 bottom: (tileHeight / 2) + fenceDy,
+                 left: fenceDx,
+                 width: tileWidth,
+                 child: AnimatedOpacity(
+                   duration: const Duration(milliseconds: 200),
+                   opacity: hideFence ? 0.0 : 1.0, 
+                   child: Image.asset(
+                     fenceAsset!,
+                     height: tileHeight * 2,
+                     fit: BoxFit.contain,
+                   ),
+                 ),
+               ),
+          ],
+        ),
       ),
     );
   }
@@ -228,14 +271,17 @@ class IsometricMap extends StatelessWidget {
 
 class _GridBorderPainter extends CustomPainter {
   final bool isBackground;
-  _GridBorderPainter({this.isBackground = false});
+  final bool isSelected;
+  _GridBorderPainter({this.isBackground = false, this.isSelected = false});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = isBackground ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.2)
+      ..color = isSelected 
+          ? Colors.yellow.withOpacity(0.8) 
+          : (isBackground ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.2))
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
+      ..strokeWidth = isSelected ? 2 : 1;
 
     final path = Path();
     path.moveTo(size.width / 2, 0);
@@ -248,18 +294,13 @@ class _GridBorderPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _GridBorderPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _GridBorderPainter oldDelegate) => 
+      oldDelegate.isSelected != isSelected;
 }
 
 class _IsoTileClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    // Return a Rhombus shape
-    // Center is (w/2, h/2)
-    // Top: (w/2, 0)
-    // Right: (w, h/2)
-    // Bottom: (w/2, h)
-    // Left: (0, h/2)
     final path = Path();
     path.moveTo(size.width / 2, 0);
     path.lineTo(size.width, size.height / 2);
@@ -298,5 +339,3 @@ class _TileEntry {
     this.fenceDy = 0,
   });
 }
-
-
