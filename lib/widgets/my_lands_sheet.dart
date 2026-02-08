@@ -30,9 +30,9 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         children: [
@@ -42,7 +42,7 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: Theme.of(context).dividerColor,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -54,12 +54,11 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
               children: [
                 const Icon(Icons.landscape, color: Colors.green),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'My Lands',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const Spacer(),
                 IconButton(
@@ -89,20 +88,20 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.landscape_outlined, size: 60, color: Colors.grey[400]),
+          Icon(Icons.landscape_outlined, size: 60, color: Theme.of(context).disabledColor),
           const SizedBox(height: 16),
           Text(
             'No lands found',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.grey[600],
+              color: Theme.of(context).textTheme.bodyMedium?.color,
               fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'You haven\'t rented any lands yet.',
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(color: Theme.of(context).disabledColor),
           ),
         ],
       ),
@@ -132,11 +131,13 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
   Widget _buildLandCard(BuildContext context, Land land) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Theme.of(context).brightness == Brightness.dark 
+                ? Colors.black.withOpacity(0.3)
+                : Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -176,7 +177,7 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -185,14 +186,15 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
                         const Icon(
                           Icons.grid_on,
                           size: 12,
-                          color: Colors.black87,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '${land.gridWidth}x${land.gridHeight}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -234,7 +236,7 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
                       land.isActive ? 'Active' : 'Inactive',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).textTheme.bodySmall?.color,
                       ),
                     ),
                   ],
