@@ -60,6 +60,7 @@ dependencies:
   file_selector_windows: ^0.9.3+5
   file_picker: ^10.3.10
   mime: ^2.0.0
+  image: ^4.7.2
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1

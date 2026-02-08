@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:image/image.dart' as img;
 import '../../providers/product_provider.dart';
 import '../../models/product_type_model.dart';
 
@@ -19,7 +21,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _priceController = TextEditingController();
   final _quantityController = TextEditingController();
   final _unitController = TextEditingController();
-
+  
   File? _selectedImage;
   String? _selectedProductTypeId;
 
@@ -55,9 +57,37 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
 
     if (result != null && result.files.single.path != null) {
-      setState(() {
-        _selectedImage = File(result.files.single.path!);
-      });
+      final originalFile = File(result.files.single.path!);
+      final bytes = await originalFile.readAsBytes();
+      final image = img.decodeImage(bytes);
+
+      if (image != null) {
+        // Resize if too large (max width 1024)
+        var resized = image;
+        if (image.width > 1024) {
+          resized = img.copyResize(image, width: 1024);
+        }
+
+        // Compress to JPG with 85% quality
+        final compressedBytes = img.encodeJpg(resized, quality: 85);
+        
+        // Save to temp file
+        final tempDir = Directory.systemTemp;
+        
+        // Ensure unique filename
+        final uniqueId = DateTime.now().millisecondsSinceEpoch;
+        final tempFile = File('${tempDir.path}/compressed_$uniqueId.jpg');
+        await tempFile.writeAsBytes(compressedBytes);
+
+        setState(() {
+          _selectedImage = tempFile;
+        });
+      } else {
+        // Fallback if decoding fails
+        setState(() {
+          _selectedImage = originalFile;
+        });
+      }
     }
   }
 
@@ -79,10 +109,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       'product_type_id': _selectedProductTypeId,
     };
 
-    final success = await context.read<ProductProvider>().addProduct(
-      data,
-      imageFile: _selectedImage,
-    );
+    final success = await context.read<ProductProvider>().addProduct(data, imageFile: _selectedImage);
 
     if (!mounted) return;
 
@@ -92,9 +119,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
         const SnackBar(content: Text('Product listed successfully!')),
       );
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Failed to list product.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to list product.')),
+      );
     }
   }
 
@@ -129,16 +156,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       : const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.add_a_photo,
-                              size: 40,
-                              color: Colors.grey,
-                            ),
+                            Icon(Icons.add_a_photo, size: 40, color: Colors.grey),
                             SizedBox(height: 8),
-                            Text(
-                              'Tap to add image',
-                              style: TextStyle(color: Colors.grey),
-                            ),
+                            Text('Tap to add image', style: TextStyle(color: Colors.grey)),
                           ],
                         ),
                 ),
@@ -160,8 +180,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   );
                 }).toList(),
                 onChanged: (val) {
-                  final type = productTypes.firstWhere((t) => t.id == val);
-                  _onProductTypeChanged(type);
+                   final type = productTypes.firstWhere((t) => t.id == val);
+                   _onProductTypeChanged(type);
                 },
                 validator: (v) => v == null ? 'Required' : null,
               ),
