@@ -6,8 +6,10 @@ import '../../models/land_model.dart';
 import '../../providers/land_provider.dart';
 import 'add_land_screen.dart';
 import 'rental_requests_screen.dart';
+import 'edit_land_sheet.dart';
 import '../../services/auth_service.dart';
 import '../../models/user_model.dart';
+import '../../models/land_rental_model.dart'; // Add this import
 
 class FarmerLandManagementScreen extends StatefulWidget {
   const FarmerLandManagementScreen({super.key});
@@ -36,7 +38,10 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
     await Future.wait([provider.fetchMyLands(), provider.fetchAllLands()]);
 
     if (_currentMode == ViewMode.ar && mounted) {
-      _fitMapToLands();
+      // Small delay to ensure map is built if we just switched
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (mounted) _fitMapToLands();
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('✨ Land Data Synchronized Successfully!'),
@@ -69,44 +74,52 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
   }
 
   void _animatedMapMove(LatLng destLocation, double destZoom) {
-    final latTween = Tween<double>(
-      begin: _mapController.camera.center.latitude,
-      end: destLocation.latitude,
-    );
-    final lngTween = Tween<double>(
-      begin: _mapController.camera.center.longitude,
-      end: destLocation.longitude,
-    );
-    final zoomTween = Tween<double>(
-      begin: _mapController.camera.zoom,
-      end: destZoom,
-    );
-
-    final controller = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    );
-    final animation = CurvedAnimation(
-      parent: controller,
-      curve: Curves.fastOutSlowIn,
-    );
-
-    controller.addListener(() {
-      _mapController.move(
-        LatLng(latTween.evaluate(animation), lngTween.evaluate(animation)),
-        zoomTween.evaluate(animation),
+    try {
+      final latTween = Tween<double>(
+        begin: _mapController.camera.center.latitude,
+        end: destLocation.latitude,
       );
-    });
+      final lngTween = Tween<double>(
+        begin: _mapController.camera.center.longitude,
+        end: destLocation.longitude,
+      );
+      final zoomTween = Tween<double>(
+        begin: _mapController.camera.zoom,
+        end: destZoom,
+      );
 
-    animation.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        controller.dispose();
-      } else if (status == AnimationStatus.dismissed) {
-        controller.dispose();
-      }
-    });
+      final controller = AnimationController(
+        duration: const Duration(milliseconds: 1000),
+        vsync: this,
+      );
+      final animation = CurvedAnimation(
+        parent: controller,
+        curve: Curves.fastOutSlowIn,
+      );
 
-    controller.forward();
+      controller.addListener(() {
+        try {
+          _mapController.move(
+            LatLng(latTween.evaluate(animation), lngTween.evaluate(animation)),
+            zoomTween.evaluate(animation),
+          );
+        } catch (_) {
+          // Surpress map move errors if controller is detached
+        }
+      });
+
+      animation.addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          controller.dispose();
+        } else if (status == AnimationStatus.dismissed) {
+          controller.dispose();
+        }
+      });
+
+      controller.forward();
+    } catch (_) {
+      // Map controller not ready
+    }
   }
 
   @override
@@ -349,9 +362,12 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                 }),
                 // Render My Lands (Green)
                 ...myLands.where((l) => l.boundaries != null).map((land) {
+                  final isRented = land.isRented;
                   return Polygon(
                     points: land.boundaries!,
-                    color: Colors.green.withOpacity(0.4),
+                    color: isRented
+                        ? Colors.orangeAccent.withOpacity(0.4)
+                        : Colors.green.withOpacity(0.4),
                     borderColor: Colors.white,
                     borderStrokeWidth: 2,
                     isFilled: true,
@@ -549,7 +565,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                       ],
                     ),
                   ),
-                  _buildStatusTag(land.isActive),
+                  _buildStatusTag(land.isActive, isRented: land.isRented),
                 ],
               ),
               const SizedBox(height: 32),
@@ -652,17 +668,137 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
               ),
             ],
           ),
-          child: IconButton(
-            onPressed: () => _showComingSoonDialog('Edit Land'),
-            icon: Icon(
-              Icons.edit_outlined,
-              color: Theme.of(context).iconTheme.color,
-            ),
-            padding: const EdgeInsets.all(16),
-            tooltip: 'Edit Land Details',
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => EditLandSheet(land: land),
+                  );
+                },
+                icon: Icon(
+                  Icons.edit_outlined,
+                  color: Theme.of(context).iconTheme.color,
+                ),
+                padding: const EdgeInsets.all(16),
+                tooltip: 'Edit Land Details',
+              ),
+              Container(
+                height: 24,
+                width: 1,
+                color: Theme.of(context).dividerColor.withOpacity(0.1),
+              ),
+              IconButton(
+                onPressed: () => _showDeleteConfirmation(land),
+                icon: const Icon(
+                  Icons.delete_outline_rounded,
+                  color: Colors.redAccent,
+                ),
+                padding: const EdgeInsets.all(16),
+                tooltip: 'Delete Land',
+              ),
+            ],
           ),
         ),
       ],
+    );
+  }
+
+  void _showDeleteConfirmation(Land land) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E2125),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Row(
+          children: [
+            Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.redAccent,
+              size: 28,
+            ),
+            SizedBox(width: 12),
+            Text(
+              'Delete Land?',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Are you sure you want to delete "${land.name}"?',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'This action cannot be undone. All associated data will be permanently removed.',
+              style: TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'CANCEL',
+              style: TextStyle(
+                color: Colors.white70,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Consumer<LandProvider>(
+            builder: (context, provider, child) {
+              return TextButton(
+                onPressed: provider.isLoading
+                    ? null
+                    : () async {
+                        final success = await provider.deleteLand(land.id);
+                        if (success && mounted) {
+                          Navigator.pop(context); // Close dialog
+                          Navigator.pop(context); // Close details sheet
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Land deleted successfully'),
+                              backgroundColor: Colors.redAccent,
+                            ),
+                          );
+                        }
+                      },
+                child: provider.isLoading
+                    ? const SizedBox(
+                        height: 16,
+                        width: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.redAccent,
+                        ),
+                      )
+                    : const Text(
+                        'DELETE',
+                        style: TextStyle(
+                          color: Colors.redAccent,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -735,19 +871,32 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
     );
   }
 
-  Widget _buildStatusTag(bool isActive) {
+  Widget _buildStatusTag(bool isActive, {bool isRented = false}) {
+    final status = !isActive
+        ? 'INACTIVE'
+        : isRented
+        ? 'RENTED'
+        : 'LIVE';
+
+    Color color;
+    if (!isActive) {
+      color = Colors.red;
+    } else if (isRented) {
+      color = Colors.orange;
+    } else {
+      color = Colors.green;
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: isActive
-            ? Colors.green.withOpacity(0.1)
-            : Colors.red.withOpacity(0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        isActive ? 'LIVE' : 'INACTIVE',
+        status,
         style: TextStyle(
-          color: isActive ? Colors.green : Colors.red,
+          color: color,
           fontSize: 10,
           fontWeight: FontWeight.bold,
           letterSpacing: 1,
@@ -1172,6 +1321,16 @@ class _ModernLandCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final isRented = land.isRented;
+    final rentalCount = land.rentals
+        .where(
+          (r) =>
+              r.paymentStatus != PaymentStatus.cancelled &&
+              (r.rentalEndDate == null ||
+                  r.rentalEndDate!.isAfter(DateTime.now())),
+        )
+        .length;
+
     return GestureDetector(
       onTap: () => onDetailTap(land),
       child: Container(
@@ -1262,8 +1421,12 @@ class _ModernLandCard extends StatelessWidget {
                             polygons: [
                               Polygon(
                                 points: land.boundaries!,
-                                color: Colors.green.withOpacity(0.4),
-                                borderColor: Colors.green,
+                                color: isRented
+                                    ? Colors.orangeAccent.withOpacity(0.5)
+                                    : Colors.green.withOpacity(0.4),
+                                borderColor: isRented
+                                    ? Colors.orangeAccent
+                                    : Colors.green,
                                 borderStrokeWidth: 2,
                                 isFilled: true,
                               ),
@@ -1308,7 +1471,7 @@ class _ModernLandCard extends StatelessWidget {
                               ),
                             ),
                           ),
-                          _buildStatusBadge(land.isActive),
+                          _buildStatusBadge(land.isActive, isRented: isRented),
                         ],
                       ),
                     ),
@@ -1333,8 +1496,9 @@ class _ModernLandCard extends StatelessWidget {
                       _buildInfoItem(
                         context,
                         'Rentals',
-                        '0 Active',
+                        '$rentalCount Active',
                         Icons.people_alt_rounded,
+                        isHighlight: rentalCount > 0,
                       ),
                       _buildInfoItem(
                         context,
@@ -1352,7 +1516,9 @@ class _ModernLandCard extends StatelessWidget {
                           onPressed: () => onDetailTap(land),
                           style: OutlinedButton.styleFrom(
                             side: BorderSide(
-                              color: Colors.green.withOpacity(0.5),
+                              color: isRented
+                                  ? Colors.orangeAccent.withOpacity(0.5)
+                                  : Colors.green.withOpacity(0.5),
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
@@ -1362,7 +1528,9 @@ class _ModernLandCard extends StatelessWidget {
                           child: Text(
                             'View Details',
                             style: TextStyle(
-                              color: Colors.green,
+                              color: isRented
+                                  ? Colors.orangeAccent
+                                  : Colors.green,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -1379,23 +1547,32 @@ class _ModernLandCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge(bool isActive) {
+  Widget _buildStatusBadge(bool isActive, {bool isRented = false}) {
+    Color color;
+    String text;
+
+    if (!isActive) {
+      color = Colors.red;
+      text = 'INACTIVE';
+    } else if (isRented) {
+      color = Colors.orangeAccent;
+      text = 'RENTED';
+    } else {
+      color = Colors.green;
+      text = 'LIVE';
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: isActive ? Colors.green.withAlpha(50) : Colors.red.withAlpha(50),
+        color: color.withOpacity(0.2),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isActive
-              ? Colors.green.withOpacity(0.5)
-              : Colors.red.withOpacity(0.5),
-          width: 0.5,
-        ),
+        border: Border.all(color: color.withOpacity(0.5), width: 0.5),
       ),
       child: Text(
-        isActive ? 'LIVE' : 'INACTIVE',
+        text,
         style: TextStyle(
-          color: isActive ? Colors.green[400] : Colors.red[400],
+          color: color,
           fontSize: 10,
           fontWeight: FontWeight.w900,
           letterSpacing: 1.2,
@@ -1408,9 +1585,14 @@ class _ModernLandCard extends StatelessWidget {
     BuildContext context,
     String label,
     String value,
-    IconData icon,
-  ) {
+    IconData icon, {
+    bool isHighlight = false,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color = isHighlight
+        ? Colors.orangeAccent
+        : Theme.of(context).textTheme.bodyLarge?.color;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1420,7 +1602,9 @@ class _ModernLandCard extends StatelessWidget {
             Icon(
               icon,
               size: 14,
-              color: isDark ? Colors.white38 : Colors.black38,
+              color: isHighlight
+                  ? Colors.orangeAccent
+                  : (isDark ? Colors.white38 : Colors.black38),
             ),
             SizedBox(width: 6),
             Text(
@@ -1436,7 +1620,7 @@ class _ModernLandCard extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            color: Theme.of(context).textTheme.bodyLarge?.color,
+            color: color,
             fontSize: 15,
             fontWeight: FontWeight.w600,
           ),

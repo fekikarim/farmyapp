@@ -62,6 +62,49 @@ class LandProvider with ChangeNotifier {
     return false;
   }
 
+  Future<bool> updateLand(String id, Map<String, dynamic> data) async {
+    _setLoading(true);
+    _error = null;
+    try {
+      final updatedLand = await LandService.updateLand(id, data);
+      if (updatedLand != null) {
+        final index = _myLands.indexWhere((l) => l.id == id);
+        if (index != -1) {
+          _myLands[index] = updatedLand;
+          notifyListeners();
+        }
+        return true;
+      }
+      _error = "Failed to update land";
+    } catch (e) {
+      _error = e.toString();
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
+    return false;
+  }
+
+  Future<bool> deleteLand(String id) async {
+    _setLoading(true);
+    _error = null;
+    try {
+      final success = await LandService.deleteLand(id);
+      if (success) {
+        _myLands.removeWhere((l) => l.id == id);
+        notifyListeners();
+        return true;
+      }
+      _error = "Failed to delete land";
+    } catch (e) {
+      _error = e.toString();
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
+    return false;
+  }
+
   // --- Rental Methods ---
 
   Future<void> fetchMyRentals(bool asInvestor, {String? paymentStatus}) async {
@@ -69,7 +112,9 @@ class LandProvider with ChangeNotifier {
     _error = null;
     try {
       if (asInvestor) {
-        _myRentals = await LandRentalService.getMyRentalsAsInvestor(paymentStatus: paymentStatus);
+        _myRentals = await LandRentalService.getMyRentalsAsInvestor(
+          paymentStatus: paymentStatus,
+        );
       } else {
         _myRentals = await LandRentalService.getMyRentalsAsOwner();
       }

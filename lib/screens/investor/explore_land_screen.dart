@@ -107,6 +107,14 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
             return _buildEmptyState();
           }
 
+          final availableLands = _currentMode == ViewMode.list
+              ? provider.allLands.where((l) => !l.isRented).toList()
+              : provider.allLands;
+
+          if (availableLands.isEmpty && _currentMode == ViewMode.list) {
+            return _buildEmptyState();
+          }
+
           return AnimatedSwitcher(
             duration: const Duration(milliseconds: 400),
             child: _currentMode == ViewMode.list
@@ -116,9 +124,9 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                     color: Colors.white,
                     child: ListView.builder(
                       padding: const EdgeInsets.all(20),
-                      itemCount: provider.allLands.length,
+                      itemCount: availableLands.length,
                       itemBuilder: (context, index) => _InvestorLandCard(
-                        land: provider.allLands[index],
+                        land: availableLands[index],
                         onTap: (land) => Navigator.push(
                           context,
                           MaterialPageRoute(
