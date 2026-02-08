@@ -1,6 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+
 import '../services/shop_service.dart';
+import '../services/land_rental_service.dart';
+import '../models/land_rental_model.dart';
+import 'shop_overlay.dart';
 
 class InventoryOverlay extends StatefulWidget {
   const InventoryOverlay({super.key});
@@ -13,6 +17,8 @@ class _InventoryOverlayState extends State<InventoryOverlay>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<dynamic> _inventory = [];
+  List<LandRental> _rentedLands = [];
+  LandRental? _selectedLand;
   bool _isLoading = true;
   String? _errorMessage;
 
@@ -20,7 +26,35 @@ class _InventoryOverlayState extends State<InventoryOverlay>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
-    _loadInventory();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    setState(() => _isLoading = true);
+    try {
+      // 1. Fetch Rented Lands
+      final lands = await LandRentalService.getMyRentalsAsInvestor();
+
+      // 2. Set Default Land (if any) or 'All' (null)
+      if (mounted) {
+        setState(() {
+          _rentedLands = lands;
+          // Optionally auto-select the first land if desired,
+          // or leave null to show "All Lands" by default
+          // _selectedLand = lands.isNotEmpty ? lands.first : null;
+        });
+      }
+
+      // 3. Load Inventory
+      await _loadInventory();
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = 'Failed to load data. Please try again.';
+        });
+      }
+    }
   }
 
   @override
@@ -35,7 +69,9 @@ class _InventoryOverlayState extends State<InventoryOverlay>
       _errorMessage = null;
     });
     try {
-      final items = await ShopService.getInvestorInventory();
+      final items = await ShopService.getInvestorInventory(
+        landId: _selectedLand?.landId,
+      );
       if (mounted) {
         setState(() {
           _inventory = items;
@@ -106,30 +142,93 @@ class _InventoryOverlayState extends State<InventoryOverlay>
   Widget _buildHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: Row(
+      child: Column(
         children: [
-          IconButton(
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.white,
-              size: 18,
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'MY INVENTORY',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.5,
+          Row(
+            children: [
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new,
+                  color: Colors.white,
+                  size: 18,
+                ),
+                onPressed: () => Navigator.pop(context),
               ),
-              overflow: TextOverflow.ellipsis,
-            ),
+              const SizedBox(width: 12),
+              const Text(
+                'MY INVENTORY',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.5,
+                ),
+              ),
+              const Spacer(),
+              // Land Selector
+              if (_rentedLands.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.greenAccent.withOpacity(0.3),
+                    ),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<LandRental>(
+                      value: _selectedLand,
+                      hint: const Text(
+                        'All Lands',
+                        style: TextStyle(
+                          color: Colors.greenAccent,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      icon: const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.greenAccent,
+                      ),
+                      dropdownColor: const Color(0xFF1E293B),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      items: [
+                        const DropdownMenuItem<LandRental>(
+                          value: null,
+                          child: Text('All Lands'),
+                        ),
+                        ..._rentedLands.map((land) {
+                          return DropdownMenuItem<LandRental>(
+                            value: land,
+                            child: Text(
+                              land.land?.name ?? 'Unknown',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          );
+                        }),
+                      ],
+                      onChanged: (LandRental? newValue) {
+                        if (_selectedLand != newValue) {
+                          setState(() {
+                            _selectedLand = newValue;
+                          });
+                          _loadInventory();
+                        }
+                      },
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),
@@ -539,10 +638,17 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                 'Buy More',
                 Icons.shopping_cart_outlined,
                 () {
-                  Navigator.pop(context);
-                  Navigator.pop(
-                    context,
-                  ); // Close inventory to reveal shop below
+                  Navigator.pop(context); // Close sheet
+                  Navigator.pop(context); // Close inventory
+                  // Open Shop, passing the current selected land if any
+                  showDialog(
+                    context: context,
+                    builder: (context) =>
+                        ShopOverlay(preSelectedLand: _selectedLand),
+                  ).then((_) {
+                    // Refresh inventory when returning from shop
+                    _loadInventory();
+                  });
                 },
                 isPrimary: false,
               ),

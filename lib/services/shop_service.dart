@@ -167,12 +167,13 @@ class ShopService {
     }
   }
 
-  static Future<List<dynamic>> getInvestorInventory() async {
+  static Future<List<dynamic>> getInvestorInventory({String? landId}) async {
     try {
-      final response = await AuthService.authenticatedRequest(
-        'GET',
-        Uri.parse('$_baseUrl/api/v1/item-requests/investor/inventory'),
-      );
+      final uri = Uri.parse(
+        '$_baseUrl/api/v1/item-requests/investor/inventory',
+      ).replace(queryParameters: landId != null ? {'landId': landId} : null);
+
+      final response = await AuthService.authenticatedRequest('GET', uri);
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
