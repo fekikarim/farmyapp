@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../models/land_model.dart';
 import 'isometric_map.dart';
 import 'land_grid_service.dart';
@@ -22,6 +23,11 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
+    // Force landscape for game
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeApp();
     });
@@ -224,5 +230,15 @@ class _GameScreenState extends State<GameScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // Restore portrait when leaving game
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
   }
 }

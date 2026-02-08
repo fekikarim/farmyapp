@@ -132,13 +132,16 @@ class _ShopOverlayState extends State<ShopOverlay> with SingleTickerProviderStat
             onPressed: () => Navigator.pop(context),
           ),
           const SizedBox(width: 8),
-          const Text(
-            'FARMY STORE',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 2,
+          Expanded(
+            child: Text(
+              'FARMY STORE',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 2,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           const Spacer(),
