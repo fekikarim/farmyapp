@@ -43,8 +43,8 @@ class Land {
   }
 
   factory Land.fromJson(Map<String, dynamic> json) {
-    final wM = (json['width_m'] ?? 10.0).toDouble();
-    final hM = (json['height_m'] ?? 10.0).toDouble();
+    final wM = double.tryParse(json['width_m']?.toString() ?? '10.0') ?? 10.0;
+    final hM = double.tryParse(json['height_m']?.toString() ?? '10.0') ?? 10.0;
 
     return Land(
       id: json['id'],

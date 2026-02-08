@@ -106,7 +106,7 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final token = await AuthService.getToken();
+      final token = await AuthService.getAccessToken();
       final uri = Uri.parse('${AuthService.baseUrl}/api/v1/products');
 
       var request = http.MultipartRequest('POST', uri);
