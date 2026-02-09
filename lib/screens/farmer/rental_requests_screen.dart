@@ -676,14 +676,7 @@ class _FarmerRentalRequestsScreenState
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: itemImage != null
-                          ? Image.network(
-                              itemImage,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) =>
-                                  _buildItemPlaceholder(assetCategory, isDark),
-                            )
-                          : _buildItemPlaceholder(assetCategory, isDark),
+                      child: _buildItemImage(itemImage, assetCategory, isDark),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -852,6 +845,28 @@ class _FarmerRentalRequestsScreenState
     );
   }
 
+  /// Builds the item image with path mapping from database to local assets
+  Widget _buildItemImage(String? url, String category, bool isDark) {
+    if (url == null || url.isEmpty) {
+      return _buildItemPlaceholder(category, isDark);
+    }
+
+    // Network images
+    if (url.startsWith('http')) {
+      return _NetworkItemImage(url: url, category: category);
+    }
+
+    // Database path mapping (e.g., '/icons/animals/cow.png' -> 'assets/game_images/icons/animals/cow.png')
+    String assetPath = url;
+    if (url.startsWith('/')) {
+      assetPath = 'assets/game_images$url';
+    } else if (!url.startsWith('assets/')) {
+      assetPath = 'assets/game_images/$url';
+    }
+
+    return _LocalAssetImage(assetPath: assetPath, category: category);
+  }
+
   Widget _buildItemPlaceholder(String category, bool isDark) {
     IconData icon;
     switch (category.toLowerCase()) {
@@ -924,6 +939,302 @@ class _FarmerRentalRequestsScreenState
               ),
             ),
           ],
+        ),
+      ],
+    );
+  }
+}
+
+/// A StatefulWidget that handles network image loading with:
+/// - Shimmer loading animation
+/// - Smooth fade-in transition when loaded
+/// - Error handling with retry capability
+/// - Category-aware placeholder fallbacks
+class _NetworkItemImage extends StatefulWidget {
+  final String url;
+  final String? category;
+
+  const _NetworkItemImage({required this.url, this.category});
+
+  @override
+  State<_NetworkItemImage> createState() => _NetworkItemImageState();
+}
+
+class _NetworkItemImageState extends State<_NetworkItemImage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _shimmerController;
+  bool _isLoading = true;
+  bool _hasError = false;
+  int _retryCount = 0;
+  static const int _maxRetries = 2;
+
+  @override
+  void initState() {
+    super.initState();
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  void _handleImageError() {
+    if (_retryCount < _maxRetries) {
+      setState(() {
+        _retryCount++;
+        _hasError = false;
+        _isLoading = true;
+      });
+    } else {
+      setState(() {
+        _hasError = true;
+        _isLoading = false;
+      });
+    }
+  }
+
+  IconData _getCategoryIcon() {
+    switch (widget.category?.toLowerCase()) {
+      case 'animal':
+        return Icons.pets_rounded;
+      case 'vegetation':
+        return Icons.grass_rounded;
+      case 'tree':
+        return Icons.park_rounded;
+      case 'structure':
+        return Icons.home_work_rounded;
+      case 'machine':
+        return Icons.precision_manufacturing_rounded;
+      default:
+        return Icons.inventory_2_outlined;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_hasError) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(_getCategoryIcon(), size: 32, color: Colors.white24),
+          const SizedBox(height: 4),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _retryCount = 0;
+                _hasError = false;
+                _isLoading = true;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.refresh, size: 10, color: Colors.white38),
+                  SizedBox(width: 4),
+                  Text(
+                    'Retry',
+                    style: TextStyle(
+                      color: Colors.white38,
+                      fontSize: 8,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (_isLoading)
+          AnimatedBuilder(
+            animation: _shimmerController,
+            builder: (context, child) {
+              return Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withOpacity(0.05),
+                      Colors.white.withOpacity(0.15),
+                      Colors.white.withOpacity(0.05),
+                    ],
+                    stops: [0.0, _shimmerController.value, 1.0],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Icon(
+                  _getCategoryIcon(),
+                  size: 28,
+                  color: Colors.white.withOpacity(0.2),
+                ),
+              );
+            },
+          ),
+        AnimatedOpacity(
+          opacity: _isLoading ? 0.0 : 1.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+          child: Image.network(
+            _retryCount > 0
+                ? '${widget.url}${widget.url.contains('?') ? '&' : '?'}retry=$_retryCount'
+                : widget.url,
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted && _isLoading) {
+                    setState(() => _isLoading = false);
+                  }
+                });
+                return child;
+              }
+              return const SizedBox.shrink();
+            },
+            errorBuilder: (_, __, ___) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) _handleImageError();
+              });
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// A StatefulWidget that handles local asset image loading with:
+/// - Shimmer loading animation
+/// - Smooth fade-in transition when loaded
+/// - Error handling with category-aware placeholders
+class _LocalAssetImage extends StatefulWidget {
+  final String assetPath;
+  final String? category;
+
+  const _LocalAssetImage({required this.assetPath, this.category});
+
+  @override
+  State<_LocalAssetImage> createState() => _LocalAssetImageState();
+}
+
+class _LocalAssetImageState extends State<_LocalAssetImage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _shimmerController;
+  bool _isLoading = true;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
+    _loadAsset();
+  }
+
+  Future<void> _loadAsset() async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  IconData _getCategoryIcon() {
+    switch (widget.category?.toLowerCase()) {
+      case 'animal':
+        return Icons.pets_rounded;
+      case 'vegetation':
+        return Icons.grass_rounded;
+      case 'tree':
+        return Icons.park_rounded;
+      case 'structure':
+        return Icons.home_work_rounded;
+      case 'machine':
+        return Icons.precision_manufacturing_rounded;
+      default:
+        return Icons.inventory_2_outlined;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_hasError) {
+      return Icon(_getCategoryIcon(), size: 32, color: Colors.white24);
+    }
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (_isLoading)
+          AnimatedBuilder(
+            animation: _shimmerController,
+            builder: (context, child) {
+              return Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withOpacity(0.05),
+                      Colors.white.withOpacity(0.12),
+                      Colors.white.withOpacity(0.05),
+                    ],
+                    stops: [0.0, _shimmerController.value, 1.0],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Icon(
+                  _getCategoryIcon(),
+                  size: 28,
+                  color: Colors.white.withOpacity(0.2),
+                ),
+              );
+            },
+          ),
+        AnimatedOpacity(
+          opacity: _isLoading ? 0.0 : 1.0,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+          child: Image.asset(
+            widget.assetPath,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted && !_hasError) {
+                  setState(() => _hasError = true);
+                }
+              });
+              return Icon(_getCategoryIcon(), size: 32, color: Colors.white24);
+            },
+          ),
         ),
       ],
     );

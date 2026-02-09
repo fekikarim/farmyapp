@@ -43,7 +43,9 @@ class _InventoryOverlayState extends State<InventoryOverlay>
           if (widget.initialLandId != null) {
             _selectedLand = _rentedLands.firstWhere(
               (r) => r.landId == widget.initialLandId,
-              orElse: () => _rentedLands.isNotEmpty ? _rentedLands.first : _rentedLands.first, // Placeholder fallback
+              orElse: () => _rentedLands.isNotEmpty
+                  ? _rentedLands.first
+                  : _rentedLands.first, // Placeholder fallback
             );
             // Re-check if firstWhere found something or fallback to null (All Lands)
             if (_selectedLand?.landId != widget.initialLandId) {
@@ -370,7 +372,10 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                             top: Radius.circular(16),
                           ),
                         ),
-                        child: _buildItemImage(details['image_url']),
+                        child: _buildItemImage(
+                          details['image_url'],
+                          category: item['asset_category'],
+                        ),
                       ),
                       Positioned(
                         top: 10,
@@ -570,43 +575,60 @@ class _InventoryOverlayState extends State<InventoryOverlay>
     );
   }
 
-  Widget _buildItemImage(String? url) {
+  /// Builds an enhanced image widget with shimmer loading, error handling,
+  /// and smooth transitions for a polished user experience.
+  Widget _buildItemImage(String? url, {String? category}) {
     if (url == null || url.isEmpty) {
-      return const Icon(
-        Icons.inventory_2_outlined,
-        size: 64,
-        color: Colors.white24,
-      );
+      return _buildImagePlaceholder(category);
     }
 
     // Check if it's a network URL
     if (url.startsWith('http')) {
-      return Image.network(
-        url,
-        fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => const Icon(
-          Icons.broken_image_outlined,
-          size: 64,
-          color: Colors.white24,
-        ),
-      );
+      return _NetworkItemImage(url: url, category: category);
     }
 
-    // Assume local asset
-    return Image.asset(
-      url,
-      fit: BoxFit.contain,
-      errorBuilder: (_, __, ___) => const Icon(
-        Icons.inventory_2_outlined,
-        size: 64,
-        color: Colors.white24,
-      ),
-    );
+    // Handle database paths like '/icons/animals/cow.png'
+    // Map to 'assets/game_images/icons/animals/cow.png'
+    String assetPath = url;
+    if (url.startsWith('/')) {
+      assetPath = 'assets/game_images$url';
+    } else if (!url.startsWith('assets/')) {
+      assetPath = 'assets/game_images/$url';
+    }
+
+    // Local asset handling with shimmer-like loading
+    return _LocalAssetImage(assetPath: assetPath, category: category);
+  }
+
+  /// Builds a category-aware placeholder icon
+  Widget _buildImagePlaceholder(String? category) {
+    IconData icon;
+    switch (category?.toLowerCase()) {
+      case 'animal':
+        icon = Icons.pets_rounded;
+        break;
+      case 'vegetation':
+        icon = Icons.grass_rounded;
+        break;
+      case 'tree':
+        icon = Icons.park_rounded;
+        break;
+      case 'structure':
+        icon = Icons.home_work_rounded;
+        break;
+      case 'machine':
+        icon = Icons.precision_manufacturing_rounded;
+        break;
+      default:
+        icon = Icons.inventory_2_outlined;
+    }
+    return Icon(icon, size: 64, color: Colors.white24);
   }
 
   void _showItemActions(BuildContext context, dynamic item) {
     final itemLandId = (item['land_id'] ?? item['land']?['id'])?.toString();
-    final isMatchingLand = widget.initialLandId != null && itemLandId == widget.initialLandId;
+    final isMatchingLand =
+        widget.initialLandId != null && itemLandId == widget.initialLandId;
 
     showModalBottomSheet(
       context: context,
@@ -699,7 +721,9 @@ class _InventoryOverlayState extends State<InventoryOverlay>
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         decoration: BoxDecoration(
           color: isPrimary
-              ? (isDisabled ? Colors.grey.withOpacity(0.1) : const Color(0xFF4ADE80))
+              ? (isDisabled
+                    ? Colors.grey.withOpacity(0.1)
+                    : const Color(0xFF4ADE80))
               : Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(12),
           border: isPrimary ? null : Border.all(color: Colors.white12),
@@ -721,7 +745,9 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                   label,
                   style: TextStyle(
                     color: isPrimary
-                        ? (isDisabled ? Colors.white38 : const Color(0xFF0F172A))
+                        ? (isDisabled
+                              ? Colors.white38
+                              : const Color(0xFF0F172A))
                         : Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -765,6 +791,314 @@ class _InventoryOverlayState extends State<InventoryOverlay>
           ),
         ],
       ),
+    );
+  }
+}
+
+/// A StatefulWidget that handles network image loading with:
+/// - Shimmer loading animation
+/// - Smooth fade-in transition when loaded
+/// - Error handling with retry capability
+/// - Category-aware placeholder fallbacks
+class _NetworkItemImage extends StatefulWidget {
+  final String url;
+  final String? category;
+
+  const _NetworkItemImage({required this.url, this.category});
+
+  @override
+  State<_NetworkItemImage> createState() => _NetworkItemImageState();
+}
+
+class _NetworkItemImageState extends State<_NetworkItemImage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _shimmerController;
+  bool _isLoading = true;
+  bool _hasError = false;
+  int _retryCount = 0;
+  static const int _maxRetries = 2;
+
+  @override
+  void initState() {
+    super.initState();
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  void _handleImageError() {
+    if (_retryCount < _maxRetries) {
+      setState(() {
+        _retryCount++;
+        _hasError = false;
+        _isLoading = true;
+      });
+    } else {
+      setState(() {
+        _hasError = true;
+        _isLoading = false;
+      });
+    }
+  }
+
+  IconData _getCategoryIcon() {
+    switch (widget.category?.toLowerCase()) {
+      case 'animal':
+        return Icons.pets_rounded;
+      case 'vegetation':
+        return Icons.grass_rounded;
+      case 'tree':
+        return Icons.park_rounded;
+      case 'structure':
+        return Icons.home_work_rounded;
+      case 'machine':
+        return Icons.precision_manufacturing_rounded;
+      default:
+        return Icons.inventory_2_outlined;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_hasError) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(_getCategoryIcon(), size: 48, color: Colors.white24),
+          const SizedBox(height: 8),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _retryCount = 0;
+                _hasError = false;
+                _isLoading = true;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.refresh, size: 12, color: Colors.white38),
+                  SizedBox(width: 4),
+                  Text(
+                    'Retry',
+                    style: TextStyle(
+                      color: Colors.white38,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Shimmer loading placeholder
+        if (_isLoading)
+          AnimatedBuilder(
+            animation: _shimmerController,
+            builder: (context, child) {
+              return Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withOpacity(0.05),
+                      Colors.white.withOpacity(0.15),
+                      Colors.white.withOpacity(0.05),
+                    ],
+                    stops: [0.0, _shimmerController.value, 1.0],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Icon(
+                  _getCategoryIcon(),
+                  size: 32,
+                  color: Colors.white.withOpacity(0.2),
+                ),
+              );
+            },
+          ),
+
+        // Actual image with fade-in animation
+        AnimatedOpacity(
+          opacity: _isLoading ? 0.0 : 1.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+          child: Image.network(
+            // Add cache-busting for retries if needed
+            _retryCount > 0
+                ? '${widget.url}${widget.url.contains('?') ? '&' : '?'}retry=$_retryCount'
+                : widget.url,
+            fit: BoxFit.contain,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) {
+                // Image loaded successfully
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted && _isLoading) {
+                    setState(() => _isLoading = false);
+                  }
+                });
+                return child;
+              }
+              // Still loading - shimmer handles this
+              return const SizedBox.shrink();
+            },
+            errorBuilder: (_, __, ___) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) _handleImageError();
+              });
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// A StatefulWidget that handles local asset image loading with:
+/// - Shimmer loading animation
+/// - Smooth fade-in transition when loaded
+/// - Error handling with category-aware placeholders
+class _LocalAssetImage extends StatefulWidget {
+  final String assetPath;
+  final String? category;
+
+  const _LocalAssetImage({required this.assetPath, this.category});
+
+  @override
+  State<_LocalAssetImage> createState() => _LocalAssetImageState();
+}
+
+class _LocalAssetImageState extends State<_LocalAssetImage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _shimmerController;
+  bool _isLoading = true;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
+
+    // Pre-check asset availability
+    _loadAsset();
+  }
+
+  Future<void> _loadAsset() async {
+    // Small delay for shimmer effect visibility
+    await Future.delayed(const Duration(milliseconds: 100));
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  IconData _getCategoryIcon() {
+    switch (widget.category?.toLowerCase()) {
+      case 'animal':
+        return Icons.pets_rounded;
+      case 'vegetation':
+        return Icons.grass_rounded;
+      case 'tree':
+        return Icons.park_rounded;
+      case 'structure':
+        return Icons.home_work_rounded;
+      case 'machine':
+        return Icons.precision_manufacturing_rounded;
+      default:
+        return Icons.inventory_2_outlined;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_hasError) {
+      return Icon(_getCategoryIcon(), size: 48, color: Colors.white24);
+    }
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Shimmer loading placeholder
+        if (_isLoading)
+          AnimatedBuilder(
+            animation: _shimmerController,
+            builder: (context, child) {
+              return Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withOpacity(0.05),
+                      Colors.white.withOpacity(0.12),
+                      Colors.white.withOpacity(0.05),
+                    ],
+                    stops: [0.0, _shimmerController.value, 1.0],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Icon(
+                  _getCategoryIcon(),
+                  size: 32,
+                  color: Colors.white.withOpacity(0.2),
+                ),
+              );
+            },
+          ),
+
+        // Actual image with fade-in animation
+        AnimatedOpacity(
+          opacity: _isLoading ? 0.0 : 1.0,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+          child: Image.asset(
+            widget.assetPath,
+            fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted && !_hasError) {
+                  setState(() => _hasError = true);
+                }
+              });
+              return Icon(_getCategoryIcon(), size: 48, color: Colors.white24);
+            },
+          ),
+        ),
+      ],
     );
   }
 }
