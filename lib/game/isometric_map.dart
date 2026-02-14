@@ -319,7 +319,7 @@ class IsometricMapPainter extends CustomPainter {
           path.close();
           
           final Paint p = Paint()
-             ..color = isOccupied ? Colors.red.withValues(alpha: 0.5) : Colors.green.withValues(alpha: 0.5)
+             ..color = isOccupied ? Colors.red.withOpacity(0.5) : Colors.green.withOpacity(0.5)
              ..style = PaintingStyle.fill;
           
           canvas.drawPath(path, p);
@@ -347,7 +347,7 @@ class IsometricMapPainter extends CustomPainter {
          final ui.Image? img = assetManager.getImage(fullPath);
          
          if (img != null) {
-             canvas.saveLayer(null, Paint()..color = Colors.white.withValues(alpha: 0.7));
+             canvas.saveLayer(null, Paint()..color = Colors.white.withOpacity(0.7));
              
              double w = 64;
              double h = 80;
@@ -369,7 +369,7 @@ class IsometricMapPainter extends CustomPainter {
      }
      
      // Ghost Fallback
-     canvas.drawCircle(Offset(isoX + tileWidth/2, isoY + tileHeight/2), 10, Paint()..color = Colors.blue.withValues(alpha: 0.5));
+     canvas.drawCircle(Offset(isoX + tileWidth/2, isoY + tileHeight/2), 10, Paint()..color = Colors.blue.withOpacity(0.5));
   }
 
   void _paintTile(Canvas canvas, Paint paint, _PaintTask task) {
@@ -408,7 +408,7 @@ class IsometricMapPainter extends CustomPainter {
       canvas.translate(task.isoX, task.isoY);
       paint.style = PaintingStyle.stroke;
       paint.strokeWidth = 1; // Default
-      paint.color = task.isForeground ? Colors.white.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05);
+      paint.color = task.isForeground ? Colors.white.withOpacity(0.2) : Colors.white.withOpacity(0.05);
       canvas.drawPath(path, paint);
       canvas.restore();
     }
@@ -482,8 +482,26 @@ class IsometricMapPainter extends CustomPainter {
         else if (state['is_finished'] == true) status = 'finished';
     }
 
-    String? spriteBase = sprites?[status] ?? sprites?['idle'] ?? sprites?['unharvested'];
+    String? spriteBase = sprites?[status];
     
+    // Fallback logic: if specific status is missing or failed to load, try 'idle'
+    bool needsFallback = spriteBase == null;
+    if (spriteBase != null) {
+      String cleanPath = spriteBase;
+      if (cleanPath.startsWith('/')) cleanPath = cleanPath.substring(1);
+      if (assetManager.hasFailed('assets/game_images/$cleanPath/image0.png')) {
+        needsFallback = true;
+      }
+    }
+
+    if (needsFallback) {
+      if (status != 'idle') {
+        spriteBase = sprites?['idle'] ?? sprites?['unharvested'];
+      } else {
+        spriteBase = sprites?['unharvested'];
+      }
+    }
+
     if (spriteBase != null) {
        if (spriteBase.startsWith('/')) spriteBase = spriteBase.substring(1);
        // Determine available frames

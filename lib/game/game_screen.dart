@@ -296,6 +296,7 @@ class _GameScreenState extends State<GameScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.greenAccent,
                         foregroundColor: Colors.black,
+                        minimumSize: const Size(0, 56),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -306,6 +307,7 @@ class _GameScreenState extends State<GameScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.redAccent,
                         foregroundColor: Colors.white,
+                        minimumSize: const Size(0, 56),
                       ),
                     ),
                   ],
