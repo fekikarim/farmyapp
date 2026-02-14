@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'animated_sprite.dart';
 
 class IsometricMap extends StatefulWidget {
   final int gridWidth;
@@ -231,7 +232,7 @@ class _IsometricMapState extends State<IsometricMap> {
             if (cellData != null)
                Positioned(
                  bottom: tileHeight / 4,
-                 child: const Icon(Icons.house, color: Colors.brown, size: 32),
+                 child: _buildItemSprite(cellData),
                ),
     
             // Tree Overlay
@@ -266,6 +267,57 @@ class _IsometricMapState extends State<IsometricMap> {
         ),
       ),
     );
+  }
+
+  Widget _buildItemSprite(dynamic cellData) {
+    final Map<String, dynamic>? sprites = cellData['sprites'];
+    final Map<String, dynamic>? state = cellData['state'];
+    
+    // Determine status from state or default to idle
+    String status = 'idle';
+    if (state != null) {
+      if (state['status'] != null) {
+         status = state['status']; // Direct status override
+      } else {
+        // Tree/Crop states
+        if (state['is_harvested'] == true) status = 'harvested';
+        else if (state['is_ready'] == true) status = 'ready'; // Ready to harvest
+        else if (state['is_cut'] == true) status = 'cut';
+        else if (state['is_withered'] == true) status = 'withered';
+        
+        // Animal states
+        else if (state['is_sick'] == true) status = 'sick';
+        else if (state['is_sleeping'] == true) status = 'sleeping';
+        else if (state['is_eating'] == true) status = 'eating';
+        else if (state['is_walking'] == true) status = 'walking';
+        
+        // Machine states
+        else if (state['is_processing'] == true) status = 'processing';
+        else if (state['is_finished'] == true) status = 'finished';
+        else if (state['is_broken'] == true) status = 'broken';
+
+        // General
+        else if (state['is_pending'] == true) status = 'pending';
+      }
+    }
+
+    // Try to find the specific sprite, fallback to idle, then fallback to unharvested if available
+    final String? spritePath = sprites?[status] ?? 
+                              sprites?['idle'] ?? 
+                              sprites?['unharvested'] ?? // Legacy/Accessory fallback
+                              sprites?['unhavesed']; // Typos in old DB?
+
+    if (spritePath != null) {
+      return AnimatedSprite(
+        baseAssetPath: spritePath,
+        width: 64,
+        height: 80,
+        fit: BoxFit.contain,
+      );
+    }
+
+    // Fallback to variant image if no sprites
+    return const Icon(Icons.house, color: Colors.brown, size: 32);
   }
 }
 

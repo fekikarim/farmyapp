@@ -49,6 +49,7 @@ class ShopItemVariant {
   final double basePrice;
   final Map<String, dynamic>? attributes;
   final String? imageUrl;
+  final Map<String, dynamic>? sprites;
   final bool isAvailable;
 
   ShopItemVariant({
@@ -58,6 +59,7 @@ class ShopItemVariant {
     required this.basePrice,
     this.attributes,
     this.imageUrl,
+    this.sprites,
     required this.isAvailable,
   });
 
@@ -71,6 +73,7 @@ class ShopItemVariant {
           : double.tryParse(json['base_price'].toString()) ?? 0.0,
       attributes: json['attributes'],
       imageUrl: json['image_url'],
+      sprites: json['sprites'],
       isAvailable: json['is_available'] ?? true,
     );
   }
