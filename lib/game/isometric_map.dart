@@ -509,21 +509,24 @@ class IsometricMapPainter extends CustomPainter {
        List<ui.Image> frames = [];
        List<String> missingPaths = [];
        
-       for (int i = 0; i < 8; i++) {
-           String p = 'assets/game_images/$spriteBase/image$i.png';
-           ui.Image? img = assetManager.getImage(p);
-           if (img != null) {
-               frames.add(img);
-               frameCount++;
-           } else {
-               if (assetManager.hasFailed(p)) {
-                   break;
-               } else {
-                   missingPaths.add(p);
-                   break; 
-               }
-           }
-       }
+        int maxFrames = assetManager.getFrameCount(spriteBase);
+        if (maxFrames == 0) maxFrames = 8; // Safety fallback for first load
+
+        for (int i = 0; i < maxFrames; i++) {
+            String p = 'assets/game_images/$spriteBase/image$i.png';
+            ui.Image? img = assetManager.getImage(p);
+            if (img != null) {
+                frames.add(img);
+                frameCount++;
+            } else {
+                if (!assetManager.hasFailed(p)) {
+                    missingPaths.add(p);
+                }
+                // Don't break if we know from manifest that more frames exist, 
+                // but for paint logic we only care about what's CURRENTLY loaded.
+                // However, we want to load all of them.
+            }
+        }
        
        // Trigger load for missing
        if (missingPaths.isNotEmpty) {

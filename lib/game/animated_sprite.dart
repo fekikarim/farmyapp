@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'asset_manager.dart';
 
 class AnimatedSprite extends StatefulWidget {
   final String baseAssetPath;
@@ -61,7 +62,10 @@ class _AnimatedSpriteState extends State<AnimatedSprite> {
     }
     final String fullBasePath = 'assets/game_images/$path';
 
-    while (hasMoreFrames && frameIndex < 20) { // Limit to 20 frames for safety
+    int maxFrames = AssetManager().getFrameCount(path);
+    if (maxFrames == 0) maxFrames = 20; // Fallback if manifest not loaded or empty
+
+    while (hasMoreFrames && frameIndex < maxFrames) {
       final String framePath = '$fullBasePath/image$frameIndex.png';
       final ImageProvider provider = AssetImage(framePath);
       

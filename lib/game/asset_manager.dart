@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 
@@ -12,6 +13,38 @@ class AssetManager extends ChangeNotifier {
   final Map<String, ui.Image> _images = {};
   final Set<String> _failed = {};
   final Set<String> _loading = {};
+  Map<String, dynamic> _manifest = {};
+  bool _manifestLoaded = false;
+
+  Future<void> _loadManifest() async {
+    if (_manifestLoaded) return;
+    try {
+      final manifestContent = await rootBundle.loadString('AssetManifest.json');
+      _manifest = json.decode(manifestContent);
+      _manifestLoaded = true;
+    } catch (e) {
+      print('Failed to load AssetManifest: $e');
+    }
+  }
+
+  int getFrameCount(String baseAssetPath) {
+    if (!_manifestLoaded) {
+       _loadManifest(); // Trigger lazy load
+       return 0; // Return 0 until loaded, or we could return a safe default
+    }
+    
+    // Normalize path
+    String path = baseAssetPath;
+    if (path.startsWith('/')) path = path.substring(1);
+    if (!path.startsWith('assets/')) path = 'assets/game_images/$path';
+    if (!path.endsWith('/')) path = '$path/';
+
+    int count = 0;
+    while (_manifest.containsKey('${path}image$count.png')) {
+      count++;
+    }
+    return count;
+  }
 
   Future<void> loadAssets(List<String> paths) async {
     await Future.wait(paths.map(_loadImage));
