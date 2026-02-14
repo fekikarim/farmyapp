@@ -327,6 +327,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
         final land = item['land'] ?? {};
         final details = item['details'] ?? {};
         final status = (item['status'] ?? 'PENDING').toString().toUpperCase();
+        final bool isPlaced = item['placed_item'] != null;
 
         return GestureDetector(
           onTap: () {
@@ -388,6 +389,33 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                         right: 10,
                         child: _buildStatusBadge(status),
                       ),
+                      if (isPlaced)
+                        Positioned.fill(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5),
+                              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                            ),
+                            child: Center(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.blueAccent.withOpacity(0.9),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Text(
+                                  'PLACED',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 14,
+                                    letterSpacing: 2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -633,6 +661,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
 
   void _showItemActions(BuildContext context, dynamic item) {
     final itemLandId = (item['land_id'] ?? item['land']?['id'])?.toString();
+    final bool isPlaced = item['placed_item'] != null;
     final isMatchingLand =
         widget.initialLandId != null && itemLandId == widget.initialLandId;
 
@@ -669,9 +698,9 @@ class _InventoryOverlayState extends State<InventoryOverlay>
               const SizedBox(height: 24),
               _buildActionButton(
                 context,
-                isMatchingLand ? 'Add to Land' : 'Wrong Land',
+                isPlaced ? 'Already Placed' : (isMatchingLand ? 'Add to Land' : 'Wrong Land'),
                 Icons.landscape_rounded,
-              isMatchingLand
+              (isMatchingLand && !isPlaced)
                   ? () {
                       Navigator.pop(context); // Close sheet
                       if (widget.onPlaceItem != null) {
@@ -682,10 +711,10 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                       }
                     }
                   : null, // Disabled
-              isPrimary: isMatchingLand,
-                subtitle: isMatchingLand
-                    ? null
-                    : 'This item belongs to another land.',
+              isPrimary: isMatchingLand && !isPlaced,
+                subtitle: isPlaced 
+                    ? 'This item is already on the map.'
+                    : (isMatchingLand ? null : 'This item belongs to another land.'),
               ),
               const SizedBox(height: 12),
               _buildActionButton(
