@@ -92,19 +92,142 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
+  // Placement State
+  bool _isPlacing = false;
+  Map<String, dynamic>? _placementItem;
+  Map<String, dynamic>? _placementFootprint; // Store footprint data
+  int? _pendingX;
+  int? _pendingY;
+  bool _isPendingValid = false;
+
+  void _startPlacement(dynamic item) async {
+    // 1. Enter placement mode immediately
+    setState(() {
+      _isPlacing = true;
+      _placementItem = item;
+      _placementFootprint = null; // Loading
+    });
+
+    // 2. Fetch footprint
+    final category = item['asset_category']; // e.g., 'animal'
+    final variantId = item['variant_id'];
+
+    if (category != null && variantId != null) {
+       final footprint = await ShopService.getAssetFootprint(category: category, variantId: variantId);
+       if (mounted && _isPlacing && _placementItem == item) {
+         setState(() {
+           _placementFootprint = footprint;
+         });
+       }
+    }
+  }
+
+  void _cancelPlacement() {
+    setState(() {
+      _isPlacing = false;
+      _placementItem = null;
+      _placementFootprint = null;
+      _pendingX = null;
+      _pendingY = null;
+      _isPendingValid = false;
+    });
+  }
+
+  void _onMapTap(int x, int y) {
+    if (!_isPlacing) return;
+    
+    setState(() {
+      _pendingX = x;
+      _pendingY = y;
+      _isPendingValid = _validatePlacement(x, y);
+    });
+  }
+
+  bool _validatePlacement(int x, int y) {
+    if (_placementFootprint == null) return false;
+    final grid = _gridData?['matrix'] as List?;
+    if (grid == null) return false;
+
+    final squares = _placementFootprint!['squares'] as List;
+    for (var sq in squares) {
+      int tx = x + (sq['x'] as int);
+      int ty = y + (sq['y'] as int);
+
+      if (tx < 0 || tx >= 20 || ty < 0 || ty >= 20) return false;
+      if (grid[ty][tx] != null) return false;
+    }
+    return true;
+  }
+
+  Future<void> _handlePlacement() async {
+    if (_placementItem == null || _pendingX == null || _pendingY == null || !_isPendingValid) return;
+
+    final requestId = _placementItem!['id'];
+    final x = _pendingX!;
+    final y = _pendingY!;
+
+    // Show loading indicator
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Placing item...'), duration: Duration(milliseconds: 500)),
+    );
+
+    final success = await ShopService.placeItem(
+      requestId: requestId,
+      x: x,
+      y: y,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      setState(() {
+        _isPlacing = false;
+        _placementItem = null;
+        _placementFootprint = null;
+        // Refresh grid
+        _updateLoading('Updating...', null);
+        _isLoading = true; // Trigger reload
+      });
+      _initializeApp(); // Reload grid
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Item placed successfully!'), backgroundColor: Colors.green),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to place item. Try elsewhere.'), backgroundColor: Colors.red),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF2D231E), // Fallback Dark Soil
       body: _isLoading
-          ? _buildLoadingScreen()
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 20),
+                  Text(_loadingMessage),
+                ],
+              ),
+            )
           : _gridData == null
           ? _buildErrorScreen()
           : IsometricMap(
-              gridWidth: _gridData!['grid_width'],
-              gridHeight: _gridData!['grid_height'],
-              matrix: _gridData!['matrix'],
-              onTileTap: _isPlacing ? _handlePlacement : null,
+              gridWidth: 20, // Fixed grid size
+              gridHeight: 20,
+              matrix: _gridData!['matrix'], 
+              onTileTap: _isPlacing ? _onMapTap : null,
+              // Pass placement data to map
+              placementMode: _isPlacing,
+              placementFootprint: _placementFootprint,
+              placementItem: _placementItem,
+              externalSelectionX: _pendingX,
+              externalSelectionY: _pendingY,
             ),
       floatingActionButton: !_isLoading && !_isPlacing
           ? Column(
@@ -139,17 +262,43 @@ class _GameScreenState extends State<GameScreen> {
           ? Container(
               color: Colors.black87,
               padding: const EdgeInsets.all(16),
-              height: 100, // Explicit height constraint
               child: SafeArea(
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                      Expanded(
-                      child: Text(
-                        'Tap on a tile to place ${_placementItem['details']?['name'] ?? 'Item'}',
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      child: Column(
+                         mainAxisSize: MainAxisSize.min,
+                         crossAxisAlignment: CrossAxisAlignment.start,
+                         children: [
+                             Text(
+                              'Placing: ${_placementItem?['details']?['name'] ?? 'Item'}',
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            if (_placementFootprint == null)
+                               const Text(
+                                 'Loading footprint...',
+                                 style: TextStyle(color: Colors.grey, fontSize: 12),
+                               )
+                            else 
+                               Text(
+                                 'Size: ${_placementFootprint!['base_size']['width']}x${_placementFootprint!['base_size']['height']}',
+                                 style: const TextStyle(color: Colors.greenAccent, fontSize: 12),
+                               ),
+                         ]
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      onPressed: (_isPlacing && _isPendingValid) ? _handlePlacement : null,
+                      icon: const Icon(Icons.check),
+                      label: const Text('Confirm'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.greenAccent,
+                        foregroundColor: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     ElevatedButton.icon(
                       onPressed: _cancelPlacement,
                       icon: const Icon(Icons.close),
@@ -191,72 +340,7 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  // --- Placement Logic ---
 
-  dynamic _placementItem;
-  bool _isPlacing = false;
-
-  void _startPlacement(dynamic item) {
-    setState(() {
-      _placementItem = item;
-      _isPlacing = true;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Tap on the map to place ${item['details']?['name']}'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
-  void _cancelPlacement() {
-    setState(() {
-      _placementItem = null;
-      _isPlacing = false;
-    });
-  }
-
-  Future<void> _handlePlacement(int x, int y) async {
-    if (!_isPlacing || _placementItem == null) return;
-
-    final requestId = _placementItem['id'];
-    
-    // Optimistic UI update or loading indicator could go here
-    // For now, let's just show a loading indicator
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-
-    final success = await ShopService.placeItem(
-      requestId: requestId,
-      x: x,
-      y: y,
-    );
-
-    if (!mounted) return;
-    Navigator.pop(context); // Hide loading
-
-    if (success) {
-      setState(() {
-        _isPlacing = false;
-        _placementItem = null;
-        // Refresh grid
-        _updateLoading('Updating...', null);
-        _isLoading = true; // Trigger reload
-      });
-      _initializeApp(); // Reload grid
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Item placed successfully!'), backgroundColor: Colors.green),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to place item. Try elsewhere.'), backgroundColor: Colors.red),
-      );
-    }
-  }
 
   Widget _buildLoadingScreen() {
     return Container(

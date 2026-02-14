@@ -7,6 +7,13 @@ class IsometricMap extends StatefulWidget {
   final int gridHeight;
   final List<dynamic> matrix;
   final Function(int x, int y)? onTileTap;
+  
+  // Placement Mode Props
+  final bool placementMode;
+  final Map<String, dynamic>? placementFootprint;
+  final Map<String, dynamic>? placementItem;
+  final int? externalSelectionX;
+  final int? externalSelectionY;
 
   const IsometricMap({
     super.key,
@@ -14,13 +21,18 @@ class IsometricMap extends StatefulWidget {
     required this.gridHeight,
     required this.matrix,
     this.onTileTap,
+    this.placementMode = false,
+    this.placementFootprint,
+    this.placementItem,
+    this.externalSelectionX,
+    this.externalSelectionY,
   });
 
   @override
   State<IsometricMap> createState() => _IsometricMapState();
 }
 
-class _IsometricMapState extends State<IsometricMap> {
+class _IsometricMapState extends State<IsometricMap> with SingleTickerProviderStateMixin {
   // Constants
   static const double tileWidth = 64.0;
   static const double tileHeight = 32.0;
@@ -28,14 +40,29 @@ class _IsometricMapState extends State<IsometricMap> {
   // Track selected tile
   int? _selectedX;
   int? _selectedY;
+  
+  // Animation
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+       vsync: this,
+       duration: const Duration(seconds: 1), // 1 second cycle, arbitrary
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Calculate total size
-    // We add padding for the background
     const int backgroundPadding = 10;
     
-    // Total canvas size estimation
     final double totalWidth = (widget.gridWidth + widget.gridHeight + backgroundPadding * 2) * tileWidth / 2 + 200;
     final double totalHeight = (widget.gridWidth + widget.gridHeight + backgroundPadding * 2) * tileHeight / 2 + 200;
 
@@ -46,43 +73,37 @@ class _IsometricMapState extends State<IsometricMap> {
       maxScale: 4.0,
       child: GestureDetector(
         onTapUp: (details) => _handleTap(details, backgroundPadding),
-        child: CustomPaint(
-          size: Size(totalWidth, totalHeight),
-          painter: IsometricMapPainter(
-            gridWidth: widget.gridWidth,
-            gridHeight: widget.gridHeight,
-            matrix: widget.matrix,
-            selectedX: _selectedX,
-            selectedY: _selectedY,
-            backgroundPadding: backgroundPadding,
-            assetManager: AssetManager(),
-          ),
+        child: AnimatedBuilder(
+          animation: _animationController,
+          builder: (context, child) {
+            return CustomPaint(
+              size: Size(totalWidth, totalHeight),
+              painter: IsometricMapPainter(
+                gridWidth: widget.gridWidth,
+                gridHeight: widget.gridHeight,
+                matrix: widget.matrix,
+                selectedX: widget.placementMode ? widget.externalSelectionX : _selectedX,
+                selectedY: widget.placementMode ? widget.externalSelectionY : _selectedY,
+                backgroundPadding: backgroundPadding,
+                assetManager: AssetManager(),
+                placementMode: widget.placementMode,
+                placementFootprint: widget.placementFootprint,
+                placementItem: widget.placementItem,
+                animationValue: _animationController.value,
+              ),
+            );
+          }
         ),
       ),
     );
   }
 
   void _handleTap(TapUpDetails details, int padding) {
-    // Constants from Painter
      final double offsetX = (widget.gridHeight * tileWidth / 2);
      const double offsetY = 100;
 
-     // Adjust click coordinate relative to the origin of the grid drawing
      double dx = details.localPosition.dx - offsetX;
      double dy = details.localPosition.dy - offsetY;
-
-     // Isometric projection:
-     // x_screen = (x_grid - y_grid) * (W/2)
-     // y_screen = (x_grid + y_grid) * (H/2)
-     
-     // Solving for grid coordinates:
-     // dy / (H/2) = x + y
-     // dx / (W/2) = x - y
-     
-     // let a = dx / (W/2)
-     // let b = dy / (H/2)
-     // x = (a + b) / 2
-     // y = (b - a) / 2
 
      double halfW = tileWidth / 2;
      double halfH = tileHeight / 2;
@@ -93,24 +114,18 @@ class _IsometricMapState extends State<IsometricMap> {
      int gridX = ((a + b) / 2).floor();
      int gridY = ((b - a) / 2).floor();
 
-     // Check bounds
      if (gridX >= 0 && gridX < widget.gridWidth && gridY >= 0 && gridY < widget.gridHeight) {
+       setState(() {
+          _selectedX = gridX;
+          _selectedY = gridY;
+       });
+
        if (widget.onTileTap != null) {
+         // During placement mode, we ALWAYS call back so parent can move the ghost.
+         // Validation visuals are handled in the painter.
          widget.onTileTap!(gridX, gridY);
-       } else {
-         setState(() {
-           if (_selectedX == gridX && _selectedY == gridY) {
-             _selectedX = null;
-             _selectedY = null;
-           } else {
-             _selectedX = gridX;
-             _selectedY = gridY;
-           }
-         });
-       }
+       } 
      } else {
-        // Tapped outside grid (background)
-        // Check if existing selection needs to be cleared
         if (_selectedX != null || _selectedY != null) {
            setState(() {
              _selectedX = null;
@@ -118,6 +133,25 @@ class _IsometricMapState extends State<IsometricMap> {
            });
         }
      }
+  }
+
+  bool _isPlacementValid(int x, int y) {
+      if (!widget.placementMode || widget.placementFootprint == null) return true;
+      
+      final squares = widget.placementFootprint!['squares'] as List;
+      
+      for (var sq in squares) {
+          int tx = x + (sq['x'] as int);
+          int ty = y + (sq['y'] as int);
+          
+          if (tx < 0 || tx >= widget.gridWidth || ty < 0 || ty >= widget.gridHeight) {
+              return false;
+          }
+          if (widget.matrix[ty][tx] != null) {
+              return false;
+          }
+      }
+      return true;
   }
 }
 
@@ -129,6 +163,14 @@ class IsometricMapPainter extends CustomPainter {
   final int? selectedY;
   final int backgroundPadding;
   final AssetManager assetManager;
+  
+  // Placement Props
+  final bool placementMode;
+  final Map<String, dynamic>? placementFootprint;
+  final Map<String, dynamic>? placementItem;
+  
+  // Animation
+  final double animationValue;
 
   // Constants
   static const double tileWidth = 64.0;
@@ -142,29 +184,26 @@ class IsometricMapPainter extends CustomPainter {
     required this.selectedY,
     required this.backgroundPadding,
     required this.assetManager,
+    this.placementMode = false,
+    this.placementFootprint,
+    this.placementItem,
+    required this.animationValue,
   }) : super(repaint: assetManager);
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Center offset
     double offsetX = (gridHeight * tileWidth / 2);
     double offsetY = 100;
 
-    // We need to sort tiles by depth (x + y) to draw them in correct order
-    // Since we are iterating systematically, we just need to iterate in a way that respects depth.
-    // Standard double loop (y then x) works for isometric if viewed from one angle,
-    // but with negative padding, we need to be careful.
-    
-    // Let's collect all tasks and sort them, similar to previous widget implementation, 
-    // but just storing data, not widgets.
     List<_PaintTask> tasks = [];
 
+    // 1. Generate Tasks for Ground & Existing Objects
     for (int y = -backgroundPadding; y < gridHeight + backgroundPadding; y++) {
       for (int x = -backgroundPadding; x < gridWidth + backgroundPadding; x++) {
         
         bool isForeground = (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight);
         
-        // --- Logic copied from previous implementation ---
+        // ... (Logic for trees/fences same as before) ...
         bool isTreeRow = false;
         String? treeAsset;
         String? fenceAsset;
@@ -172,7 +211,6 @@ class IsometricMapPainter extends CustomPainter {
         double fenceDy = 0;
 
         if (!isForeground) {
-          // 1. Forest Decoration
           bool isTopSide = (x >= -2 && x < 0) || (y >= -2 && y < 0);
           if (isTopSide) {
             int hash = (x * 7 + y * 13).abs();
@@ -183,7 +221,6 @@ class IsometricMapPainter extends CustomPainter {
             }
           }
 
-          // 2. Fence Boundary
           bool isInXRange = (x >= 0 && x < gridWidth);
           bool isInYRange = (y >= 0 && y < gridHeight);
 
@@ -209,7 +246,6 @@ class IsometricMapPainter extends CustomPainter {
         double isoX = (x - y) * (tileWidth / 2) + offsetX;
         double isoY = (x + y) * (tileHeight / 2) + offsetY;
 
-        // Get cell data if foreground
         dynamic cellData;
         if (isForeground && matrix.length > y && matrix[y].length > x) {
           cellData = matrix[y][x];
@@ -245,10 +281,100 @@ class IsometricMapPainter extends CustomPainter {
     for (final task in tasks) {
       _paintTile(canvas, paint, task);
     }
+    
+    // 3. Draw Placement Overlay (On Top)
+    if (placementMode && selectedX != null && selectedY != null && placementFootprint != null && placementItem != null) {
+       _paintPlacementOverlay(canvas, offsetX, offsetY);
+    }
+  }
+
+  void _paintPlacementOverlay(Canvas canvas, double offsetX, double offsetY) {
+     final squares = placementFootprint!['squares'] as List;
+     
+     // 1. Draw Footprint Grid
+     
+     for (var sq in squares) {
+          int tx = selectedX! + (sq['x'] as int);
+          int ty = selectedY! + (sq['y'] as int);
+          
+          bool isOccupied = false;
+          bool isOutOfBounds = (tx < 0 || tx >= gridWidth || ty < 0 || ty >= gridHeight);
+          
+          if (!isOutOfBounds) {
+              if (matrix[ty][tx] != null) isOccupied = true;
+          } else {
+              isOccupied = true; // Treat OOB as occupied
+          }
+          
+          // Compute Screen Coords for this tile
+          double isoX = (tx - ty) * (tileWidth / 2) + offsetX;
+          double isoY = (tx + ty) * (tileHeight / 2) + offsetY;
+          
+          // Draw Diamond overlay
+          final Path path = Path();
+          path.moveTo(isoX + tileWidth / 2, isoY);
+          path.lineTo(isoX + tileWidth, isoY + tileHeight / 2);
+          path.lineTo(isoX + tileWidth / 2, isoY + tileHeight);
+          path.lineTo(isoX, isoY + tileHeight / 2);
+          path.close();
+          
+          final Paint p = Paint()
+             ..color = isOccupied ? Colors.red.withValues(alpha: 0.5) : Colors.green.withValues(alpha: 0.5)
+             ..style = PaintingStyle.fill;
+          
+          canvas.drawPath(path, p);
+          
+          final Paint border = Paint()
+             ..color = isOccupied ? Colors.red : Colors.green
+             ..style = PaintingStyle.stroke
+             ..strokeWidth = 2;
+          canvas.drawPath(path, border);
+     }
+     
+     // 2. Draw Ghost Item (Use idle sprite)
+     double isoX = (selectedX! - selectedY!) * (tileWidth / 2) + offsetX;
+     double isoY = (selectedX! + selectedY!) * (tileHeight / 2) + offsetY;
+     
+     final Map<String, dynamic>? details = placementItem!['details'];
+     final Map<String, dynamic>? sprites = placementItem!['sprites'] ?? details?['sprites'];
+     String status = 'idle';
+     String? spriteBase = sprites?[status] ?? sprites?['idle'];
+     
+     if (spriteBase != null) {
+         if (spriteBase.startsWith('/')) spriteBase = spriteBase.substring(1);
+         // Draw ghost using first frame
+         String fullPath = 'assets/game_images/$spriteBase/image0.png';
+         final ui.Image? img = assetManager.getImage(fullPath);
+         
+         if (img != null) {
+             canvas.saveLayer(null, Paint()..color = Colors.white.withValues(alpha: 0.7));
+             
+             double w = 64;
+             double h = 80;
+             double dx = isoX + (tileWidth - w) / 2;
+             double dy = isoY + tileHeight - (tileHeight / 4) - h;
+          
+             paintImage(
+                canvas: canvas,
+                rect: Rect.fromLTWH(dx, dy, w, h),
+                image: img,
+                fit: BoxFit.contain,
+             );
+             
+             canvas.restore();
+             return;
+         } else if (!assetManager.hasFailed(fullPath)) {
+             assetManager.loadAssets([fullPath]);
+         }
+     }
+     
+     // Ghost Fallback
+     canvas.drawCircle(Offset(isoX + tileWidth/2, isoY + tileHeight/2), 10, Paint()..color = Colors.blue.withValues(alpha: 0.5));
   }
 
   void _paintTile(Canvas canvas, Paint paint, _PaintTask task) {
-    // 1. Draw Base Tile
+    // ... (Base tile painting same as before) ...
+        // 1. Draw Base Tile
     final String assetPath = task.isForeground 
         ? 'assets/game_images/textures/grass_land.jpg'
         : 'assets/game_images/textures/soil_background.jpg';
@@ -256,13 +382,6 @@ class IsometricMapPainter extends CustomPainter {
     final ui.Image? baseImg = assetManager.getImage(assetPath);
     
     if (baseImg != null) {
-      // Draw image in a diamond shape? 
-      // For performance, we usually draw a pre-masked image or just the image if it has transparency.
-      // Since our textures are square/rectangular, we might need to clip them or draw a diamond path if they are not already.
-      // But typically isometric tiles are pre-drawn sprites.
-      // Assuming textures are just rects, we should clip them used to behave like the widget version.
-      // Widget version used `_IsoTileClipper`.
-      
       canvas.save();
       canvas.translate(task.isoX, task.isoY);
       
@@ -275,22 +394,12 @@ class IsometricMapPainter extends CustomPainter {
       
       canvas.clipPath(path);
       
-      // Draw image covering the tile rect
-      // paintImage fits the image into the rect
       paintImage(
         canvas: canvas,
-        rect: const Rect.fromLTWH(0, 0, tileWidth, tileHeight), // Height was tileWidth in widget code? (line 214: width: tileWidth, height: tileWidth)
-        // Wait, original code said: height: tileWidth (64). But container was tileHeight (32).
-        // This means it was drawing a 64x64 image inside a 64x32 clipped area.
+        rect: const Rect.fromLTWH(0, 0, tileWidth, tileHeight), 
         image: baseImg,
         fit: BoxFit.cover,
       );
-      
-      // Selection highlight
-      bool isSelected = selectedX == task.x && selectedY == task.y;
-      if (isSelected) {
-        canvas.drawColor(Colors.white.withOpacity(0.3), BlendMode.srcOver);
-      }
       
       canvas.restore();
 
@@ -298,10 +407,8 @@ class IsometricMapPainter extends CustomPainter {
       canvas.save();
       canvas.translate(task.isoX, task.isoY);
       paint.style = PaintingStyle.stroke;
-      paint.strokeWidth = isSelected ? 2 : 1;
-      paint.color = isSelected 
-          ? Colors.yellow.withOpacity(0.8) 
-          : (task.isForeground ? Colors.white.withOpacity(0.2) : Colors.white.withOpacity(0.05));
+      paint.strokeWidth = 1; // Default
+      paint.color = task.isForeground ? Colors.white.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05);
       canvas.drawPath(path, paint);
       canvas.restore();
     }
@@ -311,23 +418,14 @@ class IsometricMapPainter extends CustomPainter {
        _paintItem(canvas, task);
     }
 
-    // 3. Draw Trees (Decoration)
+    // 3. Draw Trees (Decoration) - unchanged
     if (task.hasTree && task.treeAsset != null) {
       final ui.Image? treeImg = assetManager.getImage(task.treeAsset!);
       if (treeImg != null) {
-        // Positioned(bottom: tileHeight / 2 - 10, ...) in widget
-        // In local tile coords (0,0 is top-left of 64x32 tile)
-        // bottom is at y=32. 
-        // 32/2 - 10 = 6. This is offset from bottom? No, Positioned bottom means distance from bottom.
-        // So y = 32 - (16-10) = 26 from top? 
-        // Let's approximate. The tree is 100x140.
-        // We want it centered horizontally? Widget didn't specify left, so centered in Stack.
-        
         double treeW = 100;
         double treeH = 140;
         double dx = task.isoX + (tileWidth - treeW) / 2;
         double dy = task.isoY + tileHeight - (tileHeight / 2 - 10) - treeH; 
-        // bottom = 16-10 = 6. y = 32 - 6 - 140 = -114.
         
         paintImage(
            canvas: canvas,
@@ -338,9 +436,8 @@ class IsometricMapPainter extends CustomPainter {
       }
     }
 
-    // 4. Draw Fences
+    // 4. Draw Fences - unchanged
     if (task.fenceAsset != null) {
-      // Check visibility logic
       bool hideFence = false;
       if (selectedX != null && selectedY != null) {
         if (task.y == -1 && (selectedX! - task.x).abs() <= 1 && selectedY == 0) hideFence = true;
@@ -352,17 +449,9 @@ class IsometricMapPainter extends CustomPainter {
       if (!hideFence) {
          final ui.Image? fenceImg = assetManager.getImage(task.fenceAsset!);
          if (fenceImg != null) {
-            // Widget: bottom: (tileHeight / 2) + fenceDy
-            // left: fenceDx
-            // Height: tileHeight * 2 (64)
-            // Width: tileWidth (64) implied by SizedBox width
-            
             double h = tileHeight * 2;
             double w = tileWidth;
-            
             double bottomDist = (tileHeight / 2) + task.fenceDy; 
-            // y = tileHeight - bottomDist - h
-            
             double dx = task.isoX + task.fenceDx;
             double dy = task.isoY + tileHeight - bottomDist - h;
             
@@ -378,12 +467,6 @@ class IsometricMapPainter extends CustomPainter {
   }
 
   void _paintItem(Canvas canvas, _PaintTask task) {
-    // Logic to determine sprite path
-    // We can't use AnimatedSprite widget here. We need raw images.
-    // OPTIMIZATION: For now, we only render the static 'idle' state or first frame.
-    // Support for animation in CustomPainter requires a ticker providing frame index.
-    // For this step, let's just get the static image rendering working.
-    
     final Map<String, dynamic>? sprites = task.cellData['sprites'];
     final Map<String, dynamic>? state = task.cellData['state'];
     
@@ -391,63 +474,71 @@ class IsometricMapPainter extends CustomPainter {
     if (state != null && state['status'] != null) {
          status = state['status'];
     } else if (state != null) {
+        // Fallback checks
         if (state['is_harvested'] == true) status = 'harvested';
         else if (state['is_ready'] == true) status = 'ready';
-        else if (state['is_cut'] == true) status = 'cut';
-        else if (state['is_withered'] == true) status = 'withered';
-        else if (state['is_sick'] == true) status = 'sick';
-        else if (state['is_sleeping'] == true) status = 'sleeping';
-        else if (state['is_eating'] == true) status = 'eating';
         else if (state['is_walking'] == true) status = 'walking';
         else if (state['is_processing'] == true) status = 'processing';
         else if (state['is_finished'] == true) status = 'finished';
-        else if (state['is_broken'] == true) status = 'broken';
-        else if (state['is_pending'] == true) status = 'pending';
     }
 
-    String? spritePath = sprites?[status] ?? sprites?['idle'] ?? sprites?['unharvested'] ?? sprites?['unhavesed'];
+    String? spriteBase = sprites?[status] ?? sprites?['idle'] ?? sprites?['unharvested'];
     
-    // The spritePath usually points to a folder like "assets/game_images/..." or a file prefix?
-    // In previous code `AnimatedSprite`, it appended `image0.png`.
-    // Let's try to load `spritePath + image0.png`.
-    
-    if (spritePath != null) {
-       // We need to resolve the full path. The DB usually stores relative path.
-       // However, AssetManager needs exact path.
-       // Let's assume for now optimization Step 1 just renders, we might need to pre-load these specific item sprites too!
-       // Since we didn't preload them in GameScreen, they won't render yet if not in cache.
-       // But AssetManager only returns if cached.
+    if (spriteBase != null) {
+       if (spriteBase.startsWith('/')) spriteBase = spriteBase.substring(1);
+       // Determine available frames
+       int frameCount = 0;
+       List<ui.Image> frames = [];
+       List<String> missingPaths = [];
        
-       String fullPath = '$spritePath/image0.png';
-       final ui.Image? img = assetManager.getImage(fullPath);
+       for (int i = 0; i < 8; i++) {
+           String p = 'assets/game_images/$spriteBase/image$i.png';
+           ui.Image? img = assetManager.getImage(p);
+           if (img != null) {
+               frames.add(img);
+               frameCount++;
+           } else {
+               if (assetManager.hasFailed(p)) {
+                   break;
+               } else {
+                   missingPaths.add(p);
+                   break; 
+               }
+           }
+       }
        
-       if (img != null) {
-          // Render item
-          // Widget: width: 64, height: 80, fit: contain
-          // Positioned: bottom: tileHeight / 4 (8)
-          
-          double w = 64;
-          double h = 80;
-          double dx = task.isoX + (tileWidth - w) / 2;
-          double dy = task.isoY + tileHeight - (tileHeight / 4) - h;
-          
-          paintImage(
-             canvas: canvas,
-             rect: Rect.fromLTWH(dx, dy, w, h),
-             image: img,
-             fit: BoxFit.contain
-          );
-          return;
-       } else {
-         // Trigger load? CustomPainter shouldn't trigger side effects ideally.
-         // But we can trigger it.
-         assetManager.loadAssets([fullPath]); 
-         // This won't repaint automatically. We need a way to notify.
-         // For now, let's fallback to drawing a placeholder circle/rect if image missing
+       // Trigger load for missing
+       if (missingPaths.isNotEmpty) {
+           assetManager.loadAssets(missingPaths);
+       }
+       
+       if (frameCount > 0) {
+           // Calc current frame
+           // Use a key to offset animation per item if we want them out of sync?
+           // hash code?
+           int hash = (task.x * 31 + task.y * 17);
+           // Offset animationValue so they don't all move in perfect sync
+           double adjustedTime = animationValue + (hash % 100) / 100.0;
+           
+           int frameIndex = ((adjustedTime * 10) % frameCount).floor();
+           ui.Image img = frames[frameIndex % frameCount];
+
+           double w = 64;
+           double h = 80;
+           double dx = task.isoX + (tileWidth - w) / 2;
+           double dy = task.isoY + tileHeight - (tileHeight / 4) - h;
+           
+           paintImage(
+              canvas: canvas,
+              rect: Rect.fromLTWH(dx, dy, w, h),
+              image: img,
+              fit: BoxFit.contain,
+           );
+           return;
        }
     }
     
-    // Fallback: Brown Circle (House placeholder)
+    // Fallback if no frames loaded yet
     final Paint p = Paint()..color = Colors.brown;
     canvas.drawCircle(Offset(task.isoX + tileWidth/2, task.isoY + tileHeight/2), 16, p);
   }
@@ -456,7 +547,9 @@ class IsometricMapPainter extends CustomPainter {
   bool shouldRepaint(covariant IsometricMapPainter oldDelegate) {
     return oldDelegate.selectedX != selectedX || 
            oldDelegate.selectedY != selectedY ||
-           oldDelegate.matrix != matrix;
+           oldDelegate.matrix != matrix ||
+           oldDelegate.placementMode != placementMode ||
+           oldDelegate.animationValue != animationValue; // Repaint on animation
   }
 }
 

@@ -10,6 +10,7 @@ class AssetManager extends ChangeNotifier {
   AssetManager._internal();
 
   final Map<String, ui.Image> _images = {};
+  final Set<String> _failed = {};
   final Set<String> _loading = {};
 
   Future<void> loadAssets(List<String> paths) async {
@@ -17,9 +18,10 @@ class AssetManager extends ChangeNotifier {
   }
 
   Future<void> _loadImage(String path) async {
-    if (_images.containsKey(path) || _loading.contains(path)) return;
+    if (_images.containsKey(path) || _loading.contains(path) || _failed.contains(path)) return;
 
     _loading.add(path);
+    
     try {
       final ByteData data = await rootBundle.load(path);
       final Completer<ui.Image> completer = Completer();
@@ -30,7 +32,8 @@ class AssetManager extends ChangeNotifier {
       _images[path] = image;
       notifyListeners();
     } catch (e) {
-      print('Failed to load asset: $path, error: $e');
+      print('Failed to load asset: $path');
+      _failed.add(path);
     } finally {
       _loading.remove(path);
     }
@@ -38,5 +41,9 @@ class AssetManager extends ChangeNotifier {
 
   ui.Image? getImage(String path) {
     return _images[path];
+  }
+
+  bool hasFailed(String path) {
+    return _failed.contains(path);
   }
 }

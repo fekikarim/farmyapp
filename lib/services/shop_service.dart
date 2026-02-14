@@ -213,4 +213,28 @@ class ShopService {
       return false;
     }
   }
+
+  static Future<Map<String, dynamic>?> getAssetFootprint({
+    required String category,
+    required String variantId,
+  }) async {
+    try {
+      final response = await AuthService.authenticatedRequest(
+        'GET',
+        Uri.parse('$_baseUrl/api/v1/land-grid/assets/$category/variants/$variantId/footprint'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['success'] == true) {
+          return data['data'];
+        }
+      }
+      print('getAssetFootprint Failed: ${response.statusCode} - ${response.body}');
+      return null;
+    } catch (e) {
+      print('getAssetFootprint Error: $e');
+      return null;
+    }
+  }
 }
