@@ -59,7 +59,7 @@ class _AnimatedSpriteState extends State<AnimatedSprite> {
     if (path.startsWith('/')) {
       path = path.substring(1);
     }
-    final String fullBasePath = 'assets/$path';
+    final String fullBasePath = 'assets/game_images/$path';
 
     while (hasMoreFrames && frameIndex < 20) { // Limit to 20 frames for safety
       final String framePath = '$fullBasePath/image$frameIndex.png';
