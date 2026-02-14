@@ -8,7 +8,13 @@ import 'shop_overlay.dart';
 
 class InventoryOverlay extends StatefulWidget {
   final String? initialLandId;
-  const InventoryOverlay({super.key, this.initialLandId});
+  final Function(dynamic item)? onPlaceItem;
+
+  const InventoryOverlay({
+    super.key,
+    this.initialLandId,
+    this.onPlaceItem,
+  });
 
   @override
   State<InventoryOverlay> createState() => _InventoryOverlayState();
@@ -665,13 +671,18 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                 context,
                 isMatchingLand ? 'Add to Land' : 'Wrong Land',
                 Icons.landscape_rounded,
-                isMatchingLand
-                    ? () {
-                        Navigator.pop(context); // Close sheet FIRST
-                        _showComingSoonDialog(context); // Then show dialog
+              isMatchingLand
+                  ? () {
+                      Navigator.pop(context); // Close sheet
+                      if (widget.onPlaceItem != null) {
+                        Navigator.pop(context); // Close inventory
+                        widget.onPlaceItem!(item);
+                      } else {
+                        _showComingSoonDialog(context);
                       }
-                    : null, // Disabled
-                isPrimary: isMatchingLand,
+                    }
+                  : null, // Disabled
+              isPrimary: isMatchingLand,
                 subtitle: isMatchingLand
                     ? null
                     : 'This item belongs to another land.',

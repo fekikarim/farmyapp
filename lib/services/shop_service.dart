@@ -185,4 +185,32 @@ class ShopService {
       return [];
     }
   }
+
+  static Future<bool> placeItem({
+    required String requestId,
+    required int x,
+    required int y,
+    int rotation = 0,
+  }) async {
+    try {
+      final response = await AuthService.authenticatedRequest(
+        'POST',
+        Uri.parse('$_baseUrl/api/v1/item-requests/$requestId/place'),
+        body: jsonEncode({
+          'position_x': x,
+          'position_y': y,
+          'rotation': rotation,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+      print('placeItem Failed: ${response.statusCode} - ${response.body}');
+      return false;
+    } catch (e) {
+      print('placeItem Error: $e');
+      return false;
+    }
+  }
 }

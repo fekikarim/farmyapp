@@ -5,6 +5,7 @@ import 'isometric_map.dart';
 import 'land_grid_service.dart';
 import 'shop_overlay.dart';
 import 'inventory_overlay.dart';
+import '../services/shop_service.dart';
 
 class GameScreen extends StatefulWidget {
   final Land land;
@@ -120,8 +121,9 @@ class _GameScreenState extends State<GameScreen> {
               gridWidth: _gridData!['grid_width'],
               gridHeight: _gridData!['grid_height'],
               matrix: _gridData!['matrix'],
+              onTileTap: _isPlacing ? _handlePlacement : null,
             ),
-      floatingActionButton: !_isLoading
+      floatingActionButton: !_isLoading && !_isPlacing
           ? Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -150,6 +152,31 @@ class _GameScreenState extends State<GameScreen> {
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      bottomSheet: _isPlacing
+          ? Container(
+              color: Colors.black87,
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                   Expanded(
+                    child: Text(
+                      'Tap on a tile to place ${_placementItem['details']?['name'] ?? 'Item'}',
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: _cancelPlacement,
+                    icon: const Icon(Icons.close),
+                    label: const Text('Cancel'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : null,
     );
   }
 
@@ -168,9 +195,80 @@ class _GameScreenState extends State<GameScreen> {
       context,
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (context) => InventoryOverlay(initialLandId: widget.land.id),
+        builder:
+            (context) => InventoryOverlay(
+              initialLandId: widget.land.id,
+              onPlaceItem: _startPlacement,
+            ),
       ),
     );
+  }
+
+  // --- Placement Logic ---
+
+  dynamic _placementItem;
+  bool _isPlacing = false;
+
+  void _startPlacement(dynamic item) {
+    setState(() {
+      _placementItem = item;
+      _isPlacing = true;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Tap on the map to place ${item['details']?['name']}'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _cancelPlacement() {
+    setState(() {
+      _placementItem = null;
+      _isPlacing = false;
+    });
+  }
+
+  Future<void> _handlePlacement(int x, int y) async {
+    if (!_isPlacing || _placementItem == null) return;
+
+    final requestId = _placementItem['id'];
+    
+    // Optimistic UI update or loading indicator could go here
+    // For now, let's just show a loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    final success = await ShopService.placeItem(
+      requestId: requestId,
+      x: x,
+      y: y,
+    );
+
+    if (!mounted) return;
+    Navigator.pop(context); // Hide loading
+
+    if (success) {
+      setState(() {
+        _isPlacing = false;
+        _placementItem = null;
+        // Refresh grid
+        _updateLoading('Updating...', null);
+        _isLoading = true; // Trigger reload
+      });
+      _initializeApp(); // Reload grid
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Item placed successfully!'), backgroundColor: Colors.green),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to place item. Try elsewhere.'), backgroundColor: Colors.red),
+      );
+    }
   }
 
   Widget _buildLoadingScreen() {

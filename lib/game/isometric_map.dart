@@ -5,12 +5,14 @@ class IsometricMap extends StatefulWidget {
   final int gridWidth;
   final int gridHeight;
   final List<dynamic> matrix;
+  final Function(int x, int y)? onTileTap;
 
   const IsometricMap({
     super.key,
     required this.gridWidth,
     required this.gridHeight,
     required this.matrix,
+    this.onTileTap,
   });
 
   @override
@@ -186,15 +188,19 @@ class _IsometricMapState extends State<IsometricMap> {
 
     return GestureDetector(
       onTap: isBackground ? null : () {
-        setState(() {
-          if (_selectedX == x && _selectedY == y) {
-            _selectedX = null;
-            _selectedY = null;
-          } else {
-            _selectedX = x;
-            _selectedY = y;
-          }
-        });
+        if (widget.onTileTap != null) {
+          widget.onTileTap!(x, y);
+        } else {
+          setState(() {
+            if (_selectedX == x && _selectedY == y) {
+              _selectedX = null;
+              _selectedY = null;
+            } else {
+              _selectedX = x;
+              _selectedY = y;
+            }
+          });
+        }
       },
       child: SizedBox(
         width: tileWidth,
