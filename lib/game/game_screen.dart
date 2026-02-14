@@ -149,11 +149,14 @@ class _GameScreenState extends State<GameScreen> {
     if (grid == null) return false;
 
     final squares = _placementFootprint!['squares'] as List;
+    final int width = _gridData?['grid_width'] ?? widget.land.gridWidth;
+    final int height = _gridData?['grid_height'] ?? widget.land.gridHeight;
+
     for (var sq in squares) {
       int tx = x + (sq['x'] as int);
       int ty = y + (sq['y'] as int);
 
-      if (tx < 0 || tx >= 20 || ty < 0 || ty >= 20) return false;
+      if (tx < 0 || tx >= width || ty < 0 || ty >= height) return false;
       if (grid[ty][tx] != null) return false;
     }
     return true;
@@ -218,8 +221,8 @@ class _GameScreenState extends State<GameScreen> {
           : _gridData == null
           ? _buildErrorScreen()
           : IsometricMap(
-              gridWidth: 20, // Fixed grid size
-              gridHeight: 20,
+              gridWidth: _gridData!['grid_width'] ?? widget.land.gridWidth,
+              gridHeight: _gridData!['grid_height'] ?? widget.land.gridHeight,
               matrix: _gridData!['matrix'], 
               onTileTap: _isPlacing ? _onMapTap : null,
               // Pass placement data to map
