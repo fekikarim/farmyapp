@@ -6,6 +6,7 @@ import 'land_grid_service.dart';
 import 'shop_overlay.dart';
 import 'inventory_overlay.dart';
 import '../services/shop_service.dart';
+import 'asset_manager.dart';
 
 class GameScreen extends StatefulWidget {
   final Land land;
@@ -65,34 +66,16 @@ class _GameScreenState extends State<GameScreen> {
   Future<bool> _precacheAssets() async {
     _updateLoading('Loading Assets...', null);
     try {
-      await precacheImage(
-        const AssetImage('assets/game_images/textures/grass_land.jpg'),
-        context,
-      );
-      await precacheImage(
-        const AssetImage('assets/game_images/textures/soil_background.jpg'),
-        context,
-      );
-      await precacheImage(
-        const AssetImage('assets/game_images/3d/outside_tree/tree1.png'),
-        context,
-      );
-      await precacheImage(
-        const AssetImage('assets/game_images/3d/outside_tree/tree2.png'),
-        context,
-      );
-      await precacheImage(
-        const AssetImage('assets/game_images/3d/outside_tree/tree3.png'),
-        context,
-      );
-      await precacheImage(
-        const AssetImage('assets/game_images/3d/outside_fance/fance1.png'),
-        context,
-      );
-      await precacheImage(
-        const AssetImage('assets/game_images/3d/outside_fance/fance2.png'),
-        context,
-      );
+      final assetManager = AssetManager();
+      await assetManager.loadAssets([
+        'assets/game_images/textures/grass_land.jpg',
+        'assets/game_images/textures/soil_background.jpg',
+        'assets/game_images/3d/outside_tree/tree1.png',
+        'assets/game_images/3d/outside_tree/tree2.png',
+        'assets/game_images/3d/outside_tree/tree3.png',
+        'assets/game_images/3d/outside_fance/fance1.png',
+        'assets/game_images/3d/outside_fance/fance2.png',
+      ]);
       return true;
     } catch (e) {
       print('Asset load error: $e');
@@ -156,24 +139,28 @@ class _GameScreenState extends State<GameScreen> {
           ? Container(
               color: Colors.black87,
               padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                   Expanded(
-                    child: Text(
-                      'Tap on a tile to place ${_placementItem['details']?['name'] ?? 'Item'}',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              height: 100, // Explicit height constraint
+              child: SafeArea(
+                child: Row(
+                  children: [
+                     Expanded(
+                      child: Text(
+                        'Tap on a tile to place ${_placementItem['details']?['name'] ?? 'Item'}',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: _cancelPlacement,
-                    icon: const Icon(Icons.close),
-                    label: const Text('Cancel'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      foregroundColor: Colors.white,
+                    const SizedBox(width: 16),
+                    ElevatedButton.icon(
+                      onPressed: _cancelPlacement,
+                      icon: const Icon(Icons.close),
+                      label: const Text('Cancel'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        foregroundColor: Colors.white,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             )
           : null,
