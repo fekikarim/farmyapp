@@ -510,53 +510,62 @@ class IsometricMapPainter extends CustomPainter {
        List<String> missingPaths = [];
        
         int maxFrames = assetManager.getFrameCount(spriteBase);
-        if (maxFrames == 0) maxFrames = 8; // Safety fallback for first load
+        if (maxFrames == 0) maxFrames = 24; // Increased fallback for cow sprite
 
+        Map<int, ui.Image> loadedFrames = {};
         for (int i = 0; i < maxFrames; i++) {
             String p = 'assets/game_images/$spriteBase/image$i.png';
             ui.Image? img = assetManager.getImage(p);
             if (img != null) {
-                frames.add(img);
+                loadedFrames[i] = img;
                 frameCount++;
             } else {
                 if (!assetManager.hasFailed(p)) {
                     missingPaths.add(p);
                 }
-                // Don't break if we know from manifest that more frames exist, 
-                // but for paint logic we only care about what's CURRENTLY loaded.
-                // However, we want to load all of them.
             }
         }
+        
+        // Trigger load for missing
+        if (missingPaths.isNotEmpty) {
+            assetManager.loadAssets(missingPaths);
+        }
        
-       // Trigger load for missing
-       if (missingPaths.isNotEmpty) {
-           assetManager.loadAssets(missingPaths);
-       }
-       
-       if (frameCount > 0) {
-           // Calc current frame
-           // Use a key to offset animation per item if we want them out of sync?
-           // hash code?
-           int hash = (task.x * 31 + task.y * 17);
-           // Offset animationValue so they don't all move in perfect sync
-           double adjustedTime = animationValue + (hash % 100) / 100.0;
-           
-           int frameIndex = ((adjustedTime * 10) % frameCount).floor();
-           ui.Image img = frames[frameIndex % frameCount];
+        if (loadedFrames.isNotEmpty) {
+            // Use maxFrames for timing if available, otherwise fallback to 1 to avoid division by zero
+            int totalExpected = maxFrames > 0 ? maxFrames : 24; 
+            
+            int hash = (task.x * 31 + task.y * 17);
+            double adjustedTime = animationValue + (hash % 100) / 100.0;
+            
+            // Calculate which frame we SHOULD be showing
+            int targetFrameIndex = ((adjustedTime * 10) % totalExpected).floor();
+            
+            // Try to find the image for this specific index if it's loaded
+            ui.Image? img = loadedFrames[targetFrameIndex];
+            
+            // Fallback: if target frame not loaded, use the closest available one or first frame
+            if (img == null && loadedFrames.isNotEmpty) {
+                // Find the closest loaded frame. For simplicity, just use the first one loaded.
+                // A more sophisticated approach might find the closest index.
+                img = loadedFrames.values.first; 
+            }
 
-           double w = 64;
-           double h = 80;
-           double dx = task.isoX + (tileWidth - w) / 2;
-           double dy = task.isoY + tileHeight - (tileHeight / 4) - h;
-           
-           paintImage(
-              canvas: canvas,
-              rect: Rect.fromLTWH(dx, dy, w, h),
-              image: img,
-              fit: BoxFit.contain,
-           );
-           return;
-       }
+            if (img != null) {
+                double w = 64;
+                double h = 80;
+                double dx = task.isoX + (tileWidth - w) / 2;
+                double dy = task.isoY + tileHeight - (tileHeight / 4) - h;
+                
+                paintImage(
+                   canvas: canvas,
+                   rect: Rect.fromLTWH(dx, dy, w, h),
+                   image: img,
+                   fit: BoxFit.contain,
+                );
+                return;
+            }
+        }
     }
     
     // Fallback if no frames loaded yet

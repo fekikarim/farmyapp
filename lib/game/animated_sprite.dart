@@ -63,7 +63,7 @@ class _AnimatedSpriteState extends State<AnimatedSprite> {
     final String fullBasePath = 'assets/game_images/$path';
 
     int maxFrames = AssetManager().getFrameCount(path);
-    if (maxFrames == 0) maxFrames = 20; // Fallback if manifest not loaded or empty
+    if (maxFrames == 0) maxFrames = 64; // Fallback with higher limit for safety
 
     while (hasMoreFrames && frameIndex < maxFrames) {
       final String framePath = '$fullBasePath/image$frameIndex.png';

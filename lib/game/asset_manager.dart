@@ -13,37 +13,75 @@ class AssetManager extends ChangeNotifier {
   final Map<String, ui.Image> _images = {};
   final Set<String> _failed = {};
   final Set<String> _loading = {};
-  Map<String, dynamic> _manifest = {};
-  bool _manifestLoaded = false;
+  final Map<String, int> _frameCountCache = {};
+  AssetManifest? _manifest;
+  bool _manifestLoading = false;
 
   Future<void> _loadManifest() async {
-    if (_manifestLoaded) return;
+    if (_manifest != null || _manifestLoading) return;
+    _manifestLoading = true;
     try {
-      final manifestContent = await rootBundle.loadString('AssetManifest.json');
-      _manifest = json.decode(manifestContent);
-      _manifestLoaded = true;
+      print('Attempting to load AssetManifest...');
+      _manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+      print('AssetManifest loaded successfully.');
     } catch (e) {
-      print('Failed to load AssetManifest: $e');
+      print('Detailed Failed to load AssetManifest: $e');
+      // If manifest fails, we'll rely on the brute force fallback in getFrameCount
+    } finally {
+      _manifestLoading = false;
+      notifyListeners();
     }
   }
 
   int getFrameCount(String baseAssetPath) {
-    if (!_manifestLoaded) {
-       _loadManifest(); // Trigger lazy load
-       return 0; // Return 0 until loaded, or we could return a safe default
-    }
-    
     // Normalize path
     String path = baseAssetPath;
     if (path.startsWith('/')) path = path.substring(1);
     if (!path.startsWith('assets/')) path = 'assets/game_images/$path';
     if (!path.endsWith('/')) path = '$path/';
 
+    if (_frameCountCache.containsKey(path)) {
+      return _frameCountCache[path]!;
+    }
+
+    if (_manifest == null) {
+       _loadManifest(); // Trigger lazy load
+       // Brute force detection for the first time if manifest isn't ready
+       _discoverFramesBruteForce(path);
+       return 0; 
+    }
+    
+    final allAssets = _manifest!.listAssets();
     int count = 0;
-    while (_manifest.containsKey('${path}image$count.png')) {
+    while (allAssets.contains('${path}image$count.png')) {
       count++;
     }
+    
+    _frameCountCache[path] = count;
     return count;
+  }
+
+  Future<void> _discoverFramesBruteForce(String path) async {
+    if (_loading.contains(path + '_discovery')) return;
+    _loading.add(path + '_discovery');
+    
+    int count = 0;
+    bool exists = true;
+    // Check up to 100 frames as a safe brute-force limit
+    while (exists && count < 100) {
+      final String framePath = '${path}image$count.png';
+      try {
+        await rootBundle.load(framePath);
+        count++;
+      } catch (e) {
+        exists = false;
+      }
+    }
+    
+    _frameCountCache[path] = count;
+    _loading.remove(path + '_discovery');
+    print('Brute-force discovered $count frames for $path');
+    notifyListeners();
   }
 
   Future<void> loadAssets(List<String> paths) async {
