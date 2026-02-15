@@ -5,8 +5,7 @@ import '../providers/auth_provider.dart';
 // Customer Screens
 import 'customer/home_screen.dart';
 import 'customer/subscriptions_screen.dart';
-// import 'customer/marketplace_screen.dart'; // Replaced by new implementation
-import 'marketplace/marketplace_screen.dart';
+import 'customer/marketplace_screen.dart';
 
 // Farmer Screens
 import 'farmer/analytics_screen.dart';
@@ -57,7 +56,7 @@ class _MainScreenState extends State<MainScreen> {
     if (role == 'customer') {
       screens = [
         const CustomerHomeScreen(),
-        const MarketplaceScreen(), // Updated
+        const CustomerMarketplaceScreen(),
         const CustomerSubscriptionsScreen(),
         const SettingsScreen(),
       ];
