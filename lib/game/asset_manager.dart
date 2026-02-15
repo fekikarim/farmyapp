@@ -51,41 +51,66 @@ class AssetManager extends ChangeNotifier {
 
     if (_manifest == null) {
        _loadManifest(); 
-       _discoverFramesBruteForce(path);
+       _discoverFrames(path);
        return 0; 
     }
     
     final allAssets = _manifest!.listAssets();
     int count = 0;
-    while (allAssets.contains('${path}image$count.png')) {
-      count++;
+    
+    // Try different naming conventions
+    String pattern = 'image';
+    if (allAssets.contains('${path}${pattern}0.png')) {
+       // Simple pattern (image0.png)
+       while (allAssets.contains('${path}${pattern}$count.png')) count++;
+    } else if (allAssets.contains('${path}${pattern}000.png')) {
+       // Padded pattern (image000.png)
+       while (allAssets.contains('${path}${pattern}${count.toString().padLeft(3, '0')}.png')) count++;
     }
     
     _frameCountCache[path] = count;
     return count;
   }
 
-  Future<void> _discoverFramesBruteForce(String path) async {
+  Future<void> _discoverFrames(String path) async {
     // Check cache and loading state to avoid redundant work
     if (_frameCountCache.containsKey(path) || _loading.contains(path + '_discovery')) return;
     _loading.add(path + '_discovery');
     
     int count = 0;
     bool exists = true;
-    while (exists && count < 100) {
-      final String framePath = '${path}image$count.png';
-      try {
-        await rootBundle.load(framePath);
-        count++;
-      } catch (e) {
-        exists = false;
-      }
+    String? foundPattern;
+
+    // Try finding the pattern first
+    if (await _checkExists('${path}image0.png')) foundPattern = 'standard';
+    else if (await _checkExists('${path}image000.png')) foundPattern = 'padded';
+
+    if (foundPattern != null) {
+        while (exists && count < 100) {
+          final String framePath = foundPattern == 'padded' 
+              ? '${path}image${count.toString().padLeft(3, '0')}.png'
+              : '${path}image$count.png';
+          if (await _checkExists(framePath)) {
+            count++;
+          } else {
+            exists = false;
+          }
+        }
     }
     
     _frameCountCache[path] = count;
     _loading.remove(path + '_discovery');
-    print('Brute-force discovered $count frames for $path');
+    print('Discovered $count frames for $path (pattern: $foundPattern)');
     _safeNotify();
+  }
+
+  Future<bool> _checkExists(String path) async {
+    try {
+      await rootBundle.load(path);
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> loadAssets(List<String> paths) async {
