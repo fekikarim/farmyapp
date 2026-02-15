@@ -237,4 +237,21 @@ class ShopService {
       return null;
     }
   }
+  static Future<List<dynamic>> getLandResources(String landId) async {
+    try {
+      final response = await AuthService.authenticatedRequest(
+        'GET',
+        Uri.parse('$_baseUrl/api/v1/lands/$landId/resources'),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        return body['data'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      print('getLandResources Error: $e');
+      return [];
+    }
+  }
 }

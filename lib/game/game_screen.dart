@@ -7,6 +7,9 @@ import 'shop_overlay.dart';
 import 'inventory_overlay.dart';
 import '../services/shop_service.dart';
 import 'asset_manager.dart';
+import '../widgets/upper_game_bar.dart';
+import '../widgets/lower_game_bar.dart';
+import '../widgets/resource_panel.dart';
 
 class GameScreen extends StatefulWidget {
   final Land land;
@@ -99,6 +102,41 @@ class _GameScreenState extends State<GameScreen> {
   int? _pendingX;
   int? _pendingY;
   bool _isPendingValid = false;
+
+  GameTab? _activeTab;
+
+  void _handleTabSelected(GameTab tab) {
+    setState(() {
+      _activeTab = tab;
+    });
+
+    switch (tab) {
+      case GameTab.build:
+        _showShop(context);
+        break;
+      case GameTab.animals:
+        _showShop(context); // Could filter for animals in the future
+        break;
+      case GameTab.quests:
+        // TODO: Implement Quests Overlay
+        break;
+      case GameTab.resources:
+        _showResourcePanel(context);
+        break;
+      case GameTab.market:
+        _showShop(context);
+        break;
+    }
+    
+    // Reset active tab after a short delay to allow re-clicking
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        setState(() {
+          _activeTab = null;
+        });
+      }
+    });
+  }
 
   void _startPlacement(dynamic item) async {
     // 1. Enter placement mode immediately
@@ -204,63 +242,64 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF2D231E), // Fallback Dark Soil
-      body: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 20),
-                  Text(_loadingMessage),
-                ],
+    Widget build(BuildContext context) {
+      return Scaffold(
+        backgroundColor: const Color(0xFF2D231E), // Fallback Dark Soil
+        body: Stack(
+          children: [
+            // 1. The Game Map
+            _isLoading
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: 20),
+                        Text(_loadingMessage),
+                      ],
+                    ),
+                  )
+                : _gridData == null
+                ? _buildErrorScreen()
+                : IsometricMap(
+                    gridWidth: _gridData!['grid_width'] ?? widget.land.gridWidth,
+                    gridHeight: _gridData!['grid_height'] ?? widget.land.gridHeight,
+                    matrix: _gridData!['matrix'], 
+                    onTileTap: _isPlacing ? _onMapTap : null,
+                    // Pass placement data to map
+                    placementMode: _isPlacing,
+                    placementFootprint: _placementFootprint,
+                    placementItem: _placementItem,
+                    externalSelectionX: _pendingX,
+                    externalSelectionY: _pendingY,
+                  ),
+
+            // 2. Upper Game Bar
+            if (!_isLoading && !_isPlacing)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: UpperGameBar(
+                  land: widget.land,
+                  onSettingsTap: () => Navigator.pop(context),
+                ),
               ),
-            )
-          : _gridData == null
-          ? _buildErrorScreen()
-          : IsometricMap(
-              gridWidth: _gridData!['grid_width'] ?? widget.land.gridWidth,
-              gridHeight: _gridData!['grid_height'] ?? widget.land.gridHeight,
-              matrix: _gridData!['matrix'], 
-              onTileTap: _isPlacing ? _onMapTap : null,
-              // Pass placement data to map
-              placementMode: _isPlacing,
-              placementFootprint: _placementFootprint,
-              placementItem: _placementItem,
-              externalSelectionX: _pendingX,
-              externalSelectionY: _pendingY,
-            ),
-      floatingActionButton: !_isLoading && !_isPlacing
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                FloatingActionButton(
-                  heroTag: 'close_game',
-                  child: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
+
+            // 3. Lower Game Bar
+            if (!_isLoading && !_isPlacing)
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: LowerGameBar(
+                  selectedTab: _activeTab,
+                  onTabSelected: _handleTabSelected,
                 ),
-                const SizedBox(height: 16),
-                FloatingActionButton(
-                  heroTag: 'open_shop',
-                  backgroundColor: Colors.greenAccent,
-                  foregroundColor: Colors.black,
-                  child: const Icon(Icons.shopping_basket),
-                  onPressed: () => _showShop(context),
-                ),
-                const SizedBox(height: 16),
-                FloatingActionButton(
-                  heroTag: 'open_inventory',
-                  backgroundColor: Colors.orangeAccent,
-                  foregroundColor: Colors.black,
-                  child: const Icon(Icons.inventory_2),
-                  onPressed: () => _showInventory(context),
-                ),
-              ],
-            )
-          : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+              ),
+          ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       bottomSheet: _isPlacing
           ? Container(
               color: Colors.black87,
@@ -322,25 +361,46 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _showShop(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (context) => ShopOverlay(preSelectedLandId: widget.land.id),
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black54,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: ShopOverlay(preSelectedLandId: widget.land.id),
       ),
     );
   }
 
   void _showInventory(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        fullscreenDialog: true,
-        builder:
-            (context) => InventoryOverlay(
-              initialLandId: widget.land.id,
-              onPlaceItem: _startPlacement,
-            ),
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black54,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: InventoryOverlay(
+          initialLandId: widget.land.id,
+          onPlaceItem: (item) {
+            Navigator.of(context).pop(); // Close the overlay
+            _startPlacement(item);
+          },
+        ),
+      ),
+    );
+  }
+
+  void _showResourcePanel(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black54,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: ResourcePanel(landId: widget.land.id),
       ),
     );
   }

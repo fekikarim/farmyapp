@@ -15,6 +15,13 @@ class Land {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final List<LandRental> rentals;
+  
+  // Game progression fields
+  final int level;
+  final int experience;
+  final double money;
+  final double foodStorage;
+  final double maxFoodStorage;
 
   Land({
     required this.id,
@@ -30,6 +37,11 @@ class Land {
     this.createdAt,
     this.updatedAt,
     this.rentals = const [],
+    this.level = 1,
+    this.experience = 0,
+    this.money = 1000.0,
+    this.foodStorage = 0.0,
+    this.maxFoodStorage = 100.0,
   });
 
   bool get isRented {
@@ -68,6 +80,11 @@ class Land {
                 .map((r) => LandRental.fromJson(r))
                 .toList()
           : [],
+      level: int.tryParse(json['level']?.toString() ?? '') ?? 1,
+      experience: int.tryParse(json['experience']?.toString() ?? '') ?? 0,
+      money: double.tryParse(json['money']?.toString() ?? '') ?? 1000.0,
+      foodStorage: double.tryParse(json['food_storage']?.toString() ?? '') ?? 0.0,
+      maxFoodStorage: double.tryParse(json['max_food_storage']?.toString() ?? '') ?? 100.0,
     );
   }
 
