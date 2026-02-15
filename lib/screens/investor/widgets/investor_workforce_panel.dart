@@ -32,6 +32,9 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel> {
   }
 
   void _showAddWorkerModal() {
+    final workers = context.read<WorkerProvider>().landWorkers;
+    final assignedWorkerIds = workers.map((w) => w.workerId).toList();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -39,11 +42,44 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel> {
       builder: (context) => InvestorWorkerMarketplace(
         landId: widget.landId,
         landName: widget.landName,
+        excludedWorkerIds: assignedWorkerIds,
       ),
     ).then((_) {
       // Refresh list after returning from marketplace
       context.read<WorkerProvider>().loadLandWorkers(widget.landId);
     });
+  }
+
+  Future<void> _toggleWorkerStatus(
+    String workerId,
+    String currentStatus,
+  ) async {
+    final newStatus = currentStatus == 'active' ? 'inactive' : 'active';
+    final success = await context.read<WorkerProvider>().updateWorkerStatus(
+      widget.landId,
+      workerId,
+      newStatus,
+    );
+
+    if (mounted) {
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Worker ${newStatus == 'active' ? 'activated' : 'deactivated'} successfully',
+            ),
+            backgroundColor: Colors.green.shade700,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to update worker status'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _removeWorker(String workerId) async {
@@ -193,6 +229,10 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel> {
                       worker: workers[index],
                       isDark: isDark,
                       onRemove: () => _removeWorker(workers[index].workerId),
+                      onToggleStatus: () => _toggleWorkerStatus(
+                        workers[index].workerId,
+                        workers[index].status,
+                      ),
                     ),
                   ),
           ),
@@ -362,11 +402,13 @@ class _WorkerCard extends StatelessWidget {
   final LandWorker worker;
   final bool isDark;
   final VoidCallback onRemove;
+  final VoidCallback onToggleStatus;
 
   const _WorkerCard({
     required this.worker,
     required this.isDark,
     required this.onRemove,
+    required this.onToggleStatus,
   });
 
   @override
@@ -442,11 +484,28 @@ class _WorkerCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      '${worker.salary.toStringAsFixed(0)} TND',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark ? Colors.white38 : Colors.black38,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color:
+                            (worker.status == 'active'
+                                    ? Colors.green
+                                    : Colors.red)
+                                .withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        worker.status.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                          color: worker.status == 'active'
+                              ? Colors.green
+                              : Colors.red,
+                        ),
                       ),
                     ),
                   ],
@@ -454,11 +513,32 @@ class _WorkerCard extends StatelessWidget {
               ],
             ),
           ),
+          if (worker.status == 'inactive' || worker.status == 'suspended')
+            IconButton(
+              onPressed: onToggleStatus,
+              icon: const Icon(
+                Icons.play_circle_fill_rounded,
+                color: Colors.green,
+                size: 20,
+              ),
+              tooltip: 'Activate Worker',
+            ),
+          if (worker.status == 'active')
+            IconButton(
+              onPressed: onToggleStatus,
+              icon: Icon(
+                Icons.pause_circle_filled_rounded,
+                color: Colors.orange.withOpacity(0.7),
+                size: 20,
+              ),
+              tooltip: 'Deactivate Worker',
+            ),
           IconButton(
             onPressed: () => _confirmRemove(context),
             icon: Icon(
               Icons.remove_circle_outline,
               color: Colors.red.withOpacity(0.7),
+              size: 20,
             ),
             tooltip: 'Remove Worker',
           ),

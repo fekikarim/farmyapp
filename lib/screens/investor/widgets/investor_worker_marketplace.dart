@@ -8,11 +8,13 @@ import '../../shared/worker_detail_screen.dart';
 class InvestorWorkerMarketplace extends StatefulWidget {
   final String landId;
   final String landName;
+  final List<String> excludedWorkerIds;
 
   const InvestorWorkerMarketplace({
     super.key,
     required this.landId,
     required this.landName,
+    this.excludedWorkerIds = const [],
   });
 
   @override
@@ -61,7 +63,11 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final provider = context.watch<WorkerProvider>();
-    final workers = provider.marketplace;
+
+    // Filter out workers already assigned to this land
+    final workers = provider.marketplace
+        .where((w) => !widget.excludedWorkerIds.contains(w.id))
+        .toList();
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
@@ -320,7 +326,6 @@ class _MarketplaceWorkerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? Colors.white.withOpacity(0.03) : Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -336,102 +341,140 @@ class _MarketplaceWorkerCard extends StatelessWidget {
             ),
         ],
       ),
-      child: Row(
-        children: [
-          Hero(
-            tag: 'marketplace_avatar_${worker.id}',
-            child: CircleAvatar(
-              radius: 28,
-              backgroundColor: isDark
-                  ? Colors.white.withOpacity(0.1)
-                  : Colors.grey.shade100,
-              backgroundImage: worker.userProfilePicture != null
-                  ? NetworkImage(worker.userProfilePicture!)
-                  : null,
-              child: worker.userProfilePicture == null
-                  ? Icon(
-                      Icons.person,
-                      color: isDark ? Colors.white54 : Colors.grey,
-                      size: 28,
-                    )
-                  : null,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+          onTap: onHire,
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        worker.userName ?? 'Worker',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : Colors.black87,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (worker.isVerified) ...[
-                      const SizedBox(width: 6),
-                      Icon(
-                        Icons.verified,
-                        size: 14,
-                        color: Colors.blue.shade400,
-                      ),
-                    ],
-                  ],
+                Hero(
+                  tag: 'marketplace_avatar_${worker.id}',
+                  child: CircleAvatar(
+                    radius: 28,
+                    backgroundColor: isDark
+                        ? Colors.white.withOpacity(0.1)
+                        : Colors.grey.shade100,
+                    backgroundImage: worker.userProfilePicture != null
+                        ? NetworkImage(worker.userProfilePicture!)
+                        : null,
+                    child: worker.userProfilePicture == null
+                        ? Icon(
+                            Icons.person,
+                            color: isDark ? Colors.white54 : Colors.grey,
+                            size: 28,
+                          )
+                        : null,
+                  ),
                 ),
-                const SizedBox(height: 6),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 4,
-                  children: worker.skills
-                      .take(2)
-                      .map(
-                        (skill) => Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: (isDark ? Colors.white : Colors.black)
-                                .withOpacity(0.05),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            skill,
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: isDark ? Colors.white70 : Colors.black54,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              worker.userName ?? 'Worker',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? Colors.white : Colors.black87,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                        ),
-                      )
-                      .toList(),
+                          if (worker.isVerified) ...[
+                            const SizedBox(width: 6),
+                            Icon(
+                              Icons.verified,
+                              size: 14,
+                              color: Colors.blue.shade400,
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: worker.skills
+                            .take(2)
+                            .map(
+                              (skill) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: (isDark ? Colors.white : Colors.black)
+                                      .withOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  skill,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: isDark
+                                        ? Colors.white70
+                                        : Colors.black54,
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.star_rounded,
+                            size: 14,
+                            color: Colors.amber,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            worker.rating.toStringAsFixed(1),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? Colors.white70 : Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            '${worker.completedTasks} tasks',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? Colors.white38 : Colors.black38,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 6),
-                Row(
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Icon(Icons.star_rounded, size: 14, color: Colors.amber),
-                    const SizedBox(width: 4),
                     Text(
-                      worker.rating.toStringAsFixed(1),
+                      '${worker.hourlyRate.toStringAsFixed(0)} TND',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white70 : Colors.black87,
+                        color: Colors.green.shade400,
                       ),
                     ),
-                    const SizedBox(width: 12),
                     Text(
-                      '${worker.completedTasks} tasks',
+                      'per hour',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 10,
                         color: isDark ? Colors.white38 : Colors.black38,
                       ),
                     ),
@@ -440,44 +483,7 @@ class _MarketplaceWorkerCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(
-            width: 8,
-          ), // Add spacing between name column and price column
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${worker.hourlyRate.toStringAsFixed(0)} TND',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green.shade400,
-                ),
-              ),
-              Text(
-                'per hour',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: isDark ? Colors.white38 : Colors.black38,
-                ),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: onHire,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? Colors.white : Colors.black,
-                  foregroundColor: isDark ? Colors.black : Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  minimumSize: const Size(0, 36),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text('Hire'),
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }

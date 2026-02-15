@@ -189,6 +189,26 @@ class WorkerProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> updateWorkerStatus(
+    String landId,
+    String workerId,
+    String status,
+  ) async {
+    try {
+      final success = await WorkerService.updateWorkerStatus(
+        landId,
+        workerId,
+        status,
+      );
+      if (success) {
+        await loadLandWorkers(landId);
+      }
+      return success;
+    } catch (e) {
+      return false;
+    }
+  }
+
   // ─── Worker's Assigned Lands ───
 
   Future<void> loadAssignedLands() async {

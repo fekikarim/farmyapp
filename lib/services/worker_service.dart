@@ -146,6 +146,21 @@ class WorkerService {
     return response.statusCode == 200;
   }
 
+  static Future<bool> updateWorkerStatus(
+    String landId,
+    String workerId,
+    String status,
+  ) async {
+    final response = await AuthService.authenticatedRequest(
+      'PATCH',
+      Uri.parse(
+        '$_baseUrl/api/v1/workforce/lands/$landId/workers/$workerId/status',
+      ),
+      body: jsonEncode({'status': status}),
+    );
+    return response.statusCode == 200;
+  }
+
   static Future<List<LandWorker>> getMyAssignedLands() async {
     final response = await AuthService.authenticatedRequest(
       'GET',
