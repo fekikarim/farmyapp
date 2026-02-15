@@ -537,9 +537,10 @@ class IsometricMapPainter extends CustomPainter {
             
             int hash = (task.x * 31 + task.y * 17);
             double adjustedTime = animationValue + (hash % 100) / 100.0;
-            
-            // Calculate which frame we SHOULD be showing
-            int targetFrameIndex = ((adjustedTime * 10) % totalExpected).floor();
+
+            // Calculate which frame we SHOULD be showing based on the full expected count
+            // Using totalExpected as the multiplier ensures the full animation plays in 1 second
+            int targetFrameIndex = ((adjustedTime * totalExpected) % totalExpected).floor();
             
             // Try to find the image for this specific index if it's loaded
             ui.Image? img = loadedFrames[targetFrameIndex];

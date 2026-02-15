@@ -17,6 +17,12 @@ class AssetManager extends ChangeNotifier {
   AssetManifest? _manifest;
   bool _manifestLoading = false;
 
+  void _safeNotify() {
+    scheduleMicrotask(() {
+      if (hasListeners) notifyListeners();
+    });
+  }
+
   Future<void> _loadManifest() async {
     if (_manifest != null || _manifestLoading) return;
     _manifestLoading = true;
@@ -26,10 +32,9 @@ class AssetManager extends ChangeNotifier {
       print('AssetManifest loaded successfully.');
     } catch (e) {
       print('Detailed Failed to load AssetManifest: $e');
-      // If manifest fails, we'll rely on the brute force fallback in getFrameCount
     } finally {
       _manifestLoading = false;
-      notifyListeners();
+      _safeNotify();
     }
   }
 
@@ -45,8 +50,7 @@ class AssetManager extends ChangeNotifier {
     }
 
     if (_manifest == null) {
-       _loadManifest(); // Trigger lazy load
-       // Brute force detection for the first time if manifest isn't ready
+       _loadManifest(); 
        _discoverFramesBruteForce(path);
        return 0; 
     }
@@ -62,12 +66,12 @@ class AssetManager extends ChangeNotifier {
   }
 
   Future<void> _discoverFramesBruteForce(String path) async {
-    if (_loading.contains(path + '_discovery')) return;
+    // Check cache and loading state to avoid redundant work
+    if (_frameCountCache.containsKey(path) || _loading.contains(path + '_discovery')) return;
     _loading.add(path + '_discovery');
     
     int count = 0;
     bool exists = true;
-    // Check up to 100 frames as a safe brute-force limit
     while (exists && count < 100) {
       final String framePath = '${path}image$count.png';
       try {
@@ -81,7 +85,7 @@ class AssetManager extends ChangeNotifier {
     _frameCountCache[path] = count;
     _loading.remove(path + '_discovery');
     print('Brute-force discovered $count frames for $path');
-    notifyListeners();
+    _safeNotify();
   }
 
   Future<void> loadAssets(List<String> paths) async {
@@ -101,7 +105,7 @@ class AssetManager extends ChangeNotifier {
       });
       final image = await completer.future;
       _images[path] = image;
-      notifyListeners();
+      _safeNotify();
     } catch (e) {
       print('Failed to load asset: $path');
       _failed.add(path);
