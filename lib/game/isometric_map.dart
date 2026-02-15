@@ -560,19 +560,26 @@ class IsometricMapPainter extends CustomPainter {
                 int fw = task.cellData['footprint_width'] ?? 1;
                 int fh = task.cellData['footprint_height'] ?? 1;
                 
-                // Scale sprite width based on footprint size (approx 1.3x tile width per unit)
-                double scaleFactor = (fw + fh) / 2.0;
-                double w = tileWidth * 1.3 * scaleFactor; 
-                double h = w * (img.height / img.width);
+                double w, h, dx, dy;
                 
-                // Calculate centered position for the footprint
-                // Intersection center in grid: (originX + fw/2 - 0.5, originY + fh/2 - 0.5)
-                // Offset from originIso: (fw-fh)*tileWidth/4 horizontally, (fw+fh-2)*tileHeight/4 + tileHeight/2 vertically
-                double cx = (fw - fh) * tileWidth / 4;
-                double cy = (fw + fh) * tileHeight / 4; // Feet position at the center of footprint
-                
-                double dx = task.isoX + cx + (tileWidth - w) / 2;
-                double dy = task.isoY + cy - h;
+                if (fw == 1 && fh == 1) {
+                    // OLD LOGIC for 1x1: Place feet at ~75% down the tile depth for exact grounding
+                    w = tileWidth * 1.3;
+                    h = w * (img.height / img.width);
+                    dx = task.isoX + (tileWidth - w) / 2;
+                    dy = task.isoY + (tileHeight * 0.75) - h;
+                } else {
+                    // NEW LOGIC for multi-tile: Center exactly across the footprint
+                    double scaleFactor = (fw + fh) / 2.0;
+                    w = tileWidth * 1.3 * scaleFactor; 
+                    h = w * (img.height / img.width);
+                    
+                    double cx = (fw - fh) * tileWidth / 4;
+                    double cy = (fw + fh) * tileHeight / 4; 
+                    
+                    dx = task.isoX + cx + (tileWidth - w) / 2;
+                    dy = task.isoY + cy - h;
+                }
                 
                 paintImage(
                    canvas: canvas,
