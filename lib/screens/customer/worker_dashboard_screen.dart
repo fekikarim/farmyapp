@@ -78,7 +78,13 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     const SizedBox(height: 20),
 
                     // Quick Stats
-                    Row(
+                    GridView.count(
+                      crossAxisCount: 3,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                      childAspectRatio: 0.85,
                       children: [
                         _statWidget(
                           'Assigned Lands',
@@ -87,7 +93,6 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                           Colors.green,
                           isDark,
                         ),
-                        const SizedBox(width: 10),
                         _statWidget(
                           'Active Tasks',
                           '${tasks.where((t) => t.isAssigned || t.isInProgress).length}',
@@ -95,7 +100,6 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                           Colors.blue,
                           isDark,
                         ),
-                        const SizedBox(width: 10),
                         _statWidget(
                           'Earnings',
                           '${lands.fold<double>(0, (sum, l) => sum + l.salary).toStringAsFixed(0)} TND',
@@ -103,11 +107,6 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                           Colors.purple,
                           isDark,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
                         _statWidget(
                           'Performance',
                           '${profile?.rating.toStringAsFixed(1) ?? '0.0'}',
@@ -115,7 +114,6 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                           Colors.amber,
                           isDark,
                         ),
-                        const SizedBox(width: 10),
                         _statWidget(
                           'Completed',
                           '${profile?.completedTasks ?? 0}',
@@ -123,7 +121,6 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                           Colors.teal,
                           isDark,
                         ),
-                        const SizedBox(width: 10),
                         _statWidget(
                           'On-time',
                           '${profile?.onTimeRate.toStringAsFixed(0) ?? '0'}%',
@@ -294,13 +291,17 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
               children: [
                 Row(
                   children: [
-                    Text(
-                      profile.userName ?? 'Worker',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 20,
-                        letterSpacing: -0.5,
+                    Flexible(
+                      child: Text(
+                        profile.userName ?? 'Worker',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 20,
+                          letterSpacing: -0.5,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -374,35 +375,35 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
     Color color,
     bool isDark,
   ) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-        decoration: BoxDecoration(
-          color: isDark ? Colors.grey.shade800 : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-          border: Border.all(
-            color: isDark ? Colors.white.withOpacity(0.05) : Colors.transparent,
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey.shade800 : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
+        ],
+        border: Border.all(
+          color: isDark ? Colors.white.withOpacity(0.05) : Colors.transparent,
         ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: color, size: 22),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 12),
-            Text(
+            child: Icon(icon, color: color, size: 22),
+          ),
+          const SizedBox(height: 12),
+          Flexible(
+            child: Text(
               value,
               style: TextStyle(
                 fontSize: 18,
@@ -410,20 +411,24 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                 color: isDark ? Colors.white : const Color(0xFF1F2937),
                 letterSpacing: -0.5,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
-            Text(
-              label.toUpperCase(),
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white54 : Colors.grey.shade500,
-                letterSpacing: 0.5,
-              ),
-              textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label.toUpperCase(),
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white54 : Colors.grey.shade500,
+              letterSpacing: 0.5,
             ),
-          ],
-        ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }

@@ -14,14 +14,28 @@ import '../screens/wallet/payment_methods_screen.dart';
 import 'customer/become_worker_screen.dart';
 import 'customer/worker_dashboard_screen.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WorkerProvider>().loadMyProfile();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
     final gameProvider = Provider.of<GameProvider>(context);
+    final workerProvider = Provider.of<WorkerProvider>(context);
     final user = authProvider.user;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -68,65 +82,107 @@ class SettingsScreen extends StatelessWidget {
                           color: theme.colorScheme.onSurface.withOpacity(0.6),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          user.role.toUpperCase(),
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: user.isVerified
-                              ? Colors.green.withOpacity(0.1)
-                              : Colors.orange.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: user.isVerified
-                                ? Colors.green
-                                : Colors.orange,
-                            width: 1,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              user.isVerified ? Icons.verified : Icons.gpp_bad,
-                              size: 16,
-                              color: user.isVerified
-                                  ? Colors.green
-                                  : Colors.orange,
+                      const SizedBox(height: 12),
+                      Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
                             ),
-                            const SizedBox(width: 4),
-                            Text(
-                              user.isVerified ? 'Verified' : 'Unverified',
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              user.role.toUpperCase(),
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: user.isVerified
-                                    ? Colors.green
-                                    : Colors.orange,
+                                color: theme.colorScheme.primary,
                                 fontWeight: FontWeight.bold,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                          ),
+                          if (workerProvider.myProfile != null) ...[
+                            const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.blue,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.engineering_outlined,
+                                    size: 14,
+                                    color: Colors.blue,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'WORKER',
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1.0,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
-                        ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: user.isVerified
+                                  ? Colors.green.withOpacity(0.1)
+                                  : Colors.orange.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: user.isVerified
+                                    ? Colors.green
+                                    : Colors.orange,
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  user.isVerified
+                                      ? Icons.verified
+                                      : Icons.gpp_bad,
+                                  size: 16,
+                                  color: user.isVerified
+                                      ? Colors.green
+                                      : Colors.orange,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  user.isVerified ? 'Verified' : 'Unverified',
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: user.isVerified
+                                        ? Colors.green
+                                        : Colors.orange,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -239,8 +295,17 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 _buildSectionTitle(theme, 'Worker'),
                 Consumer<WorkerProvider>(
-                  builder: (context, workerProvider, _) {
-                    final hasProfile = workerProvider.myProfile != null;
+                  builder: (context, provider, _) {
+                    if (provider.profileLoading && provider.myProfile == null) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      );
+                    }
+
+                    final hasProfile = provider.myProfile != null;
                     return Column(
                       children: [
                         if (!hasProfile)
@@ -254,7 +319,7 @@ class SettingsScreen extends StatelessWidget {
                               MaterialPageRoute(
                                 builder: (_) => const BecomeWorkerScreen(),
                               ),
-                            ),
+                            ).then((_) => provider.loadMyProfile()),
                           ),
                         if (hasProfile)
                           _buildSettingsTile(
