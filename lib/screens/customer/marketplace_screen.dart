@@ -8,6 +8,7 @@ import '../../providers/wallet_provider.dart';
 import '../../widgets/marketplace/product_card.dart';
 import 'product_detail_screen.dart';
 import 'basket_screen.dart';
+import '../wallet/payment_methods_screen.dart';
 
 class CustomerMarketplaceScreen extends StatefulWidget {
   const CustomerMarketplaceScreen({super.key});
@@ -140,30 +141,59 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                             ),
                           ),
                           // Credits chip
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 8),
-                            decoration: BoxDecoration(
-                              color:
-                                  theme.colorScheme.primary.withOpacity(0.1),
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) =>
+                                          const PaymentMethodsScreen()),
+                                ).then((_) {
+                                  // Refresh wallet when returning
+                                  context.read<WalletProvider>().fetchWalletStatus();
+                                });
+                              },
                               borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.account_balance_wallet_rounded,
-                                    size: 16,
-                                    color: theme.colorScheme.primary),
-                                const SizedBox(width: 6),
-                                Text(
-                                  '${wallet.credits.toStringAsFixed(2)} Credits',
-                                  style: TextStyle(
-                                    color: theme.colorScheme.primary,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 13,
+                              child: Container(
+                                padding: const EdgeInsets.fromLTRB(12, 6, 8, 6),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: theme.colorScheme.primary.withOpacity(0.2),
+                                    width: 1,
                                   ),
                                 ),
-                              ],
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.account_balance_wallet_rounded,
+                                        size: 16,
+                                        color: theme.colorScheme.primary),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      wallet.credits.toStringAsFixed(2),
+                                      style: TextStyle(
+                                        color: theme.colorScheme.primary,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      padding: const EdgeInsets.all(2),
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.primary,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(Icons.add,
+                                          size: 12, color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ],
