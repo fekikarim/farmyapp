@@ -554,10 +554,14 @@ class IsometricMapPainter extends CustomPainter {
             }
 
             if (img != null) {
-                double w = 64;
-                double h = 80;
+                // Dynamic sizing based on image aspect ratio
+                double w = tileWidth * 1.3; // Make sprite slightly larger than tile
+                double h = w * (img.height / img.width);
+                
+                // Fine-tune centering
                 double dx = task.isoX + (tileWidth - w) / 2;
-                double dy = task.isoY + tileHeight - (tileHeight / 4) - h;
+                // Place feet at ~75% down the tile height for better grounding
+                double dy = task.isoY + (tileHeight * 0.75) - h;
                 
                 paintImage(
                    canvas: canvas,

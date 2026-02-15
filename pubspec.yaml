@@ -117,6 +117,7 @@ flutter:
     - assets/game_images/3d/outside_tree/
     - assets/game_images/3d/outside_fance/
     - assets/game_images/sprites/animals/cow_jersey/idle/
+    - assets/game_images/sprites/animals/cow_jersey/walking/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
