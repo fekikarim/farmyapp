@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/basket_provider.dart';
+import '../../providers/product_provider.dart';
 import '../../providers/wallet_provider.dart';
 import '../../widgets/marketplace/basket_item_tile.dart';
 
@@ -250,6 +251,26 @@ class BasketScreen extends StatelessWidget {
 
   Future<void> _handleCheckout(BuildContext context, BasketProvider basket,
       WalletProvider wallet) async {
+    // Check balance
+    if (wallet.credits < basket.totalTND) {
+      if (!context.mounted) return;
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Insufficient Funds'),
+          content: Text(
+              'Your balance is ${wallet.credits.toStringAsFixed(2)} Credits, but the total is ${basket.totalTND.toStringAsFixed(2)} TND.\n\nPlease top up your wallet.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
     // Confirmation dialog
     final confirm = await showDialog<bool>(
       context: context,
@@ -300,8 +321,9 @@ class BasketScreen extends StatelessWidget {
 
     if (!context.mounted) return;
 
-    // Refresh wallet after purchase
+    // Refresh wallet and products after purchase
     wallet.fetchWalletStatus();
+    context.read<ProductProvider>().fetchProducts(status: 'available');
 
     final successCount = result['successCount'] as int;
     final failCount = result['failCount'] as int;
