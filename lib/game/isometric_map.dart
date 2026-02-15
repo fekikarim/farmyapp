@@ -532,6 +532,8 @@ class IsometricMapPainter extends CustomPainter {
         }
        
         if (loadedFrames.isNotEmpty) {
+            final bool isActive = task.cellData['is_active'] != false; // Support both bool and 0/1 from JSON
+
             // Use maxFrames for timing if available, otherwise fallback to 1 to avoid division by zero
             int totalExpected = maxFrames > 0 ? maxFrames : 24; 
             
@@ -539,16 +541,15 @@ class IsometricMapPainter extends CustomPainter {
             double adjustedTime = animationValue + (hash % 100) / 100.0;
 
             // Calculate which frame we SHOULD be showing based on the full expected count
-            // Using totalExpected as the multiplier ensures the full animation plays in 1 second
-            int targetFrameIndex = ((adjustedTime * totalExpected) % totalExpected).floor();
+            int targetFrameIndex = isActive 
+                ? ((adjustedTime * totalExpected) % totalExpected).floor()
+                : 0; // Lock to frame 0 for inactive
             
             // Try to find the image for this specific index if it's loaded
             ui.Image? img = loadedFrames[targetFrameIndex];
             
             // Fallback: if target frame not loaded, use the closest available one or first frame
             if (img == null && loadedFrames.isNotEmpty) {
-                // Find the closest loaded frame. For simplicity, just use the first one loaded.
-                // A more sophisticated approach might find the closest index.
                 img = loadedFrames.values.first; 
             }
 
@@ -563,6 +564,12 @@ class IsometricMapPainter extends CustomPainter {
                    rect: Rect.fromLTWH(dx, dy, w, h),
                    image: img,
                    fit: BoxFit.contain,
+                   colorFilter: isActive ? null : const ColorFilter.matrix(<double>[
+                      0.2126, 0.7152, 0.0722, 0, 0,
+                      0.2126, 0.7152, 0.0722, 0, 0,
+                      0.2126, 0.7152, 0.0722, 0, 0,
+                      0,      0,      0,      1, 0,
+                   ]),
                 );
                 return;
             }
