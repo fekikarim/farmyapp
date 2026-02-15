@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../../models/land_model.dart';
+import '../../models/land_rental_model.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/land_provider.dart';
+import '../screens/investor/widgets/investor_workforce_panel.dart';
 import 'isometric_map.dart';
 import 'land_grid_service.dart';
 import 'shop_overlay.dart';
@@ -17,15 +22,31 @@ class GameScreen extends StatefulWidget {
   State<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
+class _GameScreenState extends State<GameScreen>
+    with SingleTickerProviderStateMixin {
   Map<String, dynamic>? _gridData;
   bool _isLoading = true;
   String _loadingMessage = 'Initializing...';
   double? _loadingProgress;
+  bool _showWorkforcePanel = false;
+
+  // Animation for Floating Menu
+  late AnimationController _menuController;
+  late Animation<double> _menuAnimation;
+  bool _isMenuOpen = false;
 
   @override
   void initState() {
     super.initState();
+    _menuController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
+    _menuAnimation = CurvedAnimation(
+      parent: _menuController,
+      curve: Curves.easeOutBack,
+    );
+
     // Force portrait for vertical shop as requested
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -41,9 +62,14 @@ class _GameScreenState extends State<GameScreen> {
     _updateLoading('Fetching Farm Data...', null);
 
     try {
+      final landProvider = context.read<LandProvider>();
+      final authProvider = context.read<AuthProvider>();
+
       final futures = await Future.wait([
         LandGridService.fetchLandGrid(widget.land.id),
         _precacheAssets(),
+        if (authProvider.user?.role == 'investor')
+          landProvider.fetchMyRentals(true),
       ]);
 
       if (mounted) {
@@ -113,12 +139,15 @@ class _GameScreenState extends State<GameScreen> {
     final variantId = item['variant_id'];
 
     if (category != null && variantId != null) {
-       final footprint = await ShopService.getAssetFootprint(category: category, variantId: variantId);
-       if (mounted && _isPlacing && _placementItem == item) {
-         setState(() {
-           _placementFootprint = footprint;
-         });
-       }
+      final footprint = await ShopService.getAssetFootprint(
+        category: category,
+        variantId: variantId,
+      );
+      if (mounted && _isPlacing && _placementItem == item) {
+        setState(() {
+          _placementFootprint = footprint;
+        });
+      }
     }
   }
 
@@ -135,7 +164,7 @@ class _GameScreenState extends State<GameScreen> {
 
   void _onMapTap(int x, int y) {
     if (!_isPlacing) return;
-    
+
     setState(() {
       _pendingX = x;
       _pendingY = y;
@@ -163,7 +192,11 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Future<void> _handlePlacement() async {
-    if (_placementItem == null || _pendingX == null || _pendingY == null || !_isPendingValid) return;
+    if (_placementItem == null ||
+        _pendingX == null ||
+        _pendingY == null ||
+        !_isPendingValid)
+      return;
 
     final requestId = _placementItem!['id'];
     final x = _pendingX!;
@@ -171,7 +204,10 @@ class _GameScreenState extends State<GameScreen> {
 
     // Show loading indicator
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Placing item...'), duration: Duration(milliseconds: 500)),
+      const SnackBar(
+        content: Text('Placing item...'),
+        duration: Duration(milliseconds: 500),
+      ),
     );
 
     final success = await ShopService.placeItem(
@@ -192,132 +228,195 @@ class _GameScreenState extends State<GameScreen> {
         _isLoading = true; // Trigger reload
       });
       _initializeApp(); // Reload grid
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Item placed successfully!'), backgroundColor: Colors.green),
+        const SnackBar(
+          content: Text('Item placed successfully!'),
+          backgroundColor: Colors.green,
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to place item. Try elsewhere.'), backgroundColor: Colors.red),
+        const SnackBar(
+          content: Text('Failed to place item. Try elsewhere.'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF2D231E), // Fallback Dark Soil
-      body: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 20),
-                  Text(_loadingMessage),
-                ],
-              ),
-            )
-          : _gridData == null
-          ? _buildErrorScreen()
-          : IsometricMap(
-              gridWidth: _gridData!['grid_width'] ?? widget.land.gridWidth,
-              gridHeight: _gridData!['grid_height'] ?? widget.land.gridHeight,
-              matrix: _gridData!['matrix'], 
-              onTileTap: _isPlacing ? _onMapTap : null,
-              // Pass placement data to map
-              placementMode: _isPlacing,
-              placementFootprint: _placementFootprint,
-              placementItem: _placementItem,
-              externalSelectionX: _pendingX,
-              externalSelectionY: _pendingY,
-            ),
-      floatingActionButton: !_isLoading && !_isPlacing
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                FloatingActionButton(
-                  heroTag: 'close_game',
-                  child: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                const SizedBox(height: 16),
-                FloatingActionButton(
-                  heroTag: 'open_shop',
-                  backgroundColor: Colors.greenAccent,
-                  foregroundColor: Colors.black,
-                  child: const Icon(Icons.shopping_basket),
-                  onPressed: () => _showShop(context),
-                ),
-                const SizedBox(height: 16),
-                FloatingActionButton(
-                  heroTag: 'open_inventory',
-                  backgroundColor: Colors.orangeAccent,
-                  foregroundColor: Colors.black,
-                  child: const Icon(Icons.inventory_2),
-                  onPressed: () => _showInventory(context),
-                ),
-              ],
-            )
-          : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      bottomSheet: _isPlacing
-          ? Container(
-              color: Colors.black87,
-              padding: const EdgeInsets.all(16),
-              child: SafeArea(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+    final authProvider = context.watch<AuthProvider>();
+    final landProvider = context.watch<LandProvider>();
+    final currentUser = authProvider.user;
+    final myRentals = landProvider.myRentals;
+
+    bool canManageWorkforce = false;
+    if (currentUser?.role == 'investor') {
+      final activeRental = myRentals
+          .where((r) => r.landId == widget.land.id)
+          .firstOrNull;
+      if (activeRental != null &&
+          activeRental.paymentStatus != PaymentStatus.cancelled &&
+          (activeRental.rentalEndDate == null ||
+              activeRental.rentalEndDate!.isAfter(DateTime.now()))) {
+        canManageWorkforce = true;
+      }
+    }
+
+    return PopScope(
+      canPop: !_showWorkforcePanel && !_isMenuOpen && !_isPlacing,
+      onPopInvoked: (didPop) {
+        if (didPop) return;
+
+        if (_showWorkforcePanel) {
+          setState(() {
+            _showWorkforcePanel = false;
+          });
+          return;
+        }
+
+        if (_isMenuOpen) {
+          _toggleMenu();
+          return;
+        }
+
+        if (_isPlacing) {
+          _cancelPlacement();
+          return;
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFF2D231E), // Fallback Dark Soil
+        body: _isLoading
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                     Expanded(
-                      child: Column(
-                         mainAxisSize: MainAxisSize.min,
-                         crossAxisAlignment: CrossAxisAlignment.start,
-                         children: [
-                             Text(
-                              'Placing: ${_placementItem?['details']?['name'] ?? 'Item'}',
-                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                            if (_placementFootprint == null)
-                               const Text(
-                                 'Loading footprint...',
-                                 style: TextStyle(color: Colors.grey, fontSize: 12),
-                               )
-                            else 
-                               Text(
-                                 'Size: ${_placementFootprint!['base_size']['width']}x${_placementFootprint!['base_size']['height']}',
-                                 style: const TextStyle(color: Colors.greenAccent, fontSize: 12),
-                               ),
-                         ]
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton.icon(
-                      onPressed: (_isPlacing && _isPendingValid) ? _handlePlacement : null,
-                      icon: const Icon(Icons.check),
-                      label: const Text('Confirm'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.greenAccent,
-                        foregroundColor: Colors.black,
-                        minimumSize: const Size(0, 56),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton.icon(
-                      onPressed: _cancelPlacement,
-                      icon: const Icon(Icons.close),
-                      label: const Text('Cancel'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(0, 56),
-                      ),
-                    ),
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 20),
+                    Text(_loadingMessage),
                   ],
                 ),
+              )
+            : _gridData == null
+            ? _buildErrorScreen()
+            : Stack(
+                children: [
+                  IsometricMap(
+                    gridWidth:
+                        _gridData!['grid_width'] ?? widget.land.gridWidth,
+                    gridHeight:
+                        _gridData!['grid_height'] ?? widget.land.gridHeight,
+                    matrix: _gridData!['matrix'],
+                    onTileTap: _isPlacing ? _onMapTap : null,
+                    // Pass placement data to map
+                    placementMode: _isPlacing,
+                    placementFootprint: _placementFootprint,
+                    placementItem: _placementItem,
+                    externalSelectionX: _pendingX,
+                    externalSelectionY: _pendingY,
+                  ),
+                  // Workforce Panel
+                  if (canManageWorkforce)
+                    AnimatedPositioned(
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeOutCubic,
+                      right: _showWorkforcePanel ? 0 : -400,
+                      top: 0,
+                      bottom: 0,
+                      width: 400,
+                      child: Material(
+                        elevation: 16,
+                        color: Colors.transparent,
+                        child: InvestorWorkforcePanel(
+                          landId: widget.land.id,
+                          landName: widget.land.name,
+                          onClose: () {
+                            setState(() {
+                              _showWorkforcePanel = false;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                ],
               ),
-            )
-          : null,
+        floatingActionButton: !_isLoading && !_isPlacing && !_showWorkforcePanel
+            ? _buildAnimatedFloatingMenu(canManageWorkforce)
+            : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        bottomSheet: _isPlacing
+            ? Container(
+                color: Colors.black87,
+                padding: const EdgeInsets.all(16),
+                child: SafeArea(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Placing: ${_placementItem?['details']?['name'] ?? 'Item'}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            if (_placementFootprint == null)
+                              const Text(
+                                'Loading footprint...',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12,
+                                ),
+                              )
+                            else
+                              Text(
+                                'Size: ${_placementFootprint!['base_size']['width']}x${_placementFootprint!['base_size']['height']}',
+                                style: const TextStyle(
+                                  color: Colors.greenAccent,
+                                  fontSize: 12,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton.icon(
+                        onPressed: (_isPlacing && _isPendingValid)
+                            ? _handlePlacement
+                            : null,
+                        icon: const Icon(Icons.check),
+                        label: const Text('Confirm'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.greenAccent,
+                          foregroundColor: Colors.black,
+                          minimumSize: const Size(0, 56),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton.icon(
+                        onPressed: _cancelPlacement,
+                        icon: const Icon(Icons.close),
+                        label: const Text('Cancel'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(0, 56),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : null,
+      ),
     );
   }
 
@@ -336,16 +435,13 @@ class _GameScreenState extends State<GameScreen> {
       context,
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder:
-            (context) => InventoryOverlay(
-              initialLandId: widget.land.id,
-              onPlaceItem: _startPlacement,
-            ),
+        builder: (context) => InventoryOverlay(
+          initialLandId: widget.land.id,
+          onPlaceItem: _startPlacement,
+        ),
       ),
     );
   }
-
-
 
   Widget _buildLoadingScreen() {
     return Container(
@@ -425,8 +521,138 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  Widget _buildAnimatedFloatingMenu(bool canManageWorkforce) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        if (_isMenuOpen) ...[
+          // Workforce Button
+          if (canManageWorkforce)
+            _buildMenuItem(
+              label: 'Workforce',
+              icon: Icons.engineering,
+              color: Colors.blue.shade600,
+              delay: 0,
+              onTap: () {
+                _toggleMenu();
+                setState(() {
+                  _showWorkforcePanel = !_showWorkforcePanel;
+                });
+              },
+            ),
+
+          // Inventory Button
+          _buildMenuItem(
+            label: 'Inventory',
+            icon: Icons.inventory_2_rounded,
+            color: Colors.orangeAccent,
+            textColor: Colors.black,
+            delay: 50,
+            onTap: () {
+              _toggleMenu();
+              _showInventory(context);
+            },
+          ),
+
+          // Shop Button
+          _buildMenuItem(
+            label: 'Shop',
+            icon: Icons.storefront_rounded,
+            color: Colors.greenAccent,
+            textColor: Colors.black,
+            delay: 100,
+            onTap: () {
+              _toggleMenu();
+              _showShop(context);
+            },
+          ),
+
+          // Exit Button
+          _buildMenuItem(
+            label: 'Exit Game',
+            icon: Icons.exit_to_app_rounded,
+            color: Colors.redAccent,
+            delay: 150,
+            onTap: () => Navigator.pop(context),
+          ),
+        ],
+
+        const SizedBox(height: 16),
+
+        // Main Toggle Button
+        FloatingActionButton(
+          heroTag: 'menu_toggle',
+          onPressed: _toggleMenu,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          child: AnimatedIcon(
+            icon: AnimatedIcons.menu_close,
+            progress: _menuController,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMenuItem({
+    required String label,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+    Color textColor = Colors.white,
+    int delay = 0,
+  }) {
+    return ScaleTransition(
+      scale: _menuAnimation,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.black54,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            FloatingActionButton.small(
+              heroTag: 'menu_item_$label',
+              onPressed: onTap,
+              backgroundColor: color,
+              foregroundColor: textColor,
+              child: Icon(icon),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _toggleMenu() {
+    setState(() {
+      _isMenuOpen = !_isMenuOpen;
+      if (_isMenuOpen) {
+        _menuController.forward();
+      } else {
+        _menuController.reverse();
+      }
+    });
+  }
+
   @override
   void dispose() {
+    _menuController.dispose();
     // Keep portrait when leaving (app default)
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
