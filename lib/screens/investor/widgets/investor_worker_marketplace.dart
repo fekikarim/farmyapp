@@ -40,7 +40,9 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WorkerProvider>().loadMarketplace();
+      context.read<WorkerProvider>().loadMarketplace(
+        excludeLandId: widget.landId,
+      );
     });
   }
 
@@ -55,7 +57,10 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
     setState(() {
       _selectedSkill = skill == 'All' ? null : skill;
     });
-    context.read<WorkerProvider>().loadMarketplace(skill: _selectedSkill);
+    context.read<WorkerProvider>().loadMarketplace(
+      skill: _selectedSkill,
+      excludeLandId: widget.landId,
+    );
   }
 
   @override
@@ -64,10 +69,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
     final isDark = theme.brightness == Brightness.dark;
     final provider = context.watch<WorkerProvider>();
 
-    // Filter out workers already assigned to this land
-    final workers = provider.marketplace
-        .where((w) => !widget.excludedWorkerIds.contains(w.id))
-        .toList();
+    final workers = provider.marketplace;
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
@@ -182,19 +184,34 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
 
           // List
           Expanded(
-            child: provider.marketplaceLoading
-                ? _buildShimmerList(isDark)
-                : workers.isEmpty
-                ? _buildEmptyState(isDark)
-                : ListView.builder(
-                    padding: const EdgeInsets.all(24),
-                    itemCount: workers.length,
-                    itemBuilder: (context, index) => _MarketplaceWorkerCard(
-                      worker: workers[index],
-                      isDark: isDark,
-                      onHire: () => _openWorkerDetails(workers[index]),
+            child: RefreshIndicator(
+              onRefresh: () async {
+                await provider.loadMarketplace(
+                  skill: _selectedSkill,
+                  excludeLandId: widget.landId,
+                );
+              },
+              child: provider.marketplaceLoading && provider.marketplace.isEmpty
+                  ? _buildShimmerList(isDark)
+                  : workers.isEmpty
+                  ? ListView(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.4,
+                          child: _buildEmptyState(isDark),
+                        ),
+                      ],
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(24),
+                      itemCount: workers.length,
+                      itemBuilder: (context, index) => _MarketplaceWorkerCard(
+                        worker: workers[index],
+                        isDark: isDark,
+                        onHire: () => _openWorkerDetails(workers[index]),
+                      ),
                     ),
-                  ),
+            ),
           ),
         ],
       ),
@@ -255,21 +272,26 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
   Widget _buildShimmerList(bool isDark) {
     return ListView.separated(
       padding: const EdgeInsets.all(24),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: 6,
       separatorBuilder: (_, __) => const SizedBox(height: 16),
-      itemBuilder: (_, __) => Container(
-        height: 100,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.03) : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+      itemBuilder: (_, __) => Shimmer.fromColors(
+        baseColor: isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.grey.shade200,
+        highlightColor: isDark
+            ? Colors.white.withOpacity(0.1)
+            : Colors.grey.shade100,
+        child: Container(
+          height: 110,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? Colors.white.withOpacity(0.03) : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+            ),
           ),
-        ),
-        child: Shimmer.fromColors(
-          baseColor: isDark ? Colors.white10 : Colors.grey.shade300,
-          highlightColor: isDark ? Colors.white24 : Colors.grey.shade100,
           child: Row(
             children: [
               const CircleAvatar(radius: 28, backgroundColor: Colors.white),
@@ -279,26 +301,68 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(height: 16, width: 150, color: Colors.white),
-                    const SizedBox(height: 8),
-                    Container(height: 12, width: 100, color: Colors.white),
-                    const SizedBox(height: 8),
-                    Container(height: 10, width: 80, color: Colors.white),
+                    Container(
+                      height: 18,
+                      width: 140,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Container(
+                          height: 14,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          height: 14,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      height: 12,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
                   ],
                 ),
               ),
+              const SizedBox(width: 12),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Container(height: 16, width: 60, color: Colors.white),
-                  const SizedBox(height: 8),
                   Container(
-                    height: 36,
-                    width: 70,
+                    height: 20,
+                    width: 60,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Container(
+                    height: 12,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                 ],

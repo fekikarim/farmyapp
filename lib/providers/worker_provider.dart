@@ -123,6 +123,7 @@ class WorkerProvider extends ChangeNotifier {
     String? skill,
     double? minRating,
     String? availability,
+    String? excludeLandId,
   }) async {
     _marketplaceLoading = true;
     notifyListeners();
@@ -132,6 +133,7 @@ class WorkerProvider extends ChangeNotifier {
         skill: skill,
         minRating: minRating,
         availability: availability,
+        excludeLandId: excludeLandId,
       );
     } catch (e) {
       _marketplace = [];

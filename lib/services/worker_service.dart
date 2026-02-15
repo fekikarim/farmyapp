@@ -79,11 +79,13 @@ class WorkerService {
     String? skill,
     double? minRating,
     String? availability,
+    String? excludeLandId,
   }) async {
     final params = <String, String>{};
     if (skill != null) params['skill'] = skill;
     if (minRating != null) params['minRating'] = minRating.toString();
     if (availability != null) params['availability'] = availability;
+    if (excludeLandId != null) params['excludeLandId'] = excludeLandId;
 
     final uri = Uri.parse(
       '$_baseUrl/api/v1/worker-profile/marketplace',
