@@ -14,6 +14,7 @@ class AssetManager extends ChangeNotifier {
   final Set<String> _failed = {};
   final Set<String> _loading = {};
   final Map<String, int> _frameCountCache = {};
+  final Map<String, String?> _patternCache = {}; // Store 'standard' or 'padded'
   AssetManifest? _manifest;
   bool _manifestLoading = false;
 
@@ -69,7 +70,27 @@ class AssetManager extends ChangeNotifier {
     }
     
     _frameCountCache[path] = count;
+    
+    // Determine pattern for this path if not cached
+    if (!_patternCache.containsKey(path)) {
+      if (allAssets.contains('${path}${pattern}000.png')) _patternCache[path] = 'padded';
+      else if (allAssets.contains('${path}${pattern}0.png')) _patternCache[path] = 'standard';
+    }
+    
     return count;
+  }
+
+  String getFramePath(String baseAssetPath, int index) {
+    String path = baseAssetPath;
+    if (path.startsWith('/')) path = path.substring(1);
+    if (!path.startsWith('assets/')) path = 'assets/game_images/$path';
+    if (!path.endsWith('/')) path = '$path/';
+
+    String? pattern = _patternCache[path];
+    if (pattern == 'padded') {
+      return '${path}image${index.toString().padLeft(3, '0')}.png';
+    }
+    return '${path}image$index.png';
   }
 
   Future<void> _discoverFrames(String path) async {
@@ -99,6 +120,7 @@ class AssetManager extends ChangeNotifier {
     }
     
     _frameCountCache[path] = count;
+    _patternCache[path] = foundPattern;
     _loading.remove(path + '_discovery');
     print('Discovered $count frames for $path (pattern: $foundPattern)');
     _safeNotify();

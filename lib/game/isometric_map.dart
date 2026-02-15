@@ -49,7 +49,7 @@ class _IsometricMapState extends State<IsometricMap> with SingleTickerProviderSt
     super.initState();
     _animationController = AnimationController(
        vsync: this,
-       duration: const Duration(seconds: 1), // 1 second cycle, arbitrary
+       duration: const Duration(milliseconds: 3000), // Slower animation (3s cycle)
     )..repeat();
   }
 
@@ -513,13 +513,13 @@ class IsometricMapPainter extends CustomPainter {
         if (maxFrames == 0) maxFrames = 24; // Increased fallback for cow sprite
 
         Map<int, ui.Image> loadedFrames = {};
-        for (int i = 0; i < maxFrames; i++) {
-            String p = 'assets/game_images/$spriteBase/image$i.png';
-            ui.Image? img = assetManager.getImage(p);
-            if (img != null) {
-                loadedFrames[i] = img;
-                frameCount++;
-            } else {
+         for (int i = 0; i < maxFrames; i++) {
+             String p = assetManager.getFramePath(spriteBase, i);
+             ui.Image? img = assetManager.getImage(p);
+             if (img != null) {
+                 loadedFrames[i] = img;
+                 frameCount++;
+             } else {
                 if (!assetManager.hasFailed(p)) {
                     missingPaths.add(p);
                 }
