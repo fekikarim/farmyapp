@@ -565,10 +565,11 @@ class IsometricMapPainter extends CustomPainter {
                    image: img,
                    fit: BoxFit.contain,
                    colorFilter: isActive ? null : const ColorFilter.matrix(<double>[
-                      0.2126, 0.7152, 0.0722, 0, 0,
-                      0.2126, 0.7152, 0.0722, 0, 0,
-                      0.2126, 0.7152, 0.0722, 0, 0,
-                      0,      0,      0,      1, 0,
+                      // Darkened Grayscale (values multiplied by ~0.2 for shadow look)
+                      0.0425, 0.1430, 0.0144, 0, 0,
+                      0.0425, 0.1430, 0.0144, 0, 0,
+                      0.0425, 0.1430, 0.0144, 0, 0,
+                      0,      0,      0,      0.7, 0, // Slightly transparent
                    ]),
                 );
                 return;
