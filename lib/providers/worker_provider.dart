@@ -159,7 +159,7 @@ class WorkerProvider extends ChangeNotifier {
     }
   }
 
-  Future<String?> assignWorker({
+  Future<bool> assignWorker({
     required String landId,
     required String workerId,
     String? role,
@@ -173,9 +173,9 @@ class WorkerProvider extends ChangeNotifier {
         salary: salary,
       );
       await loadLandWorkers(landId);
-      return null;
+      return true;
     } catch (e) {
-      return e.toString().replaceAll('Exception: ', '');
+      return false;
     }
   }
 

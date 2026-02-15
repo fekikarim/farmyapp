@@ -287,14 +287,14 @@ class WorkerDetailScreen extends StatelessWidget {
     final salary = await _showSalaryDialog(context);
     if (salary == null) return;
 
-    final error = await provider.assignWorker(
+    final success = await provider.assignWorker(
       landId: landId!,
       workerId: workerProfile.userId,
       salary: salary,
     );
 
     if (context.mounted) {
-      if (error == null) {
+      if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -308,7 +308,10 @@ class WorkerDetailScreen extends StatelessWidget {
           ..pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error), backgroundColor: Colors.redAccent),
+          const SnackBar(
+            content: Text('Failed to assign worker'),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     }
