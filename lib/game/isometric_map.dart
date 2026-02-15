@@ -467,6 +467,8 @@ class IsometricMapPainter extends CustomPainter {
   }
 
   void _paintItem(Canvas canvas, _PaintTask task) {
+    if (task.cellData['is_origin'] == false) return; // Only draw at the origin of a multi-tile footprint
+
     final Map<String, dynamic>? sprites = task.cellData['sprites'];
     final Map<String, dynamic>? state = task.cellData['state'];
     
@@ -554,14 +556,23 @@ class IsometricMapPainter extends CustomPainter {
             }
 
             if (img != null) {
-                // Dynamic sizing based on image aspect ratio
-                double w = tileWidth * 1.3; // Make sprite slightly larger than tile
+                // Dynamic sizing based on image aspect ratio and footprint
+                int fw = task.cellData['footprint_width'] ?? 1;
+                int fh = task.cellData['footprint_height'] ?? 1;
+                
+                // Scale sprite width based on footprint size (approx 1.3x tile width per unit)
+                double scaleFactor = (fw + fh) / 2.0;
+                double w = tileWidth * 1.3 * scaleFactor; 
                 double h = w * (img.height / img.width);
                 
-                // Fine-tune centering
-                double dx = task.isoX + (tileWidth - w) / 2;
-                // Place feet at ~75% down the tile height for better grounding
-                double dy = task.isoY + (tileHeight * 0.75) - h;
+                // Calculate centered position for the footprint
+                // Intersection center in grid: (originX + fw/2 - 0.5, originY + fh/2 - 0.5)
+                // Offset from originIso: (fw-fh)*tileWidth/4 horizontally, (fw+fh-2)*tileHeight/4 + tileHeight/2 vertically
+                double cx = (fw - fh) * tileWidth / 4;
+                double cy = (fw + fh) * tileHeight / 4; // Feet position at the center of footprint
+                
+                double dx = task.isoX + cx + (tileWidth - w) / 2;
+                double dy = task.isoY + cy - h;
                 
                 paintImage(
                    canvas: canvas,
