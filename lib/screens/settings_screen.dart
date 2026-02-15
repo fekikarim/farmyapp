@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/game_provider.dart';
+import '../providers/worker_provider.dart';
 import 'settings/edit_profile_screen.dart';
 import 'settings/change_password_screen.dart';
 import 'settings/enable_2fa_screen.dart';
@@ -10,6 +11,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../services/kyc_service.dart';
 import '../screens/kyc/kyc_flow_screen.dart';
 import '../screens/wallet/payment_methods_screen.dart';
+import 'customer/become_worker_screen.dart';
+import 'customer/worker_dashboard_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -24,10 +27,7 @@ class SettingsScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Settings'), centerTitle: true),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -41,12 +41,18 @@ class SettingsScreen extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 40,
-                        backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                        backgroundImage: user.profilePicture != null 
-                            ? NetworkImage(user.profilePicture!) 
+                        backgroundColor: theme.colorScheme.primary.withOpacity(
+                          0.1,
+                        ),
+                        backgroundImage: user.profilePicture != null
+                            ? NetworkImage(user.profilePicture!)
                             : null,
                         child: user.profilePicture == null
-                            ? Icon(Icons.person, size: 40, color: theme.colorScheme.primary)
+                            ? Icon(
+                                Icons.person,
+                                size: 40,
+                                color: theme.colorScheme.primary,
+                              )
                             : null,
                       ),
                       const SizedBox(height: 12),
@@ -64,7 +70,10 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
@@ -80,14 +89,19 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: user.isVerified 
-                              ? Colors.green.withOpacity(0.1) 
+                          color: user.isVerified
+                              ? Colors.green.withOpacity(0.1)
                               : Colors.orange.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: user.isVerified ? Colors.green : Colors.orange,
+                            color: user.isVerified
+                                ? Colors.green
+                                : Colors.orange,
                             width: 1,
                           ),
                         ),
@@ -97,13 +111,17 @@ class SettingsScreen extends StatelessWidget {
                             Icon(
                               user.isVerified ? Icons.verified : Icons.gpp_bad,
                               size: 16,
-                              color: user.isVerified ? Colors.green : Colors.orange,
+                              color: user.isVerified
+                                  ? Colors.green
+                                  : Colors.orange,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               user.isVerified ? 'Verified' : 'Unverified',
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: user.isVerified ? Colors.green : Colors.orange,
+                                color: user.isVerified
+                                    ? Colors.green
+                                    : Colors.orange,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -124,7 +142,9 @@ class SettingsScreen extends StatelessWidget {
                 subtitle: 'Manage credits and payment methods',
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const PaymentMethodsScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const PaymentMethodsScreen(),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -136,7 +156,9 @@ class SettingsScreen extends StatelessWidget {
                 title: 'Edit Profile',
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const EditProfileScreen(),
+                  ),
                 ),
               ),
               _buildSettingsTile(
@@ -145,30 +167,45 @@ class SettingsScreen extends StatelessWidget {
                 title: 'Change Password',
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const ChangePasswordScreen(),
+                  ),
                 ),
               ),
               _buildSettingsTile(
                 context,
-                icon: (user?.isTwoFactorEnabled ?? false) ? Icons.security : Icons.security_outlined,
-                title: (user?.isTwoFactorEnabled ?? false) ? 'Disable 2FA' : 'Enable 2FA',
-                subtitle: (user?.isTwoFactorEnabled ?? false) ? 'Strong security active' : 'Add an extra layer of security',
+                icon: (user?.isTwoFactorEnabled ?? false)
+                    ? Icons.security
+                    : Icons.security_outlined,
+                title: (user?.isTwoFactorEnabled ?? false)
+                    ? 'Disable 2FA'
+                    : 'Enable 2FA',
+                subtitle: (user?.isTwoFactorEnabled ?? false)
+                    ? 'Strong security active'
+                    : 'Add an extra layer of security',
                 trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
-                    color: (user?.isTwoFactorEnabled ?? false) 
-                        ? Colors.green.withOpacity(0.1) 
+                    color: (user?.isTwoFactorEnabled ?? false)
+                        ? Colors.green.withOpacity(0.1)
                         : theme.colorScheme.onSurface.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: (user?.isTwoFactorEnabled ?? false) ? Colors.green : Colors.transparent,
+                      color: (user?.isTwoFactorEnabled ?? false)
+                          ? Colors.green
+                          : Colors.transparent,
                       width: 1,
                     ),
                   ),
                   child: Text(
                     (user?.isTwoFactorEnabled ?? false) ? 'ENABLED' : 'OFF',
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: (user?.isTwoFactorEnabled ?? false) ? Colors.green : theme.colorScheme.onSurface.withOpacity(0.5),
+                      color: (user?.isTwoFactorEnabled ?? false)
+                          ? Colors.green
+                          : theme.colorScheme.onSurface.withOpacity(0.5),
                       fontWeight: FontWeight.bold,
                       fontSize: 10,
                     ),
@@ -176,7 +213,9 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const Enable2FAScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const Enable2FAScreen(),
+                  ),
                 ),
               ),
 
@@ -196,6 +235,43 @@ class SettingsScreen extends StatelessWidget {
                   title: 'Become an Investor',
                   subtitle: 'Invest in sustainable farming',
                   onTap: () => _handleKyc(context, 'investor'),
+                ),
+                const SizedBox(height: 24),
+                _buildSectionTitle(theme, 'Worker'),
+                Consumer<WorkerProvider>(
+                  builder: (context, workerProvider, _) {
+                    final hasProfile = workerProvider.myProfile != null;
+                    return Column(
+                      children: [
+                        if (!hasProfile)
+                          _buildSettingsTile(
+                            context,
+                            icon: Icons.construction_outlined,
+                            title: 'Become a Worker',
+                            subtitle: 'Offer your skills on farms',
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const BecomeWorkerScreen(),
+                              ),
+                            ),
+                          ),
+                        if (hasProfile)
+                          _buildSettingsTile(
+                            context,
+                            icon: Icons.dashboard_outlined,
+                            title: 'Worker Dashboard',
+                            subtitle: 'View your assignments & tasks',
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const WorkerDashboardScreen(),
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
                 ),
               ],
 
@@ -221,7 +297,10 @@ class SettingsScreen extends StatelessWidget {
                         color: Colors.red.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(Icons.videogame_asset, color: Colors.red),
+                      child: const Icon(
+                        Icons.videogame_asset,
+                        color: Colors.red,
+                      ),
                     ),
                     title: Text(
                       'Show Game Bubble',
@@ -266,7 +345,9 @@ class SettingsScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(
-                      isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+                      isDark
+                          ? Icons.dark_mode_outlined
+                          : Icons.light_mode_outlined,
                       color: theme.colorScheme.primary,
                     ),
                   ),
@@ -300,7 +381,9 @@ class SettingsScreen extends StatelessWidget {
                   onPressed: () async {
                     await authProvider.logout();
                     if (context.mounted) {
-                      Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil('/', (route) => false);
                     }
                   },
                   icon: const Icon(Icons.logout),
@@ -383,17 +466,21 @@ class SettingsScreen extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        subtitle: subtitle != null ? Text(
-          subtitle,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.5),
-          ),
-        ) : null,
-        trailing: trailing ?? Icon(
-          Icons.arrow_forward_ios_rounded,
-          size: 16,
-          color: theme.colorScheme.onSurface.withOpacity(0.4),
-        ),
+        subtitle: subtitle != null
+            ? Text(
+                subtitle,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurface.withOpacity(0.5),
+                ),
+              )
+            : null,
+        trailing:
+            trailing ??
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 16,
+              color: theme.colorScheme.onSurface.withOpacity(0.4),
+            ),
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -420,9 +507,7 @@ class SettingsScreen extends StatelessWidget {
   Future<void> _handleKyc(BuildContext context, String role) async {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => KycFlowScreen(role: role),
-      ),
+      MaterialPageRoute(builder: (context) => KycFlowScreen(role: role)),
     );
   }
 }

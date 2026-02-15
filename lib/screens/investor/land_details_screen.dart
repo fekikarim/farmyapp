@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import '../../models/land_model.dart';
 import '../../services/land_service.dart';
 import 'rental_checkout_screen.dart';
+import '../farmer/workforce_screen.dart';
 import 'dart:ui';
 
 class LandDetailsScreen extends StatefulWidget {
@@ -266,6 +267,48 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                   'Secured year-round water access rights',
                   theme,
                 ),
+                const SizedBox(height: 40),
+                // Workforce Management (only for rented lands where investor has authority)
+                if (_land.isRented) ...[
+                  _buildSectionHeader('Workforce', theme),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => WorkforceScreen(
+                              landId: _land.id,
+                              landName: _land.name,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.people_alt_outlined,
+                        color: Colors.white,
+                      ),
+                      label: const Text(
+                        'Manage Workers',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green.shade600,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        elevation: 2,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
                 const SizedBox(height: 100), // Spacer for bottom sheet
               ],
             ),

@@ -7,6 +7,7 @@ import '../../providers/land_provider.dart';
 import 'add_land_screen.dart';
 import 'rental_requests_screen.dart';
 import 'edit_land_sheet.dart';
+import 'workforce_screen.dart';
 import '../../services/auth_service.dart';
 import '../../models/user_model.dart';
 import '../../models/land_rental_model.dart'; // Add this import
@@ -638,10 +639,19 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
       children: [
         Expanded(
           child: ElevatedButton.icon(
-            onPressed: () => _showComingSoonDialog('Manage Assets'),
-            icon: Icon(Icons.settings_suggest_outlined),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      WorkforceScreen(landId: land.id, landName: land.name),
+                ),
+              );
+            },
+            icon: Icon(Icons.people_alt_outlined),
             label: Text(
-              'Manage Assets',
+              'Workforce',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             style: ElevatedButton.styleFrom(
