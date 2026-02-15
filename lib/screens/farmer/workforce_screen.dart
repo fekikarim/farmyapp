@@ -136,7 +136,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1C2333) : Colors.grey.shade50,
+          color: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: comingSoon ? Colors.grey.shade300 : color.withOpacity(0.3),
@@ -168,7 +168,11 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                     subtitle,
                     style: TextStyle(
                       fontSize: 12,
-                      color: comingSoon ? Colors.grey : Colors.grey.shade600,
+                      color: comingSoon
+                          ? Colors.grey
+                          : (isDark
+                                ? Colors.grey.shade400
+                                : Colors.grey.shade600),
                     ),
                   ),
                 ],
@@ -178,7 +182,9 @@ class _WorkforceScreenState extends State<WorkforceScreen>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.amber.shade50,
+                  color: isDark
+                      ? Colors.amber.withOpacity(0.15)
+                      : Colors.amber.shade50,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -186,7 +192,9 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
-                    color: Colors.amber.shade800,
+                    color: isDark
+                        ? Colors.amber.shade300
+                        : Colors.amber.shade800,
                   ),
                 ),
               )
@@ -207,34 +215,50 @@ class _WorkforceScreenState extends State<WorkforceScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1C2333) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: isDark ? Colors.grey.shade800 : Colors.white,
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
           ],
+          border: Border.all(
+            color: isDark ? Colors.white.withOpacity(0.05) : Colors.transparent,
+          ),
         ),
         child: Column(
           children: [
-            Icon(icon, color: color, size: 22),
-            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(height: 12),
             Text(
               value,
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black87,
+                fontWeight: FontWeight.w800,
+                color: isDark ? Colors.white : const Color(0xFF1F2937),
+                letterSpacing: -0.5,
               ),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 4),
             Text(
-              label,
-              style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+              label.toUpperCase(),
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white54 : Colors.grey.shade500,
+                letterSpacing: 0.5,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -249,7 +273,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1C2333) : Colors.white,
+        color: isDark ? Colors.grey.shade800 : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -264,12 +288,19 @@ class _WorkforceScreenState extends State<WorkforceScreen>
           // Avatar
           CircleAvatar(
             radius: 24,
-            backgroundColor: Colors.green.shade100,
+            backgroundColor: isDark
+                ? Colors.green.withOpacity(0.2)
+                : Colors.green.shade100,
             backgroundImage: worker.workerProfilePicture != null
                 ? NetworkImage(worker.workerProfilePicture!)
                 : null,
             child: worker.workerProfilePicture == null
-                ? Icon(Icons.person, color: Colors.green.shade700)
+                ? Icon(
+                    Icons.person,
+                    color: isDark
+                        ? Colors.green.shade400
+                        : Colors.green.shade700,
+                  )
                 : null,
           ),
           const SizedBox(width: 14),
@@ -280,9 +311,10 @@ class _WorkforceScreenState extends State<WorkforceScreen>
               children: [
                 Text(
                   worker.workerName ?? 'Unknown Worker',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
+                    color: isDark ? Colors.white : const Color(0xFF1F2937),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -294,7 +326,9 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
+                        color: isDark
+                            ? Colors.blue.withOpacity(0.15)
+                            : Colors.blue.shade50,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -302,7 +336,9 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
-                          color: Colors.blue.shade700,
+                          color: isDark
+                              ? Colors.blue.shade300
+                              : Colors.blue.shade700,
                         ),
                       ),
                     ),
@@ -311,7 +347,9 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                       '${worker.salary.toStringAsFixed(0)} TND/mo',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade600,
+                        color: isDark
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade600,
                       ),
                     ),
                   ],
@@ -347,7 +385,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
     final workers = workerProvider.landWorkers;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0D1117) : Colors.grey.shade50,
+      backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
       appBar: AppBar(
         title: Text('Workforce — ${widget.landName}'),
         backgroundColor: Colors.transparent,
@@ -481,10 +519,14 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? const Color(0xFF1C2333)
+                            ? Colors.grey.shade800
                             : Colors.blue.shade50,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.blue.shade100),
+                        border: Border.all(
+                          color: isDark
+                              ? Colors.blue.withOpacity(0.2)
+                              : Colors.blue.shade100,
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -501,16 +543,21 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                                 'Coming Soon',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.blue.shade800,
+                                  color: isDark
+                                      ? Colors.blue.shade200
+                                      : Colors.blue.shade800,
                                 ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 12),
-                          _comingSoonItem('🤖 AI Auto-Assign Tasks'),
-                          _comingSoonItem('📍 GPS-verified Work Proof'),
-                          _comingSoonItem('🌡️ IoT Sensor Dashboard'),
-                          _comingSoonItem('💰 Smart Payroll Integration'),
+                          _comingSoonItem('🤖 AI Auto-Assign Tasks', isDark),
+                          _comingSoonItem('📍 GPS-verified Work Proof', isDark),
+                          _comingSoonItem('🌡️ IoT Sensor Dashboard', isDark),
+                          _comingSoonItem(
+                            '💰 Smart Payroll Integration',
+                            isDark,
+                          ),
                         ],
                       ),
                     ),
@@ -522,16 +569,23 @@ class _WorkforceScreenState extends State<WorkforceScreen>
     );
   }
 
-  Widget _comingSoonItem(String label) {
+  Widget _comingSoonItem(String label, bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
         children: [
-          Icon(Icons.circle, size: 6, color: Colors.blue.shade300),
+          Icon(
+            Icons.circle,
+            size: 6,
+            color: isDark ? Colors.blue.shade400 : Colors.blue.shade300,
+          ),
           const SizedBox(width: 8),
           Text(
             label,
-            style: TextStyle(fontSize: 13, color: Colors.blue.shade700),
+            style: TextStyle(
+              fontSize: 13,
+              color: isDark ? Colors.blue.shade100 : Colors.blue.shade700,
+            ),
           ),
         ],
       ),

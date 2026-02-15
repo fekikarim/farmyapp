@@ -74,7 +74,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1C2333) : Colors.white,
+          color: isDark ? Colors.grey.shade800 : Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -91,12 +91,17 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
               tag: 'worker-${profile.id}',
               child: CircleAvatar(
                 radius: 28,
-                backgroundColor: Colors.green.shade100,
-                backgroundImage: profile.userProfilePicture != null
-                    ? NetworkImage(profile.userProfilePicture!)
-                    : null,
+                backgroundColor: isDark
+                    ? Colors.green.withOpacity(0.2)
+                    : Colors.green.shade100,
                 child: profile.userProfilePicture == null
-                    ? Icon(Icons.person, color: Colors.green.shade700, size: 28)
+                    ? Icon(
+                        Icons.person,
+                        color: isDark
+                            ? Colors.green.shade400
+                            : Colors.green.shade700,
+                        size: 28,
+                      )
                     : null,
               ),
             ),
@@ -111,9 +116,12 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                       Flexible(
                         child: Text(
                           profile.userName ?? 'Worker',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 15,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF1F2937),
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -139,14 +147,18 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.green.shade50,
+                          color: isDark
+                              ? Colors.green.withOpacity(0.15)
+                              : Colors.green.shade50,
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           skill,
                           style: TextStyle(
                             fontSize: 10,
-                            color: Colors.green.shade700,
+                            color: isDark
+                                ? Colors.green.shade300
+                                : Colors.green.shade700,
                           ),
                         ),
                       );
@@ -175,7 +187,9 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                         '${profile.completedTasks} tasks',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey.shade500,
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade600,
                         ),
                       ),
                     ],
@@ -192,12 +206,17 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
-                    color: Colors.green.shade700,
+                    color: isDark
+                        ? Colors.green.shade400
+                        : Colors.green.shade700,
                   ),
                 ),
                 Text(
                   '/hour',
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
+                  ),
                 ),
               ],
             ),
@@ -213,10 +232,10 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0D1117) : Colors.grey.shade50,
+      backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
       appBar: AppBar(
         title: const Text('Worker Marketplace'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.grey.shade800,
         elevation: 0,
       ),
       body: Column(
@@ -228,9 +247,12 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search workers...',
+                hintStyle: TextStyle(
+                  color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
+                ),
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
-                fillColor: isDark ? const Color(0xFF1C2333) : Colors.white,
+                fillColor: isDark ? Colors.grey.shade800 : Colors.white,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
@@ -253,27 +275,47 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                 final selected = (_selectedSkillFilter ?? 'All') == skill;
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    label: Text(skill),
-                    selected: selected,
-                    onSelected: (val) {
+                  child: InkWell(
+                    onTap: () {
                       setState(
-                        () => _selectedSkillFilter = val ? skill : 'All',
+                        () => _selectedSkillFilter = skill == 'All'
+                            ? null
+                            : skill,
                       );
                       _applyFilters();
                     },
-                    selectedColor: Colors.green.shade100,
-                    backgroundColor: isDark
-                        ? const Color(0xFF1C2333)
-                        : Colors.white,
-                    labelStyle: TextStyle(
-                      fontSize: 12,
-                      color: selected
-                          ? Colors.green.shade800
-                          : Colors.grey.shade600,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(20),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: selected
+                            ? const Color(0xFF10B981)
+                            : (isDark
+                                  ? Colors.white.withOpacity(0.05)
+                                  : Colors.white),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: selected
+                              ? const Color(0xFF10B981)
+                              : (isDark
+                                    ? Colors.white.withOpacity(0.05)
+                                    : Colors.grey.shade300),
+                        ),
+                      ),
+                      child: Text(
+                        skill,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: selected
+                              ? Colors.white
+                              : (isDark ? Colors.white70 : Colors.black54),
+                        ),
+                      ),
                     ),
                   ),
                 );

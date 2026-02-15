@@ -20,7 +20,7 @@ class WorkerDetailScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0D1117) : Colors.grey.shade50,
+      backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
       body: CustomScrollView(
         slivers: [
           // Gradient Header
@@ -184,7 +184,7 @@ class WorkerDetailScreen extends StatelessWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1C2333) : Colors.white,
+                        color: isDark ? Colors.grey.shade800 : Colors.white,
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Text(
@@ -206,7 +206,7 @@ class WorkerDetailScreen extends StatelessWidget {
                     height: 160,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF1C2333) : Colors.white,
+                      color: isDark ? Colors.grey.shade800 : Colors.white,
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Center(
@@ -319,24 +319,61 @@ class WorkerDetailScreen extends StatelessWidget {
 
   Future<double?> _showSalaryDialog(BuildContext context) {
     final controller = TextEditingController();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return showDialog<double>(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: isDark ? Colors.grey.shade800 : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Set Monthly Salary'),
+        title: Text(
+          'Set Monthly Salary',
+          style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+        ),
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
+          style: TextStyle(color: isDark ? Colors.white : Colors.black87),
           decoration: InputDecoration(
             hintText: 'e.g. 500',
+            hintStyle: TextStyle(
+              color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
+            ),
             suffixText: 'TND/month',
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            suffixStyle: TextStyle(
+              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+            ),
+            filled: true,
+            fillColor: isDark
+                ? Colors.white.withOpacity(0.05)
+                : Colors.grey.shade100,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: isDark ? Colors.grey.shade600 : Colors.grey.shade300,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: isDark ? Colors.grey.shade600 : Colors.grey.shade300,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.green.shade500, width: 2),
+            ),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -361,7 +398,7 @@ class WorkerDetailScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1C2333) : Colors.white,
+          color: isDark ? Colors.grey.shade800 : Colors.white,
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
@@ -407,7 +444,7 @@ class WorkerDetailScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1C2333) : Colors.grey.shade100,
+        color: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.grey.shade300),
       ),

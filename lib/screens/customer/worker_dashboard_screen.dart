@@ -54,7 +54,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
         workerProvider.myTasksLoading;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0D1117) : Colors.grey.shade50,
+      backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
       appBar: AppBar(
         title: const Text('Worker Dashboard'),
         backgroundColor: Colors.transparent,
@@ -168,16 +168,22 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? const Color(0xFF1C2333)
+                            ? Colors.grey.shade800
                             : Colors.blue.shade50,
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: Colors.blue.shade100),
+                        border: Border.all(
+                          color: isDark
+                              ? Colors.blue.withOpacity(0.2)
+                              : Colors.blue.shade100,
+                        ),
                       ),
                       child: Row(
                         children: [
                           Icon(
                             Icons.notifications_active,
-                            color: Colors.blue.shade600,
+                            color: isDark
+                                ? Colors.blue.shade400
+                                : Colors.blue.shade600,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -188,14 +194,18 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                                   'Notifications',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.blue.shade800,
+                                    color: isDark
+                                        ? Colors.blue.shade200
+                                        : Colors.blue.shade800,
                                   ),
                                 ),
                                 Text(
                                   'Real-time task notifications coming soon',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.blue.shade600,
+                                    color: isDark
+                                        ? Colors.blue.shade100
+                                        : Colors.blue.shade600,
                                   ),
                                 ),
                               ],
@@ -207,7 +217,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.amber.shade50,
+                              color: isDark
+                                  ? Colors.amber.withOpacity(0.15)
+                                  : Colors.amber.shade50,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -215,7 +227,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.amber.shade800,
+                                color: isDark
+                                    ? Colors.amber.shade300
+                                    : Colors.amber.shade800,
                               ),
                             ),
                           ),
@@ -232,33 +246,48 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
 
   Widget _buildProfileCard(dynamic profile, bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.green.shade700, Colors.teal.shade500],
+          colors: [
+            const Color(0xFF10B981), // Emerald 500
+            const Color(0xFF059669), // Emerald 600
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.green.withOpacity(0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
+            color: const Color(0xFF10B981).withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: Colors.white.withOpacity(0.2),
-            backgroundImage: profile.userProfilePicture != null
-                ? NetworkImage(profile.userProfilePicture!)
-                : null,
-            child: profile.userProfilePicture == null
-                ? const Icon(Icons.person, color: Colors.white, size: 28)
-                : null,
+          Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.white.withOpacity(0.3),
+                width: 2,
+              ),
+            ),
+            child: CircleAvatar(
+              radius: 32,
+              backgroundColor: Colors.white.withOpacity(0.2),
+              backgroundImage: profile.userProfilePicture != null
+                  ? NetworkImage(profile.userProfilePicture!)
+                  : null,
+              child: profile.userProfilePicture == null
+                  ? const Icon(Icons.person, color: Colors.white, size: 32)
+                  : null,
+            ),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,36 +298,65 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       profile.userName ?? 'Worker',
                       style: const TextStyle(
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 20,
+                        letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 8),
                     if (profile.isVerified)
-                      const Icon(Icons.verified, color: Colors.white, size: 16),
+                      Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.check,
+                          color: Color(0xFF059669),
+                          size: 12,
+                        ),
+                      ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
+                    horizontal: 10,
+                    vertical: 4,
                   ),
                   decoration: BoxDecoration(
                     color: profile.isVerified
                         ? Colors.white.withOpacity(0.2)
-                        : Colors.amber.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    profile.isVerified
-                        ? '✓ Verified Worker'
-                        : '⏳ Pending Verification',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
+                        : Colors.amber.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.1),
+                      width: 1,
                     ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        profile.isVerified
+                            ? Icons.verified_user_outlined
+                            : Icons.pending_outlined,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        profile.isVerified
+                            ? 'Verified Worker'
+                            : 'Pending Verification',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -318,33 +376,50 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
   ) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1C2333) : Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          color: isDark ? Colors.grey.shade800 : Colors.white,
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
           ],
+          border: Border.all(
+            color: isDark ? Colors.white.withOpacity(0.05) : Colors.transparent,
+          ),
         ),
         child: Column(
           children: [
-            Icon(icon, color: color, size: 20),
-            const SizedBox(height: 4),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(height: 12),
             Text(
               value,
               style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black87,
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: isDark ? Colors.white : const Color(0xFF1F2937),
+                letterSpacing: -0.5,
               ),
             ),
+            const SizedBox(height: 4),
             Text(
-              label,
-              style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+              label.toUpperCase(),
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white54 : Colors.grey.shade500,
+                letterSpacing: 0.5,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -375,7 +450,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1C2333) : Colors.white,
+        color: isDark ? Colors.grey.shade800 : Colors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
@@ -411,7 +486,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       land.role,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.blue.shade600,
+                        color: isDark
+                            ? Colors.blue.shade300
+                            : Colors.blue.shade600,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -419,7 +496,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       '${land.salary.toStringAsFixed(0)} TND/mo',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade500,
+                        color: isDark
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade500,
                       ),
                     ),
                   ],
@@ -445,7 +524,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1C2333) : Colors.white,
+        color: isDark ? Colors.grey.shade800 : Colors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
@@ -474,7 +553,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       task.typeLabel,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade600,
+                        color: isDark
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade600,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -482,7 +563,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       '⏱ ${task.timeRequiredMinutes}min',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade500,
+                        color: isDark
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade500,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -491,7 +574,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: Colors.green.shade600,
+                        color: isDark
+                            ? Colors.green.shade400
+                            : Colors.green.shade600,
                       ),
                     ),
                   ],
@@ -503,10 +588,16 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: task.isCompleted
-                  ? Colors.green.shade50
+                  ? (isDark
+                        ? Colors.green.withOpacity(0.15)
+                        : Colors.green.shade50)
                   : (task.isAssigned
-                        ? Colors.blue.shade50
-                        : Colors.grey.shade100),
+                        ? (isDark
+                              ? Colors.blue.withOpacity(0.15)
+                              : Colors.blue.shade50)
+                        : (isDark
+                              ? Colors.grey.withOpacity(0.1)
+                              : Colors.grey.shade100)),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -515,10 +606,14 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: task.isCompleted
-                    ? Colors.green.shade700
+                    ? (isDark ? Colors.green.shade300 : Colors.green.shade700)
                     : (task.isAssigned
-                          ? Colors.blue.shade700
-                          : Colors.grey.shade600),
+                          ? (isDark
+                                ? Colors.blue.shade300
+                                : Colors.blue.shade700)
+                          : (isDark
+                                ? Colors.grey.shade400
+                                : Colors.grey.shade600)),
               ),
             ),
           ),
