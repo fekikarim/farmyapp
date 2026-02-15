@@ -54,7 +54,7 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel> {
     String workerId,
     String currentStatus,
   ) async {
-    final newStatus = currentStatus == 'active' ? 'inactive' : 'active';
+    final newStatus = currentStatus == 'active' ? 'suspended' : 'active';
     final success = await context.read<WorkerProvider>().updateWorkerStatus(
       widget.landId,
       workerId,
@@ -66,7 +66,7 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Worker ${newStatus == 'active' ? 'activated' : 'deactivated'} successfully',
+              'Worker ${newStatus == 'active' ? 'activated' : 'suspended'} successfully',
             ),
             backgroundColor: Colors.green.shade700,
           ),
@@ -504,7 +504,9 @@ class _WorkerCard extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           color: worker.status == 'active'
                               ? Colors.green
-                              : Colors.red,
+                              : (worker.status == 'suspended'
+                                    ? Colors.orange
+                                    : Colors.red),
                         ),
                       ),
                     ),
@@ -531,7 +533,7 @@ class _WorkerCard extends StatelessWidget {
                 color: Colors.orange.withOpacity(0.7),
                 size: 20,
               ),
-              tooltip: 'Deactivate Worker',
+              tooltip: 'Suspend Worker',
             ),
           IconButton(
             onPressed: () => _confirmRemove(context),
