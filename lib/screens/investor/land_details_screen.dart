@@ -283,6 +283,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                             builder: (_) => WorkforceScreen(
                               landId: _land.id,
                               landName: _land.name,
+                              canHire: true,
                             ),
                           ),
                         );

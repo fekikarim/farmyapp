@@ -644,8 +644,11 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                      WorkforceScreen(landId: land.id, landName: land.name),
+                  builder: (_) => WorkforceScreen(
+                    landId: land.id,
+                    landName: land.name,
+                    canHire: !land.isRented,
+                  ),
                 ),
               );
             },

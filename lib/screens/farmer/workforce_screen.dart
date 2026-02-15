@@ -7,11 +7,14 @@ import 'worker_marketplace_screen.dart';
 class WorkforceScreen extends StatefulWidget {
   final String landId;
   final String landName;
+  final bool canHire;
 
   const WorkforceScreen({
     super.key,
     required this.landId,
     required this.landName,
+    this.canHire =
+        true, // Default to true for backward compatibility or direct access
   });
 
   @override
@@ -350,12 +353,17 @@ class _WorkforceScreenState extends State<WorkforceScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showAddWorkerModal,
-        backgroundColor: Colors.green.shade600,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Add Worker', style: TextStyle(color: Colors.white)),
-      ),
+      floatingActionButton: widget.canHire
+          ? FloatingActionButton.extended(
+              onPressed: _showAddWorkerModal,
+              backgroundColor: Colors.green.shade600,
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text(
+                'Add Worker',
+                style: TextStyle(color: Colors.white),
+              ),
+            )
+          : null,
       body: workerProvider.landWorkersLoading
           ? const Center(child: CircularProgressIndicator())
           : FadeTransition(
