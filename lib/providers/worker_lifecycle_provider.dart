@@ -36,6 +36,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   List<WorkerContract> _myContracts = [];
   bool _myContractsLoading = false;
+  String? _myContractsError;
 
   // ─── Negotiation State ───
   List<ContractNegotiation> _negotiations = [];
@@ -82,6 +83,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   List<WorkerContract> get myContracts => _myContracts;
   bool get myContractsLoading => _myContractsLoading;
+  String? get myContractsError => _myContractsError;
 
   List<ContractNegotiation> get negotiations => _negotiations;
   bool get negotiationsLoading => _negotiationsLoading;
@@ -365,11 +367,13 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   Future<void> loadMyContracts() async {
     _myContractsLoading = true;
+    _myContractsError = null;
     notifyListeners();
     try {
       _myContracts = await WorkerLifecycleService.getMyContracts();
     } catch (e) {
       _myContracts = [];
+      _myContractsError = e.toString().replaceAll('Exception: ', '');
     } finally {
       _myContractsLoading = false;
       notifyListeners();

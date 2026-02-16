@@ -28,8 +28,9 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
   // Per-action loading flag
   bool _actionLoading = false;
 
-  // Investor counter-offer panel
+  // Counter-offer panels
   bool _showCounterPanel = false;
+  bool _showWorkerCounterPanel = false;
   String _counterSalaryType = 'monthly';
 
   @override
@@ -70,14 +71,8 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     'expired',
   ].contains(_liveContract.status);
 
-  /// Whether the worker can see accept/decline buttons
-  bool get _workerCanRespond =>
-      _isWorker &&
-      (_liveContract.status == 'hiring_pending' ||
-          _liveContract.status == 'negotiation_countered');
-
-  /// Whether the worker can type in the chat input
-  bool get _workerCanNegotiate => _isWorker && _liveContract.isInNegotiation;
+  /// Whether the worker can see the 3-button action bar (Decline / Negotiate / Accept)
+  bool get _workerCanRespond => _isWorker && _liveContract.isInNegotiation;
 
   /// Whether the investor sees the 3-button action bar
   bool get _investorCanRespond =>
@@ -125,33 +120,231 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     );
   }
 
+  // ─── Reusable Confirmation Dialog ──────────────────────────────────
+
+  Future<bool> _showConfirmationDialog({
+    required String title,
+    required String message,
+    required String confirmLabel,
+    required Color confirmColor,
+    required IconData icon,
+  }) async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final result = await showGeneralDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Dismiss',
+      barrierColor: Colors.black54,
+      transitionDuration: const Duration(milliseconds: 250),
+      transitionBuilder: (ctx, a1, a2, child) {
+        return ScaleTransition(
+          scale: CurvedAnimation(parent: a1, curve: Curves.easeOutCubic),
+          child: FadeTransition(opacity: a1, child: child),
+        );
+      },
+      pageBuilder: (ctx, _, __) {
+        return Center(
+          child: Container(
+            width: MediaQuery.of(ctx).size.width * 0.82,
+            padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF252830) : Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 30,
+                  offset: const Offset(0, 12),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Icon circle
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: confirmColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(icon, color: confirmColor, size: 28),
+                  ),
+                  const SizedBox(height: 18),
+                  // Title
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : Colors.black87,
+                      letterSpacing: -0.3,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 10),
+                  // Message
+                  Text(
+                    message,
+                    style: TextStyle(
+                      fontSize: 14,
+                      height: 1.45,
+                      color: isDark
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  // Buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 48,
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: isDark
+                                  ? Colors.grey.shade400
+                                  : Colors.grey.shade700,
+                              side: BorderSide(
+                                color: isDark
+                                    ? Colors.white.withOpacity(0.12)
+                                    : Colors.grey.shade300,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            child: const Text(
+                              'Cancel',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: SizedBox(
+                          height: 48,
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: confirmColor,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            child: Text(
+                              confirmLabel,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+    return result == true;
+  }
+
   // ─── Worker actions ─────────────────────────────────────────────────
 
-  Future<void> _workerRespond(String response) async {
+  /// Worker accepts — with confirmation dialog
+  Future<void> _workerAccept() async {
+    final confirmed = await _showConfirmationDialog(
+      title: 'Accept this Offer?',
+      message:
+          'You are agreeing to the proposed salary of ${_liveContract.salaryAmount.toStringAsFixed(0)} TND${_liveContract.salaryTypeLabel}. This cannot be undone.',
+      confirmLabel: 'Accept',
+      confirmColor: Colors.green.shade600,
+      icon: Icons.check_circle_outline,
+    );
+    if (!confirmed) return;
+
     setState(() => _actionLoading = true);
     final provider = context.read<WorkerLifecycleProvider>();
     final success = await provider.respondToContract(
       contractId: _liveContract.id,
-      response: response,
+      response: 'approve',
     );
     if (mounted) {
       if (success) {
         await _refreshContract();
-        _showSnack(
-          response == 'approve' ? 'Contract approved!' : 'Contract declined',
-        );
+        _showSnack('Contract approved!');
         if (mounted) Navigator.pop(context, true);
       } else {
-        _showSnack(provider.lastError ?? 'Failed to respond', isError: true);
+        _showSnack(provider.lastError ?? 'Failed to accept', isError: true);
       }
       setState(() => _actionLoading = false);
     }
   }
 
-  /// Worker sends a negotiation message (simple chat input)
-  Future<void> _workerSendNegotiation() async {
+  /// Worker declines — with confirmation dialog
+  Future<void> _workerDecline() async {
+    final confirmed = await _showConfirmationDialog(
+      title: 'Decline this Offer?',
+      message:
+          'This will permanently reject the contract offer from ${_liveContract.investorName ?? "the investor"}. This action cannot be reversed.',
+      confirmLabel: 'Decline',
+      confirmColor: Colors.red,
+      icon: Icons.cancel_outlined,
+    );
+    if (!confirmed) return;
+
+    setState(() => _actionLoading = true);
+    final provider = context.read<WorkerLifecycleProvider>();
+    final success = await provider.respondToContract(
+      contractId: _liveContract.id,
+      response: 'decline',
+    );
+    if (mounted) {
+      if (success) {
+        await _refreshContract();
+        _showSnack('Contract declined');
+        if (mounted) Navigator.pop(context, true);
+      } else {
+        _showSnack(provider.lastError ?? 'Failed to decline', isError: true);
+      }
+      setState(() => _actionLoading = false);
+    }
+  }
+
+  /// Worker sends a counter-offer (salary + type + message) via the counter panel
+  Future<void> _workerSendCounter() async {
     final comment = _commentController.text.trim();
-    if (comment.isEmpty) return;
+    if (comment.isEmpty) {
+      _showSnack('Please enter a message', isError: true);
+      return;
+    }
+
+    double? proposedSalary;
+    if (_salaryController.text.isNotEmpty) {
+      proposedSalary = double.tryParse(_salaryController.text);
+      if (proposedSalary == null || proposedSalary <= 0) {
+        _showSnack('Please enter a valid salary amount', isError: true);
+        return;
+      }
+    }
 
     setState(() => _actionLoading = true);
 
@@ -159,15 +352,26 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     final success = await provider.negotiateContract(
       contractId: _liveContract.id,
       comment: comment,
+      proposedSalaryAmount: proposedSalary,
+      proposedSalaryType: _counterSalaryType,
     );
 
     if (mounted) {
       if (success) {
         _commentController.clear();
+        _salaryController.clear();
+        setState(() {
+          _showWorkerCounterPanel = false;
+          _counterSalaryType = 'monthly';
+        });
         await _refreshContract();
         _scrollToBottom();
+        _showSnack('Counter-offer sent');
       } else {
-        _showSnack(provider.lastError ?? 'Failed to send', isError: true);
+        _showSnack(
+          provider.lastError ?? 'Failed to send counter-offer',
+          isError: true,
+        );
       }
       setState(() => _actionLoading = false);
     }
@@ -175,8 +379,18 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
 
   // ─── Investor actions ───────────────────────────────────────────────
 
-  /// Investor accepts the current terms
+  /// Investor accepts — with confirmation dialog
   Future<void> _investorAccept() async {
+    final confirmed = await _showConfirmationDialog(
+      title: 'Accept this Offer?',
+      message:
+          'You are accepting the terms proposed by ${_liveContract.workerName ?? "the worker"} at ${_liveContract.salaryAmount.toStringAsFixed(0)} TND${_liveContract.salaryTypeLabel}. You will proceed to payment.',
+      confirmLabel: 'Accept',
+      confirmColor: Colors.green.shade600,
+      icon: Icons.check_circle_outline,
+    );
+    if (!confirmed) return;
+
     setState(() => _actionLoading = true);
     final provider = context.read<WorkerLifecycleProvider>();
     final success = await provider.investorRespondToContract(
@@ -196,55 +410,17 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     }
   }
 
-  /// Investor declines with confirmation
+  /// Investor declines — with confirmation dialog
   Future<void> _investorDecline() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        final isDark = Theme.of(ctx).brightness == Brightness.dark;
-        return AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF2A2D30) : Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Text(
-            'Decline Negotiation?',
-            style: TextStyle(color: isDark ? Colors.white : Colors.black87),
-          ),
-          content: Text(
-            'This will permanently cancel the contract negotiation with ${_liveContract.workerName ?? "this worker"}.',
-            style: TextStyle(
-              color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(
-                'Cancel',
-                style: TextStyle(
-                  color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text(
-                'Decline',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        );
-      },
+    final confirmed = await _showConfirmationDialog(
+      title: 'Decline Negotiation?',
+      message:
+          'This will permanently cancel the contract negotiation with ${_liveContract.workerName ?? "this worker"}. This action cannot be reversed.',
+      confirmLabel: 'Decline',
+      confirmColor: Colors.red,
+      icon: Icons.cancel_outlined,
     );
-    if (confirmed != true) return;
+    if (!confirmed) return;
 
     setState(() => _actionLoading = true);
     final provider = context.read<WorkerLifecycleProvider>();
@@ -482,12 +658,12 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
           // Loading spinner replaces action bars during API calls
           if (_actionLoading)
             _buildLoadingBar(isDark)
-          // Worker: accept / decline buttons
-          else if (_workerCanRespond)
+          // Worker: 3-button action bar (Decline / Negotiate / Accept)
+          else if (_workerCanRespond && !_showWorkerCounterPanel)
             _buildWorkerActionBar(isDark)
-          // Worker: chat input for negotiation
-          else if (_workerCanNegotiate)
-            _buildWorkerInputArea(isDark)
+          // Worker: counter-offer panel (expanded)
+          else if (_workerCanRespond && _showWorkerCounterPanel)
+            _buildWorkerCounterPanel(isDark)
           // Investor: decline / counter / accept bar
           else if (_investorCanRespond && !_showCounterPanel)
             _buildInvestorActionBar(isDark)
@@ -886,72 +1062,157 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
   // ─── Loading Bar ────────────────────────────────────────────────────
 
   Widget _buildLoadingBar(bool isDark) {
+    final bottomPad = MediaQuery.of(context).padding.bottom;
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 18),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomPad),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF252525) : Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.06),
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
           ),
-        ),
+        ],
       ),
-      child: const Center(
+      child: Center(
         child: SizedBox(
-          width: 24,
-          height: 24,
-          child: CircularProgressIndicator(strokeWidth: 2.5),
+          width: 28,
+          height: 28,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            color: Colors.green.shade500,
+          ),
         ),
       ),
     );
   }
 
-  // ─── Worker Action Bar (Accept / Decline) ───────────────────────────
+  // ─── Worker Action Bar (Decline / Negotiate / Accept) ──────────────
 
   Widget _buildWorkerActionBar(bool isDark) {
+    final bottomPad = MediaQuery.of(context).padding.bottom;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.fromLTRB(14, 12, 14, 12 + bottomPad),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF252525) : Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.06),
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
           ),
-        ),
+        ],
       ),
       child: Row(
         children: [
-          Expanded(
-            child: OutlinedButton.icon(
-              onPressed: () => _workerRespond('decline'),
-              icon: const Icon(Icons.close, size: 18),
-              label: const Text('Decline'),
+          // Decline — compact icon-only
+          SizedBox(
+            height: 50,
+            child: OutlinedButton(
+              onPressed: _workerDecline,
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.red,
-                side: const BorderSide(color: Colors.red),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                foregroundColor: Colors.red.shade400,
+                side: BorderSide(
+                  color: isDark
+                      ? Colors.red.shade800.withOpacity(0.5)
+                      : Colors.red.shade200,
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                backgroundColor: isDark
+                    ? Colors.red.withOpacity(0.06)
+                    : Colors.red.withOpacity(0.03),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+              ),
+              child: Icon(
+                Icons.close_rounded,
+                size: 20,
+                color: Colors.red.shade400,
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
+          // Negotiate — mid-weight
           Expanded(
-            child: ElevatedButton.icon(
-              onPressed: () => _workerRespond('approve'),
-              icon: const Icon(Icons.check, size: 18, color: Colors.white),
-              label: const Text(
-                'Accept',
-                style: TextStyle(color: Colors.white),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green.shade600,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            flex: 5,
+            child: SizedBox(
+              height: 50,
+              child: OutlinedButton(
+                onPressed: () => setState(() => _showWorkerCounterPanel = true),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.orange.shade600,
+                  side: BorderSide(
+                    color: isDark
+                        ? Colors.orange.shade800.withOpacity(0.5)
+                        : Colors.orange.shade200,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  backgroundColor: isDark
+                      ? Colors.orange.withOpacity(0.06)
+                      : Colors.orange.withOpacity(0.03),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                elevation: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.edit_note_rounded,
+                      size: 20,
+                      color: Colors.orange.shade600,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Negotiate',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.orange.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          // Accept — primary CTA
+          Expanded(
+            flex: 5,
+            child: SizedBox(
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _workerAccept,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade600,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.check_circle_outline,
+                      size: 20,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      'Accept',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -960,69 +1221,239 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     );
   }
 
-  // ─── Worker Input Area (simple chat) ────────────────────────────────
+  // ─── Worker Counter-offer Panel ─────────────────────────────────────
 
-  Widget _buildWorkerInputArea(bool isDark) {
+  Widget _buildWorkerCounterPanel(bool isDark) {
+    final bottomPad = MediaQuery.of(context).padding.bottom;
     return Container(
-      padding: EdgeInsets.fromLTRB(
-        12,
-        8,
-        12,
-        8 + MediaQuery.of(context).padding.bottom,
-      ),
+      padding: EdgeInsets.fromLTRB(14, 12, 14, 12 + bottomPad),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF252525) : Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.06),
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
           ),
-        ),
+        ],
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: TextField(
-              controller: _commentController,
-              maxLines: null,
-              style: TextStyle(
-                color: isDark ? Colors.white : Colors.black87,
-                fontSize: 14,
-              ),
-              decoration: InputDecoration(
-                hintText: 'Write a message...',
-                hintStyle: TextStyle(
-                  color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+          // Header with close
+          Row(
+            children: [
+              Icon(Icons.edit_note, size: 18, color: Colors.orange.shade700),
+              const SizedBox(width: 6),
+              Text(
+                'Negotiate Terms',
+                style: TextStyle(
                   fontSize: 14,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 10,
-                ),
-                filled: true,
-                fillColor: isDark
-                    ? Colors.white.withOpacity(0.06)
-                    : Colors.grey.shade100,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide.none,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : Colors.black87,
                 ),
               ),
-            ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => setState(() => _showWorkerCounterPanel = false),
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withOpacity(0.06)
+                        : Colors.grey.shade100,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.close_rounded,
+                    size: 18,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.green.shade600,
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              onPressed: _workerSendNegotiation,
-              icon: const Icon(
-                Icons.send_rounded,
-                color: Colors.white,
-                size: 20,
+          const SizedBox(height: 10),
+
+          // Salary amount + type row
+          Row(
+            children: [
+              // Amount
+              Expanded(
+                flex: 3,
+                child: TextField(
+                  controller: _salaryController,
+                  keyboardType: TextInputType.number,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 14,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Salary amount',
+                    hintStyle: TextStyle(
+                      color: isDark
+                          ? Colors.grey.shade500
+                          : Colors.grey.shade400,
+                      fontSize: 13,
+                    ),
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    filled: true,
+                    fillColor: isDark
+                        ? Colors.white.withOpacity(0.05)
+                        : Colors.amber.shade50,
+                    prefixIcon: Icon(
+                      Icons.attach_money,
+                      size: 18,
+                      color: Colors.amber.shade700,
+                    ),
+                    prefixIconConstraints: const BoxConstraints(minWidth: 36),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: Colors.amber.withOpacity(0.3),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: Colors.amber.withOpacity(0.3),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: Colors.amber.shade600,
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(width: 8),
+              // Salary type dropdown
+              Expanded(
+                flex: 2,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withOpacity(0.05)
+                        : Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withOpacity(0.1)
+                          : Colors.grey.shade300,
+                    ),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _counterSalaryType,
+                      isExpanded: true,
+                      dropdownColor: isDark
+                          ? const Color(0xFF2A2D30)
+                          : Colors.white,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'monthly',
+                          child: Text('Monthly'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'hourly',
+                          child: Text('Hourly'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'per_task',
+                          child: Text('Per Task'),
+                        ),
+                      ],
+                      onChanged: (v) {
+                        if (v != null) {
+                          setState(() => _counterSalaryType = v);
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // Message + send
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _commentController,
+                  maxLines: null,
+                  textCapitalization: TextCapitalization.sentences,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 14,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Add a message...',
+                    hintStyle: TextStyle(
+                      color: isDark
+                          ? Colors.grey.shade500
+                          : Colors.grey.shade400,
+                      fontSize: 14,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
+                    filled: true,
+                    fillColor: isDark
+                        ? Colors.white.withOpacity(0.06)
+                        : Colors.grey.shade100,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                height: 44,
+                width: 44,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.orange.shade500, Colors.orange.shade700],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.orange.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  onPressed: _workerSendCounter,
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(
+                    Icons.send_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -1032,75 +1463,128 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
   // ─── Investor Action Bar (Decline / Counter / Accept) ───────────────
 
   Widget _buildInvestorActionBar(bool isDark) {
+    final bottomPad = MediaQuery.of(context).padding.bottom;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: EdgeInsets.fromLTRB(14, 12, 14, 12 + bottomPad),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF252525) : Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.06),
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
           ),
-        ),
+        ],
       ),
       child: Row(
         children: [
-          // Decline
-          Expanded(
-            child: OutlinedButton.icon(
+          // Decline — compact, subdued
+          SizedBox(
+            height: 50,
+            child: OutlinedButton(
               onPressed: _investorDecline,
-              icon: const Icon(Icons.close, size: 16),
-              label: const Text('Decline', style: TextStyle(fontSize: 13)),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.red,
-                side: const BorderSide(color: Colors.red),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                foregroundColor: Colors.red.shade400,
+                side: BorderSide(
+                  color: isDark
+                      ? Colors.red.shade800.withOpacity(0.5)
+                      : Colors.red.shade200,
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 11),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                backgroundColor: isDark
+                    ? Colors.red.withOpacity(0.06)
+                    : Colors.red.withOpacity(0.03),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+              ),
+              child: Icon(
+                Icons.close_rounded,
+                size: 20,
+                color: Colors.red.shade400,
               ),
             ),
           ),
-          const SizedBox(width: 8),
-          // Counter
+          const SizedBox(width: 10),
+          // Counter — mid-weight
           Expanded(
-            child: OutlinedButton.icon(
-              onPressed: () => setState(() => _showCounterPanel = true),
-              icon: Icon(
-                Icons.edit_note,
-                size: 18,
-                color: Colors.orange.shade700,
-              ),
-              label: Text(
-                'Counter',
-                style: TextStyle(fontSize: 13, color: Colors.orange.shade700),
-              ),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.orange.shade700,
-                side: BorderSide(color: Colors.orange.shade400),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            flex: 5,
+            child: SizedBox(
+              height: 50,
+              child: OutlinedButton(
+                onPressed: () => setState(() => _showCounterPanel = true),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.orange.shade600,
+                  side: BorderSide(
+                    color: isDark
+                        ? Colors.orange.shade800.withOpacity(0.5)
+                        : Colors.orange.shade200,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  backgroundColor: isDark
+                      ? Colors.orange.withOpacity(0.06)
+                      : Colors.orange.withOpacity(0.03),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 11),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.edit_note_rounded,
+                      size: 20,
+                      color: Colors.orange.shade600,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Counter',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.orange.shade600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-          const SizedBox(width: 8),
-          // Accept
+          const SizedBox(width: 10),
+          // Accept — primary CTA, largest
           Expanded(
-            child: ElevatedButton.icon(
-              onPressed: _investorAccept,
-              icon: const Icon(Icons.check, size: 16, color: Colors.white),
-              label: const Text(
-                'Accept',
-                style: TextStyle(fontSize: 13, color: Colors.white),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green.shade600,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            flex: 5,
+            child: SizedBox(
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _investorAccept,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade600,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 11),
-                elevation: 0,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.check_circle_outline,
+                      size: 20,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      'Accept',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -1112,20 +1596,18 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
   // ─── Investor Counter-offer Panel ───────────────────────────────────
 
   Widget _buildInvestorCounterPanel(bool isDark) {
+    final bottomPad = MediaQuery.of(context).padding.bottom;
     return Container(
-      padding: EdgeInsets.fromLTRB(
-        12,
-        10,
-        12,
-        10 + MediaQuery.of(context).padding.bottom,
-      ),
+      padding: EdgeInsets.fromLTRB(14, 12, 14, 12 + bottomPad),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF252525) : Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.06),
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
           ),
-        ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -1329,36 +1811,47 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
   // ─── Payment Bar ────────────────────────────────────────────────────
 
   Widget _buildPaymentBar(bool isDark) {
+    final bottomPad = MediaQuery.of(context).padding.bottom;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.fromLTRB(16, 14, 16, 14 + bottomPad),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF252525) : Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.06),
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
           ),
-        ),
+        ],
       ),
       child: SizedBox(
         width: double.infinity,
-        height: 50,
-        child: ElevatedButton.icon(
+        height: 52,
+        child: ElevatedButton(
           onPressed: _processPayment,
-          icon: const Icon(Icons.payment, color: Colors.white),
-          label: Text(
-            'Pay ${_liveContract.salaryAmount.toStringAsFixed(0)} TND to Activate',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.purple.shade600,
+            foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
-            elevation: 2,
+            elevation: 0,
+            shadowColor: Colors.transparent,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.payment_rounded, color: Colors.white, size: 22),
+              const SizedBox(width: 10),
+              Text(
+                'Pay ${_liveContract.salaryAmount.toStringAsFixed(0)} TND to Activate',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
           ),
         ),
       ),

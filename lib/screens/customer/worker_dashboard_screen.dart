@@ -57,6 +57,8 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
     final lands = workerProvider.assignedLands;
     final tasks = workerProvider.myTasks;
 
+    final lifecycle = context.watch<WorkerLifecycleProvider>();
+
     final isLoading =
         workerProvider.profileLoading ||
         workerProvider.assignedLandsLoading ||
@@ -158,11 +160,100 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       ...lands.map((land) => _buildLandCard(land, isDark)),
                     const SizedBox(height: 24),
 
+                    // ── Lifecycle Loading / Error ──
+                    if (lifecycle.myContractsLoading ||
+                        lifecycle.myInvitationsLoading)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Center(
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: Colors.green.shade500,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    if (lifecycle.myContractsError != null &&
+                        !lifecycle.myContractsLoading)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? Colors.red.withOpacity(0.1)
+                              : Colors.red.shade50,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: Colors.red.withOpacity(0.2),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.cloud_off_rounded,
+                              color: Colors.red.shade400,
+                              size: 22,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Failed to load contracts',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                      color: isDark
+                                          ? Colors.red.shade300
+                                          : Colors.red.shade700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    lifecycle.myContractsError!,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: isDark
+                                          ? Colors.red.shade200
+                                          : Colors.red.shade600,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () {
+                                lifecycle.loadMyContracts();
+                                lifecycle.loadMyInvitations();
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  Icons.refresh_rounded,
+                                  size: 20,
+                                  color: Colors.red.shade400,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
                     // ── Farmer Invitations Section ──
                     Builder(
                       builder: (context) {
-                        final lifecycle = context
-                            .watch<WorkerLifecycleProvider>();
                         final pendingInvitations = lifecycle.myInvitations
                             .where((i) => i.isPending)
                             .toList();
@@ -188,13 +279,12 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     // ── Hiring Proposals Section ──
                     Builder(
                       builder: (context) {
-                        final lifecycle = context
-                            .watch<WorkerLifecycleProvider>();
                         final proposals = lifecycle.myContracts
                             .where(
                               (c) =>
-                                  c.status == 'hiring_proposed' ||
-                                  c.status == 'negotiating' ||
+                                  c.status == 'hiring_pending' ||
+                                  c.status == 'negotiation_pending' ||
+                                  c.status == 'negotiation_countered' ||
                                   c.status == 'payment_pending',
                             )
                             .toList();
@@ -221,8 +311,6 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     // ── Active Contracts Section ──
                     Builder(
                       builder: (context) {
-                        final lifecycle = context
-                            .watch<WorkerLifecycleProvider>();
                         final activeContracts = lifecycle.myContracts
                             .where((c) => c.status == 'active')
                             .toList();
@@ -870,11 +958,12 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
     Color statusColor;
     String statusText;
     switch (contract.status) {
-      case 'hiring_proposed':
+      case 'hiring_pending':
         statusColor = Colors.blue;
         statusText = 'New Proposal';
         break;
-      case 'negotiating':
+      case 'negotiation_pending':
+      case 'negotiation_countered':
         statusColor = Colors.orange;
         statusText = 'Negotiating';
         break;
@@ -895,7 +984,10 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
             builder: (_) => ContractNegotiationScreen(contract: contract),
           ),
         ).then((_) {
-          context.read<WorkerLifecycleProvider>().loadMyContracts();
+          final lc = context.read<WorkerLifecycleProvider>();
+          lc.loadMyContracts();
+          lc.loadMyInvitations();
+          lc.loadMyBalance();
         });
       },
       child: Container(
