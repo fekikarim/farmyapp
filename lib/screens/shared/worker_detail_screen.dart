@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/worker_provider.dart';
+import '../../providers/worker_lifecycle_provider.dart';
 import '../../models/worker_profile_model.dart';
 
 class WorkerDetailScreen extends StatelessWidget {
   final WorkerProfile workerProfile;
   final String? landId;
   final String? landName;
+  final bool inviteMode; // true = farmer invite, false = legacy assign
 
   const WorkerDetailScreen({
     super.key,
     required this.workerProfile,
     this.landId,
     this.landName,
+    this.inviteMode = false,
   });
 
   @override
@@ -247,7 +250,36 @@ class WorkerDetailScreen extends StatelessWidget {
                   const SizedBox(height: 32),
 
                   // Action Buttons
-                  if (landId != null) ...[
+                  if (landId != null && inviteMode) ...[
+                    SizedBox(
+                      width: double.infinity,
+                      height: 54,
+                      child: ElevatedButton.icon(
+                        onPressed: () => _inviteToLand(context),
+                        icon: const Icon(
+                          Icons.mail_outline,
+                          color: Colors.white,
+                        ),
+                        label: const Text(
+                          'Invite to Land',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green.shade600,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          elevation: 4,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                  ],
+                  if (landId != null && !inviteMode) ...[
                     SizedBox(
                       width: double.infinity,
                       height: 54,
@@ -275,6 +307,125 @@ class WorkerDetailScreen extends StatelessWidget {
                   ],
                 ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _inviteToLand(BuildContext context) async {
+    final message = await _showInviteDialog(context);
+    if (message == null) return;
+
+    final provider = context.read<WorkerLifecycleProvider>();
+    final success = await provider.inviteWorker(
+      landId: landId!,
+      workerId: workerProfile.userId,
+      message: message.isNotEmpty ? message : null,
+    );
+
+    if (context.mounted) {
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Invitation sent to ${workerProfile.userName ?? "Worker"}',
+            ),
+            backgroundColor: Colors.green.shade700,
+          ),
+        );
+        Navigator.of(context).pop(true);
+      } else {
+        final errorMsg = provider.lastError ?? 'Failed to send invitation';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMsg), backgroundColor: Colors.redAccent),
+        );
+      }
+    }
+  }
+
+  Future<String?> _showInviteDialog(BuildContext context) {
+    final controller = TextEditingController();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: isDark ? Colors.grey.shade800 : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Invite Worker',
+          style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Send an invitation to ${workerProfile.userName ?? "this worker"} for $landName.',
+              style: TextStyle(
+                fontSize: 13,
+                color: isDark ? Colors.white70 : Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              maxLines: 3,
+              style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+              decoration: InputDecoration(
+                hintText: 'Optional message...',
+                hintStyle: TextStyle(
+                  color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
+                ),
+                filled: true,
+                fillColor: isDark
+                    ? Colors.white.withOpacity(0.05)
+                    : Colors.grey.shade100,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark ? Colors.grey.shade600 : Colors.grey.shade300,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark ? Colors.grey.shade600 : Colors.grey.shade300,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Colors.green.shade500,
+                    width: 2,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, controller.text),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green.shade600,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: const Text(
+              'Send Invite',
+              style: TextStyle(color: Colors.white),
             ),
           ),
         ],

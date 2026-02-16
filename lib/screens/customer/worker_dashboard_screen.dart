@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/worker_provider.dart';
+import '../../providers/worker_lifecycle_provider.dart';
 import '../../models/task_model.dart';
 import '../../models/land_worker_model.dart';
+import '../../models/worker_invitation_model.dart';
+import '../../models/worker_contract_model.dart';
+import '../shared/contract_negotiation_screen.dart';
 
 class WorkerDashboardScreen extends StatefulWidget {
   const WorkerDashboardScreen({super.key});
@@ -31,6 +35,11 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
       provider.loadMyProfile();
       provider.loadAssignedLands();
       provider.loadMyTasks();
+
+      final lifecycle = context.read<WorkerLifecycleProvider>();
+      lifecycle.loadMyInvitations();
+      lifecycle.loadMyContracts();
+      lifecycle.loadMyBalance();
     });
   }
 
@@ -69,6 +78,10 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   await workerProvider.loadMyProfile();
                   await workerProvider.loadAssignedLands();
                   await workerProvider.loadMyTasks();
+                  final lifecycle = context.read<WorkerLifecycleProvider>();
+                  await lifecycle.loadMyInvitations();
+                  await lifecycle.loadMyContracts();
+                  await lifecycle.loadMyBalance();
                 },
                 child: ListView(
                   padding: const EdgeInsets.all(20),
@@ -144,6 +157,94 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     else
                       ...lands.map((land) => _buildLandCard(land, isDark)),
                     const SizedBox(height: 24),
+
+                    // ── Farmer Invitations Section ──
+                    Builder(
+                      builder: (context) {
+                        final lifecycle = context
+                            .watch<WorkerLifecycleProvider>();
+                        final pendingInvitations = lifecycle.myInvitations
+                            .where((i) => i.isPending)
+                            .toList();
+                        if (pendingInvitations.isEmpty) return const SizedBox();
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _sectionHeader(
+                              'Farmer Invitations',
+                              Icons.mail_outline,
+                              isDark,
+                            ),
+                            const SizedBox(height: 12),
+                            ...pendingInvitations.map(
+                              (inv) => _buildInvitationActionCard(inv, isDark),
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+                        );
+                      },
+                    ),
+
+                    // ── Hiring Proposals Section ──
+                    Builder(
+                      builder: (context) {
+                        final lifecycle = context
+                            .watch<WorkerLifecycleProvider>();
+                        final proposals = lifecycle.myContracts
+                            .where(
+                              (c) =>
+                                  c.status == 'hiring_proposed' ||
+                                  c.status == 'negotiating' ||
+                                  c.status == 'payment_pending',
+                            )
+                            .toList();
+                        if (proposals.isEmpty) return const SizedBox();
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _sectionHeader(
+                              'Hiring Proposals',
+                              Icons.handshake_outlined,
+                              isDark,
+                            ),
+                            const SizedBox(height: 12),
+                            ...proposals.map(
+                              (contract) =>
+                                  _buildContractActionCard(contract, isDark),
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+                        );
+                      },
+                    ),
+
+                    // ── Active Contracts Section ──
+                    Builder(
+                      builder: (context) {
+                        final lifecycle = context
+                            .watch<WorkerLifecycleProvider>();
+                        final activeContracts = lifecycle.myContracts
+                            .where((c) => c.status == 'active')
+                            .toList();
+                        if (activeContracts.isEmpty) return const SizedBox();
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _sectionHeader(
+                              'Active Contracts',
+                              Icons.verified_outlined,
+                              isDark,
+                            ),
+                            const SizedBox(height: 12),
+                            ...activeContracts.map(
+                              (contract) =>
+                                  _buildActiveContractCard(contract, isDark),
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+                        );
+                      },
+                    ),
 
                     // Active Tasks
                     _sectionHeader('Active Tasks', Icons.task, isDark),
@@ -621,6 +722,362 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                                 : Colors.grey.shade600)),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInvitationActionCard(WorkerInvitation invitation, bool isDark) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey.shade800 : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.blue.withOpacity(0.2)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: Colors.blue.withOpacity(0.15),
+                child: Icon(
+                  Icons.mail_outline,
+                  color: Colors.blue.shade600,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Invitation from ${invitation.farmerName ?? "Farmer"}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
+                    ),
+                    if (invitation.landName != null)
+                      Text(
+                        'Land: ${invitation.landName}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade600,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (invitation.message != null) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withOpacity(0.04)
+                    : Colors.grey.shade50,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                '"${invitation.message}"',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
+                  color: isDark ? Colors.grey.shade300 : Colors.grey.shade600,
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () async {
+                    final lifecycle = context.read<WorkerLifecycleProvider>();
+                    await lifecycle.respondToInvitation(
+                      invitationId: invitation.id,
+                      response: 'decline',
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    side: const BorderSide(color: Colors.red),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                  ),
+                  child: const Text('Decline'),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final lifecycle = context.read<WorkerLifecycleProvider>();
+                    final success = await lifecycle.respondToInvitation(
+                      invitationId: invitation.id,
+                      response: 'approve',
+                    );
+                    if (mounted && success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Invitation accepted!'),
+                          backgroundColor: Colors.green.shade700,
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green.shade600,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    elevation: 0,
+                  ),
+                  child: const Text('Accept'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContractActionCard(WorkerContract contract, bool isDark) {
+    Color statusColor;
+    String statusText;
+    switch (contract.status) {
+      case 'hiring_proposed':
+        statusColor = Colors.blue;
+        statusText = 'New Proposal';
+        break;
+      case 'negotiating':
+        statusColor = Colors.orange;
+        statusText = 'Negotiating';
+        break;
+      case 'payment_pending':
+        statusColor = Colors.purple;
+        statusText = 'Awaiting Payment';
+        break;
+      default:
+        statusColor = Colors.grey;
+        statusText = contract.statusLabel;
+    }
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ContractNegotiationScreen(contract: contract),
+          ),
+        ).then((_) {
+          context.read<WorkerLifecycleProvider>().loadMyContracts();
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: isDark ? Colors.grey.shade800 : Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: statusColor.withOpacity(0.25)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: statusColor.withOpacity(0.15),
+              child: Icon(Icons.handshake, color: statusColor, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    contract.investorName ?? 'Investor',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${contract.salaryAmount.toStringAsFixed(0)} TND/${contract.salaryTypeLabel}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: statusColor.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    statusText,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: statusColor,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Icon(
+                  Icons.chevron_right,
+                  size: 18,
+                  color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActiveContractCard(WorkerContract contract, bool isDark) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey.shade800 : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.green.withOpacity(0.2)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Stack(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: Colors.green.withOpacity(0.15),
+                child: Icon(Icons.work, color: Colors.green.shade600, size: 20),
+              ),
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isDark ? Colors.grey.shade800 : Colors.white,
+                      width: 2,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  contract.investorName ?? 'Investor',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${contract.salaryAmount.toStringAsFixed(0)} TND/${contract.salaryTypeLabel}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text(
+                  'ACTIVE',
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.green,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+              ...[
+                const SizedBox(height: 4),
+                Text(
+                  'Until ${contract.contractEndDate.day}/${contract.contractEndDate.month}',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: isDark ? Colors.grey.shade500 : Colors.grey.shade500,
+                  ),
+                ),
+              ],
+            ],
           ),
         ],
       ),

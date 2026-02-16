@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/worker_provider.dart';
+import '../../providers/worker_lifecycle_provider.dart';
 import '../../models/land_worker_model.dart';
+import '../../models/worker_invitation_model.dart';
 import 'worker_marketplace_screen.dart';
 
 class WorkforceScreen extends StatefulWidget {
@@ -37,8 +39,20 @@ class _WorkforceScreenState extends State<WorkforceScreen>
     _animController.forward();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WorkerProvider>().loadLandWorkers(widget.landId);
+      _refreshAll();
     });
+  }
+
+  Future<void> _refreshAll() async {
+    final workerProv = context.read<WorkerProvider>();
+    final lifecycleProv = context.read<WorkerLifecycleProvider>();
+    await Future.wait([
+      workerProv.loadLandWorkers(widget.landId),
+      lifecycleProv.loadInvitationsByLand(
+        widget.landId,
+        status: 'invitation_pending',
+      ),
+    ]);
   }
 
   @override
@@ -92,9 +106,9 @@ class _WorkforceScreenState extends State<WorkforceScreen>
               title: 'Invite Existing Worker',
               subtitle: 'Search the worker marketplace',
               color: Colors.green,
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(ctx);
-                Navigator.push(
+                await Navigator.push<bool>(
                   context,
                   MaterialPageRoute(
                     builder: (_) => WorkerMarketplaceScreen(
@@ -103,6 +117,11 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                     ),
                   ),
                 );
+                // Refresh data when returning — the provider already has
+                // the optimistic update, but a server sync ensures consistency
+                if (mounted) {
+                  _refreshAll();
+                }
               },
             ),
             const SizedBox(height: 12),
@@ -407,7 +426,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
           : FadeTransition(
               opacity: _fadeAnim,
               child: RefreshIndicator(
-                onRefresh: () => workerProvider.loadLandWorkers(widget.landId),
+                onRefresh: _refreshAll,
                 child: ListView(
                   padding: const EdgeInsets.all(20),
                   children: [
@@ -513,6 +532,128 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                     else
                       ...workers.map(_buildWorkerCard),
 
+                    // Sent Invitations Section (pending only)
+                    const SizedBox(height: 24),
+                    Builder(
+                      builder: (context) {
+                        final lifecycleProvider = context
+                            .watch<WorkerLifecycleProvider>();
+                        final pending = lifecycleProvider.pendingInvitations;
+                        final isLoadingInvitations =
+                            lifecycleProvider.landInvitationsLoading;
+
+                        // Loading state
+                        if (isLoadingInvitations && pending.isEmpty) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Pending Invitations',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark ? Colors.white : Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                              ...List.generate(
+                                2,
+                                (_) => Container(
+                                  margin: const EdgeInsets.only(bottom: 10),
+                                  height: 68,
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? Colors.grey.shade800
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  child: Center(
+                                    child: SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.amber.shade600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+
+                        if (pending.isEmpty) return const SizedBox();
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Pending Invitations',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDark
+                                            ? Colors.white
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.amber.withOpacity(0.15),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Text(
+                                        '${pending.length}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.amber.shade700,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (isLoadingInvitations)
+                                  SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.amber.shade600,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Waiting for worker response',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: isDark
+                                    ? Colors.white38
+                                    : Colors.grey.shade500,
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+                            ...pending.map(
+                              (inv) => _buildInvitationCard(inv, isDark),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+
                     // Coming Soon Section
                     const SizedBox(height: 24),
                     Container(
@@ -566,6 +707,143 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                 ),
               ),
             ),
+    );
+  }
+
+  Widget _buildInvitationCard(WorkerInvitation invitation, bool isDark) {
+    // Calculate remaining time
+    String timeLeft = '';
+    if (invitation.expiresAt != null) {
+      final remaining = invitation.expiresAt!.difference(DateTime.now());
+      if (remaining.isNegative) {
+        timeLeft = 'Expired';
+      } else if (remaining.inDays > 0) {
+        timeLeft = '${remaining.inDays}d left';
+      } else if (remaining.inHours > 0) {
+        timeLeft = '${remaining.inHours}h left';
+      } else {
+        timeLeft = '${remaining.inMinutes}m left';
+      }
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey.shade800 : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.amber.withOpacity(0.2)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 22,
+            backgroundColor: Colors.amber.withOpacity(0.12),
+            backgroundImage: invitation.workerProfilePicture != null
+                ? NetworkImage(invitation.workerProfilePicture!)
+                : null,
+            child: invitation.workerProfilePicture == null
+                ? Icon(
+                    Icons.mail_outline,
+                    color: Colors.amber.shade700,
+                    size: 20,
+                  )
+                : null,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  invitation.workerName ?? 'Worker',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                if (invitation.message != null &&
+                    invitation.message!.isNotEmpty)
+                  Text(
+                    invitation.message!,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                if (timeLeft.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.timer_outlined,
+                          size: 12,
+                          color: isDark
+                              ? Colors.grey.shade500
+                              : Colors.grey.shade400,
+                        ),
+                        const SizedBox(width: 3),
+                        Text(
+                          timeLeft,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: isDark
+                                ? Colors.grey.shade500
+                                : Colors.grey.shade400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.amber.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 12,
+                  height: 12,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 1.5,
+                    color: Colors.amber.shade700,
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  'PENDING',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.amber.shade700,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

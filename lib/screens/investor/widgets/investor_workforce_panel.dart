@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../providers/worker_provider.dart';
-import '../../../../models/land_worker_model.dart';
-import 'investor_worker_marketplace.dart';
+
+import '../../../providers/worker_lifecycle_provider.dart';
+
+import '../../../models/worker_contract_model.dart';
+import '../../../models/worker_profile_model.dart';
+import '../../shared/contract_negotiation_screen.dart';
 
 class InvestorWorkforcePanel extends StatefulWidget {
   final String landId;
@@ -22,97 +25,37 @@ class InvestorWorkforcePanel extends StatefulWidget {
   State<InvestorWorkforcePanel> createState() => _InvestorWorkforcePanelState();
 }
 
-class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel> {
+class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WorkerProvider>().loadLandWorkers(widget.landId);
+      _loadAllData();
     });
   }
 
-  void _showAddWorkerModal() {
-    final workers = context.read<WorkerProvider>().landWorkers;
-    final assignedWorkerIds = workers.map((w) => w.workerId).toList();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => InvestorWorkerMarketplace(
-        landId: widget.landId,
-        landName: widget.landName,
-        excludedWorkerIds: assignedWorkerIds,
-      ),
-    ).then((_) {
-      // Refresh list after returning from marketplace
-      context.read<WorkerProvider>().loadLandWorkers(widget.landId);
-    });
+  void _loadAllData() {
+    final lifecycle = context.read<WorkerLifecycleProvider>();
+    lifecycle.loadApprovedWorkers(widget.landId);
+    lifecycle.loadNegotiatingContracts(widget.landId);
+    lifecycle.loadActiveContracts(widget.landId);
   }
 
-  Future<void> _toggleWorkerStatus(
-    String workerId,
-    String currentStatus,
-  ) async {
-    final newStatus = currentStatus == 'active' ? 'suspended' : 'active';
-    final success = await context.read<WorkerProvider>().updateWorkerStatus(
-      widget.landId,
-      workerId,
-      newStatus,
-    );
-
-    if (mounted) {
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Worker ${newStatus == 'active' ? 'activated' : 'suspended'} successfully',
-            ),
-            backgroundColor: Colors.green.shade700,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to update worker status'),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _removeWorker(String workerId) async {
-    final success = await context.read<WorkerProvider>().removeWorker(
-      widget.landId,
-      workerId,
-    );
-    if (mounted) {
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Worker removed successfully'),
-            backgroundColor: Colors.green.shade700,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to remove worker'),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-      }
-    }
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final provider = context.watch<WorkerProvider>();
-    final workers = provider.landWorkers;
-    final stats = provider.workforceStats;
+    final lifecycle = context.watch<WorkerLifecycleProvider>();
 
     return Container(
       decoration: BoxDecoration(
@@ -130,267 +73,924 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel> {
         children: [
           // Header
           Container(
-            padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
+            padding: const EdgeInsets.fromLTRB(24, 60, 24, 16),
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF16181A) : Colors.grey.shade50,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(32),
               ),
             ),
-            child: Row(
+            child: Column(
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Workforce',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : Colors.black87,
-                        ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Workforce',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? Colors.white : Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            widget.landName,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: isDark ? Colors.white54 : Colors.black54,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${widget.landName} • ${workers.length} Assigned',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: isDark ? Colors.white54 : Colors.black54,
-                        ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        if (widget.onClose != null) {
+                          widget.onClose!();
+                        } else {
+                          Navigator.pop(context);
+                        }
+                      },
+                      icon: const Icon(Icons.close_rounded),
+                      style: IconButton.styleFrom(
+                        backgroundColor: (isDark ? Colors.white : Colors.black)
+                            .withOpacity(0.05),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  onPressed: () {
-                    if (widget.onClose != null) {
-                      widget.onClose!();
-                    } else {
-                      Navigator.pop(context);
-                    }
-                  },
-                  icon: const Icon(Icons.close_rounded),
-                  style: IconButton.styleFrom(
-                    backgroundColor: (isDark ? Colors.white : Colors.black)
-                        .withOpacity(0.05),
+                const SizedBox(height: 16),
+                TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  labelColor: Colors.green.shade600,
+                  unselectedLabelColor: isDark
+                      ? Colors.white38
+                      : Colors.black38,
+                  indicatorColor: Colors.green.shade600,
+                  indicatorSize: TabBarIndicatorSize.label,
+                  dividerColor: Colors.transparent,
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 12),
+                  labelStyle: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
                   ),
+                  tabs: [
+                    Tab(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.verified_user_outlined, size: 15),
+                          const SizedBox(width: 5),
+                          const Text('Approved'),
+                          if (lifecycle.approvedWorkers.isNotEmpty) ...[
+                            const SizedBox(width: 4),
+                            _badge(
+                              lifecycle.approvedWorkers.length,
+                              Colors.green,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    Tab(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.handshake_outlined, size: 15),
+                          const SizedBox(width: 5),
+                          const Text('Negotiations'),
+                          if (lifecycle.contracts
+                              .where(
+                                (c) =>
+                                    c.status == 'hiring_proposed' ||
+                                    c.status == 'negotiating',
+                              )
+                              .isNotEmpty) ...[
+                            const SizedBox(width: 4),
+                            _badge(
+                              lifecycle.contracts
+                                  .where(
+                                    (c) =>
+                                        c.status == 'hiring_proposed' ||
+                                        c.status == 'negotiating',
+                                  )
+                                  .length,
+                              Colors.orange,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    Tab(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.people_outlined, size: 15),
+                          const SizedBox(width: 5),
+                          const Text('Active'),
+                          if (lifecycle.activeContracts.isNotEmpty) ...[
+                            const SizedBox(width: 4),
+                            _badge(
+                              lifecycle.activeContracts.length,
+                              Colors.blue,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
 
-          // Stats Overview
-          if (workers.isNotEmpty)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: (isDark ? Colors.white : Colors.black).withOpacity(
-                      0.05,
-                    ),
-                  ),
-                ),
-              ),
-              child: Row(
-                children: [
-                  _StatBadge(
-                    label: 'Productivity',
-                    value: '${stats['productivity'] ?? 0}%',
-                    icon: Icons.trending_up,
-                    color: Colors.green,
-                    isDark: isDark,
-                  ),
-                  const SizedBox(width: 12),
-                  _StatBadge(
-                    label: 'Monthly Cost',
-                    value:
-                        '${stats['monthly_salary_expense']?.toStringAsFixed(0) ?? 0} TND',
-                    icon: Icons.payments_outlined,
-                    color: Colors.orange,
-                    isDark: isDark,
-                  ),
-                ],
-              ),
-            ),
-
-          // Worker List
+          // Tab Content
           Expanded(
-            child: provider.landWorkersLoading
-                ? _buildShimmerList(isDark)
-                : workers.isEmpty
-                ? _buildEmptyState(isDark)
-                : ListView.separated(
-                    padding: const EdgeInsets.all(24),
-                    itemCount: workers.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) => _WorkerCard(
-                      worker: workers[index],
-                      isDark: isDark,
-                      onRemove: () => _removeWorker(workers[index].workerId),
-                      onToggleStatus: () => _toggleWorkerStatus(
-                        workers[index].workerId,
-                        workers[index].status,
-                      ),
-                    ),
-                  ),
-          ),
-
-          // Action Button
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton.icon(
-                onPressed: _showAddWorkerModal,
-                icon: const Icon(Icons.person_add_rounded),
-                label: const Text(
-                  'Hire New Worker',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _ApprovedWorkersTab(
+                  landId: widget.landId,
+                  isDark: isDark,
+                  workers: lifecycle.approvedWorkers,
+                  isLoading: lifecycle.isLoading,
+                  onHire: _showHireDialog,
+                  onRefresh: () => lifecycle.loadApprovedWorkers(widget.landId),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green.shade600,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 4,
+                _NegotiationsTab(
+                  landId: widget.landId,
+                  isDark: isDark,
+                  contracts: lifecycle.contracts
+                      .where(
+                        (c) =>
+                            c.status == 'hiring_proposed' ||
+                            c.status == 'negotiating' ||
+                            c.status == 'worker_approved' ||
+                            c.status == 'payment_pending',
+                      )
+                      .toList(),
+                  isLoading: lifecycle.isLoading,
+                  onRefresh: () =>
+                      lifecycle.loadNegotiatingContracts(widget.landId),
                 ),
-              ),
+                _ActiveWorkersTab(
+                  landId: widget.landId,
+                  isDark: isDark,
+                  contracts: lifecycle.activeContracts,
+                  isLoading: lifecycle.isLoading,
+                  onRefresh: () => lifecycle.loadActiveContracts(widget.landId),
+                ),
+              ],
             ),
           ),
+
           SizedBox(height: MediaQuery.of(context).padding.bottom),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState(bool isDark) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.engineering_outlined,
-            size: 64,
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'No Workers Assigned',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white70 : Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Hire workers to boost productivity',
-            style: TextStyle(
-              fontSize: 14,
-              color: isDark ? Colors.white38 : Colors.black45,
-            ),
-          ),
-        ],
+  Widget _badge(int count, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        '$count',
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          color: color,
+        ),
       ),
     );
   }
 
-  Widget _buildShimmerList(bool isDark) {
-    return ListView.separated(
-      padding: const EdgeInsets.all(24),
-      itemCount: 4,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (_, __) => Container(
-        height: 80,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.05) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Shimmer.fromColors(
-          baseColor: isDark ? Colors.white10 : Colors.grey.shade300,
-          highlightColor: isDark ? Colors.white24 : Colors.grey.shade100,
-          child: Row(
-            children: [
-              const CircleAvatar(radius: 24, backgroundColor: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+  void _showHireDialog(WorkerProfile worker) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final salaryController = TextEditingController();
+    final messageController = TextEditingController();
+    String salaryType = 'monthly';
+    DateTime startDate = DateTime.now();
+    DateTime endDate = DateTime.now().add(const Duration(days: 90));
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: isDark ? const Color(0xFF2A2D30) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            'Hire ${worker.userName ?? "Worker"}',
+            style: TextStyle(
+              color: isDark ? Colors.white : Colors.black87,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Salary Amount
+                Text(
+                  'Salary Amount (TND)',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white70 : Colors.black54,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: salaryController,
+                  keyboardType: TextInputType.number,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                  decoration: _inputDecoration('e.g. 1500', isDark),
+                ),
+                const SizedBox(height: 16),
+
+                // Salary Type
+                Text(
+                  'Salary Type',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white70 : Colors.black54,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: ['monthly', 'hourly', 'per_task'].map((type) {
+                    final selected = salaryType == type;
+                    return Expanded(
+                      child: GestureDetector(
+                        onTap: () => setDialogState(() => salaryType = type),
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 6),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: selected
+                                ? Colors.green.shade600
+                                : (isDark
+                                      ? Colors.white.withOpacity(0.05)
+                                      : Colors.grey.shade100),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: selected
+                                  ? Colors.green.shade600
+                                  : (isDark
+                                        ? Colors.grey.shade700
+                                        : Colors.grey.shade300),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              type == 'per_task'
+                                  ? 'Per Task'
+                                  : type[0].toUpperCase() + type.substring(1),
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: selected
+                                    ? Colors.white
+                                    : (isDark
+                                          ? Colors.white60
+                                          : Colors.black54),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 16),
+
+                // Dates
+                Row(
                   children: [
-                    Container(height: 14, width: 120, color: Colors.white),
-                    const SizedBox(height: 8),
-                    Container(height: 10, width: 80, color: Colors.white),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Start Date',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: isDark ? Colors.white70 : Colors.black54,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          GestureDetector(
+                            onTap: () async {
+                              final date = await showDatePicker(
+                                context: ctx,
+                                initialDate: startDate,
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime.now().add(
+                                  const Duration(days: 365),
+                                ),
+                              );
+                              if (date != null)
+                                setDialogState(() => startDate = date);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? Colors.white.withOpacity(0.05)
+                                    : Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.grey.shade700
+                                      : Colors.grey.shade300,
+                                ),
+                              ),
+                              child: Text(
+                                '${startDate.day}/${startDate.month}/${startDate.year}',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: isDark
+                                      ? Colors.white70
+                                      : Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'End Date',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: isDark ? Colors.white70 : Colors.black54,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          GestureDetector(
+                            onTap: () async {
+                              final date = await showDatePicker(
+                                context: ctx,
+                                initialDate: endDate,
+                                firstDate: startDate,
+                                lastDate: DateTime.now().add(
+                                  const Duration(days: 730),
+                                ),
+                              );
+                              if (date != null)
+                                setDialogState(() => endDate = date);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? Colors.white.withOpacity(0.05)
+                                    : Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.grey.shade700
+                                      : Colors.grey.shade300,
+                                ),
+                              ),
+                              child: Text(
+                                '${endDate.day}/${endDate.month}/${endDate.year}',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: isDark
+                                      ? Colors.white70
+                                      : Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+
+                // Message
+                Text(
+                  'Message (optional)',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white70 : Colors.black54,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: messageController,
+                  maxLines: 2,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                  decoration: _inputDecoration('Optional message...', isDark),
+                ),
+              ],
+            ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final salary = double.tryParse(salaryController.text);
+                if (salary == null || salary <= 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter a valid salary'),
+                      backgroundColor: Colors.redAccent,
+                    ),
+                  );
+                  return;
+                }
+                Navigator.pop(ctx);
+                final lifecycle = context.read<WorkerLifecycleProvider>();
+                final success = await lifecycle.hireWorker(
+                  landId: widget.landId,
+                  workerId: worker.userId,
+                  salaryAmount: salary,
+                  salaryType: salaryType,
+                  contractStartDate: startDate
+                      .toIso8601String()
+                      .split('T')
+                      .first,
+                  contractEndDate: endDate.toIso8601String().split('T').first,
+                  message: messageController.text.isNotEmpty
+                      ? messageController.text
+                      : null,
+                );
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        success
+                            ? 'Hiring proposal sent!'
+                            : 'Failed to send proposal',
+                      ),
+                      backgroundColor: success
+                          ? Colors.green.shade700
+                          : Colors.redAccent,
+                    ),
+                  );
+                  if (success) {
+                    _tabController.animateTo(1); // Switch to Negotiations
+                    _loadAllData();
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green.shade600,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text(
+                'Send Proposal',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration(String hint, bool isDark) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(
+        color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+      ),
+      filled: true,
+      fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: Colors.green.shade500, width: 2),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+    );
+  }
+}
+
+// ── Approved Workers Tab ──
+class _ApprovedWorkersTab extends StatelessWidget {
+  final String landId;
+  final bool isDark;
+  final List<WorkerProfile> workers;
+  final bool isLoading;
+  final void Function(WorkerProfile) onHire;
+  final VoidCallback onRefresh;
+
+  const _ApprovedWorkersTab({
+    required this.landId,
+    required this.isDark,
+    required this.workers,
+    required this.isLoading,
+    required this.onHire,
+    required this.onRefresh,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) return _shimmerList(isDark);
+
+    if (workers.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.verified_user_outlined,
+              size: 56,
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'No Approved Workers Yet',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white70 : Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Workers must be invited and approved\nby the farmer first',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: isDark ? Colors.white38 : Colors.black45,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async => onRefresh(),
+      child: ListView.separated(
+        padding: const EdgeInsets.all(20),
+        itemCount: workers.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        itemBuilder: (context, index) {
+          final w = workers[index];
+          return Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.white.withOpacity(0.04) : Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: (isDark ? Colors.white : Colors.black).withOpacity(0.06),
+              ),
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 22,
+                  backgroundColor: isDark
+                      ? Colors.green.withOpacity(0.2)
+                      : Colors.green.shade100,
+                  child: Icon(
+                    Icons.person,
+                    color: isDark
+                        ? Colors.green.shade400
+                        : Colors.green.shade700,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              w.userName ?? 'Worker',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: isDark ? Colors.white : Colors.black87,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (w.isVerified) ...[
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.verified,
+                              color: Colors.blue.shade400,
+                              size: 14,
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      if (w.skills.isNotEmpty)
+                        Text(
+                          w.skills.take(3).join(' • '),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: isDark
+                                ? Colors.grey.shade400
+                                : Colors.grey.shade600,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () => onHire(w),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green.shade600,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text('Hire', style: TextStyle(fontSize: 13)),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 }
 
-class _StatBadge extends StatelessWidget {
-  final String label;
-  final String value;
-  final IconData icon;
-  final Color color;
+// ── Negotiations Tab ──
+class _NegotiationsTab extends StatelessWidget {
+  final String landId;
   final bool isDark;
+  final List<WorkerContract> contracts;
+  final bool isLoading;
+  final VoidCallback onRefresh;
 
-  const _StatBadge({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.color,
+  const _NegotiationsTab({
+    required this.landId,
     required this.isDark,
+    required this.contracts,
+    required this.isLoading,
+    required this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    if (isLoading) return _shimmerList(isDark);
+
+    if (contracts.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.handshake_outlined,
+              size: 56,
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'No Active Negotiations',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white70 : Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Hire an approved worker to start\na contract negotiation',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: isDark ? Colors.white38 : Colors.black45,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async => onRefresh(),
+      child: ListView.separated(
+        padding: const EdgeInsets.all(20),
+        itemCount: contracts.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        itemBuilder: (context, index) {
+          final c = contracts[index];
+          return _NegotiationCard(
+            contract: c,
+            isDark: isDark,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ContractNegotiationScreen(contract: c),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _NegotiationCard extends StatelessWidget {
+  final WorkerContract contract;
+  final bool isDark;
+  final VoidCallback onTap;
+
+  const _NegotiationCard({
+    required this.contract,
+    required this.isDark,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Color statusColor;
+    String statusText;
+    switch (contract.status) {
+      case 'hiring_proposed':
+        statusColor = Colors.blue;
+        statusText = 'Proposed';
+        break;
+      case 'negotiating':
+        statusColor = Colors.orange;
+        statusText = 'Negotiating';
+        break;
+      case 'worker_approved':
+        statusColor = Colors.green;
+        statusText = 'Approved';
+        break;
+      case 'payment_pending':
+        statusColor = Colors.purple;
+        statusText = 'Pay Now';
+        break;
+      default:
+        statusColor = Colors.grey;
+        statusText = contract.statusLabel;
+    }
+
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.2)),
+          color: isDark ? Colors.white.withOpacity(0.04) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: statusColor.withOpacity(0.25)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(icon, size: 14, color: color),
-                const SizedBox(width: 6),
-                Text(
-                  label.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                    letterSpacing: 0.5,
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: statusColor.withOpacity(0.15),
+                  child: Icon(Icons.person, color: statusColor, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        contract.workerName ?? 'Worker',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: isDark ? Colors.white : Colors.black87,
+                        ),
+                      ),
+                      Text(
+                        '${contract.salaryAmount.toStringAsFixed(0)} TND/${contract.salaryTypeLabel}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: statusColor.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    statusText,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: statusColor,
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black87,
+            if (contract.needsInvestorAction) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 14,
+                      color: Colors.amber.shade700,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      contract.status == 'payment_pending'
+                          ? 'Payment required to activate contract'
+                          : 'Worker responded — review their counter-offer',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.amber.shade700,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+            ],
           ],
         ),
       ),
@@ -398,194 +998,212 @@ class _StatBadge extends StatelessWidget {
   }
 }
 
-class _WorkerCard extends StatelessWidget {
-  final LandWorker worker;
+// ── Active Workers Tab ──
+class _ActiveWorkersTab extends StatelessWidget {
+  final String landId;
   final bool isDark;
-  final VoidCallback onRemove;
-  final VoidCallback onToggleStatus;
+  final List<WorkerContract> contracts;
+  final bool isLoading;
+  final VoidCallback onRefresh;
 
-  const _WorkerCard({
-    required this.worker,
+  const _ActiveWorkersTab({
+    required this.landId,
     required this.isDark,
-    required this.onRemove,
-    required this.onToggleStatus,
+    required this.contracts,
+    required this.isLoading,
+    required this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.03) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+    if (isLoading) return _shimmerList(isDark);
+
+    if (contracts.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.engineering_outlined,
+              size: 56,
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'No Active Workers',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white70 : Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Hire and complete payment to\nactivate workers on this land',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: isDark ? Colors.white38 : Colors.black45,
+              ),
+            ),
+          ],
         ),
-        boxShadow: [
-          if (!isDark)
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async => onRefresh(),
+      child: ListView.separated(
+        padding: const EdgeInsets.all(20),
+        itemCount: contracts.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        itemBuilder: (context, index) {
+          final c = contracts[index];
+          return Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.white.withOpacity(0.04) : Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.green.withOpacity(0.2)),
             ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Hero(
-            tag: 'worker_avatar_${worker.id}',
-            child: CircleAvatar(
-              radius: 24,
-              backgroundColor: isDark
-                  ? Colors.white.withOpacity(0.1)
-                  : Colors.grey.shade100,
-              backgroundImage: worker.workerProfilePicture != null
-                  ? NetworkImage(worker.workerProfilePicture!)
-                  : null,
-              child: worker.workerProfilePicture == null
-                  ? Icon(
-                      Icons.person,
-                      color: isDark ? Colors.white54 : Colors.grey,
-                    )
-                  : null,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  worker.workerName ?? 'Unknown Worker',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
+                Stack(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        worker.role,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
+                    CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Colors.green.withOpacity(0.15),
+                      child: Icon(
+                        Icons.person,
+                        color: Colors.green.shade600,
+                        size: 22,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color:
-                            (worker.status == 'active'
-                                    ? Colors.green
-                                    : Colors.red)
-                                .withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        worker.status.toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 8,
-                          fontWeight: FontWeight.bold,
-                          color: worker.status == 'active'
-                              ? Colors.green
-                              : (worker.status == 'suspended'
-                                    ? Colors.orange
-                                    : Colors.red),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isDark
+                                ? const Color(0xFF1E2125)
+                                : Colors.white,
+                            width: 2,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        c.workerName ?? 'Worker',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: isDark ? Colors.white : Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${c.salaryAmount.toStringAsFixed(0)} TND/${c.salaryTypeLabel}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Text(
+                        'ACTIVE',
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.green,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        'Until ${c.contractEndDate.day}/${c.contractEndDate.month}',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: isDark
+                              ? Colors.grey.shade500
+                              : Colors.grey.shade500,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ],
             ),
-          ),
-          if (worker.status == 'inactive' || worker.status == 'suspended')
-            IconButton(
-              onPressed: onToggleStatus,
-              icon: const Icon(
-                Icons.play_circle_fill_rounded,
-                color: Colors.green,
-                size: 20,
-              ),
-              tooltip: 'Activate Worker',
-            ),
-          if (worker.status == 'active')
-            IconButton(
-              onPressed: onToggleStatus,
-              icon: Icon(
-                Icons.pause_circle_filled_rounded,
-                color: Colors.orange.withOpacity(0.7),
-                size: 20,
-              ),
-              tooltip: 'Suspend Worker',
-            ),
-          IconButton(
-            onPressed: () => _confirmRemove(context),
-            icon: Icon(
-              Icons.remove_circle_outline,
-              color: Colors.red.withOpacity(0.7),
-              size: 20,
-            ),
-            tooltip: 'Remove Worker',
-          ),
-        ],
+          );
+        },
       ),
     );
   }
+}
 
-  void _confirmRemove(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF1E2125) : Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Remove Worker?',
-          style: TextStyle(color: isDark ? Colors.white : Colors.black87),
-        ),
-        content: Text(
-          'Are you sure you want to remove ${worker.workerName} from this land?',
-          style: TextStyle(color: isDark ? Colors.white70 : Colors.black54),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: isDark ? Colors.white38 : Colors.black38),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              onRemove();
-            },
-            child: const Text(
-              'Remove',
-              style: TextStyle(
-                color: Colors.redAccent,
-                fontWeight: FontWeight.bold,
+// ── Shared shimmer loader ──
+Widget _shimmerList(bool isDark) {
+  return ListView.separated(
+    padding: const EdgeInsets.all(24),
+    itemCount: 4,
+    separatorBuilder: (_, __) => const SizedBox(height: 12),
+    itemBuilder: (_, __) => Container(
+      height: 72,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withOpacity(0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Shimmer.fromColors(
+        baseColor: isDark ? Colors.white10 : Colors.grey.shade300,
+        highlightColor: isDark ? Colors.white24 : Colors.grey.shade100,
+        child: Row(
+          children: [
+            const CircleAvatar(radius: 22, backgroundColor: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(height: 14, width: 120, color: Colors.white),
+                  const SizedBox(height: 8),
+                  Container(height: 10, width: 80, color: Colors.white),
+                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    );
-  }
+    ),
+  );
 }

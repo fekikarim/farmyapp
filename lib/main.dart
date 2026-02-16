@@ -18,6 +18,7 @@ import 'screens/no_internet_screen.dart';
 import 'theme/app_theme.dart';
 import 'providers/wallet_provider.dart';
 import 'providers/worker_provider.dart';
+import 'providers/worker_lifecycle_provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/theme_provider.dart';
@@ -59,6 +60,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => BasketProvider()),
         ChangeNotifierProvider(create: (_) => WorkerProvider()),
+        ChangeNotifierProvider(create: (_) => WorkerLifecycleProvider()),
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(initialThemeMode: initialTheme),
         ),
@@ -119,8 +121,37 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  bool _socketConnected = false;
+
+  @override
+  void dispose() {
+    final lifecycle = context.read<WorkerLifecycleProvider>();
+    lifecycle.disposeSocket();
+    super.dispose();
+  }
+
+  void _connectSocket(BuildContext context) {
+    if (_socketConnected) return;
+    _socketConnected = true;
+    // Connect socket after frame to ensure providers are ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WorkerLifecycleProvider>().initSocket();
+    });
+  }
+
+  void _disconnectSocket(BuildContext context) {
+    if (!_socketConnected) return;
+    _socketConnected = false;
+    context.read<WorkerLifecycleProvider>().disposeSocket();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,9 +175,11 @@ class AuthWrapper extends StatelessWidget {
           return const VerifyScreen();
         }
       }
+      _connectSocket(context);
       return const MainScreen();
     }
 
+    _disconnectSocket(context);
     return const LoginScreen();
   }
 }

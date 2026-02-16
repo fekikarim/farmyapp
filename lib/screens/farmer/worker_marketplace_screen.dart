@@ -58,17 +58,22 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
   Widget _buildWorkerCard(WorkerProfile profile) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        final invited = await Navigator.push<bool>(
           context,
           MaterialPageRoute(
             builder: (_) => WorkerDetailScreen(
               workerProfile: profile,
               landId: widget.landId,
               landName: widget.landName,
+              inviteMode: true,
             ),
           ),
         );
+        // If an invitation was successfully sent, pop back to workforce screen
+        if (invited == true && mounted) {
+          Navigator.of(context).pop(true);
+        }
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
