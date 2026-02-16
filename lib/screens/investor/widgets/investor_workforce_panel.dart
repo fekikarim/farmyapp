@@ -165,22 +165,10 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
                           const Icon(Icons.handshake_outlined, size: 15),
                           const SizedBox(width: 5),
                           const Text('Negotiations'),
-                          if (lifecycle.contracts
-                              .where(
-                                (c) =>
-                                    c.status == 'hiring_proposed' ||
-                                    c.status == 'negotiating',
-                              )
-                              .isNotEmpty) ...[
+                          if (lifecycle.negotiatingContracts.isNotEmpty) ...[
                             const SizedBox(width: 4),
                             _badge(
-                              lifecycle.contracts
-                                  .where(
-                                    (c) =>
-                                        c.status == 'hiring_proposed' ||
-                                        c.status == 'negotiating',
-                                  )
-                                  .length,
+                              lifecycle.negotiatingContracts.length,
                               Colors.orange,
                             ),
                           ],
@@ -219,31 +207,25 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
                   landId: widget.landId,
                   isDark: isDark,
                   workers: lifecycle.approvedWorkers,
-                  isLoading: lifecycle.isLoading,
+                  isLoading: lifecycle.approvedWorkersLoading,
+                  error: lifecycle.approvedWorkersError,
                   onHire: _showHireDialog,
                   onRefresh: () => lifecycle.loadApprovedWorkers(widget.landId),
                 ),
                 _NegotiationsTab(
                   landId: widget.landId,
                   isDark: isDark,
-                  contracts: lifecycle.contracts
-                      .where(
-                        (c) =>
-                            c.status == 'hiring_proposed' ||
-                            c.status == 'negotiating' ||
-                            c.status == 'worker_approved' ||
-                            c.status == 'payment_pending',
-                      )
-                      .toList(),
-                  isLoading: lifecycle.isLoading,
-                  onRefresh: () =>
-                      lifecycle.loadNegotiatingContracts(widget.landId),
+                  contracts: lifecycle.negotiatingContracts,
+                  isLoading: lifecycle.negotiatingContractsLoading,
+                  error: lifecycle.negotiatingContractsError,
+                  onRefresh: _loadAllData,
                 ),
                 _ActiveWorkersTab(
                   landId: widget.landId,
                   isDark: isDark,
                   contracts: lifecycle.activeContracts,
-                  isLoading: lifecycle.isLoading,
+                  isLoading: lifecycle.activeContractsLoading,
+                  error: lifecycle.activeContractsError,
                   onRefresh: () => lifecycle.loadActiveContracts(widget.landId),
                 ),
               ],
@@ -629,6 +611,7 @@ class _ApprovedWorkersTab extends StatelessWidget {
   final bool isDark;
   final List<WorkerProfile> workers;
   final bool isLoading;
+  final String? error;
   final void Function(WorkerProfile) onHire;
   final VoidCallback onRefresh;
 
@@ -637,6 +620,7 @@ class _ApprovedWorkersTab extends StatelessWidget {
     required this.isDark,
     required this.workers,
     required this.isLoading,
+    this.error,
     required this.onHire,
     required this.onRefresh,
   });
@@ -644,6 +628,10 @@ class _ApprovedWorkersTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isLoading) return _shimmerList(isDark);
+
+    if (error != null) {
+      return _errorView(isDark: isDark, message: error!, onRetry: onRefresh);
+    }
 
     if (workers.isEmpty) {
       return Center(
@@ -783,6 +771,7 @@ class _NegotiationsTab extends StatelessWidget {
   final bool isDark;
   final List<WorkerContract> contracts;
   final bool isLoading;
+  final String? error;
   final VoidCallback onRefresh;
 
   const _NegotiationsTab({
@@ -790,12 +779,17 @@ class _NegotiationsTab extends StatelessWidget {
     required this.isDark,
     required this.contracts,
     required this.isLoading,
+    this.error,
     required this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
     if (isLoading) return _shimmerList(isDark);
+
+    if (error != null) {
+      return _errorView(isDark: isDark, message: error!, onRetry: onRefresh);
+    }
 
     if (contracts.isEmpty) {
       return Center(
@@ -841,13 +835,16 @@ class _NegotiationsTab extends StatelessWidget {
           return _NegotiationCard(
             contract: c,
             isDark: isDark,
-            onTap: () {
-              Navigator.push(
+            onTap: () async {
+              final result = await Navigator.push<bool>(
                 context,
                 MaterialPageRoute(
                   builder: (_) => ContractNegotiationScreen(contract: c),
                 ),
               );
+              if (result == true) {
+                onRefresh();
+              }
             },
           );
         },
@@ -872,17 +869,17 @@ class _NegotiationCard extends StatelessWidget {
     Color statusColor;
     String statusText;
     switch (contract.status) {
-      case 'hiring_proposed':
+      case 'hiring_pending':
         statusColor = Colors.blue;
         statusText = 'Proposed';
         break;
-      case 'negotiating':
+      case 'negotiation_pending':
         statusColor = Colors.orange;
         statusText = 'Negotiating';
         break;
-      case 'worker_approved':
-        statusColor = Colors.green;
-        statusText = 'Approved';
+      case 'negotiation_countered':
+        statusColor = Colors.deepOrange;
+        statusText = 'Counter-offer';
         break;
       case 'payment_pending':
         statusColor = Colors.purple;
@@ -1004,6 +1001,7 @@ class _ActiveWorkersTab extends StatelessWidget {
   final bool isDark;
   final List<WorkerContract> contracts;
   final bool isLoading;
+  final String? error;
   final VoidCallback onRefresh;
 
   const _ActiveWorkersTab({
@@ -1011,12 +1009,17 @@ class _ActiveWorkersTab extends StatelessWidget {
     required this.isDark,
     required this.contracts,
     required this.isLoading,
+    this.error,
     required this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
     if (isLoading) return _shimmerList(isDark);
+
+    if (error != null) {
+      return _errorView(isDark: isDark, message: error!, onRetry: onRefresh);
+    }
 
     if (contracts.isEmpty) {
       return Center(
@@ -1059,12 +1062,17 @@ class _ActiveWorkersTab extends StatelessWidget {
         separatorBuilder: (_, __) => const SizedBox(height: 10),
         itemBuilder: (context, index) {
           final c = contracts[index];
+          final isSuspended = c.isSuspended;
+          final badgeColor = isSuspended ? Colors.orange : Colors.green;
+          final badgeText = isSuspended ? 'SUSPENDED' : 'ACTIVE';
+          final dotColor = isSuspended ? Colors.orange : Colors.green;
+
           return Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: isDark ? Colors.white.withOpacity(0.04) : Colors.white,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.green.withOpacity(0.2)),
+              border: Border.all(color: badgeColor.withOpacity(0.2)),
             ),
             child: Row(
               children: [
@@ -1072,12 +1080,8 @@ class _ActiveWorkersTab extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 22,
-                      backgroundColor: Colors.green.withOpacity(0.15),
-                      child: Icon(
-                        Icons.person,
-                        color: Colors.green.shade600,
-                        size: 22,
-                      ),
+                      backgroundColor: badgeColor.withOpacity(0.15),
+                      child: Icon(Icons.person, color: badgeColor, size: 22),
                     ),
                     Positioned(
                       right: 0,
@@ -1086,7 +1090,7 @@ class _ActiveWorkersTab extends StatelessWidget {
                         width: 12,
                         height: 12,
                         decoration: BoxDecoration(
-                          color: Colors.green,
+                          color: dotColor,
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: isDark
@@ -1114,7 +1118,7 @@ class _ActiveWorkersTab extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${c.salaryAmount.toStringAsFixed(0)} TND/${c.salaryTypeLabel}',
+                        '${c.salaryAmount.toStringAsFixed(0)} TND${c.salaryTypeLabel}',
                         style: TextStyle(
                           fontSize: 12,
                           color: isDark
@@ -1134,32 +1138,36 @@ class _ActiveWorkersTab extends StatelessWidget {
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.12),
+                        color: badgeColor.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: const Text(
-                        'ACTIVE',
+                      child: Text(
+                        badgeText,
                         style: TextStyle(
                           fontSize: 9,
                           fontWeight: FontWeight.w700,
-                          color: Colors.green,
+                          color: badgeColor,
                           letterSpacing: 0.5,
                         ),
                       ),
                     ),
-                    ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        'Until ${c.contractEndDate.day}/${c.contractEndDate.month}',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: isDark
-                              ? Colors.grey.shade500
-                              : Colors.grey.shade500,
-                        ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Until ${c.contractEndDate.day}/${c.contractEndDate.month}',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: isDark
+                            ? Colors.grey.shade500
+                            : Colors.grey.shade500,
                       ),
-                    ],
+                    ),
                   ],
+                ),
+                const SizedBox(width: 8),
+                _RemoveWorkerButton(
+                  contract: c,
+                  isDark: isDark,
+                  landId: landId,
                 ),
               ],
             ),
@@ -1168,6 +1176,173 @@ class _ActiveWorkersTab extends StatelessWidget {
       ),
     );
   }
+}
+
+// ── Remove Worker Button ──
+class _RemoveWorkerButton extends StatefulWidget {
+  final WorkerContract contract;
+  final bool isDark;
+  final String landId;
+
+  const _RemoveWorkerButton({
+    required this.contract,
+    required this.isDark,
+    required this.landId,
+  });
+
+  @override
+  State<_RemoveWorkerButton> createState() => _RemoveWorkerButtonState();
+}
+
+class _RemoveWorkerButtonState extends State<_RemoveWorkerButton> {
+  bool _removing = false;
+
+  Future<void> _confirmRemove() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: widget.isDark ? const Color(0xFF2A2D30) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Remove Worker',
+          style: TextStyle(
+            color: widget.isDark ? Colors.white : Colors.black87,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          'Are you sure you want to permanently remove ${widget.contract.workerName ?? "this worker"} from this land?\n\nThis action will terminate the contract and cannot be undone.',
+          style: TextStyle(
+            color: widget.isDark ? Colors.white70 : Colors.black54,
+            fontSize: 14,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: widget.isDark
+                    ? Colors.grey.shade400
+                    : Colors.grey.shade600,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade600,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: const Text('Remove', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _removing = true);
+    final lifecycle = context.read<WorkerLifecycleProvider>();
+    final success = await lifecycle.terminateContract(widget.contract.id);
+    if (mounted) {
+      setState(() => _removing = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            success ? 'Worker removed successfully' : 'Failed to remove worker',
+          ),
+          backgroundColor: success ? Colors.green.shade700 : Colors.redAccent,
+        ),
+      );
+      if (success) {
+        // Also refresh approved workers so the worker reappears as available
+        lifecycle.loadApprovedWorkers(widget.landId);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_removing) {
+      return const SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(strokeWidth: 2),
+      );
+    }
+    return IconButton(
+      onPressed: _confirmRemove,
+      icon: Icon(
+        Icons.person_remove_outlined,
+        size: 20,
+        color: Colors.red.shade400,
+      ),
+      tooltip: 'Remove worker',
+      style: IconButton.styleFrom(
+        backgroundColor: Colors.red.withOpacity(0.08),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        padding: const EdgeInsets.all(8),
+      ),
+    );
+  }
+}
+
+// ── Error view helper ──
+Widget _errorView({
+  required bool isDark,
+  required String message,
+  required VoidCallback onRetry,
+}) {
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline_rounded,
+            size: 48,
+            color: Colors.red.shade300,
+          ),
+          const SizedBox(height: 14),
+          Text(
+            'Something went wrong',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white70 : Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              color: isDark ? Colors.white38 : Colors.black45,
+            ),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: onRetry,
+            icon: const Icon(Icons.refresh, size: 18),
+            label: const Text('Retry'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green.shade600,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 // ── Shared shimmer loader ──

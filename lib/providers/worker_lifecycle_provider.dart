@@ -20,6 +20,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   List<WorkerProfile> _approvedWorkers = [];
   Map<String, String> _workerInvitationMap = {}; // workerId → invitationId
   bool _approvedWorkersLoading = false;
+  String? _approvedWorkersError;
 
   // ─── Contracts State ───
   List<WorkerContract> _landContracts = [];
@@ -27,9 +28,11 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   List<WorkerContract> _negotiatingContracts = [];
   bool _negotiatingContractsLoading = false;
+  String? _negotiatingContractsError;
 
   List<WorkerContract> _activeContracts = [];
   bool _activeContractsLoading = false;
+  String? _activeContractsError;
 
   List<WorkerContract> _myContracts = [];
   bool _myContractsLoading = false;
@@ -61,6 +64,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   List<WorkerProfile> get approvedWorkers => _approvedWorkers;
   bool get approvedWorkersLoading => _approvedWorkersLoading;
+  String? get approvedWorkersError => _approvedWorkersError;
 
   String? getInvitationIdForWorker(String workerId) =>
       _workerInvitationMap[workerId];
@@ -70,9 +74,11 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   List<WorkerContract> get negotiatingContracts => _negotiatingContracts;
   bool get negotiatingContractsLoading => _negotiatingContractsLoading;
+  String? get negotiatingContractsError => _negotiatingContractsError;
 
   List<WorkerContract> get activeContracts => _activeContracts;
   bool get activeContractsLoading => _activeContractsLoading;
+  String? get activeContractsError => _activeContractsError;
 
   List<WorkerContract> get myContracts => _myContracts;
   bool get myContractsLoading => _myContractsLoading;
@@ -164,6 +170,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   Future<void> loadApprovedWorkers(String landId) async {
     _approvedWorkersLoading = true;
+    _approvedWorkersError = null;
     notifyListeners();
     try {
       final rawList = await WorkerLifecycleService.getApprovedWorkers(landId);
@@ -185,6 +192,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
     } catch (e) {
       _approvedWorkers = [];
       _workerInvitationMap = {};
+      _approvedWorkersError = e.toString().replaceAll('Exception: ', '');
     } finally {
       _approvedWorkersLoading = false;
       notifyListeners();
@@ -243,16 +251,45 @@ class WorkerLifecycleProvider extends ChangeNotifier {
     required String contractId,
     required String comment,
     double? proposedSalaryAmount,
+    String? proposedSalaryType,
   }) async {
+    _lastError = null;
     try {
-      await WorkerLifecycleService.negotiateContract(
+      final result = await WorkerLifecycleService.negotiateContract(
         contractId: contractId,
         comment: comment,
         proposedSalaryAmount: proposedSalaryAmount,
+        proposedSalaryType: proposedSalaryType,
       );
+      // Update local contract state if returned
+      if (result['contract'] != null) {
+        final updated = WorkerContract.fromJson(result['contract']);
+        _updateContractInLists(updated);
+      }
       await loadNegotiationHistory(contractId);
       return true;
     } catch (e) {
+      _lastError = e.toString().replaceAll('Exception: ', '');
+      return false;
+    }
+  }
+
+  Future<bool> investorRespondToContract({
+    required String contractId,
+    required String response,
+  }) async {
+    _lastError = null;
+    try {
+      final contract = await WorkerLifecycleService.investorRespondToContract(
+        contractId: contractId,
+        response: response,
+      );
+      if (contract != null) {
+        _updateContractInLists(contract);
+      }
+      return true;
+    } catch (e) {
+      _lastError = e.toString().replaceAll('Exception: ', '');
       return false;
     }
   }
@@ -295,12 +332,14 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   Future<void> loadNegotiatingContracts(String landId) async {
     _negotiatingContractsLoading = true;
+    _negotiatingContractsError = null;
     notifyListeners();
     try {
       _negotiatingContracts =
           await WorkerLifecycleService.getNegotiatingContracts(landId);
     } catch (e) {
       _negotiatingContracts = [];
+      _negotiatingContractsError = e.toString().replaceAll('Exception: ', '');
     } finally {
       _negotiatingContractsLoading = false;
       notifyListeners();
@@ -309,6 +348,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   Future<void> loadActiveContracts(String landId) async {
     _activeContractsLoading = true;
+    _activeContractsError = null;
     notifyListeners();
     try {
       _activeContracts = await WorkerLifecycleService.getActiveContracts(
@@ -316,6 +356,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
       );
     } catch (e) {
       _activeContracts = [];
+      _activeContractsError = e.toString().replaceAll('Exception: ', '');
     } finally {
       _activeContractsLoading = false;
       notifyListeners();
@@ -358,8 +399,17 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   Future<bool> terminateContract(String contractId) async {
     try {
-      return await WorkerLifecycleService.terminateContract(contractId);
+      final success = await WorkerLifecycleService.terminateContract(
+        contractId,
+      );
+      if (success) {
+        // Remove from active contracts list immediately
+        _activeContracts.removeWhere((c) => c.id == contractId);
+        notifyListeners();
+      }
+      return success;
     } catch (e) {
+      _lastError = e.toString().replaceAll('Exception: ', '');
       return false;
     }
   }
@@ -490,6 +540,10 @@ class WorkerLifecycleProvider extends ChangeNotifier {
       if (contract.isActive || contract.isSuspended) {
         _negotiatingContracts.removeAt(idx2);
         _activeContracts.insert(0, contract);
+      } else if (contract.isTerminated ||
+          contract.isHiringDeclined ||
+          contract.isExpired) {
+        _negotiatingContracts.removeAt(idx2);
       } else {
         _negotiatingContracts[idx2] = contract;
       }
@@ -497,7 +551,13 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
     // Update in activeContracts
     final idx3 = _activeContracts.indexWhere((c) => c.id == contract.id);
-    if (idx3 >= 0) _activeContracts[idx3] = contract;
+    if (idx3 >= 0) {
+      if (contract.isTerminated) {
+        _activeContracts.removeAt(idx3);
+      } else {
+        _activeContracts[idx3] = contract;
+      }
+    }
 
     notifyListeners();
   }

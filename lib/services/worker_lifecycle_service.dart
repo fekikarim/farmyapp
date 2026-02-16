@@ -154,11 +154,33 @@ class WorkerLifecycleService {
     throw Exception(errorBody['message'] ?? 'Failed to respond to contract');
   }
 
+  /// Investor: respond to worker counter-offer (accept/decline)
+  static Future<WorkerContract?> investorRespondToContract({
+    required String contractId,
+    required String response,
+  }) async {
+    final res = await AuthService.authenticatedRequest(
+      'POST',
+      Uri.parse(
+        '$_baseUrl/api/v1/workforce/contracts/$contractId/investor-respond',
+      ),
+      body: jsonEncode({'response': response}),
+    );
+
+    if (res.statusCode == 200) {
+      final body = jsonDecode(res.body);
+      return WorkerContract.fromJson(body['data']);
+    }
+    final errorBody = jsonDecode(res.body);
+    throw Exception(errorBody['message'] ?? 'Failed to respond to contract');
+  }
+
   /// Both: negotiate contract
   static Future<Map<String, dynamic>> negotiateContract({
     required String contractId,
     required String comment,
     double? proposedSalaryAmount,
+    String? proposedSalaryType,
   }) async {
     final response = await AuthService.authenticatedRequest(
       'POST',
@@ -166,6 +188,7 @@ class WorkerLifecycleService {
       body: jsonEncode({
         'comment': comment,
         'proposed_salary_amount': proposedSalaryAmount,
+        'proposed_salary_type': proposedSalaryType,
       }),
     );
 
