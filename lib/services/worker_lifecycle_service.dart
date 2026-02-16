@@ -219,6 +219,54 @@ class WorkerLifecycleService {
     return [];
   }
 
+  /// Both: edit the last negotiation message
+  static Future<Map<String, dynamic>> editNegotiation({
+    required String contractId,
+    required String negotiationId,
+    String? comment,
+    double? proposedSalaryAmount,
+    String? proposedSalaryType,
+  }) async {
+    final response = await AuthService.authenticatedRequest(
+      'PATCH',
+      Uri.parse(
+        '$_baseUrl/api/v1/workforce/contracts/$contractId/negotiations/$negotiationId',
+      ),
+      body: jsonEncode({
+        'comment': comment,
+        'proposed_salary_amount': proposedSalaryAmount,
+        'proposed_salary_type': proposedSalaryType,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      return body['data'] ?? {};
+    }
+    final errorBody = jsonDecode(response.body);
+    throw Exception(errorBody['message'] ?? 'Failed to edit negotiation');
+  }
+
+  /// Both: delete (withdraw) the last negotiation message
+  static Future<Map<String, dynamic>> deleteNegotiation({
+    required String contractId,
+    required String negotiationId,
+  }) async {
+    final response = await AuthService.authenticatedRequest(
+      'DELETE',
+      Uri.parse(
+        '$_baseUrl/api/v1/workforce/contracts/$contractId/negotiations/$negotiationId',
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      return body['data'] ?? {};
+    }
+    final errorBody = jsonDecode(response.body);
+    throw Exception(errorBody['message'] ?? 'Failed to withdraw negotiation');
+  }
+
   /// Investor: create payment for contract
   static Future<Map<String, dynamic>> createContractPayment(
     String contractId,

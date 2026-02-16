@@ -33,6 +33,12 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
   bool _showWorkerCounterPanel = false;
   String _counterSalaryType = 'monthly';
 
+  // Edit mode state
+  bool _isEditingMessage = false;
+  String? _editingNegotiationId;
+  final _editCommentController = TextEditingController();
+  final _editSalaryController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -57,6 +63,8 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     _commentController.dispose();
     _salaryController.dispose();
     _scrollController.dispose();
+    _editCommentController.dispose();
+    _editSalaryController.dispose();
     super.dispose();
   }
 
@@ -377,6 +385,107 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     }
   }
 
+  // ─── Edit / Delete actions ──────────────────────────────────────────
+
+  /// Start editing the last negotiation message
+  void _startEditMessage(ContractNegotiation negotiation) {
+    setState(() {
+      _isEditingMessage = true;
+      _editingNegotiationId = negotiation.id;
+      _editCommentController.text = negotiation.comment;
+      _editSalaryController.text =
+          negotiation.proposedSalaryAmount?.toStringAsFixed(0) ?? '';
+    });
+  }
+
+  /// Cancel editing
+  void _cancelEdit() {
+    setState(() {
+      _isEditingMessage = false;
+      _editingNegotiationId = null;
+      _editCommentController.clear();
+      _editSalaryController.clear();
+    });
+  }
+
+  /// Submit the edit
+  Future<void> _submitEdit() async {
+    final comment = _editCommentController.text.trim();
+    if (comment.isEmpty) {
+      _showSnack('Message cannot be empty', isError: true);
+      return;
+    }
+
+    double? proposedSalary;
+    if (_editSalaryController.text.isNotEmpty) {
+      proposedSalary = double.tryParse(_editSalaryController.text);
+      if (proposedSalary == null || proposedSalary <= 0) {
+        _showSnack('Please enter a valid salary amount', isError: true);
+        return;
+      }
+    }
+
+    setState(() => _actionLoading = true);
+
+    final provider = context.read<WorkerLifecycleProvider>();
+    final success = await provider.editNegotiation(
+      contractId: _liveContract.id,
+      negotiationId: _editingNegotiationId!,
+      comment: comment,
+      proposedSalaryAmount: proposedSalary,
+    );
+
+    if (mounted) {
+      if (success) {
+        _cancelEdit();
+        await _refreshContract();
+        await provider.loadNegotiationHistory(_liveContract.id);
+        _showSnack('Message updated');
+      } else {
+        _showSnack(
+          provider.lastError ?? 'Failed to edit message',
+          isError: true,
+        );
+      }
+      setState(() => _actionLoading = false);
+    }
+  }
+
+  /// Delete the last negotiation message with confirmation
+  Future<void> _deleteMessage(ContractNegotiation negotiation) async {
+    final confirmed = await _showConfirmationDialog(
+      title: 'Withdraw Message?',
+      message:
+          'This will remove your last message and revert the negotiation to its previous state. This cannot be undone.',
+      confirmLabel: 'Withdraw',
+      confirmColor: Colors.red,
+      icon: Icons.delete_outline,
+    );
+    if (!confirmed) return;
+
+    setState(() => _actionLoading = true);
+
+    final provider = context.read<WorkerLifecycleProvider>();
+    final success = await provider.deleteNegotiation(
+      contractId: _liveContract.id,
+      negotiationId: negotiation.id,
+    );
+
+    if (mounted) {
+      if (success) {
+        await _refreshContract();
+        await provider.loadNegotiationHistory(_liveContract.id);
+        _showSnack('Message withdrawn');
+      } else {
+        _showSnack(
+          provider.lastError ?? 'Failed to withdraw message',
+          isError: true,
+        );
+      }
+      setState(() => _actionLoading = false);
+    }
+  }
+
   // ─── Investor actions ───────────────────────────────────────────────
 
   /// Investor accepts — with confirmation dialog
@@ -647,8 +756,14 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
                         vertical: 12,
                       ),
                       itemCount: negotiations.length,
-                      itemBuilder: (context, index) =>
-                          _buildMessageBubble(negotiations[index], isDark),
+                      itemBuilder: (context, index) {
+                        final isLast = index == negotiations.length - 1;
+                        return _buildMessageBubble(
+                          negotiations[index],
+                          isDark,
+                          isLastMessage: isLast,
+                        );
+                      },
                     ),
                   ),
           ),
@@ -911,7 +1026,11 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     return systemPhrases.contains(n.comment);
   }
 
-  Widget _buildMessageBubble(ContractNegotiation negotiation, bool isDark) {
+  Widget _buildMessageBubble(
+    ContractNegotiation negotiation,
+    bool isDark, {
+    bool isLastMessage = false,
+  }) {
     // ── System message pill ──
     if (_isSystemMessage(negotiation)) {
       return Padding(
@@ -938,6 +1057,16 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
 
     // ── Normal chat bubble ──
     final isMe = negotiation.senderId == _currentUserId;
+    final canEditOrDelete =
+        isLastMessage &&
+        isMe &&
+        _liveContract.isInNegotiation &&
+        !_actionLoading;
+
+    // If we're currently editing this message, show the edit panel instead
+    if (_isEditingMessage && _editingNegotiationId == negotiation.id) {
+      return _buildInlineEditPanel(negotiation, isDark);
+    }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -1040,6 +1169,269 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
                               ? Colors.grey.shade500
                               : Colors.grey.shade400),
                   ),
+                ),
+              ],
+            ),
+          ),
+
+          // Edit / Delete buttons (only on last message, only if sender == me)
+          if (canEditOrDelete)
+            Padding(
+              padding: EdgeInsets.only(
+                top: 4,
+                left: isMe ? 60 : 0,
+                right: isMe ? 0 : 60,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildMiniAction(
+                    icon: Icons.edit_outlined,
+                    label: 'Edit',
+                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                    onTap: () => _startEditMessage(negotiation),
+                  ),
+                  const SizedBox(width: 12),
+                  _buildMiniAction(
+                    icon: Icons.delete_outline,
+                    label: 'Withdraw',
+                    color: Colors.red.shade400,
+                    onTap: () => _deleteMessage(negotiation),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// Small icon+text button for edit/delete on last message
+  Widget _buildMiniAction({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: color),
+          const SizedBox(width: 3),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Inline edit panel — replaces the last message bubble while editing
+  Widget _buildInlineEditPanel(ContractNegotiation negotiation, bool isDark) {
+    final isMe = negotiation.senderId == _currentUserId;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Column(
+        crossAxisAlignment: isMe
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4, left: 4, right: 4),
+            child: Text(
+              'Editing your message',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: Colors.amber.shade700,
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(left: isMe ? 40 : 0, right: isMe ? 0 : 40),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF2A2D30) : Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: Colors.amber.withOpacity(0.4),
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Comment field
+                TextField(
+                  controller: _editCommentController,
+                  maxLines: 3,
+                  minLines: 1,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Edit your message...',
+                    hintStyle: TextStyle(
+                      color: isDark
+                          ? Colors.grey.shade500
+                          : Colors.grey.shade400,
+                    ),
+                    filled: true,
+                    fillColor: isDark
+                        ? Colors.white.withOpacity(0.05)
+                        : Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? Colors.white.withOpacity(0.1)
+                            : Colors.grey.shade300,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? Colors.white.withOpacity(0.1)
+                            : Colors.grey.shade300,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.amber.shade600),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // Salary field
+                TextField(
+                  controller: _editSalaryController,
+                  keyboardType: TextInputType.number,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Salary (optional)',
+                    hintStyle: TextStyle(
+                      color: isDark
+                          ? Colors.grey.shade500
+                          : Colors.grey.shade400,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.attach_money,
+                      size: 18,
+                      color: Colors.amber.shade700,
+                    ),
+                    filled: true,
+                    fillColor: isDark
+                        ? Colors.white.withOpacity(0.05)
+                        : Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? Colors.white.withOpacity(0.1)
+                            : Colors.grey.shade300,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? Colors.white.withOpacity(0.1)
+                            : Colors.grey.shade300,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.amber.shade600),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                // Cancel / Save buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 38,
+                        child: OutlinedButton(
+                          onPressed: _cancelEdit,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: isDark
+                                ? Colors.grey.shade400
+                                : Colors.grey.shade600,
+                            side: BorderSide(
+                              color: isDark
+                                  ? Colors.white.withOpacity(0.12)
+                                  : Colors.grey.shade300,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: SizedBox(
+                        height: 38,
+                        child: ElevatedButton(
+                          onPressed: _actionLoading ? null : _submitEdit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.amber.shade700,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: _actionLoading
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'Save',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -1178,16 +1570,24 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
             ),
           ),
           const SizedBox(width: 10),
-          // Accept — primary CTA
+          // Accept — primary CTA (only enabled when it's the investor's offer)
           Expanded(
             flex: 5,
             child: SizedBox(
               height: 50,
               child: ElevatedButton(
-                onPressed: _workerAccept,
+                onPressed: _liveContract.currentProposer == 'investor'
+                    ? _workerAccept
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green.shade600,
                   foregroundColor: Colors.white,
+                  disabledBackgroundColor: isDark
+                      ? Colors.green.shade900.withOpacity(0.3)
+                      : Colors.green.shade100,
+                  disabledForegroundColor: isDark
+                      ? Colors.green.shade700
+                      : Colors.green.shade300,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -1550,16 +1950,26 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
             ),
           ),
           const SizedBox(width: 10),
-          // Accept — primary CTA, largest
+          // Accept — primary CTA, largest (only enabled when it's the worker's offer)
           Expanded(
             flex: 5,
             child: SizedBox(
               height: 50,
               child: ElevatedButton(
-                onPressed: _investorAccept,
+                onPressed:
+                    (_liveContract.currentProposer == 'worker' ||
+                        _liveContract.isHiringPending)
+                    ? _investorAccept
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green.shade600,
                   foregroundColor: Colors.white,
+                  disabledBackgroundColor: isDark
+                      ? Colors.green.shade900.withOpacity(0.3)
+                      : Colors.green.shade100,
+                  disabledForegroundColor: isDark
+                      ? Colors.green.shade700
+                      : Colors.green.shade300,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),

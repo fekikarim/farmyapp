@@ -311,6 +311,68 @@ class WorkerLifecycleProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> editNegotiation({
+    required String contractId,
+    required String negotiationId,
+    String? comment,
+    double? proposedSalaryAmount,
+    String? proposedSalaryType,
+  }) async {
+    _lastError = null;
+    try {
+      final result = await WorkerLifecycleService.editNegotiation(
+        contractId: contractId,
+        negotiationId: negotiationId,
+        comment: comment,
+        proposedSalaryAmount: proposedSalaryAmount,
+        proposedSalaryType: proposedSalaryType,
+      );
+      // Update local contract state if returned
+      if (result['contract'] != null) {
+        final updated = WorkerContract.fromJson(result['contract']);
+        _updateContractInLists(updated);
+      }
+      // Update the negotiation in local list
+      if (result['negotiation'] != null) {
+        final updatedNeg = ContractNegotiation.fromJson(result['negotiation']);
+        final idx = _negotiations.indexWhere((n) => n.id == updatedNeg.id);
+        if (idx >= 0) {
+          _negotiations[idx] = updatedNeg;
+          notifyListeners();
+        }
+      }
+      return true;
+    } catch (e) {
+      _lastError = e.toString().replaceAll('Exception: ', '');
+      return false;
+    }
+  }
+
+  Future<bool> deleteNegotiation({
+    required String contractId,
+    required String negotiationId,
+  }) async {
+    _lastError = null;
+    try {
+      final result = await WorkerLifecycleService.deleteNegotiation(
+        contractId: contractId,
+        negotiationId: negotiationId,
+      );
+      // Update local contract state if returned
+      if (result['contract'] != null) {
+        final updated = WorkerContract.fromJson(result['contract']);
+        _updateContractInLists(updated);
+      }
+      // Remove the deleted negotiation from local list
+      _negotiations.removeWhere((n) => n.id == negotiationId);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _lastError = e.toString().replaceAll('Exception: ', '');
+      return false;
+    }
+  }
+
   Future<Map<String, dynamic>> createContractPayment(String contractId) async {
     try {
       return await WorkerLifecycleService.createContractPayment(contractId);
@@ -451,6 +513,18 @@ class WorkerLifecycleProvider extends ChangeNotifier {
     _socketService.on('contract_terminated', (data) {
       if (data is Map<String, dynamic>) handleContractTerminated(data);
     });
+    _socketService.on('contract_accepted', (data) {
+      if (data is Map<String, dynamic>) handleContractAccepted(data);
+    });
+    _socketService.on('contract_declined', (data) {
+      if (data is Map<String, dynamic>) handleContractDeclined(data);
+    });
+    _socketService.on('negotiation_edited', (data) {
+      if (data is Map<String, dynamic>) handleNegotiationEdited(data);
+    });
+    _socketService.on('negotiation_deleted', (data) {
+      if (data is Map<String, dynamic>) handleNegotiationDeleted(data);
+    });
   }
 
   /// Call this on logout to clean up the socket connection.
@@ -530,6 +604,46 @@ class WorkerLifecycleProvider extends ChangeNotifier {
     if (data['contract'] != null) {
       final contract = WorkerContract.fromJson(data['contract']);
       _updateContractInLists(contract);
+    }
+  }
+
+  void handleContractAccepted(Map<String, dynamic> data) {
+    if (data['contract'] != null) {
+      final contract = WorkerContract.fromJson(data['contract']);
+      _updateContractInLists(contract);
+    }
+  }
+
+  void handleContractDeclined(Map<String, dynamic> data) {
+    if (data['contract'] != null) {
+      final contract = WorkerContract.fromJson(data['contract']);
+      _updateContractInLists(contract);
+    }
+  }
+
+  void handleNegotiationEdited(Map<String, dynamic> data) {
+    if (data['contract'] != null) {
+      final contract = WorkerContract.fromJson(data['contract']);
+      _updateContractInLists(contract);
+    }
+    if (data['negotiation'] != null) {
+      final neg = ContractNegotiation.fromJson(data['negotiation']);
+      final idx = _negotiations.indexWhere((n) => n.id == neg.id);
+      if (idx >= 0) {
+        _negotiations[idx] = neg;
+      }
+      notifyListeners();
+    }
+  }
+
+  void handleNegotiationDeleted(Map<String, dynamic> data) {
+    if (data['contract'] != null) {
+      final contract = WorkerContract.fromJson(data['contract']);
+      _updateContractInLists(contract);
+    }
+    if (data['deletedNegotiationId'] != null) {
+      _negotiations.removeWhere((n) => n.id == data['deletedNegotiationId']);
+      notifyListeners();
     }
   }
 
