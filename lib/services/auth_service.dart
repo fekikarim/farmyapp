@@ -13,7 +13,7 @@ import '../models/user_model.dart';
 class AuthService {
   static final String _baseUrl = dotenv.get(
     'API_BASE_URL',
-    fallback: 'http://192.168.1.21:3001',
+    fallback: 'http://192.168.0.133:3001',
   );
   static String get baseUrl => _baseUrl;
   static const _storage = FlutterSecureStorage();

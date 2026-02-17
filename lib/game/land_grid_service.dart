@@ -5,7 +5,7 @@ import '../services/auth_service.dart';
 class LandGridService {
   static final String _baseUrl = dotenv.get(
     'API_BASE_URL',
-    fallback: 'http://192.168.1.21:3001',
+    fallback: 'http://192.168.0.133:3001',
   );
 
   static Future<Map<String, dynamic>> fetchLandGrid(String landId) async {

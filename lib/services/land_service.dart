@@ -7,7 +7,7 @@ import '../models/land_model.dart';
 class LandService {
   static final String _baseUrl = dotenv.get(
     'API_BASE_URL',
-    fallback: 'http://192.168.1.21:3001',
+    fallback: 'http://192.168.0.133:3001',
   );
 
   static Future<List<Land>> getAllLands() async {

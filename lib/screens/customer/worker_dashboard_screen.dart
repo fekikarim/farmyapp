@@ -116,9 +116,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                           isDark,
                         ),
                         _statWidget(
-                          'Earnings',
-                          '${lands.fold<double>(0, (sum, l) => sum + l.salary).toStringAsFixed(0)} TND',
-                          Icons.payments,
+                          'Escrow Balance',
+                          '\$${_getPendingBalance(lifecycle)}',
+                          Icons.account_balance_wallet,
                           Colors.purple,
                           isDark,
                         ),
@@ -146,6 +146,25 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       ],
                     ),
                     const SizedBox(height: 24),
+
+                    // Escrow Balance Info
+                    if (!lifecycle.balanceLoading &&
+                        (double.tryParse(
+                                  lifecycle.myBalance['pending_balance']
+                                          ?.toString() ??
+                                      '0',
+                                ) ??
+                                0) >
+                            0)
+                      _buildEscrowBalanceCard(lifecycle, isDark),
+                    if ((double.tryParse(
+                              lifecycle.myBalance['pending_balance']
+                                      ?.toString() ??
+                                  '0',
+                            ) ??
+                            0) >
+                        0)
+                      const SizedBox(height: 24),
 
                     // Assigned Lands
                     _sectionHeader('Assigned Lands', Icons.landscape, isDark),
@@ -557,6 +576,87 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
     );
   }
 
+  Widget _buildEscrowBalanceCard(
+    WorkerLifecycleProvider lifecycle,
+    bool isDark,
+  ) {
+    final pending =
+        double.tryParse(
+          lifecycle.myBalance['pending_balance']?.toString() ?? '0',
+        ) ??
+        0.0;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isDark
+              ? [
+                  Colors.purple.shade900.withOpacity(0.4),
+                  Colors.deepPurple.shade900.withOpacity(0.3),
+                ]
+              : [Colors.purple.shade50, Colors.deepPurple.shade50],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? Colors.purple.shade700.withOpacity(0.3)
+              : Colors.purple.shade200,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.account_balance_wallet,
+                color: Colors.purple.shade400,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Escrow Balance',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  color: isDark ? Colors.white : Colors.purple.shade800,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '\$${pending.toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 20,
+                  color: isDark ? Colors.white : Colors.purple.shade900,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Funds will be released after task verification (Coming Soon)',
+            style: TextStyle(
+              fontSize: 12,
+              color: isDark ? Colors.white54 : Colors.purple.shade400,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getPendingBalance(WorkerLifecycleProvider lifecycle) {
+    final balance = lifecycle.myBalance;
+    final pending = balance['pending_balance'];
+    if (pending == null) return '0';
+    final val = double.tryParse(pending.toString()) ?? 0.0;
+    return val.toStringAsFixed(0);
+  }
+
   Widget _statWidget(
     String label,
     String value,
@@ -687,7 +787,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      '${land.salary.toStringAsFixed(0)} TND/mo',
+                      '\$${land.salary.toStringAsFixed(0)}/mo',
                       style: TextStyle(
                         fontSize: 12,
                         color: isDark
@@ -764,7 +864,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '💰 ${task.reward.toStringAsFixed(0)} TND',
+                      '💰 \$${task.reward.toStringAsFixed(0)}',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -1027,7 +1127,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${contract.salaryAmount.toStringAsFixed(0)} TND/${contract.salaryTypeLabel}',
+                    '\$${contract.salaryAmount.toStringAsFixed(0)}/${contract.salaryTypeLabel}',
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark
@@ -1131,7 +1231,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${contract.salaryAmount.toStringAsFixed(0)} TND/${contract.salaryTypeLabel}',
+                  '\$${contract.salaryAmount.toStringAsFixed(0)}/${contract.salaryTypeLabel}',
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import '../../models/worker_contract_model.dart';
 import '../../models/contract_negotiation_model.dart';
 import '../../providers/worker_lifecycle_provider.dart';
@@ -282,7 +283,7 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     final confirmed = await _showConfirmationDialog(
       title: 'Accept this Offer?',
       message:
-          'You are agreeing to the proposed salary of ${_liveContract.salaryAmount.toStringAsFixed(0)} TND${_liveContract.salaryTypeLabel}. This cannot be undone.',
+          'You are agreeing to the proposed salary of \$${_liveContract.salaryAmount.toStringAsFixed(0)}${_liveContract.salaryTypeLabel}. This cannot be undone.',
       confirmLabel: 'Accept',
       confirmColor: Colors.green.shade600,
       icon: Icons.check_circle_outline,
@@ -493,7 +494,7 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     final confirmed = await _showConfirmationDialog(
       title: 'Accept this Offer?',
       message:
-          'You are accepting the terms proposed by ${_liveContract.workerName ?? "the worker"} at ${_liveContract.salaryAmount.toStringAsFixed(0)} TND${_liveContract.salaryTypeLabel}. You will proceed to payment.',
+          'You are accepting the terms proposed by ${_liveContract.workerName ?? "the worker"} at \$${_liveContract.salaryAmount.toStringAsFixed(0)}${_liveContract.salaryTypeLabel}. You will proceed to payment.',
       confirmLabel: 'Accept',
       confirmColor: Colors.green.shade600,
       icon: Icons.check_circle_outline,
@@ -598,78 +599,85 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     }
   }
 
-  /// Investor creates a payment intent
+  /// Investor creates a payment intent and presents Stripe PaymentSheet.
+  /// Contract activation happens ONLY via webhook — never from frontend.
   Future<void> _processPayment() async {
     setState(() => _actionLoading = true);
 
-    final provider = context.read<WorkerLifecycleProvider>();
-    final paymentData = await provider.createContractPayment(_liveContract.id);
+    try {
+      final provider = context.read<WorkerLifecycleProvider>();
+      final paymentData = await provider.createContractPayment(
+        _liveContract.id,
+      );
 
-    if (mounted) {
-      setState(() => _actionLoading = false);
+      if (!mounted) return;
+
       if (paymentData.isEmpty) {
+        setState(() => _actionLoading = false);
         _showSnack('Failed to create payment', isError: true);
         return;
       }
 
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          final isDark = Theme.of(ctx).brightness == Brightness.dark;
-          return AlertDialog(
-            backgroundColor: isDark ? const Color(0xFF2A2D30) : Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Row(
-              children: [
-                Icon(Icons.payment, color: Colors.purple.shade400, size: 22),
-                const SizedBox(width: 8),
-                Text(
-                  'Payment Ready',
-                  style: TextStyle(
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                ),
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Amount: ${_liveContract.salaryAmount.toStringAsFixed(2)} TND',
-                  style: TextStyle(
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Complete the Stripe payment to activate the contract.',
-                  style: TextStyle(
-                    color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Client Secret: ${paymentData['clientSecret']?.toString().substring(0, 20) ?? '...'}...',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Colors.grey.shade500,
-                    fontFamily: 'monospace',
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text('Close'),
-              ),
-            ],
-          );
-        },
+      final clientSecret = paymentData['clientSecret'] as String?;
+      final ephemeralKey = paymentData['ephemeralKey'] as String?;
+      final customerId = paymentData['customerId'] as String?;
+      final publishableKey = paymentData['publishableKey'] as String?;
+
+      if (clientSecret == null ||
+          ephemeralKey == null ||
+          customerId == null ||
+          publishableKey == null) {
+        setState(() => _actionLoading = false);
+        _showSnack('Invalid payment data received', isError: true);
+        return;
+      }
+
+      // Configure Stripe
+      Stripe.publishableKey = publishableKey;
+
+      // Initialize PaymentSheet
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          customFlow: false,
+          merchantDisplayName: 'Farmy',
+          customerId: customerId,
+          customerEphemeralKeySecret: ephemeralKey,
+          paymentIntentClientSecret: clientSecret,
+          style: ThemeMode.system,
+        ),
       );
+
+      // Present PaymentSheet — user enters card details
+      await Stripe.instance.presentPaymentSheet();
+
+      // If we reach here, payment was submitted (not necessarily succeeded).
+      // Contract activation will happen via webhook.
+      if (mounted) {
+        setState(() => _actionLoading = false);
+        _showSnack('Payment submitted! Contract will activate shortly.');
+
+        // Refresh contract state after a brief delay to pick up webhook result
+        Future.delayed(const Duration(seconds: 3), () {
+          if (mounted) _onRefresh();
+        });
+      }
+    } on StripeException catch (e) {
+      if (mounted) {
+        setState(() => _actionLoading = false);
+        final msg = e.error.localizedMessage ?? 'Payment cancelled';
+        if (e.error.code != FailureCode.Canceled) {
+          _showSnack(msg, isError: true);
+        }
+        // User cancelled — no action needed
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _actionLoading = false);
+        _showSnack(
+          'Payment failed: ${e.toString().replaceAll('Exception: ', '')}',
+          isError: true,
+        );
+      }
     }
   }
 
@@ -713,7 +721,7 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
               ),
             ),
             Text(
-              '${_liveContract.salaryAmount.toStringAsFixed(0)} TND${_liveContract.salaryTypeLabel} \u2022 ${_liveContract.statusLabel}',
+              '\$${_liveContract.salaryAmount.toStringAsFixed(0)}${_liveContract.salaryTypeLabel} \u2022 ${_liveContract.statusLabel}',
               style: TextStyle(
                 fontSize: 12,
                 color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
@@ -844,7 +852,7 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
                   children: [
                     _infoChip(
                       Icons.payments_outlined,
-                      '${_liveContract.salaryAmount.toStringAsFixed(0)} TND',
+                      '\$${_liveContract.salaryAmount.toStringAsFixed(0)}',
                       isDark,
                     ),
                     _infoChip(
@@ -1112,7 +1120,7 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'Proposed: ${negotiation.proposedSalaryAmount!.toStringAsFixed(0)} TND',
+                    'Proposed: \$${negotiation.proposedSalaryAmount!.toStringAsFixed(0)}',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -2254,7 +2262,7 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
               const Icon(Icons.payment_rounded, color: Colors.white, size: 22),
               const SizedBox(width: 10),
               Text(
-                'Pay ${_liveContract.salaryAmount.toStringAsFixed(0)} TND to Activate',
+                'Pay \$${_liveContract.salaryAmount.toStringAsFixed(0)} to Activate',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,

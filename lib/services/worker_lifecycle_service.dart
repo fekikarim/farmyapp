@@ -8,7 +8,7 @@ import '../models/contract_negotiation_model.dart';
 class WorkerLifecycleService {
   static final String _baseUrl = dotenv.get(
     'API_BASE_URL',
-    fallback: 'http://192.168.1.21:3001',
+    fallback: 'http://192.168.0.133:3001',
   );
 
   // ─── Invitations (Phase 1) ───

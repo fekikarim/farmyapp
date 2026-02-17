@@ -6,7 +6,7 @@ import '../models/task_model.dart';
 class TaskService {
   static final String _baseUrl = dotenv.get(
     'API_BASE_URL',
-    fallback: 'http://192.168.1.21:3001',
+    fallback: 'http://192.168.0.133:3001',
   );
 
   static Future<FarmTask?> createTask({
