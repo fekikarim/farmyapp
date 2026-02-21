@@ -206,7 +206,24 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
                                 child: Text('AI Notes: ${proof['ai_reasoning']}'),
                               ),
                               const SizedBox(height: 12),
-                            ],
+                              if (proof['image_url'] != null) ...[
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.network(
+                                    '${AuthService.baseUrl}${proof['image_url']}',
+                                    height: 200,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Container(
+                                      height: 100,
+                                      width: double.infinity,
+                                      color: Colors.grey.withOpacity(0.1),
+                                      child: const Icon(Icons.broken_image_outlined, color: Colors.grey),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                              ],
                             if (isFarmer && isPending && !isExpiredLocal) ...[
                               SizedBox(
                                 width: double.infinity,

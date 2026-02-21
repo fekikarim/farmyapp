@@ -1526,7 +1526,15 @@ class _ProofsTab extends StatelessWidget {
                                 height: 120,
                                 width: double.infinity,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => const SizedBox(),
+                                errorBuilder: (context, error, stackTrace) => Container(
+                                  height: 80,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.withOpacity(0.05),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(Icons.broken_image_outlined, color: Colors.grey, size: 24),
+                                ),
                               ),
                             ),
                           ),
