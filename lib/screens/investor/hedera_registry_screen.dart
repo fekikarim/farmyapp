@@ -203,7 +203,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
 
   Widget _buildStats() {
     final rentals = _entries.where((e) => e.type == 'land_rental').length;
-    final items = _entries.where((e) => e.type == 'item_purchase').length;
+    final items = _entries.where((e) => e.type == 'item_purchase' || e.type == 'product_purchase').length;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
       child: Row(
