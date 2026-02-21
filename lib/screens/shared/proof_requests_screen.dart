@@ -153,97 +153,98 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
       body: _error != null
           ? Center(child: Text(_error!))
           : _proofs.isEmpty
-              ? const Center(child: Text('No proof requests found.'))
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _proofs.length,
-                  itemBuilder: (context, index) {
-                    final proof = _proofs[index];
-                    final isFarmer = proof['farmer_id'] == _currentUserId;
-                    final isPending = proof['status'] == 'pending';
-                    final expiresAt = DateTime.parse(proof['expires_at']);
-                    final isExpiredLocal = isPending && expiresAt.isBefore(DateTime.now());
+               ? const Center(child: Text('No proof requests found.'))
+               : ListView.builder(
+                   padding: const EdgeInsets.all(16),
+                   itemCount: _proofs.length,
+                   itemBuilder: (context, index) {
+                     final proof = _proofs[index];
+                     final isFarmer = proof['farmer_id'] == _currentUserId;
+                     final isPending = proof['status'] == 'pending';
+                     final expiresAt = DateTime.parse(proof['expires_at']);
+                     final isExpiredLocal = isPending && expiresAt.isBefore(DateTime.now());
 
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  isFarmer 
-                                    ? 'From: ${proof['investor_name']}'
-                                    : 'To: ${proof['farmer_name']}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                _buildStatusBadge(
-                                  isExpiredLocal ? 'expired' : proof['status']
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            if (isPending && !isExpiredLocal) ...[
-                              Text(
-                                'Must submit before: ${DateFormat('MMM d, h:mm a').format(expiresAt)}',
-                                style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 12),
-                            ],
-                            if (proof['ai_reasoning'] != null) ...[
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.withOpacity(0.05),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text('AI Notes: ${proof['ai_reasoning']}'),
-                              ),
-                              const SizedBox(height: 12),
-                              if (proof['image_url'] != null) ...[
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.network(
-                                    '${AuthService.baseUrl}${proof['image_url']}',
-                                    height: 200,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Container(
-                                      height: 100,
-                                      width: double.infinity,
-                                      color: Colors.grey.withOpacity(0.1),
-                                      child: const Icon(Icons.broken_image_outlined, color: Colors.grey),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                              ],
-                            if (isFarmer && isPending && !isExpiredLocal) ...[
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton.icon(
-                                  onPressed: () => _handleSubmitProof(proof['id']),
-                                  icon: const Icon(Icons.camera_alt),
-                                  label: const Text('Submit Photo Proof'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blueAccent,
-                                    foregroundColor: Colors.white,
-                                  ),
-                                ),
-                              )
-                            ]
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                     return Card(
+                       margin: const EdgeInsets.only(bottom: 16),
+                       child: Padding(
+                         padding: const EdgeInsets.all(16),
+                         child: Column(
+                           crossAxisAlignment: CrossAxisAlignment.start,
+                           children: [
+                             Row(
+                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                               children: [
+                                 Text(
+                                   isFarmer 
+                                     ? 'From: ${proof['investor_name']}'
+                                     : 'To: ${proof['farmer_name']}',
+                                   style: const TextStyle(
+                                     fontWeight: FontWeight.bold,
+                                     fontSize: 16,
+                                   ),
+                                 ),
+                                 _buildStatusBadge(
+                                   isExpiredLocal ? 'expired' : proof['status']
+                                 ),
+                               ],
+                             ),
+                             const SizedBox(height: 12),
+                             if (isPending && !isExpiredLocal) ...[
+                               Text(
+                                 'Must submit before: ${DateFormat('MMM d, h:mm a').format(expiresAt)}',
+                                 style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                               ),
+                               const SizedBox(height: 12),
+                             ],
+                             if (proof['ai_reasoning'] != null) ...[
+                               Container(
+                                 padding: const EdgeInsets.all(12),
+                                 decoration: BoxDecoration(
+                                   color: Colors.blue.withOpacity(0.05),
+                                   borderRadius: BorderRadius.circular(8),
+                                 ),
+                                 child: Text('AI Notes: ${proof['ai_reasoning']}'),
+                               ),
+                               const SizedBox(height: 12),
+                             ],
+                             if (proof['image_url'] != null) ...[
+                               ClipRRect(
+                                 borderRadius: BorderRadius.circular(12),
+                                 child: Image.network(
+                                   '${AuthService.baseUrl}${proof['image_url']}',
+                                   height: 200,
+                                   width: double.infinity,
+                                   fit: BoxFit.cover,
+                                   errorBuilder: (_, __, ___) => Container(
+                                     height: 100,
+                                     width: double.infinity,
+                                     color: Colors.grey.withOpacity(0.1),
+                                     child: const Icon(Icons.broken_image_outlined, color: Colors.grey),
+                                   ),
+                                 ),
+                               ),
+                               const SizedBox(height: 12),
+                             ],
+                             if (isFarmer && isPending && !isExpiredLocal) ...[
+                               SizedBox(
+                                 width: double.infinity,
+                                 child: ElevatedButton.icon(
+                                   onPressed: () => _handleSubmitProof(proof['id']),
+                                   icon: const Icon(Icons.camera_alt),
+                                   label: const Text('Submit Photo Proof'),
+                                   style: ElevatedButton.styleFrom(
+                                     backgroundColor: Colors.blueAccent,
+                                     foregroundColor: Colors.white,
+                                   ),
+                                 ),
+                               )
+                             ]
+                           ],
+                         ),
+                       ),
+                     );
+                   },
+                 ),
     );
   }
 }

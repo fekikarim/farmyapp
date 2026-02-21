@@ -57,11 +57,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       CircleAvatar(
                         radius: 40,
-                        backgroundColor: theme.colorScheme.primary.withOpacity(
-                          0.1,
-                        ),
+                        backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
                         backgroundImage: user.profilePicture != null
-                            ? NetworkImage(user.profilePicture!)
+                            ? NetworkImage(
+                                user.profilePicture!.startsWith('http')
+                                    ? user.profilePicture!
+                                    : '${AuthService.baseUrl}${user.profilePicture!}',
+                              )
                             : null,
                         child: user.profilePicture == null
                             ? Icon(
@@ -189,7 +191,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 12),
+                // Latest Proof Preview for Workers
+                if (workerProvider.myProfile != null) 
+                  Consumer<WorkerLifecycleProvider>(
+                    builder: (context, lifecycle, _) {
+                      if (lifecycle.myProofs.isEmpty) return const SizedBox();
+                      final latest = lifecycle.myProofs.first;
+                      if (latest.imageUrl == null) return const SizedBox();
+                      
+                      return Center(
+                        child: Column(
+                          children: [
+                            const Text('Latest Submitted Proof', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+                            const SizedBox(height: 4),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                '${AuthService.baseUrl}${latest.imageUrl}',
+                                height: 80,
+                                width: 80,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 20, color: Colors.grey),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                const SizedBox(height: 20),
               ],
 
               _buildSectionTitle(theme, 'Payments'),
