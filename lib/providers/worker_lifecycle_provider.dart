@@ -52,6 +52,9 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   List<ProofRequest> _landProofs = [];
   bool _landProofsLoading = false;
 
+  List<ProofRequest> _myProofs = [];
+  bool _myProofsLoading = false;
+
   // ─── Getters ───
   List<WorkerInvitation> get landInvitations => _landInvitations;
   bool get landInvitationsLoading => _landInvitationsLoading;
@@ -98,8 +101,14 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   bool get balanceLoading => _balanceLoading;
 
   List<ProofRequest> get landProofs => _landProofs;
-  List<ProofRequest> get pendingLandProofs => _landProofs.where((p) => p.isPending).toList();
+  List<ProofRequest> get pendingLandProofs =>
+      _landProofs.where((p) => p.isPending).toList();
   bool get landProofsLoading => _landProofsLoading;
+
+  List<ProofRequest> get myProofs => _myProofs;
+  List<ProofRequest> get pendingMyProofs =>
+      _myProofs.where((p) => p.isPending).toList();
+  bool get myProofsLoading => _myProofsLoading;
 
   // ─── Invitation Actions ───
 
@@ -485,6 +494,20 @@ class WorkerLifecycleProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> loadMyProofs() async {
+    _myProofsLoading = true;
+    notifyListeners();
+    try {
+      final List<dynamic> raw = await ProofService.getMyProofs();
+      _myProofs = raw.map((json) => ProofRequest.fromJson(json)).toList();
+    } catch (e) {
+      _myProofs = [];
+    } finally {
+      _myProofsLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<bool> suspendContract(String contractId) async {
     try {
       return await WorkerLifecycleService.suspendContract(contractId);
@@ -686,23 +709,30 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   void handleProofRequested(Map<String, dynamic> data) {
     if (data['proof'] != null) {
       final proof = ProofRequest.fromJson(data['proof']);
-      // Add if it matches any of our known lands or we are in a land-specific view
-      // For now, just add it if it's not already in list
+      // Update land-specific list if matches
       if (!_landProofs.any((p) => p.id == proof.id)) {
         _landProofs.insert(0, proof);
-        notifyListeners();
       }
+      // Update global list for worker
+      if (!_myProofs.any((p) => p.id == proof.id)) {
+        _myProofs.insert(0, proof);
+      }
+      notifyListeners();
     }
   }
 
   void handleProofStatusUpdated(Map<String, dynamic> data) {
     if (data['proof'] != null) {
       final proof = ProofRequest.fromJson(data['proof']);
-      final idx = _landProofs.indexWhere((p) => p.id == proof.id);
-      if (idx >= 0) {
-        _landProofs[idx] = proof;
-        notifyListeners();
-      }
+      // Update in land list
+      final idx1 = _landProofs.indexWhere((p) => p.id == proof.id);
+      if (idx1 >= 0) _landProofs[idx1] = proof;
+
+      // Update in global list
+      final idx2 = _myProofs.indexWhere((p) => p.id == proof.id);
+      if (idx2 >= 0) _myProofs[idx2] = proof;
+
+      notifyListeners();
     }
   }
 

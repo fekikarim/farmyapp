@@ -6,6 +6,9 @@ import '../../models/task_model.dart';
 import '../../models/land_worker_model.dart';
 import '../../models/worker_invitation_model.dart';
 import '../../models/worker_contract_model.dart';
+import '../../models/proof_request_model.dart';
+import '../../services/proof_service.dart';
+import 'package:image_picker/image_picker.dart';
 import '../shared/contract_negotiation_screen.dart';
 
 class WorkerDashboardScreen extends StatefulWidget {
@@ -40,6 +43,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
       lifecycle.loadMyInvitations();
       lifecycle.loadMyContracts();
       lifecycle.loadMyBalance();
+      lifecycle.loadMyProofs();
     });
   }
 
@@ -84,6 +88,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   await lifecycle.loadMyInvitations();
                   await lifecycle.loadMyContracts();
                   await lifecycle.loadMyBalance();
+                  await lifecycle.loadMyProofs();
                 },
                 child: ListView(
                   padding: const EdgeInsets.all(20),
@@ -320,6 +325,30 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                             ...proposals.map(
                               (contract) =>
                                   _buildContractActionCard(contract, isDark),
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 24),
+
+                    // ── Proof Requests Section ──
+                    Builder(
+                      builder: (context) {
+                        final pendingProofs = lifecycle.pendingMyProofs;
+                        if (pendingProofs.isEmpty) return const SizedBox();
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _sectionHeader(
+                              'Proof Requests',
+                              Icons.camera_alt_outlined,
+                              isDark,
+                            ),
+                            const SizedBox(height: 12),
+                            ...pendingProofs.map(
+                              (proof) => _buildProofActionCard(proof, isDark),
                             ),
                             const SizedBox(height: 24),
                           ],
@@ -1269,6 +1298,115 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   ),
                 ),
               ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProofActionCard(ProofRequest proof, bool isDark) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.blue.withOpacity(0.05) : Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.blue.withOpacity(0.2)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.camera_alt, color: Colors.blue, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Proof Requested',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: isDark ? Colors.blue.shade200 : Colors.blue.shade800,
+                      ),
+                    ),
+                    Text(
+                      proof.landName ?? 'Ongoing farming activity',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isDark ? Colors.blue.shade100 : Colors.blue.shade700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'AI VERIFY',
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.blue.shade200 : Colors.blue.shade800,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () async {
+                    final picker = ImagePicker();
+                    final image = await picker.pickImage(
+                      source: ImageSource.camera,
+                      imageQuality: 70,
+                    );
+                    if (image != null) {
+                      final lifecycle = context.read<WorkerLifecycleProvider>();
+                      // In a real flow, we'd show a "submitting" dialog
+                      final error = await ProofService.submitProof(proof.id, image);
+                      if (error == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Proof submitted and verified!')),
+                        );
+                        lifecycle.loadMyProofs();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(error), backgroundColor: Colors.red),
+                        );
+                      }
+                    }
+                  },
+                  icon: const Icon(Icons.upload_rounded, size: 18),
+                  label: const Text('Capture & Submit'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade600,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    elevation: 0,
+                  ),
+                ),
+              ),
             ],
           ),
         ],
