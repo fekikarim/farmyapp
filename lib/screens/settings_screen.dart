@@ -15,6 +15,8 @@ import 'customer/become_worker_screen.dart';
 import 'customer/worker_dashboard_screen.dart';
 import 'investor/hedera_registry_screen.dart';
 import 'shared/proof_requests_screen.dart';
+import '../services/auth_service.dart';
+import '../providers/worker_lifecycle_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
