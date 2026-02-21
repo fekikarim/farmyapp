@@ -74,7 +74,7 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
         children: [
           // Header
           Container(
-            padding: const EdgeInsets.fromLTRB(24, 60, 24, 16),
+            padding: const EdgeInsets.fromLTRB(16, 60, 16, 12),
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF16181A) : Colors.grey.shade50,
               borderRadius: const BorderRadius.only(
@@ -136,7 +136,7 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
                   indicatorColor: Colors.green.shade600,
                   indicatorSize: TabBarIndicatorSize.label,
                   dividerColor: Colors.transparent,
-                  labelPadding: const EdgeInsets.symmetric(horizontal: 12),
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 8),
                   labelStyle: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -670,13 +670,13 @@ class _ApprovedWorkersTab extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () async => onRefresh(),
       child: ListView.separated(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         itemCount: workers.length,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final w = workers[index];
           return Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF2C2F33) : Colors.white,
               borderRadius: BorderRadius.circular(16),
@@ -695,7 +695,7 @@ class _ApprovedWorkersTab extends StatelessWidget {
             child: Row(
               children: [
                 CircleAvatar(
-                  radius: 22,
+                  radius: 20, // Slightly smaller
                   backgroundColor: isDark
                       ? Colors.green.withOpacity(0.2)
                       : Colors.green.shade100,
@@ -704,66 +704,53 @@ class _ApprovedWorkersTab extends StatelessWidget {
                     color: isDark
                         ? Colors.green.shade400
                         : Colors.green.shade700,
-                    size: 22,
+                    size: 20,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              w.userName ?? 'Worker',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                                color: isDark ? Colors.white : Colors.black87,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          if (w.isVerified) ...[
-                            const SizedBox(width: 4),
-                            Icon(
-                              Icons.verified,
-                              color: Colors.blue.shade400,
-                              size: 14,
-                            ),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      if (w.skills.isNotEmpty)
-                        Text(
-                          w.skills.take(3).join(' • '),
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: isDark
-                                ? Colors.grey.shade400
-                                : Colors.grey.shade600,
-                          ),
+                      Text(
+                        w.userName ?? 'Worker',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13, // Smaller font
+                          color: isDark ? Colors.white : Colors.black87,
                         ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      const SizedBox(height: 1),
+                      Text(
+                        w.skills.isNotEmpty ? w.skills.first : 'No skills',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                 ),
+                const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () => onHire(w),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green.shade600,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
+                    minimumSize: const Size(60, 32),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     elevation: 0,
                   ),
-                  child: const Text('Hire', style: TextStyle(fontSize: 13)),
+                  child: const Text('Hire', style: TextStyle(fontSize: 11)),
                 ),
               ],
             ),

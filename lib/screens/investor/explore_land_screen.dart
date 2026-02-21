@@ -255,10 +255,10 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
           AnimatedPositioned(
             duration: const Duration(milliseconds: 400),
             curve: Curves.easeOutCubic,
-            right: _showWorkforcePanel ? 0 : -400,
+            right: _showWorkforcePanel ? 0 : -MediaQuery.of(context).size.width * 0.75,
             top: 0,
             bottom: 0,
-            width: 400, // Fixed width for panel
+            width: MediaQuery.of(context).size.width * 0.75, // Narrower 75% width
             child: Material(
               elevation: 16,
               color: Colors.transparent,
