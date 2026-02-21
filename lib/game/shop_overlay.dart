@@ -622,9 +622,22 @@ class _ShopOverlayState extends State<ShopOverlay>
 
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Request sent to Farmer!'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: Row(
+              children: const [
+                Icon(Icons.verified, color: Color(0xFF9B59B6), size: 16),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Request sent! Transaction recorded on Hedera.',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFF1B4332),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
         context.read<WalletProvider>().fetchWalletStatus();

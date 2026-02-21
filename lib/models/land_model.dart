@@ -15,6 +15,7 @@ class Land {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final List<LandRental> rentals;
+  final String? hederaTransactionId;
 
   Land({
     required this.id,
@@ -30,6 +31,7 @@ class Land {
     this.createdAt,
     this.updatedAt,
     this.rentals = const [],
+    this.hederaTransactionId,
   });
 
   bool get isRented {
@@ -68,6 +70,7 @@ class Land {
                 .map((r) => LandRental.fromJson(r))
                 .toList()
           : [],
+      hederaTransactionId: json['hedera_transaction_id']?.toString(),
     );
   }
 

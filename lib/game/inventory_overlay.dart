@@ -389,6 +389,13 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                         right: 10,
                         child: _buildStatusBadge(status),
                       ),
+                      // Hedera verification badge
+                      if (item['hedera_transaction_id'] != null)
+                        Positioned(
+                          top: 10,
+                          left: 10,
+                          child: _buildHederaBadge(item['hedera_transaction_id'].toString()),
+                        ),
                       if (isPlaced)
                         Positioned.fill(
                           child: Container(
@@ -578,6 +585,62 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHederaBadge(String txId) {
+    return GestureDetector(
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: const Color(0xFF1A1A2E),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            content: Row(
+              children: [
+                const Icon(Icons.verified, color: Color(0xFF9B59B6), size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'TxID: ${txId.length > 20 ? '${txId.substring(0, 20)}...' : txId}',
+                    style: const TextStyle(color: Colors.white70, fontSize: 11),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1A2E).withOpacity(0.85),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFF9B59B6).withOpacity(0.6), width: 1),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.verified, size: 9, color: Color(0xFF9B59B6)),
+                SizedBox(width: 3),
+                Text(
+                  'HEDERA',
+                  style: TextStyle(
+                    color: Color(0xFF9B59B6),
+                    fontSize: 8,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
