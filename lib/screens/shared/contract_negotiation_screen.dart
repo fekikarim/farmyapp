@@ -618,6 +618,14 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
         return;
       }
 
+      final activated = paymentData['activated'] as bool? ?? false;
+      if (activated) {
+        setState(() => _actionLoading = false);
+        _showSnack(paymentData['message'] ?? 'Contract activated!');
+        await _onRefresh();
+        return;
+      }
+
       final clientSecret = paymentData['clientSecret'] as String?;
       final ephemeralKey = paymentData['ephemeralKey'] as String?;
       final customerId = paymentData['customerId'] as String?;
