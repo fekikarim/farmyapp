@@ -527,7 +527,7 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
                 }
                 Navigator.pop(ctx);
                 final lifecycle = context.read<WorkerLifecycleProvider>();
-                final success = await lifecycle.hireWorker(
+                final error = await lifecycle.hireWorker(
                   landId: widget.landId,
                   workerId: worker.userId,
                   salaryAmount: salary,
@@ -545,16 +545,16 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        success
+                        error == null
                             ? 'Hiring proposal sent!'
-                            : 'Failed to send proposal',
+                            : error,
                       ),
-                      backgroundColor: success
+                      backgroundColor: error == null
                           ? Colors.green.shade700
                           : Colors.redAccent,
                     ),
                   );
-                  if (success) {
+                  if (error == null) {
                     _tabController.animateTo(1); // Switch to Negotiations
                     _loadAllData();
                   }

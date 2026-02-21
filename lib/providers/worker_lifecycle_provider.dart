@@ -203,7 +203,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   // ─── Contract Actions ───
 
-  Future<bool> hireWorker({
+  Future<String?> hireWorker({
     required String landId,
     required String workerId,
     required double salaryAmount,
@@ -216,7 +216,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
       // Look up the invitation ID from the approved workers map
       final invitationId = _workerInvitationMap[workerId];
       if (invitationId == null) {
-        throw Exception('No approved invitation found for this worker');
+        return 'No approved invitation found for this worker';
       }
       await WorkerLifecycleService.hireWorker(
         landId: landId,
@@ -227,9 +227,9 @@ class WorkerLifecycleProvider extends ChangeNotifier {
         contractEndDate: contractEndDate,
         message: message,
       );
-      return true;
+      return null; // Success
     } catch (e) {
-      return false;
+      return e.toString().replaceAll('Exception: ', '');
     }
   }
 
