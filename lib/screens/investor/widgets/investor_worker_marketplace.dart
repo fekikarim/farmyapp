@@ -77,143 +77,149 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
         color: isDark ? const Color(0xFF1E2125) : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
-      child: Column(
-        children: [
-          // Handle Bar
-          Center(
-            child: Container(
-              margin: const EdgeInsets.only(top: 12, bottom: 20),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(4),
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            // Handle Bar
+            Center(
+              child: Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 20),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: (isDark ? Colors.white : Colors.black).withOpacity(
+                    0.1,
+                  ),
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
             ),
-          ),
 
-          // Header
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Hire Workers',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Find professionals for ${widget.landName}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: isDark ? Colors.white54 : Colors.black54,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close_rounded),
-                  style: IconButton.styleFrom(
-                    backgroundColor: (isDark ? Colors.white : Colors.black)
-                        .withOpacity(0.05),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Search & Filters
-          SizedBox(
-            height: 40,
-            child: ListView.separated(
+            // Header
+            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              scrollDirection: Axis.horizontal,
-              itemCount: _skills.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
-              itemBuilder: (context, index) {
-                final skill = _skills[index];
-                final isSelected =
-                    (_selectedSkill == null && skill == 'All') ||
-                    _selectedSkill == skill;
-                return FilterChip(
-                  label: Text(skill),
-                  selected: isSelected,
-                  onSelected: (_) => _onSkillSelected(skill),
-                  backgroundColor: (isDark ? Colors.white : Colors.black)
-                      .withOpacity(0.05),
-                  selectedColor: Colors.green.withOpacity(0.2),
-                  labelStyle: TextStyle(
-                    color: isSelected
-                        ? Colors.green
-                        : (isDark ? Colors.white70 : Colors.black87),
-                    fontWeight: isSelected
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    side: BorderSide(
-                      color: isSelected ? Colors.green : Colors.transparent,
-                    ),
-                  ),
-                  showCheckmark: false,
-                );
-              },
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Divider
-          Divider(
-            height: 1,
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
-          ),
-
-          // List
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: () async {
-                await provider.loadMarketplace(
-                  skill: _selectedSkill,
-                  excludeLandId: widget.landId,
-                );
-              },
-              child: provider.marketplaceLoading && provider.marketplace.isEmpty
-                  ? _buildShimmerList(isDark)
-                  : workers.isEmpty
-                  ? ListView(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.4,
-                          child: _buildEmptyState(isDark),
+                        Text(
+                          'Hire Workers',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Find professionals for ${widget.landName}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: isDark ? Colors.white54 : Colors.black54,
+                          ),
                         ),
                       ],
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(24),
-                      itemCount: workers.length,
-                      itemBuilder: (context, index) => _MarketplaceWorkerCard(
-                        worker: workers[index],
-                        isDark: isDark,
-                        onHire: () => _openWorkerDetails(workers[index]),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close_rounded),
+                    style: IconButton.styleFrom(
+                      backgroundColor: (isDark ? Colors.white : Colors.black)
+                          .withOpacity(0.05),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Search & Filters
+            SizedBox(
+              height: 40,
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                scrollDirection: Axis.horizontal,
+                itemCount: _skills.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (context, index) {
+                  final skill = _skills[index];
+                  final isSelected =
+                      (_selectedSkill == null && skill == 'All') ||
+                      _selectedSkill == skill;
+                  return FilterChip(
+                    label: Text(skill),
+                    selected: isSelected,
+                    onSelected: (_) => _onSkillSelected(skill),
+                    backgroundColor: (isDark ? Colors.white : Colors.black)
+                        .withOpacity(0.05),
+                    selectedColor: Colors.green.withOpacity(0.2),
+                    labelStyle: TextStyle(
+                      color: isSelected
+                          ? Colors.green
+                          : (isDark ? Colors.white70 : Colors.black87),
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                        color: isSelected ? Colors.green : Colors.transparent,
                       ),
                     ),
+                    showCheckmark: false,
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+
+            const SizedBox(height: 16),
+
+            // Divider
+            Divider(
+              height: 1,
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+            ),
+
+            // List
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await provider.loadMarketplace(
+                    skill: _selectedSkill,
+                    excludeLandId: widget.landId,
+                  );
+                },
+                child:
+                    provider.marketplaceLoading && provider.marketplace.isEmpty
+                    ? _buildShimmerList(isDark)
+                    : workers.isEmpty
+                    ? ListView(
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.4,
+                            child: _buildEmptyState(isDark),
+                          ),
+                        ],
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(24),
+                        itemCount: workers.length,
+                        itemBuilder: (context, index) => _MarketplaceWorkerCard(
+                          worker: workers[index],
+                          isDark: isDark,
+                          onHire: () => _openWorkerDetails(workers[index]),
+                        ),
+                      ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

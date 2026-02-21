@@ -82,159 +82,193 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
         children: [
           // Header
           Container(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF16181A) : Colors.grey.shade50,
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(32),
               ),
             ),
-            child: Column(
-              children: [
-                // Handle Bar
-                Center(
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: (isDark ? Colors.white : Colors.black).withOpacity(
-                        0.1,
-                      ),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
-                Row(
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                child: Column(
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Workforce',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white : Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            widget.landName,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: isDark ? Colors.white54 : Colors.black54,
-                            ),
-                          ),
-                        ],
+                    // Handle Bar
+                    Center(
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: (isDark ? Colors.white : Colors.black)
+                              .withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
                       ),
                     ),
-                    IconButton(
-                      onPressed: () {
-                        if (widget.onClose != null) {
-                          widget.onClose!();
-                        } else {
-                          Navigator.pop(context);
-                        }
-                      },
-                      icon: const Icon(Icons.close_rounded),
-                      style: IconButton.styleFrom(
-                        backgroundColor: (isDark ? Colors.white : Colors.black)
-                            .withOpacity(0.05),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Workforce',
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -0.5,
+                                  color: isDark ? Colors.white : Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on_rounded,
+                                    size: 14,
+                                    color: Colors.green.shade500,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      widget.landName,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: isDark
+                                            ? Colors.white70
+                                            : Colors.black54,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: (isDark ? Colors.white : Colors.black)
+                                .withOpacity(0.05),
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              if (widget.onClose != null) {
+                                widget.onClose!();
+                              } else {
+                                Navigator.pop(context);
+                              }
+                            },
+                            icon: const Icon(Icons.close_rounded, size: 20),
+                            color: isDark ? Colors.white70 : Colors.black87,
+                            splashRadius: 24,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    TabBar(
+                      controller: _tabController,
+                      isScrollable: true,
+                      tabAlignment: TabAlignment.start,
+                      labelColor: Colors.green.shade600,
+                      unselectedLabelColor: isDark
+                          ? Colors.white38
+                          : Colors.black38,
+                      indicatorColor: Colors.green.shade600,
+                      indicatorSize: TabBarIndicatorSize.label,
+                      dividerColor: Colors.transparent,
+                      labelPadding: const EdgeInsets.symmetric(horizontal: 8),
+                      labelStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
                       ),
+                      tabs: [
+                        Tab(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.verified_user_outlined,
+                                size: 15,
+                              ),
+                              const SizedBox(width: 5),
+                              const Text('Approved'),
+                              if (lifecycle.approvedWorkers.isNotEmpty) ...[
+                                const SizedBox(width: 4),
+                                _badge(
+                                  lifecycle.approvedWorkers.length,
+                                  Colors.green,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        Tab(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.handshake_outlined, size: 15),
+                              const SizedBox(width: 5),
+                              const Text('Negotiations'),
+                              if (lifecycle
+                                  .negotiatingContracts
+                                  .isNotEmpty) ...[
+                                const SizedBox(width: 4),
+                                _badge(
+                                  lifecycle.negotiatingContracts.length,
+                                  Colors.orange,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        Tab(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.history_edu_outlined, size: 15),
+                              const SizedBox(width: 5),
+                              const Text('Active'),
+                              if (lifecycle.activeContracts.isNotEmpty) ...[
+                                const SizedBox(width: 5),
+                                _badge(
+                                  lifecycle.activeContracts.length,
+                                  Colors.green.shade600,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        Tab(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.camera_alt_outlined, size: 15),
+                              const SizedBox(width: 5),
+                              const Text('Proofs'),
+                              if (lifecycle.pendingLandProofs.isNotEmpty) ...[
+                                const SizedBox(width: 5),
+                                _badge(
+                                  lifecycle.pendingLandProofs.length,
+                                  Colors.blue.shade600,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                TabBar(
-                  controller: _tabController,
-                  isScrollable: true,
-                  tabAlignment: TabAlignment.start,
-                  labelColor: Colors.green.shade600,
-                  unselectedLabelColor: isDark
-                      ? Colors.white38
-                      : Colors.black38,
-                  indicatorColor: Colors.green.shade600,
-                  indicatorSize: TabBarIndicatorSize.label,
-                  dividerColor: Colors.transparent,
-                  labelPadding: const EdgeInsets.symmetric(horizontal: 8),
-                  labelStyle: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  tabs: [
-                    Tab(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.verified_user_outlined, size: 15),
-                          const SizedBox(width: 5),
-                          const Text('Approved'),
-                          if (lifecycle.approvedWorkers.isNotEmpty) ...[
-                            const SizedBox(width: 4),
-                            _badge(
-                              lifecycle.approvedWorkers.length,
-                              Colors.green,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    Tab(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.handshake_outlined, size: 15),
-                          const SizedBox(width: 5),
-                          const Text('Negotiations'),
-                          if (lifecycle.negotiatingContracts.isNotEmpty) ...[
-                            const SizedBox(width: 4),
-                            _badge(
-                              lifecycle.negotiatingContracts.length,
-                              Colors.orange,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    Tab(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.history_edu_outlined, size: 15),
-                          const SizedBox(width: 5),
-                          const Text('Active'),
-                          if (lifecycle.activeContracts.isNotEmpty) ...[
-                            const SizedBox(width: 5),
-                            _badge(
-                              lifecycle.activeContracts.length,
-                              Colors.green.shade600,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    Tab(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.camera_alt_outlined, size: 15),
-                          const SizedBox(width: 5),
-                          const Text('Proofs'),
-                          if (lifecycle.pendingLandProofs.isNotEmpty) ...[
-                            const SizedBox(width: 5),
-                            _badge(
-                              lifecycle.pendingLandProofs.length,
-                              Colors.blue.shade600,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
 
