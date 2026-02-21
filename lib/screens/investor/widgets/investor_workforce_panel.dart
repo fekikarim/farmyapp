@@ -7,6 +7,7 @@ import '../../../services/proof_service.dart';
 
 import '../../../models/worker_contract_model.dart';
 import '../../../models/worker_profile_model.dart';
+import '../../../models/proof_request_model.dart';
 import '../../shared/contract_negotiation_screen.dart';
 
 class InvestorWorkforcePanel extends StatefulWidget {
@@ -33,7 +34,7 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadAllData();
     });
@@ -44,6 +45,7 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
     lifecycle.loadApprovedWorkers(widget.landId);
     lifecycle.loadNegotiatingContracts(widget.landId);
     lifecycle.loadActiveContracts(widget.landId);
+    lifecycle.loadLandProofs(widget.landId);
   }
 
   @override
@@ -180,15 +182,26 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.people_outlined, size: 15),
+                          const Icon(Icons.history_edu_outlined, size: 15),
                           const SizedBox(width: 5),
                           const Text('Active'),
                           if (lifecycle.activeContracts.isNotEmpty) ...[
-                            const SizedBox(width: 4),
-                            _badge(
-                              lifecycle.activeContracts.length,
-                              Colors.blue,
-                            ),
+                            const SizedBox(width: 5),
+                            _badge(lifecycle.activeContracts.length, Colors.green.shade600),
+                          ],
+                        ],
+                      ),
+                    ),
+                    Tab(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.camera_alt_outlined, size: 15),
+                          const SizedBox(width: 5),
+                          const Text('Proofs'),
+                          if (lifecycle.pendingLandProofs.isNotEmpty) ...[
+                            const SizedBox(width: 5),
+                            _badge(lifecycle.pendingLandProofs.length, Colors.blue.shade600),
                           ],
                         ],
                       ),
@@ -228,6 +241,13 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
                   isLoading: lifecycle.activeContractsLoading,
                   error: lifecycle.activeContractsError,
                   onRefresh: () => lifecycle.loadActiveContracts(widget.landId),
+                ),
+                _ProofsTab(
+                  landId: widget.landId,
+                  isDark: isDark,
+                  proofs: lifecycle.landProofs,
+                  isLoading: lifecycle.landProofsLoading,
+                  onRefresh: () => lifecycle.loadLandProofs(widget.landId),
                 ),
               ],
             ),
@@ -1163,6 +1183,7 @@ class _ActiveWorkersTab extends StatelessWidget {
                 _RequestProofButton(
                   contract: c,
                   isDark: isDark,
+                  landId: landId,
                 ),
                 const SizedBox(width: 8),
                 _RemoveWorkerButton(
@@ -1183,10 +1204,12 @@ class _ActiveWorkersTab extends StatelessWidget {
 class _RequestProofButton extends StatefulWidget {
   final WorkerContract contract;
   final bool isDark;
+  final String landId;
 
   const _RequestProofButton({
     required this.contract,
     required this.isDark,
+    required this.landId,
   });
 
   @override
@@ -1243,7 +1266,10 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
     if (confirmed != true || !mounted) return;
 
     setState(() => _requesting = true);
-    final errorMsg = await ProofService.requestProof(widget.contract.workerId);
+    final errorMsg = await ProofService.requestProof(
+      widget.contract.workerId,
+      widget.landId,
+    );
     
     if (mounted) {
       setState(() => _requesting = false);
@@ -1289,6 +1315,155 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
         padding: const EdgeInsets.all(8),
       ),
     );
+  }
+}
+
+// ── Proofs Tab ──
+class _ProofsTab extends StatelessWidget {
+  final String landId;
+  final bool isDark;
+  final List<ProofRequest> proofs;
+  final bool isLoading;
+  final VoidCallback onRefresh;
+
+  const _ProofsTab({
+    required this.landId,
+    required this.isDark,
+    required this.proofs,
+    required this.isLoading,
+    required this.onRefresh,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) return _shimmerList(isDark);
+
+    if (proofs.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.camera_enhance_outlined,
+              size: 56,
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'No Proofs Requested',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white70 : Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Request a photo proof from an active\nworker to see it here.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: isDark ? Colors.white38 : Colors.black45,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async => onRefresh(),
+      child: ListView.separated(
+        padding: const EdgeInsets.all(20),
+        itemCount: proofs.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        itemBuilder: (context, index) {
+          final p = proofs[index];
+          final color = _getStatusColor(p.status);
+
+          return Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.white.withOpacity(0.04) : Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: color.withOpacity(0.2)),
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: color.withOpacity(0.1),
+                  child: Icon(_getStatusIcon(p.status), color: color, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        p.farmerName ?? 'Worker',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: isDark ? Colors.white : Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Requested on ${_formatDate(p.createdAt)}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? Colors.white38 : Colors.black45,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    p.statusLabel.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: color,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'verified': return Colors.green;
+      case 'rejected': return Colors.red;
+      case 'expired': return Colors.orange;
+      default: return Colors.blue;
+    }
+  }
+
+  IconData _getStatusIcon(String status) {
+    switch (status) {
+      case 'verified': return Icons.check_circle_outline;
+      case 'rejected': return Icons.error_outline;
+      case 'expired': return Icons.timer_off_outlined;
+      default: return Icons.schedule_outlined;
+    }
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return 'unknown';
+    return '${date.day}/${date.month} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
   }
 }
 

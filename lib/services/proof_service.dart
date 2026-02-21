@@ -7,12 +7,15 @@ import 'auth_service.dart';
 class ProofService {
   static final String _baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
 
-  static Future<String?> requestProof(String farmerId) async {
+  static Future<String?> requestProof(String farmerId, String landId) async {
     try {
       final response = await AuthService.authenticatedRequest(
         'POST',
         Uri.parse('$_baseUrl/api/v1/proofs/request-proof'),
-        body: {'farmer_id': farmerId}
+        body: {
+          'farmer_id': farmerId,
+          'land_id': landId,
+        }
       );
 
       final body = jsonDecode(response.body);

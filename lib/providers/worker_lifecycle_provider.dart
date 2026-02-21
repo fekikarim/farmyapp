@@ -3,7 +3,9 @@ import '../models/worker_invitation_model.dart';
 import '../models/worker_contract_model.dart';
 import '../models/contract_negotiation_model.dart';
 import '../models/worker_profile_model.dart';
+import '../models/proof_request_model.dart';
 import '../services/worker_lifecycle_service.dart';
+import '../services/proof_service.dart';
 import '../services/socket_service.dart';
 
 class WorkerLifecycleProvider extends ChangeNotifier {
@@ -45,6 +47,10 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   // ─── Balance State ───
   Map<String, dynamic> _myBalance = {};
   bool _balanceLoading = false;
+
+  // ─── Proofs State ───
+  List<ProofRequest> _landProofs = [];
+  bool _landProofsLoading = false;
 
   // ─── Getters ───
   List<WorkerInvitation> get landInvitations => _landInvitations;
@@ -90,6 +96,10 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   Map<String, dynamic> get myBalance => _myBalance;
   bool get balanceLoading => _balanceLoading;
+
+  List<ProofRequest> get landProofs => _landProofs;
+  List<ProofRequest> get pendingLandProofs => _landProofs.where((p) => p.isPending).toList();
+  bool get landProofsLoading => _landProofsLoading;
 
   // ─── Invitation Actions ───
 
@@ -455,6 +465,26 @@ class WorkerLifecycleProvider extends ChangeNotifier {
     }
   }
 
+  // ─── Proof Actions ───
+
+  Future<void> loadLandProofs(String landId) async {
+    _landProofsLoading = true;
+    notifyListeners();
+    try {
+      final List<dynamic> raw = await ProofService.getMyProofs();
+      // Filter by landId locally since API returns all my proofs
+      _landProofs = raw
+          .map((json) => ProofRequest.fromJson(json))
+          .where((p) => p.landId == landId)
+          .toList();
+    } catch (e) {
+      _landProofs = [];
+    } finally {
+      _landProofsLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<bool> suspendContract(String contractId) async {
     try {
       return await WorkerLifecycleService.suspendContract(contractId);
@@ -524,6 +554,12 @@ class WorkerLifecycleProvider extends ChangeNotifier {
     });
     _socketService.on('negotiation_deleted', (data) {
       if (data is Map<String, dynamic>) handleNegotiationDeleted(data);
+    });
+    _socketService.on('proof_requested', (data) {
+      if (data is Map<String, dynamic>) handleProofRequested(data);
+    });
+    _socketService.on('proof_status_updated', (data) {
+      if (data is Map<String, dynamic>) handleProofStatusUpdated(data);
     });
   }
 
@@ -644,6 +680,29 @@ class WorkerLifecycleProvider extends ChangeNotifier {
     if (data['deletedNegotiationId'] != null) {
       _negotiations.removeWhere((n) => n.id == data['deletedNegotiationId']);
       notifyListeners();
+    }
+  }
+
+  void handleProofRequested(Map<String, dynamic> data) {
+    if (data['proof'] != null) {
+      final proof = ProofRequest.fromJson(data['proof']);
+      // Add if it matches any of our known lands or we are in a land-specific view
+      // For now, just add it if it's not already in list
+      if (!_landProofs.any((p) => p.id == proof.id)) {
+        _landProofs.insert(0, proof);
+        notifyListeners();
+      }
+    }
+  }
+
+  void handleProofStatusUpdated(Map<String, dynamic> data) {
+    if (data['proof'] != null) {
+      final proof = ProofRequest.fromJson(data['proof']);
+      final idx = _landProofs.indexWhere((p) => p.id == proof.id);
+      if (idx >= 0) {
+        _landProofs[idx] = proof;
+        notifyListeners();
+      }
     }
   }
 
