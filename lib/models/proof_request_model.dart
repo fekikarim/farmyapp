@@ -16,6 +16,7 @@ class ProofRequest {
   final String targetType; // land, item
   final String? targetId;
   final String? targetName;
+  final String? imageUrl;
 
   ProofRequest({
     required this.id,
@@ -33,6 +34,7 @@ class ProofRequest {
     this.targetType = 'land',
     this.targetId,
     this.targetName,
+    this.imageUrl,
   });
 
   factory ProofRequest.fromJson(Map<String, dynamic> json) {
@@ -62,6 +64,7 @@ class ProofRequest {
       targetType: json['target_type'] ?? 'land',
       targetId: json['target_id'],
       targetName: json['target_name'],
+      imageUrl: json['image_url'],
     );
   }
 

@@ -6,6 +6,7 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../providers/worker_lifecycle_provider.dart';
 import '../../../services/proof_service.dart';
+import '../../../services/auth_service.dart';
 
 import '../../../models/worker_contract_model.dart';
 import '../../../models/worker_profile_model.dart';
@@ -1515,6 +1516,20 @@ class _ProofsTab extends StatelessWidget {
                              ),
                            ),
                          ),
+                       if (p.imageUrl != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(
+                                '${AuthService.baseUrl}${p.imageUrl}',
+                                height: 120,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => const SizedBox(),
+                              ),
+                            ),
+                          ),
                       if (p.isPending) ...[
                         const SizedBox(height: 4),
                         Row(

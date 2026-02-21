@@ -10,6 +10,7 @@ import '../../models/worker_invitation_model.dart';
 import '../../models/worker_contract_model.dart';
 import '../../models/proof_request_model.dart';
 import '../../services/proof_service.dart';
+import '../../services/auth_service.dart';
 import 'package:image_picker/image_picker.dart';
 import '../shared/contract_negotiation_screen.dart';
 
@@ -1451,6 +1452,24 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
               ),
             ],
           ),
+          if (proof.imageUrl != null) ...[
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                '${AuthService.baseUrl}${proof.imageUrl}',
+                height: 180,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  height: 100,
+                  width: double.infinity,
+                  color: Colors.grey.withOpacity(0.1),
+                  child: const Icon(Icons.broken_image_outlined, color: Colors.grey),
+                ),
+              ),
+            ),
+          ],
           if (isPending) ...[
             const SizedBox(height: 16),
             Row(
