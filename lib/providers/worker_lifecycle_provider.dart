@@ -108,6 +108,8 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   List<ProofRequest> get myProofs => _myProofs;
   List<ProofRequest> get pendingMyProofs =>
       _myProofs.where((p) => p.isPending).toList();
+  List<ProofRequest> get historyMyProofs =>
+      _myProofs.where((p) => !p.isPending).toList();
   bool get myProofsLoading => _myProofsLoading;
 
   // ─── Invitation Actions ───
@@ -484,7 +486,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
       // Filter by landId locally since API returns all my proofs
       _landProofs = raw
           .map((json) => ProofRequest.fromJson(json))
-          .where((p) => p.landId == landId)
+          .where((p) => (p.landId?.toLowerCase() == landId.toLowerCase()))
           .toList();
     } catch (e) {
       _landProofs = [];
@@ -715,7 +717,8 @@ class WorkerLifecycleProvider extends ChangeNotifier {
       // if it belongs to the land currently being displayed.
       // Since _landProofs is filtered by landId during loading, 
       // we check if the new proof belongs to the same land.
-      if (_landProofs.isNotEmpty && _landProofs.first.landId == proof.landId) {
+      if (_landProofs.isNotEmpty && 
+          _landProofs.first.landId?.toLowerCase() == proof.landId?.toLowerCase()) {
         if (!_landProofs.any((p) => p.id == proof.id)) {
           _landProofs.insert(0, proof);
         }
@@ -742,7 +745,8 @@ class WorkerLifecycleProvider extends ChangeNotifier {
       final idx1 = _landProofs.indexWhere((p) => p.id == proof.id);
       if (idx1 >= 0) {
         _landProofs[idx1] = proof;
-      } else if (_landProofs.isNotEmpty && _landProofs.first.landId == proof.landId) {
+      } else if (_landProofs.isNotEmpty && 
+          _landProofs.first.landId?.toLowerCase() == proof.landId?.toLowerCase()) {
         // If it was somehow missing but belongs to this land, add it
         _landProofs.insert(0, proof);
       }

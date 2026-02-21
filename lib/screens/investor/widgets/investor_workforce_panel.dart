@@ -1532,6 +1532,20 @@ class _ProofsTab extends StatelessWidget {
                           ],
                         ),
                       ],
+                      if (p.isRejected && p.aiReasoning != null) ...[
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            p.aiReasoning!,
+                            style: const TextStyle(fontSize: 10, color: Colors.red),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),

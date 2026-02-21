@@ -52,9 +52,13 @@ class ProofRequest {
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'])
           : null,
-      investorName: json['investor']?['profile']?['name'] ?? json['investor']?['email'],
-      farmerName: json['farmer']?['profile']?['name'] ?? json['farmer']?['email'],
-      landName: json['land']?['name'],
+      investorName: json['investor_name'] ?? 
+          json['investor']?['profile']?['name'] ?? 
+          json['investor']?['email'],
+      farmerName: json['farmer_name'] ?? 
+          json['farmer']?['profile']?['name'] ?? 
+          json['farmer']?['email'],
+      landName: json['land_name'] ?? json['land']?['name'],
       targetType: json['target_type'] ?? 'land',
       targetId: json['target_id'],
       targetName: json['target_name'],

@@ -358,6 +358,38 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       },
                     ),
 
+                    // ── Proof History Section ──
+                    Builder(
+                      builder: (context) {
+                        final historyProofs = lifecycle.historyMyProofs;
+                        if (historyProofs.isEmpty) return const SizedBox();
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _sectionHeader(
+                              'Proof History',
+                              Icons.history_rounded,
+                              isDark,
+                            ),
+                            const SizedBox(height: 12),
+                            ...historyProofs.take(10).map(
+                              (proof) => _buildProofActionCard(proof, isDark),
+                            ),
+                            if (historyProofs.length > 10)
+                              Center(
+                                child: TextButton(
+                                  onPressed: () {
+                                    // Could navigate to a full history screen later
+                                  },
+                                  child: const Text('View All History'),
+                                ),
+                              ),
+                            const SizedBox(height: 24),
+                          ],
+                        );
+                      },
+                    ),
+
                     // ── Active Contracts Section ──
                     Builder(
                       builder: (context) {
@@ -1308,13 +1340,34 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
   }
 
   Widget _buildProofActionCard(ProofRequest proof, bool isDark) {
+    final bool isVerified = proof.isVerified;
+    final bool isRejected = proof.isRejected;
+    final bool isExpired = proof.isExpired;
+    final bool isPending = proof.isPending && !isExpired;
+
+    Color cardColor;
+    Color iconColor;
+    if (isVerified) {
+      cardColor = Colors.green;
+      iconColor = Colors.green;
+    } else if (isRejected) {
+      cardColor = Colors.red;
+      iconColor = Colors.red;
+    } else if (isExpired) {
+      cardColor = Colors.grey;
+      iconColor = Colors.grey;
+    } else {
+      cardColor = Colors.blue;
+      iconColor = Colors.blue;
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.blue.withOpacity(0.05) : Colors.blue.shade50,
+        color: isDark ? cardColor.withOpacity(0.05) : cardColor.withOpacity(0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue.withOpacity(0.2)),
+        border: Border.all(color: cardColor.withOpacity(0.2)),
       ),
       child: Column(
         children: [
@@ -1323,10 +1376,17 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: iconColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.camera_alt, color: Colors.blue, size: 20),
+                child: Icon(
+                  isVerified ? Icons.check_circle_outline : 
+                  isRejected ? Icons.error_outline :
+                  isExpired ? Icons.timer_off_outlined :
+                  Icons.camera_alt, 
+                  color: iconColor, 
+                  size: 20
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -1343,10 +1403,13 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      proof.targetType == 'item' ? 'Item Verification' : 'General Land Proof',
+                      isVerified ? 'Verification Successful' :
+                      isRejected ? 'Verification Failed' :
+                      isExpired ? 'Request Expired' :
+                      (proof.targetType == 'item' ? 'Item Verification' : 'General Land Proof'),
                       style: TextStyle(
                         fontSize: 12,
-                        color: isDark ? Colors.blue.shade100 : Colors.blue.shade700,
+                        color: isDark ? cardColor.withOpacity(0.7) : cardColor.withOpacity(0.9),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -1370,27 +1433,31 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.15),
+                  color: iconColor.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
+                  isVerified ? 'VERIFIED' :
+                  isRejected ? 'REJECTED' :
+                  isExpired ? 'EXPIRED' :
                   'AI VERIFY',
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.blue.shade200 : Colors.blue.shade800,
+                    color: isDark ? iconColor.withOpacity(0.8) : iconColor,
                     letterSpacing: 0.5,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () async {
+          if (isPending) ...[
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
                     final picker = ImagePicker();
                     final image = await picker.pickImage(
                       source: ImageSource.camera,
@@ -1472,12 +1539,35 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   ),
                 ),
               ),
-            ],
+          ],
+        ],
+        if (isRejected && proof.aiReasoning != null) ...[
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.red.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.info_outline, size: 14, color: Colors.red),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    proof.aiReasoning!,
+                    style: const TextStyle(fontSize: 11, color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
 
   Widget _emptyState(String title, String subtitle, IconData icon) {
     return Container(
