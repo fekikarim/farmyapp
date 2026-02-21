@@ -55,6 +55,8 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   List<ProofRequest> _myProofs = [];
   bool _myProofsLoading = false;
 
+  String? _currentLandId;
+
   // ─── Getters ───
   List<WorkerInvitation> get landInvitations => _landInvitations;
   bool get landInvitationsLoading => _landInvitationsLoading;
@@ -99,6 +101,8 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   Map<String, dynamic> get myBalance => _myBalance;
   bool get balanceLoading => _balanceLoading;
+
+  String? get currentLandId => _currentLandId;
 
   List<ProofRequest> get landProofs => _landProofs;
   List<ProofRequest> get pendingLandProofs =>
@@ -192,6 +196,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   }
 
   Future<void> loadApprovedWorkers(String landId) async {
+    _currentLandId = landId;
     _approvedWorkersLoading = true;
     _approvedWorkersError = null;
     notifyListeners();
@@ -403,6 +408,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   }
 
   Future<void> loadLandContracts(String landId) async {
+    _currentLandId = landId;
     _landContractsLoading = true;
     notifyListeners();
     try {
@@ -416,6 +422,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   }
 
   Future<void> loadNegotiatingContracts(String landId) async {
+    _currentLandId = landId;
     _negotiatingContractsLoading = true;
     _negotiatingContractsError = null;
     notifyListeners();
@@ -432,6 +439,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   }
 
   Future<void> loadActiveContracts(String landId) async {
+    _currentLandId = landId;
     _activeContractsLoading = true;
     _activeContractsError = null;
     notifyListeners();
@@ -479,6 +487,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   // ─── Proof Actions ───
 
   Future<void> loadLandProofs(String landId) async {
+    _currentLandId = landId;
     _landProofsLoading = true;
     notifyListeners();
     try {
@@ -712,21 +721,12 @@ class WorkerLifecycleProvider extends ChangeNotifier {
     if (data['proof'] != null) {
       final proof = ProofRequest.fromJson(data['proof']);
       
-      // Update land-specific list if it matches a land we might be viewing
-      // Note: In a multi-land scenario, we only want to update _landProofs
-      // if it belongs to the land currently being displayed.
-      // Since _landProofs is filtered by landId during loading, 
-      // we check if the new proof belongs to the same land.
-      if (_landProofs.isNotEmpty && 
-          _landProofs.first.landId?.toLowerCase() == proof.landId?.toLowerCase()) {
+      // Update land-specific list if it matches the current land
+      if (_currentLandId != null && 
+          proof.landId?.toLowerCase() == _currentLandId!.toLowerCase()) {
         if (!_landProofs.any((p) => p.id == proof.id)) {
           _landProofs.insert(0, proof);
         }
-      } else if (_landProofs.isEmpty) {
-        // If it was empty, we can't be sure which land we are looking at 
-        // without storing the 'currentLandId' in the provider.
-        // For now, let's assume if it's empty, we might need a refresh 
-        // or just ignore if it doesn't match the current land context.
       }
 
       // Update global list for worker
@@ -741,20 +741,24 @@ class WorkerLifecycleProvider extends ChangeNotifier {
     if (data['proof'] != null) {
       final proof = ProofRequest.fromJson(data['proof']);
       
-      // Update in land list (only if it belongs to the same land)
-      final idx1 = _landProofs.indexWhere((p) => p.id == proof.id);
-      if (idx1 >= 0) {
-        _landProofs[idx1] = proof;
-      } else if (_landProofs.isNotEmpty && 
-          _landProofs.first.landId?.toLowerCase() == proof.landId?.toLowerCase()) {
-        // If it was somehow missing but belongs to this land, add it
-        _landProofs.insert(0, proof);
+      // Update in my list
+      final idx = _myProofs.indexWhere((p) => p.id == proof.id);
+      if (idx >= 0) {
+        _myProofs[idx] = proof;
+      } else {
+        _myProofs.insert(0, proof);
       }
 
-      // Update in global list
-      final idx2 = _myProofs.indexWhere((p) => p.id == proof.id);
-      if (idx2 >= 0) _myProofs[idx2] = proof;
-
+      // Update in land list (only if it belongs to the current land)
+      if (_currentLandId != null && 
+          proof.landId?.toLowerCase() == _currentLandId!.toLowerCase()) {
+        final idxInLand = _landProofs.indexWhere((p) => p.id == proof.id);
+        if (idxInLand >= 0) {
+          _landProofs[idxInLand] = proof;
+        } else {
+          _landProofs.insert(0, proof);
+        }
+      }
       notifyListeners();
     }
   }
