@@ -147,10 +147,17 @@ class _EditLandSheetState extends State<EditLandSheet> {
                   ),
                   prefixIcon: const Icon(Icons.payments_rounded),
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter a price';
-                  if (double.tryParse(value) == null) return 'Invalid number';
+                  if (value == null || value.trim().isEmpty)
+                    return 'Price cannot be empty';
+                  final val = double.tryParse(value.trim());
+                  if (val == null) return 'Please enter a valid numeric amount';
+                  if (val <= 0) return 'Price must be greater than 0';
+                  if (val > 1000000)
+                    return 'Price exceeds maximum allowed limit';
                   return null;
                 },
               ),

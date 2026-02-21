@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:intl/intl.dart';
 import '../../models/land_model.dart';
 import '../../services/land_service.dart';
 import 'rental_checkout_screen.dart';
@@ -44,7 +45,16 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = e.toString().replaceAll('Exception: ', '');
+          if (e.toString().contains('SocketException') ||
+              e.toString().contains('Failed host lookup')) {
+            _error =
+                'No internet connection. Please check your network and try again.';
+          } else {
+            _error = e
+                .toString()
+                .replaceAll('Exception: ', '')
+                .replaceAll('HttpException: ', '');
+          }
           _isLoading = false;
         });
       }
@@ -364,9 +374,9 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                '1,200 TND',
-                style: TextStyle(
+              Text(
+                '${NumberFormat('#,###').format(_land.price)} TND',
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.green,
@@ -528,47 +538,64 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: Colors.red.withOpacity(0.1),
                 shape: BoxShape.circle,
+                border: Border.all(color: Colors.red.withOpacity(0.2)),
               ),
               child: const Icon(
-                Icons.error_outline_rounded,
-                color: Colors.red,
+                Icons
+                    .wifi_off_rounded, // Better visual representation of sync failures
+                color: Colors.redAccent,
                 size: 48,
               ),
             ),
             const SizedBox(height: 24),
             const Text(
-              'Sync Failed',
+              'Connection Error',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 12),
             Text(
-              _error ?? 'Unable to retrieve land details',
+              _error ??
+                  'Unable to retrieve land details. Please ensure you are connected to the internet.',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white38),
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.7),
+                fontSize: 15,
+                height: 1.5,
+              ),
             ),
             const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: _fetchDetails,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.05),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 16,
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+                onPressed: _fetchDetails,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white.withOpacity(0.08),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 18,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                label: const Text(
+                  'TRY AGAIN',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.1,
+                  ),
                 ),
               ),
-              child: const Text('Try Again'),
             ),
           ],
         ),

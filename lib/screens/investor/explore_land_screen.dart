@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:intl/intl.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/land_provider.dart';
 import '../../models/land_model.dart';
@@ -255,10 +256,13 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
           AnimatedPositioned(
             duration: const Duration(milliseconds: 400),
             curve: Curves.easeOutCubic,
-            right: _showWorkforcePanel ? 0 : -MediaQuery.of(context).size.width * 0.75,
+            right: _showWorkforcePanel
+                ? 0
+                : -MediaQuery.of(context).size.width * 0.75,
             top: 0,
             bottom: 0,
-            width: MediaQuery.of(context).size.width * 0.75, // Narrower 75% width
+            width:
+                MediaQuery.of(context).size.width * 0.75, // Narrower 75% width
             child: Material(
               elevation: 16,
               color: Colors.transparent,
@@ -434,6 +438,12 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
   }
 
   Widget _buildErrorState(String error) {
+    bool isNetwork =
+        error.contains('SocketException') ||
+        error.contains('Failed host lookup');
+    String displayError = isNetwork
+        ? 'No internet connection. Please check your network and try again.'
+        : error.replaceAll('Exception: ', '').replaceAll('HttpException: ', '');
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -441,47 +451,62 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: Colors.red.withOpacity(0.1),
                 shape: BoxShape.circle,
+                border: Border.all(color: Colors.red.withOpacity(0.2)),
               ),
               child: const Icon(
-                Icons.error_outline_rounded,
-                color: Colors.red,
+                Icons.wifi_off_rounded,
+                color: Colors.redAccent,
                 size: 48,
               ),
             ),
             const SizedBox(height: 24),
             const Text(
-              'Sync Failed',
+              'Connection Error',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 12),
             Text(
-              error,
+              displayError,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white38),
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.7),
+                fontSize: 15,
+                height: 1.5,
+              ),
             ),
             const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: _loadData,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.05),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 16,
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+                onPressed: _loadData,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white.withOpacity(0.08),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 18,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                label: const Text(
+                  'TRY AGAIN',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.1,
+                  ),
                 ),
               ),
-              child: const Text('Try Again'),
             ),
           ],
         ),
@@ -756,7 +781,7 @@ class _InvestorLandCard extends StatelessWidget {
                         '${land.gridWidth}x${land.gridHeight} Plots',
                         Icons.grid_3x3_rounded,
                       ),
-                      _buildPriceInfo(context),
+                      _buildPriceInfo(context, land),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -852,7 +877,7 @@ class _InvestorLandCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceInfo(BuildContext context) {
+  Widget _buildPriceInfo(BuildContext context, Land land) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -865,9 +890,9 @@ class _InvestorLandCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        const Text(
-          '1,200 TND',
-          style: TextStyle(
+        Text(
+          '${NumberFormat('#,###').format(land.price)} TND',
+          style: const TextStyle(
             color: Colors.green,
             fontSize: 15,
             fontWeight: FontWeight.bold,

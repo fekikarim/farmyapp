@@ -180,9 +180,12 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                 decimal: true,
               ),
               validator: (v) {
-                final val = double.tryParse(v ?? '');
-                if (val == null) return 'Invalid price';
+                if (v == null || v.trim().isEmpty)
+                  return 'Price cannot be empty';
+                final val = double.tryParse(v.trim());
+                if (val == null) return 'Please enter a valid numeric amount';
                 if (val <= 0) return 'Price must be greater than 0';
+                if (val > 1000000) return 'Price exceeds maximum allowed limit';
                 return null;
               },
             ),

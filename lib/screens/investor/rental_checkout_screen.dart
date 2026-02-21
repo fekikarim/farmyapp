@@ -6,7 +6,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../../models/land_model.dart';
 import '../../providers/land_provider.dart';
-import '../../providers/wallet_provider.dart'; 
+import '../../providers/wallet_provider.dart';
 import '../wallet/payment_methods_screen.dart'; // Added
 import 'dart:ui';
 
@@ -26,11 +26,9 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   bool _acceptedTerms = false;
   late final double _monthlyRent = widget.land.price;
   DateTime _startDate = DateTime.now();
-  PaymentMethod? _selectedPaymentMethod; 
+  PaymentMethod? _selectedPaymentMethod;
   bool _highlightTerms = false;
   final ScrollController _scrollController = ScrollController();
-
-
 
   @override
   void initState() {
@@ -45,7 +43,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     // Auto-select logic is now inside _buildPaymentMethodSelector to react to state changes and credits
     final walletProvider = context.watch<WalletProvider>(); // Keep watcher here
 
@@ -76,7 +74,6 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
             controller: _scrollController,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             child: Column(
-
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildPremiumHeader(),
@@ -116,14 +113,14 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 _buildTotalBreakdown(),
                 const SizedBox(height: 32),
                 _buildTermsAndConditions(),
-                const SizedBox(height: 120), // Spacer for button
+                const SizedBox(height: 32), // Spacer
               ],
             ),
           ),
           if (_isLoading) _buildProcessingOverlay(),
         ],
       ),
-      bottomSheet: _buildBottomActionCard(),
+      bottomNavigationBar: _buildBottomActionCard(),
     );
   }
 
@@ -176,10 +173,26 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                       if (!isDark) return tileWidget;
                       return ColorFiltered(
                         colorFilter: const ColorFilter.matrix([
-                          -1, 0, 0, 0, 255,
-                          0, -1, 0, 0, 255,
-                          0, 0, -1, 0, 255,
-                          0, 0, 0, 1, 0,
+                          -1,
+                          0,
+                          0,
+                          0,
+                          255,
+                          0,
+                          -1,
+                          0,
+                          0,
+                          255,
+                          0,
+                          0,
+                          -1,
+                          0,
+                          255,
+                          0,
+                          0,
+                          0,
+                          1,
+                          0,
                         ]),
                         child: tileWidget,
                       );
@@ -409,81 +422,91 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
 
     // Define a "Credits" payment method placeholder
     final creditsMethod = PaymentMethod(
-        id: 'WALLET_CREDITS',
-        type: 'credits',
-        last4: '',
-        brand: 'Wallet Credits',
-        expiryMonth: '',
-        expiryYear: '',
-        isDefault: false,
+      id: 'WALLET_CREDITS',
+      type: 'credits',
+      last4: '',
+      brand: 'Wallet Credits',
+      expiryMonth: '',
+      expiryYear: '',
+      isDefault: false,
     );
 
     // Auto-select credits if available and sufficient, AND no other method explicitly selected yet
     if (_selectedPaymentMethod == null) {
-        if (canUseCredits) {
-            _selectedPaymentMethod = creditsMethod;
-        } else if (walletProvider.paymentMethods.isNotEmpty) {
-             try {
-                _selectedPaymentMethod = walletProvider.paymentMethods.firstWhere((p) => p.isDefault);
-            } catch (_) {
-                _selectedPaymentMethod = walletProvider.paymentMethods.first;
-            }
+      if (canUseCredits) {
+        _selectedPaymentMethod = creditsMethod;
+      } else if (walletProvider.paymentMethods.isNotEmpty) {
+        try {
+          _selectedPaymentMethod = walletProvider.paymentMethods.firstWhere(
+            (p) => p.isDefault,
+          );
+        } catch (_) {
+          _selectedPaymentMethod = walletProvider.paymentMethods.first;
         }
+      }
     }
 
     final allMethods = [
-        if (canUseCredits) creditsMethod,
-        ...walletProvider.paymentMethods
+      if (canUseCredits) creditsMethod,
+      ...walletProvider.paymentMethods,
     ];
 
     // Safety check: Ensure selected method exists in the current list (or is credits which is dynamic)
     if (_selectedPaymentMethod != null) {
-        bool exists = false;
-        if (_selectedPaymentMethod!.id == 'WALLET_CREDITS') {
-            exists = canUseCredits; // Only exists if credits are sufficient
-        } else {
-            exists = walletProvider.paymentMethods.any((p) => p.id == _selectedPaymentMethod!.id);
+      bool exists = false;
+      if (_selectedPaymentMethod!.id == 'WALLET_CREDITS') {
+        exists = canUseCredits; // Only exists if credits are sufficient
+      } else {
+        exists = walletProvider.paymentMethods.any(
+          (p) => p.id == _selectedPaymentMethod!.id,
+        );
+      }
+
+      if (!exists) {
+        _selectedPaymentMethod = null;
+        // Try to re-select something valid
+        if (canUseCredits) {
+          _selectedPaymentMethod = creditsMethod;
+        } else if (walletProvider.paymentMethods.isNotEmpty) {
+          _selectedPaymentMethod = walletProvider.paymentMethods.first;
         }
-        
-        if (!exists) {
-            _selectedPaymentMethod = null;
-            // Try to re-select something valid
-            if (canUseCredits) {
-                _selectedPaymentMethod = creditsMethod;
-            } else if (walletProvider.paymentMethods.isNotEmpty) {
-                _selectedPaymentMethod = walletProvider.paymentMethods.first;
-            }
-        }
+      }
     }
 
     if (allMethods.isEmpty) {
-        return Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-                color: const Color(0xFF1A1D21),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1A1D21),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+        ),
+        child: Column(
+          children: [
+            Text(
+              'Insufficient Credits (${NumberFormat('#,###').format(walletProvider.credits)} TND)',
+              style: TextStyle(
+                color: Colors.redAccent,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            child: Column(
-                children: [
-                    Text(
-                        'Insufficient Credits (${NumberFormat('#,###').format(walletProvider.credits)} TND)',
-                        style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    TextButton.icon(
-                        icon: Icon(Icons.add_card, color: Colors.green),
-                        label: Text("Add Payment Method", style: TextStyle(color: Colors.green)),
-                        onPressed: () => _handleAddCard(context),
-                    ),
-                ],
+            const SizedBox(height: 10),
+            TextButton.icon(
+              icon: Icon(Icons.add_card, color: Colors.green),
+              label: Text(
+                "Add Payment Method",
+                style: TextStyle(color: Colors.green),
+              ),
+              onPressed: () => _handleAddCard(context),
             ),
-        );
+          ],
+        ),
+      );
     }
 
     // New UI: Selected Card Display with "Change" action
     final isCredits = _selectedPaymentMethod?.id == 'WALLET_CREDITS';
-    
+
     return GestureDetector(
       onTap: () => _showPaymentMethodPicker(context, allMethods, creditsMethod),
       child: Container(
@@ -492,28 +515,36 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
           color: const Color(0xFF1A1D21),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isCredits ? Colors.amber.withOpacity(0.3) : Colors.white.withOpacity(0.05),
+            color: isCredits
+                ? Colors.amber.withOpacity(0.3)
+                : Colors.white.withOpacity(0.05),
             width: isCredits ? 1.5 : 1,
           ),
-          boxShadow: isCredits ? [
-            BoxShadow(
-                color: Colors.amber.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-            )
-          ] : [],
+          boxShadow: isCredits
+              ? [
+                  BoxShadow(
+                    color: Colors.amber.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : [],
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: (isCredits ? Colors.amber : Colors.blue).withOpacity(0.1),
+                color: (isCredits ? Colors.amber : Colors.blue).withOpacity(
+                  0.1,
+                ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                  isCredits ? Icons.account_balance_wallet_rounded : Icons.credit_card_rounded, 
-                  color: isCredits ? Colors.amber : Colors.blue
+                isCredits
+                    ? Icons.account_balance_wallet_rounded
+                    : Icons.credit_card_rounded,
+                color: isCredits ? Colors.amber : Colors.blue,
               ),
             ),
             const SizedBox(width: 20),
@@ -521,43 +552,42 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                    Text(
-                        isCredits 
-                            ? 'Wallet Credits' 
-                            : '${_selectedPaymentMethod?.brand.toUpperCase()} •••• ${_selectedPaymentMethod?.last4}',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                        ),
+                  Text(
+                    isCredits
+                        ? 'Wallet Credits'
+                        : '${_selectedPaymentMethod?.brand.toUpperCase()} •••• ${_selectedPaymentMethod?.last4}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                        isCredits
-                            ? 'Balance: ${NumberFormat('#,###').format(walletProvider.credits)} TND'
-                            : (_selectedPaymentMethod?.isDefault == true ? 'Default Method' : 'Saved Card'),
-                        style: TextStyle(
-                            color: Colors.white38,
-                            fontSize: 12,
-                        ),
-                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    isCredits
+                        ? 'Balance: ${NumberFormat('#,###').format(walletProvider.credits)} TND'
+                        : (_selectedPaymentMethod?.isDefault == true
+                              ? 'Default Method'
+                              : 'Saved Card'),
+                    style: TextStyle(color: Colors.white38, fontSize: 12),
+                  ),
                 ],
               ),
             ),
             Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(20),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                "Change",
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
                 ),
-                child: Text(
-                    "Change",
-                    style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                    ),
-                ),
+              ),
             ),
           ],
         ),
@@ -566,151 +596,168 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
   }
 
   void _showPaymentMethodPicker(
-      BuildContext context, 
-      List<PaymentMethod> methods,
-      PaymentMethod creditsMethod // Pass this to identify credits
+    BuildContext context,
+    List<PaymentMethod> methods,
+    PaymentMethod creditsMethod, // Pass this to identify credits
   ) {
-      showModalBottomSheet(
-          context: context,
-          backgroundColor: Colors.transparent,
-          isScrollControlled: true,
-          builder: (context) {
-              return Container(
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  decoration: BoxDecoration(
-                      color: const Color(0xFF1A1D21),
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                      border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1))),
-                  ),
-                  child: Column(
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.5,
+          decoration: BoxDecoration(
+            color: const Color(0xFF1A1D21),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border(
+              top: BorderSide(color: Colors.white.withOpacity(0.1)),
+            ),
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                "Select Payment Method",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 24),
+              // "Add New Card" Button
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 8,
+                ),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context); // Close sheet
+                    _handleAddCard(context); // Trigger add card
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white.withOpacity(0.1)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                          const SizedBox(height: 12),
-                          Container(
-                              width: 40,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.3),
-                                  borderRadius: BorderRadius.circular(2),
-                              ),
+                        Icon(
+                          Icons.add_circle_outline_rounded,
+                          color: Colors.green,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          "Add New Card",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
                           ),
-                          const SizedBox(height: 24),
-                          const Text(
-                              "Select Payment Method",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                              ),
-                          ),
-                          const SizedBox(height: 24),
-                          // "Add New Card" Button
-                           Padding(
-                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                               child: InkWell(
-                                   onTap: () {
-                                       Navigator.pop(context); // Close sheet
-                                       _handleAddCard(context); // Trigger add card
-                                   },
-                                   borderRadius: BorderRadius.circular(16),
-                                   child: Container(
-                                       padding: const EdgeInsets.all(16),
-                                       decoration: BoxDecoration(
-                                           color: Colors.white.withOpacity(0.05),
-                                           borderRadius: BorderRadius.circular(16),
-                                           border: Border.all(color: Colors.white.withOpacity(0.1)),
-                                       ),
-                                       child: Row(
-                                           mainAxisAlignment: MainAxisAlignment.center,
-                                           children: [
-                                               Icon(Icons.add_circle_outline_rounded, color: Colors.green),
-                                               const SizedBox(width: 12),
-                                               Text(
-                                                   "Add New Card",
-                                                   style: TextStyle(
-                                                       color: Colors.white,
-                                                       fontWeight: FontWeight.bold,
-                                                       fontSize: 16,
-                                                   ),
-                                               ),
-                                           ],
-                                       ),
-                                   ),
-                               ),
-                           ),
-                           const SizedBox(height: 12),
-                          Expanded(
-                              child: ListView.separated(
-                                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                                  itemCount: methods.length,
-                                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                                  itemBuilder: (context, index) {
-                                      final method = methods[index];
-                                      final isSelected = method == _selectedPaymentMethod;
-                                      final isCredit = method.id == 'WALLET_CREDITS';
-                                      
-                                      return GestureDetector(
-                                          onTap: () {
-                                              setState(() => _selectedPaymentMethod = method);
-                                              Navigator.pop(context);
-                                          },
-                                          child: Container(
-                                              padding: const EdgeInsets.all(16),
-                                              decoration: BoxDecoration(
-                                                  color: isSelected 
-                                                      ? (isCredit ? Colors.amber.withOpacity(0.1) : Colors.green.withOpacity(0.1))
-                                                      : Colors.white.withOpacity(0.05),
-                                                  borderRadius: BorderRadius.circular(16),
-                                                  border: Border.all(
-                                                      color: isSelected 
-                                                          ? (isCredit ? Colors.amber : Colors.green)
-                                                          : Colors.transparent,
-                                                  ),
-                                              ),
-                                              child: Row(
-                                                  children: [
-                                                      Icon(
-                                                          isCredit ? Icons.account_balance_wallet_rounded : Icons.credit_card_rounded,
-                                                          color: isCredit ? Colors.amber : Colors.blue,
-                                                      ),
-                                                      const SizedBox(width: 16),
-                                                      Expanded(
-                                                          child: Column(
-                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                              children: [
-                                                                  Text(
-                                                                      isCredit ? 'Wallet Credits' : '${method.brand.toUpperCase()} •••• ${method.last4}',
-                                                                      style: const TextStyle(
-                                                                          color: Colors.white,
-                                                                          fontWeight: FontWeight.bold,
-                                                                          fontSize: 15,
-                                                                      ),
-                                                                  ),
-                                                                  if (isCredit)
-                                                                  Text(
-                                                                      'Available: Instant payment',
-                                                                      style: TextStyle(color: Colors.white54, fontSize: 12),
-                                                                  ),
-                                                              ],
-                                                          ),
-                                                      ),
-                                                      if (isSelected)
-                                                          Icon(
-                                                              Icons.check_circle_rounded,
-                                                              color: isCredit ? Colors.amber : Colors.green,
-                                                          ),
-                                                  ],
-                                              ),
-                                          ),
-                                      );
-                                  },
-                              ),
-                          ),
-                          const SizedBox(height: 32),
+                        ),
                       ],
+                    ),
                   ),
-              );
-          },
-      );
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  itemCount: methods.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final method = methods[index];
+                    final isSelected = method == _selectedPaymentMethod;
+                    final isCredit = method.id == 'WALLET_CREDITS';
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() => _selectedPaymentMethod = method);
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? (isCredit
+                                    ? Colors.amber.withOpacity(0.1)
+                                    : Colors.green.withOpacity(0.1))
+                              : Colors.white.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isSelected
+                                ? (isCredit ? Colors.amber : Colors.green)
+                                : Colors.transparent,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isCredit
+                                  ? Icons.account_balance_wallet_rounded
+                                  : Icons.credit_card_rounded,
+                              color: isCredit ? Colors.amber : Colors.blue,
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    isCredit
+                                        ? 'Wallet Credits'
+                                        : '${method.brand.toUpperCase()} •••• ${method.last4}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  if (isCredit)
+                                    Text(
+                                      'Available: Instant payment',
+                                      style: TextStyle(
+                                        color: Colors.white54,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            if (isSelected)
+                              Icon(
+                                Icons.check_circle_rounded,
+                                color: isCredit ? Colors.amber : Colors.green,
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 32),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildTotalBreakdown() {
@@ -727,7 +774,10 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
       ),
       child: Column(
         children: [
-          _buildRow('Monthly Rent', '1,200 TND'),
+          _buildRow(
+            'Monthly Rent',
+            '${NumberFormat('#,###').format(_monthlyRent)} TND',
+          ),
           const SizedBox(height: 16),
           _buildRow('Duration', '$_months Months'),
           const SizedBox(height: 16),
@@ -794,7 +844,9 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
           duration: const Duration(milliseconds: 300),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
-            border: _highlightTerms ? Border.all(color: Colors.redAccent, width: 2) : null,
+            border: _highlightTerms
+                ? Border.all(color: Colors.redAccent, width: 2)
+                : null,
           ),
           child: SizedBox(
             height: 24,
@@ -804,13 +856,15 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
               activeColor: Colors.green,
               checkColor: Colors.white,
               side: BorderSide(
-                color: _highlightTerms ? Colors.redAccent : (isDark ? Colors.white : Colors.black).withOpacity(0.2),
+                color: _highlightTerms
+                    ? Colors.redAccent
+                    : (isDark ? Colors.white : Colors.black).withOpacity(0.2),
               ),
               onChanged: (val) {
-                  setState(() { 
-                      _acceptedTerms = val ?? false;
-                      if (_acceptedTerms) _highlightTerms = false;
-                  });
+                setState(() {
+                  _acceptedTerms = val ?? false;
+                  if (_acceptedTerms) _highlightTerms = false;
+                });
               },
             ),
           ),
@@ -820,7 +874,9 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
           child: Text(
             'I agree to the Terms of Service & Privacy Policy',
             style: TextStyle(
-              color: _highlightTerms ? Colors.redAccent : (isDark ? Colors.white54 : Colors.black54),
+              color: _highlightTerms
+                  ? Colors.redAccent
+                  : (isDark ? Colors.white54 : Colors.black54),
               fontSize: 13,
               fontWeight: _highlightTerms ? FontWeight.bold : FontWeight.normal,
             ),
@@ -835,7 +891,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
     final isDark = theme.brightness == Brightness.dark;
     // Check if payment method is selected
     final canPay = _acceptedTerms && _selectedPaymentMethod != null;
-    
+
     return Container(
       padding: EdgeInsets.fromLTRB(
         24,
@@ -886,27 +942,45 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
           Expanded(
             child: ElevatedButton(
               onPressed: () {
-                  if (!_acceptedTerms) {
-                      setState(() => _highlightTerms = true);
-                      // Auto-scroll to bottom to show checkbox
-                      _scrollController.animateTo(
-                        _scrollController.position.maxScrollExtent,
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.easeOut,
-                      );
-                      
-                      Future.delayed(const Duration(milliseconds: 800), () {
-                          if (mounted) setState(() => _highlightTerms = false);
-                      });
-                      return;
-                  }
-                  if (_selectedPaymentMethod == null) {
-                       ScaffoldMessenger.of(context).showSnackBar(
-                           const SnackBar(content: Text("Please select a payment method"))
-                       );
-                       return;
-                  }
-                  _handlePayment();
+                if (!_acceptedTerms) {
+                  setState(() => _highlightTerms = true);
+                  // Auto-scroll to bottom to show checkbox
+                  _scrollController.animateTo(
+                    _scrollController.position.maxScrollExtent,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeOut,
+                  );
+
+                  Future.delayed(const Duration(milliseconds: 800), () {
+                    if (mounted) setState(() => _highlightTerms = false);
+                  });
+                  return;
+                }
+                if (_selectedPaymentMethod == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Row(
+                        children: [
+                          Icon(
+                            Icons.error_outline_rounded,
+                            color: Colors.white,
+                          ),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              "Please select a payment method",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
+                      backgroundColor: Colors.redAccent,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                  return;
+                }
+                _handlePayment();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
@@ -991,17 +1065,17 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         'payment_status': 'paid', // Intention to pay
         'payment_method_id': _selectedPaymentMethod?.id, // Added
       });
-      
+
       // Wait for loading to finish
       if (mounted) setState(() => _isLoading = false);
 
       if (success) {
         if (mounted) _showSuccessDialog();
       } else {
-        // This block might not be reached if provider throws exception, 
+        // This block might not be reached if provider throws exception,
         // but if it returns false, we show error.
         if (mounted) {
-           _showErrorSnackBar(
+          _showErrorSnackBar(
             context.read<LandProvider>().error ??
                 'Payment failed, please try again.',
           );
@@ -1010,109 +1084,160 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);
       if (mounted) {
-          final errorMsg = e.toString();
-          // Check for payment-related errors
-          if (errorMsg.contains("PaymentMethod") || errorMsg.contains("payment") || errorMsg.contains("Stripe")) {
-               _showPaymentFailureDialog(errorMsg);
-          } else {
-               _showErrorSnackBar(errorMsg);
-          }
+        final errorMsg = e.toString();
+        // Check for payment-related errors
+        if (errorMsg.contains("PaymentMethod") ||
+            errorMsg.contains("payment") ||
+            errorMsg.contains("Stripe")) {
+          _showPaymentFailureDialog(errorMsg);
+        } else {
+          _showErrorSnackBar(errorMsg);
+        }
       }
     }
   }
 
   void _showPaymentFailureDialog(String errorMsg) {
-       final isDark = Theme.of(context).brightness == Brightness.dark;
-       showDialog(
-           context: context,
-           builder: (context) => AlertDialog(
-               backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-               title: Text("Payment Failed", style: TextStyle(color: isDark ? Colors.white : Colors.black)),
-               content: Column(
-                   mainAxisSize: MainAxisSize.min,
-                   children: [
-                       Text(
-                           "There was an issue with your payment method.",
-                           style: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
-                       ),
-                       const SizedBox(height: 8),
-                       Text(
-                           errorMsg.replaceAll("Exception: ", ""),
-                           style: const TextStyle(color: Colors.redAccent, fontSize: 12),
-                           maxLines: 3,
-                           overflow: TextOverflow.ellipsis,
-                       ),
-                   ],
-               ),
-               actions: [
-                   TextButton(
-                       onPressed: () => Navigator.pop(context),
-                       child: const Text("Cancel"),
-                   ),
-                   ElevatedButton(
-                       style: ElevatedButton.styleFrom(
-                           backgroundColor: Colors.green,
-                           foregroundColor: Colors.white,
-                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                       ),
-                       onPressed: () {
-                           Navigator.pop(context); // Close dialog
-                           Navigator.push(
-                               context, 
-                               MaterialPageRoute(builder: (_) => const PaymentMethodsScreen())
-                           ).then((_) {
-                               // Refresh wallet when coming back
-                               context.read<WalletProvider>().fetchWalletStatus();
-                           });
-                       },
-                       child: const Text("Manage Cards"),
-                   ),
-               ],
-           ),
-       );
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          "Payment Failed",
+          style: TextStyle(color: isDark ? Colors.white : Colors.black),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "There was an issue processing your payment method. Please ensure you have sufficient balance or a valid card and try again.",
+              style: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.red.withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.info_outline_rounded,
+                    color: Colors.redAccent,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      errorMsg
+                          .replaceAll("Exception: ", "")
+                          .replaceAll("HttpException: ", ""),
+                      style: const TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()),
+              ).then((_) {
+                // Refresh wallet when coming back
+                context.read<WalletProvider>().fetchWalletStatus();
+              });
+            },
+            child: const Text("Manage Cards"),
+          ),
+        ],
+      ),
+    );
   }
 
-
-  
   Future<void> _handleAddCard(BuildContext context) async {
     setState(() => _isLoading = true);
     try {
       final success = await context.read<WalletProvider>().addCard();
       if (success && mounted) {
-           ScaffoldMessenger.of(context).showSnackBar(
-               const SnackBar(content: Text("Card added successfully"))
-           );
-           // Auto-select the new card (logic relies on provider list update)
-           // We can assume the last added card is the one we want, or just let the user pick it.
-           // But better to find the one that wasn't there before? 
-           // For simplicity, we just refresh. build() will pick it up or user can select it.
-           
-           // Force select if it's the only one or default logic handles it
-           final provider = context.read<WalletProvider>();
-           if (provider.paymentMethods.isNotEmpty) {
-               setState(() {
-                   // Prefer the one that is default, or just the first one if we can't tell which is new
-                   // Usually Stripe newly added card becomes default or is just added.
-                   _selectedPaymentMethod = provider.paymentMethods.firstWhere((p) => p.isDefault, orElse: () => provider.paymentMethods.first);
-               });
-           }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Card added successfully")),
+        );
+        // Auto-select the new card (logic relies on provider list update)
+        // We can assume the last added card is the one we want, or just let the user pick it.
+        // But better to find the one that wasn't there before?
+        // For simplicity, we just refresh. build() will pick it up or user can select it.
+
+        // Force select if it's the only one or default logic handles it
+        final provider = context.read<WalletProvider>();
+        if (provider.paymentMethods.isNotEmpty) {
+          setState(() {
+            // Prefer the one that is default, or just the first one if we can't tell which is new
+            // Usually Stripe newly added card becomes default or is just added.
+            _selectedPaymentMethod = provider.paymentMethods.firstWhere(
+              (p) => p.isDefault,
+              orElse: () => provider.paymentMethods.first,
+            );
+          });
+        }
       } else if (mounted) {
-           ScaffoldMessenger.of(context).showSnackBar(
-               const SnackBar(content: Text("Cancelled or failed to add card"), backgroundColor: Colors.orange)
-           );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Cancelled or failed to add card"),
+            backgroundColor: Colors.orange,
+          ),
+        );
       }
     } catch (e) {
-        if(mounted) _showErrorSnackBar(e.toString());
+      if (mounted) _showErrorSnackBar(e.toString());
     } finally {
-        if(mounted) setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Row(
+          children: [
+            const Icon(
+              Icons.wifi_off_rounded,
+              color: Colors.white,
+            ), // Assuming network-related error mostly
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
         backgroundColor: Colors.redAccent,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(24),
@@ -1178,7 +1303,9 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Close dialog
-                    Navigator.of(context).pop(true); // Back to Explore with success result
+                    Navigator.of(
+                      context,
+                    ).pop(true); // Back to Explore with success result
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
