@@ -55,7 +55,19 @@ class ProofRequest {
   bool get isPending => status == 'pending';
   bool get isVerified => status == 'verified';
   bool get isRejected => status == 'rejected';
-  bool get isExpired => status == 'expired';
+  bool get isExpired => status == 'expired' || DateTime.now().isAfter(expiresAt);
+
+  String get timeRemaining {
+    final now = DateTime.now();
+    final diff = expiresAt.difference(now);
+    if (diff.isNegative) return "Expired";
+    final hours = diff.inHours;
+    final minutes = diff.inMinutes.remainder(60);
+    final seconds = diff.inSeconds.remainder(60);
+    if (hours > 0) return "${hours}h ${minutes}m";
+    if (minutes > 0) return "${minutes}m ${seconds}s";
+    return "${seconds}s";
+  }
 
   String get statusLabel {
     switch (status) {

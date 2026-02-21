@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -1169,7 +1171,7 @@ class _ActiveWorkersTab extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Until ${c.contractEndDate.day}/${c.contractEndDate.month}',
+                      'Until ${DateFormat('MMM d').format(c.contractEndDate)}',
                       style: TextStyle(
                         fontSize: 10,
                         color: isDark
@@ -1410,12 +1412,29 @@ class _ProofsTab extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Requested on ${_formatDate(p.createdAt)}',
+                        'Requested • ${_formatDate(p.createdAt)}',
                         style: TextStyle(
                           fontSize: 11,
                           color: isDark ? Colors.white38 : Colors.black45,
                         ),
                       ),
+                      if (p.isPending) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(Icons.timer_outlined, size: 10, color: Colors.blue.shade300),
+                            const SizedBox(width: 4),
+                            _ProofCountdown(
+                              proof: p,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue.shade400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -1463,7 +1482,60 @@ class _ProofsTab extends StatelessWidget {
 
   String _formatDate(DateTime? date) {
     if (date == null) return 'unknown';
-    return '${date.day}/${date.month} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+    return DateFormat('MMM d, HH:mm').format(date);
+  }
+}
+
+class _ProofCountdown extends StatefulWidget {
+  final ProofRequest proof;
+  final TextStyle? style;
+  const _ProofCountdown({required this.proof, this.style});
+
+  @override
+  State<_ProofCountdown> createState() => _ProofCountdownState();
+}
+
+class _ProofCountdownState extends State<_ProofCountdown> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {});
+        if (widget.proof.isExpired) {
+          _timer?.cancel();
+        }
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(_ProofCountdown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.proof.id != widget.proof.id || oldWidget.proof.expiresAt != widget.proof.expiresAt) {
+      _startTimer();
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      widget.proof.timeRemaining,
+      style: widget.style,
+    );
   }
 }
 

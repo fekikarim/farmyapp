@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../providers/worker_provider.dart';
 import '../../providers/worker_lifecycle_provider.dart';
@@ -1291,7 +1293,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
               ...[
                 const SizedBox(height: 4),
                 Text(
-                  'Until ${contract.contractEndDate.day}/${contract.contractEndDate.month}',
+                  'Until ${DateFormat('MMM d').format(contract.contractEndDate)}',
                   style: TextStyle(
                     fontSize: 10,
                     color: isDark ? Colors.grey.shade500 : Colors.grey.shade500,
@@ -1345,6 +1347,21 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                         fontSize: 12,
                         color: isDark ? Colors.blue.shade100 : Colors.blue.shade700,
                       ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.timer_outlined, size: 10, color: isDark ? Colors.blue.shade300 : Colors.blue.shade600),
+                        const SizedBox(width: 4),
+                        _ProofCountdown(
+                          proof: proof,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.blue.shade300 : Colors.blue.shade700,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -1437,6 +1454,59 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ProofCountdown extends StatefulWidget {
+  final ProofRequest proof;
+  final TextStyle? style;
+  const _ProofCountdown({required this.proof, this.style});
+
+  @override
+  State<_ProofCountdown> createState() => _ProofCountdownState();
+}
+
+class _ProofCountdownState extends State<_ProofCountdown> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {});
+        if (widget.proof.isExpired) {
+          _timer?.cancel();
+        }
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(_ProofCountdown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.proof.id != widget.proof.id || oldWidget.proof.expiresAt != widget.proof.expiresAt) {
+      _startTimer();
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      widget.proof.timeRemaining,
+      style: widget.style,
     );
   }
 }
