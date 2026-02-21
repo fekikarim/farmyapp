@@ -242,18 +242,25 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.search_off_rounded,
-            size: 64,
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.03),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.search_off_rounded,
+              size: 48,
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.2),
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Text(
             'No Workers Found',
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white70 : Colors.black87,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.black87,
             ),
           ),
           const SizedBox(height: 8),
@@ -261,7 +268,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
             'Try adjusting your filters',
             style: TextStyle(
               fontSize: 14,
-              color: isDark ? Colors.white38 : Colors.black45,
+              color: isDark ? Colors.white54 : Colors.black54,
             ),
           ),
         ],
@@ -283,7 +290,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
             ? Colors.white.withOpacity(0.1)
             : Colors.grey.shade100,
         child: Container(
-          height: 110,
+          height: 100,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: isDark ? Colors.white.withOpacity(0.03) : Colors.white,
@@ -313,16 +320,16 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
                     Row(
                       children: [
                         Container(
-                          height: 14,
-                          width: 60,
+                          height: 18,
+                          width: 50,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 6),
                         Container(
-                          height: 14,
+                          height: 18,
                           width: 60,
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -350,7 +357,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
                 children: [
                   Container(
                     height: 20,
-                    width: 60,
+                    width: 50,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(4),
@@ -464,29 +471,34 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 4,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: worker.skills
                             .take(2)
                             .map(
-                              (skill) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: (isDark ? Colors.white : Colors.black)
-                                      .withOpacity(0.05),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  skill,
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: isDark
-                                        ? Colors.white70
-                                        : Colors.black54,
+                              (skill) => Flexible(
+                                child: Container(
+                                  margin: const EdgeInsets.only(right: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        (isDark ? Colors.white : Colors.black)
+                                            .withOpacity(0.05),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    skill,
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: isDark
+                                          ? Colors.white70
+                                          : Colors.black54,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ),

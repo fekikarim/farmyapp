@@ -66,14 +66,15 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
     final lifecycle = context.watch<WorkerLifecycleProvider>();
 
     return Container(
+      height: MediaQuery.of(context).size.height * 0.9,
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E2125) : Colors.white,
-        borderRadius: const BorderRadius.horizontal(left: Radius.circular(32)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.3),
             blurRadius: 30,
-            offset: const Offset(-5, 0),
+            offset: const Offset(0, -5),
           ),
         ],
       ),
@@ -81,15 +82,29 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
         children: [
           // Header
           Container(
-            padding: const EdgeInsets.fromLTRB(16, 60, 16, 12),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF16181A) : Colors.grey.shade50,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(32),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(32),
               ),
             ),
             child: Column(
               children: [
+                // Handle Bar
+                Center(
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: (isDark ? Colors.white : Colors.black).withOpacity(
+                        0.1,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
                 Row(
                   children: [
                     Expanded(
@@ -192,7 +207,10 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
                           const Text('Active'),
                           if (lifecycle.activeContracts.isNotEmpty) ...[
                             const SizedBox(width: 5),
-                            _badge(lifecycle.activeContracts.length, Colors.green.shade600),
+                            _badge(
+                              lifecycle.activeContracts.length,
+                              Colors.green.shade600,
+                            ),
                           ],
                         ],
                       ),
@@ -206,7 +224,10 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
                           const Text('Proofs'),
                           if (lifecycle.pendingLandProofs.isNotEmpty) ...[
                             const SizedBox(width: 5),
-                            _badge(lifecycle.pendingLandProofs.length, Colors.blue.shade600),
+                            _badge(
+                              lifecycle.pendingLandProofs.length,
+                              Colors.blue.shade600,
+                            ),
                           ],
                         ],
                       ),
@@ -570,9 +591,7 @@ class _InvestorWorkforcePanelState extends State<InvestorWorkforcePanel>
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        error == null
-                            ? 'Hiring proposal sent!'
-                            : error,
+                        error == null ? 'Hiring proposal sent!' : error,
                       ),
                       backgroundColor: error == null
                           ? Colors.green.shade700
@@ -706,7 +725,9 @@ class _ApprovedWorkersTab extends StatelessWidget {
               color: isDark ? const Color(0xFF2C2F33) : Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isDark ? Colors.white.withOpacity(0.1) : Colors.grey.shade200,
+                color: isDark
+                    ? Colors.white.withOpacity(0.1)
+                    : Colors.grey.shade200,
                 width: 1,
               ),
               boxShadow: [
@@ -742,22 +763,25 @@ class _ApprovedWorkersTab extends StatelessWidget {
                         w.userName ?? 'Worker',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 13, // Smaller font
+                          fontSize: 14,
                           color: isDark ? Colors.white : Colors.black87,
                         ),
+                        softWrap: false,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
-                      const SizedBox(height: 1),
+                      const SizedBox(height: 2),
                       Text(
                         w.skills.isNotEmpty ? w.skills.first : 'No skills',
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 11,
                           color: isDark
                               ? Colors.grey.shade400
                               : Colors.grey.shade600,
                         ),
+                        softWrap: false,
                         overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ],
                   ),
@@ -942,7 +966,11 @@ class _NegotiationCard extends StatelessWidget {
                           fontSize: 14,
                           color: isDark ? Colors.white : Colors.black87,
                         ),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
+                      const SizedBox(height: 2),
                       Text(
                         '${contract.salaryAmount.toStringAsFixed(0)} TND/${contract.salaryTypeLabel}',
                         style: TextStyle(
@@ -951,6 +979,9 @@ class _NegotiationCard extends StatelessWidget {
                               ? Colors.grey.shade400
                               : Colors.grey.shade600,
                         ),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ],
                   ),
@@ -1136,6 +1167,9 @@ class _ActiveWorkersTab extends StatelessWidget {
                           fontSize: 14,
                           color: isDark ? Colors.white : Colors.black87,
                         ),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -1146,6 +1180,9 @@ class _ActiveWorkersTab extends StatelessWidget {
                               ? Colors.grey.shade400
                               : Colors.grey.shade600,
                         ),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ],
                   ),
@@ -1238,8 +1275,12 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          backgroundColor: widget.isDark ? const Color(0xFF2A2D30) : Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: widget.isDark
+              ? const Color(0xFF2A2D30)
+              : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Text(
             'Request Proof',
             style: TextStyle(
@@ -1262,12 +1303,20 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
               const SizedBox(height: 16),
               Container(
                 decoration: BoxDecoration(
-                  color: widget.isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100,
+                  color: widget.isDark
+                      ? Colors.white.withOpacity(0.05)
+                      : Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: RadioListTile<String>(
-                  title: const Text('Entire Land', style: TextStyle(fontSize: 14)),
-                  subtitle: const Text('General farming activity', style: TextStyle(fontSize: 11)),
+                  title: const Text(
+                    'Entire Land',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  subtitle: const Text(
+                    'General farming activity',
+                    style: TextStyle(fontSize: 11),
+                  ),
                   value: 'land',
                   groupValue: targetType,
                   onChanged: (val) => setDialogState(() {
@@ -1297,7 +1346,10 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
                     itemBuilder: (context, index) {
                       final item = items[index];
                       return RadioListTile<String>(
-                        title: Text(item.displayName, style: const TextStyle(fontSize: 14)),
+                        title: Text(
+                          item.displayName,
+                          style: const TextStyle(fontSize: 14),
+                        ),
                         value: item.id,
                         groupValue: targetId,
                         onChanged: (val) => setDialogState(() {
@@ -1327,7 +1379,9 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
               child: Text(
                 'Cancel',
                 style: TextStyle(
-                  color: widget.isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                  color: widget.isDark
+                      ? Colors.grey.shade400
+                      : Colors.grey.shade600,
                 ),
               ),
             ),
@@ -1343,7 +1397,10 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text('Request', style: TextStyle(color: Colors.white)),
+              child: const Text(
+                'Request',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
@@ -1359,13 +1416,15 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
       targetType: result['targetType'],
       targetId: result['targetId'],
     );
-    
+
     if (mounted) {
       setState(() => _requesting = false);
       if (errorMsg == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Proof requested! The worker has 1 hour to submit.'),
+            content: const Text(
+              'Proof requested! The worker has 1 hour to submit.',
+            ),
             backgroundColor: Colors.green.shade600,
           ),
         );
@@ -1496,6 +1555,9 @@ class _ProofsTab extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           color: isDark ? Colors.white : Colors.black87,
                         ),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -1506,43 +1568,52 @@ class _ProofsTab extends StatelessWidget {
                         ),
                       ),
                       if (p.targetType == 'item')
-                         Padding(
-                           padding: const EdgeInsets.only(top: 4),
-                           child: Text(
-                             'Item ID: ${p.targetId?.substring(0, 8)}...',
-                             style: TextStyle(
-                               fontSize: 10,
-                               color: isDark ? Colors.white24 : Colors.black26,
-                             ),
-                           ),
-                         ),
-                       if (p.imageUrl != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.network(
-                                '${AuthService.baseUrl}${p.imageUrl}',
-                                height: 120,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => Container(
-                                  height: 80,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.withOpacity(0.05),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Icon(Icons.broken_image_outlined, color: Colors.grey, size: 24),
-                                ),
-                              ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            'Item ID: ${p.targetId?.substring(0, 8)}...',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: isDark ? Colors.white24 : Colors.black26,
                             ),
                           ),
+                        ),
+                      if (p.imageUrl != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              '${AuthService.baseUrl}${p.imageUrl}',
+                              height: 120,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                    height: 80,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.withOpacity(0.05),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Icon(
+                                      Icons.broken_image_outlined,
+                                      color: Colors.grey,
+                                      size: 24,
+                                    ),
+                                  ),
+                            ),
+                          ),
+                        ),
                       if (p.isPending) ...[
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(Icons.timer_outlined, size: 10, color: Colors.blue.shade300),
+                            Icon(
+                              Icons.timer_outlined,
+                              size: 10,
+                              color: Colors.blue.shade300,
+                            ),
                             const SizedBox(width: 4),
                             _ProofCountdown(
                               proof: p,
@@ -1565,7 +1636,10 @@ class _ProofsTab extends StatelessWidget {
                           ),
                           child: Text(
                             p.aiReasoning!,
-                            style: const TextStyle(fontSize: 10, color: Colors.red),
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Colors.red,
+                            ),
                           ),
                         ),
                       ],
@@ -1573,7 +1647,10 @@ class _ProofsTab extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(6),
@@ -1598,19 +1675,27 @@ class _ProofsTab extends StatelessWidget {
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'verified': return Colors.green;
-      case 'rejected': return Colors.red;
-      case 'expired': return Colors.orange;
-      default: return Colors.blue;
+      case 'verified':
+        return Colors.green;
+      case 'rejected':
+        return Colors.red;
+      case 'expired':
+        return Colors.orange;
+      default:
+        return Colors.blue;
     }
   }
 
   IconData _getStatusIcon(String status) {
     switch (status) {
-      case 'verified': return Icons.check_circle_outline;
-      case 'rejected': return Icons.error_outline;
-      case 'expired': return Icons.timer_off_outlined;
-      default: return Icons.schedule_outlined;
+      case 'verified':
+        return Icons.check_circle_outline;
+      case 'rejected':
+        return Icons.error_outline;
+      case 'expired':
+        return Icons.timer_off_outlined;
+      default:
+        return Icons.schedule_outlined;
     }
   }
 
@@ -1653,7 +1738,8 @@ class _ProofCountdownState extends State<_ProofCountdown> {
   @override
   void didUpdateWidget(_ProofCountdown oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.proof.id != widget.proof.id || oldWidget.proof.expiresAt != widget.proof.expiresAt) {
+    if (oldWidget.proof.id != widget.proof.id ||
+        oldWidget.proof.expiresAt != widget.proof.expiresAt) {
       _startTimer();
     }
   }
@@ -1666,10 +1752,7 @@ class _ProofCountdownState extends State<_ProofCountdown> {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      widget.proof.timeRemaining,
-      style: widget.style,
-    );
+    return Text(widget.proof.timeRemaining, style: widget.style);
   }
 }
 
@@ -1798,10 +1881,17 @@ Widget _errorView({
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline_rounded,
-            size: 48,
-            color: Colors.red.shade300,
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.red.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.error_outline_rounded,
+              size: 40,
+              color: Colors.red.shade400,
+            ),
           ),
           const SizedBox(height: 14),
           Text(
@@ -1846,29 +1936,59 @@ Widget _shimmerList(bool isDark) {
     padding: const EdgeInsets.all(24),
     itemCount: 4,
     separatorBuilder: (_, __) => const SizedBox(height: 12),
-    itemBuilder: (_, __) => Container(
-      height: 72,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.05) : Colors.white,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Shimmer.fromColors(
-        baseColor: isDark ? Colors.white10 : Colors.grey.shade300,
-        highlightColor: isDark ? Colors.white24 : Colors.grey.shade100,
+    itemBuilder: (_, __) => Shimmer.fromColors(
+      baseColor: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade200,
+      highlightColor: isDark
+          ? Colors.white.withOpacity(0.1)
+          : Colors.grey.shade100,
+      child: Container(
+        height: 76,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF2C2F33) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withOpacity(0.1)
+                : Colors.grey.shade200,
+          ),
+        ),
         child: Row(
           children: [
-            const CircleAvatar(radius: 22, backgroundColor: Colors.white),
+            const CircleAvatar(radius: 20, backgroundColor: Colors.white),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(height: 14, width: 120, color: Colors.white),
+                  Container(
+                    height: 14,
+                    width: 140,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
                   const SizedBox(height: 8),
-                  Container(height: 10, width: 80, color: Colors.white),
+                  Container(
+                    height: 10,
+                    width: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
                 ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              height: 32,
+              width: 60,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
           ],
