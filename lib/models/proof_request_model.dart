@@ -40,7 +40,7 @@ class ProofRequest {
       id: json['id'] ?? '',
       investorId: json['investor_id'] ?? '',
       farmerId: json['farmer_id'] ?? '',
-      landId: json['land_id'],
+      landId: json['land_id'] ?? json['land']?['id'],
       status: json['status'] ?? 'pending',
       aiReasoning: json['ai_reasoning'],
       expiresAt: json['expires_at'] != null

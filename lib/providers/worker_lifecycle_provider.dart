@@ -709,10 +709,23 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   void handleProofRequested(Map<String, dynamic> data) {
     if (data['proof'] != null) {
       final proof = ProofRequest.fromJson(data['proof']);
-      // Update land-specific list if matches
-      if (!_landProofs.any((p) => p.id == proof.id)) {
-        _landProofs.insert(0, proof);
+      
+      // Update land-specific list if it matches a land we might be viewing
+      // Note: In a multi-land scenario, we only want to update _landProofs
+      // if it belongs to the land currently being displayed.
+      // Since _landProofs is filtered by landId during loading, 
+      // we check if the new proof belongs to the same land.
+      if (_landProofs.isNotEmpty && _landProofs.first.landId == proof.landId) {
+        if (!_landProofs.any((p) => p.id == proof.id)) {
+          _landProofs.insert(0, proof);
+        }
+      } else if (_landProofs.isEmpty) {
+        // If it was empty, we can't be sure which land we are looking at 
+        // without storing the 'currentLandId' in the provider.
+        // For now, let's assume if it's empty, we might need a refresh 
+        // or just ignore if it doesn't match the current land context.
       }
+
       // Update global list for worker
       if (!_myProofs.any((p) => p.id == proof.id)) {
         _myProofs.insert(0, proof);
@@ -724,9 +737,15 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   void handleProofStatusUpdated(Map<String, dynamic> data) {
     if (data['proof'] != null) {
       final proof = ProofRequest.fromJson(data['proof']);
-      // Update in land list
+      
+      // Update in land list (only if it belongs to the same land)
       final idx1 = _landProofs.indexWhere((p) => p.id == proof.id);
-      if (idx1 >= 0) _landProofs[idx1] = proof;
+      if (idx1 >= 0) {
+        _landProofs[idx1] = proof;
+      } else if (_landProofs.isNotEmpty && _landProofs.first.landId == proof.landId) {
+        // If it was somehow missing but belongs to this land, add it
+        _landProofs.insert(0, proof);
+      }
 
       // Update in global list
       final idx2 = _myProofs.indexWhere((p) => p.id == proof.id);
