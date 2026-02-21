@@ -10,6 +10,8 @@ import '../../../services/proof_service.dart';
 import '../../../models/worker_contract_model.dart';
 import '../../../models/worker_profile_model.dart';
 import '../../../models/proof_request_model.dart';
+import '../../../models/placed_item_model.dart';
+import '../../../services/land_service.dart';
 import '../../shared/contract_negotiation_screen.dart';
 
 class InvestorWorkforcePanel extends StatefulWidget {
@@ -1222,55 +1224,139 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
   bool _requesting = false;
 
   Future<void> _handleRequest() async {
-    final confirmed = await showDialog<bool>(
+    setState(() => _requesting = true);
+    final items = await LandService.getPlacedItems(widget.landId);
+    if (!mounted) return;
+    setState(() => _requesting = false);
+
+    String targetType = 'land';
+    String? targetId;
+    String targetLabel = 'Current Land';
+
+    final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: widget.isDark ? const Color(0xFF2A2D30) : Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Request Proof',
-          style: TextStyle(
-            color: widget.isDark ? Colors.white : Colors.black87,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Text(
-          'Do you want to request a photo proof of work from ${widget.contract.workerName ?? "this worker"}?\n\nThey will have 1 hour to submit an AI-verified image. (Limit: 3 per week).',
-          style: TextStyle(
-            color: widget.isDark ? Colors.white70 : Colors.black54,
-            fontSize: 14,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: widget.isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-              ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: widget.isDark ? const Color(0xFF2A2D30) : Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            'Request Proof',
+            style: TextStyle(
+              color: widget.isDark ? Colors.white : Colors.black87,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
             ),
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueAccent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'What do you want proof for?',
+                style: TextStyle(
+                  color: widget.isDark ? Colors.white70 : Colors.black54,
+                  fontSize: 13,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                decoration: BoxDecoration(
+                  color: widget.isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: RadioListTile<String>(
+                  title: const Text('Entire Land', style: TextStyle(fontSize: 14)),
+                  subtitle: const Text('General farming activity', style: TextStyle(fontSize: 11)),
+                  value: 'land',
+                  groupValue: targetType,
+                  onChanged: (val) => setDialogState(() {
+                    targetType = val!;
+                    targetId = null;
+                    targetLabel = 'Current Land';
+                  }),
+                ),
+              ),
+              if (items.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'Or select an item:',
+                  style: TextStyle(
+                    color: widget.isDark ? Colors.white38 : Colors.black38,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 150,
+                  width: double.maxFinite,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      return RadioListTile<String>(
+                        title: Text(item.displayName, style: const TextStyle(fontSize: 14)),
+                        value: item.id,
+                        groupValue: targetId,
+                        onChanged: (val) => setDialogState(() {
+                          targetType = 'item';
+                          targetId = val;
+                          targetLabel = item.displayName;
+                        }),
+                      );
+                    },
+                  ),
+                ),
+              ],
+              const SizedBox(height: 16),
+              Text(
+                'The worker has 1 hour to submit an AI-verified image of $targetLabel.',
+                style: TextStyle(
+                  color: Colors.blue.shade400,
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: widget.isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                ),
               ),
             ),
-            child: const Text('Request', style: TextStyle(color: Colors.white)),
-          ),
-        ],
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, {
+                'targetType': targetType,
+                'targetId': targetId,
+                'targetLabel': targetLabel,
+              }),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text('Request', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
       ),
     );
 
-    if (confirmed != true || !mounted) return;
+    if (result == null || !mounted) return;
 
     setState(() => _requesting = true);
     final errorMsg = await ProofService.requestProof(
       widget.contract.workerId,
       widget.landId,
+      targetType: result['targetType'],
+      targetId: result['targetId'],
     );
     
     if (mounted) {
@@ -1403,10 +1489,10 @@ class _ProofsTab extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        p.farmerName ?? 'Worker',
+                        p.targetName ?? p.landName ?? 'General Land Proof',
                         style: TextStyle(
-                          fontWeight: FontWeight.w600,
                           fontSize: 14,
+                          fontWeight: FontWeight.bold,
                           color: isDark ? Colors.white : Colors.black87,
                         ),
                       ),
@@ -1418,6 +1504,17 @@ class _ProofsTab extends StatelessWidget {
                           color: isDark ? Colors.white38 : Colors.black45,
                         ),
                       ),
+                      if (p.targetType == 'item')
+                         Padding(
+                           padding: const EdgeInsets.only(top: 4),
+                           child: Text(
+                             'Item ID: ${p.targetId?.substring(0, 8)}...',
+                             style: TextStyle(
+                               fontSize: 10,
+                               color: isDark ? Colors.white24 : Colors.black26,
+                             ),
+                           ),
+                         ),
                       if (p.isPending) ...[
                         const SizedBox(height: 4),
                         Row(

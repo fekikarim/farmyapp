@@ -7,7 +7,12 @@ import 'auth_service.dart';
 class ProofService {
   static final String _baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
 
-  static Future<String?> requestProof(String farmerId, String landId) async {
+  static Future<String?> requestProof(
+    String farmerId,
+    String landId, {
+    String targetType = 'land',
+    String? targetId,
+  }) async {
     try {
       final response = await AuthService.authenticatedRequest(
         'POST',
@@ -15,6 +20,8 @@ class ProofService {
         body: {
           'farmer_id': farmerId,
           'land_id': landId,
+          'target_type': targetType,
+          if (targetId != null) 'target_id': targetId,
         }
       );
 

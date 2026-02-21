@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'auth_service.dart';
 import '../models/land_model.dart';
+import '../models/placed_item_model.dart';
 
 class LandService {
   static final String _baseUrl = dotenv.get(
@@ -103,5 +104,23 @@ class LandService {
 
     final errorBody = jsonDecode(response.body);
     throw Exception(errorBody['message'] ?? 'Failed to delete land');
+  }
+
+  static Future<List<PlacedItem>> getPlacedItems(String landId) async {
+    try {
+      final response = await AuthService.authenticatedRequest(
+        'GET',
+        Uri.parse('$_baseUrl/api/v1/items/land/$landId'),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> body = jsonDecode(response.body);
+        final List data = body['data'] ?? [];
+        return data.map((item) => PlacedItem.fromJson(item)).toList();
+      }
+      return [];
+    } catch (e) {
+      print('GetPlacedItems Error: $e');
+      return [];
+    }
   }
 }

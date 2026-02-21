@@ -13,6 +13,9 @@ class ProofRequest {
   final String? investorName;
   final String? farmerName;
   final String? landName;
+  final String targetType; // land, item
+  final String? targetId;
+  final String? targetName;
 
   ProofRequest({
     required this.id,
@@ -27,6 +30,9 @@ class ProofRequest {
     this.investorName,
     this.farmerName,
     this.landName,
+    this.targetType = 'land',
+    this.targetId,
+    this.targetName,
   });
 
   factory ProofRequest.fromJson(Map<String, dynamic> json) {
@@ -49,6 +55,9 @@ class ProofRequest {
       investorName: json['investor']?['profile']?['name'] ?? json['investor']?['email'],
       farmerName: json['farmer']?['profile']?['name'] ?? json['farmer']?['email'],
       landName: json['land']?['name'],
+      targetType: json['target_type'] ?? 'land',
+      targetId: json['target_id'],
+      targetName: json['target_name'],
     );
   }
 

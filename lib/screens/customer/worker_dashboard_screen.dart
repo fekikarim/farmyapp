@@ -1334,15 +1334,16 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Proof Requested',
+                      proof.targetName ?? proof.landName ?? 'Farming activity',
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
                         fontSize: 14,
-                        color: isDark ? Colors.blue.shade200 : Colors.blue.shade800,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
+                    const SizedBox(height: 2),
                     Text(
-                      proof.landName ?? 'Ongoing farming activity',
+                      proof.targetType == 'item' ? 'Item Verification' : 'General Land Proof',
                       style: TextStyle(
                         fontSize: 12,
                         color: isDark ? Colors.blue.shade100 : Colors.blue.shade700,
