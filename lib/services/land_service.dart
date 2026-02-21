@@ -110,7 +110,7 @@ class LandService {
     try {
       final response = await AuthService.authenticatedRequest(
         'GET',
-        Uri.parse('$_baseUrl/api/v1/items/land/$landId'),
+        Uri.parse('$_baseUrl/api/v1/item-requests/land/$landId/items'),
       );
       if (response.statusCode == 200) {
         final Map<String, dynamic> body = jsonDecode(response.body);
