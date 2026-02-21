@@ -479,18 +479,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onTap: () => _showComingSoonDialog(context),
               ),
 
-              const SizedBox(height: 24),
-              _buildSectionTitle(theme, 'Tasks & Proofs'),
-              _buildSettingsTile(
-                context,
-                icon: Icons.verified_user_outlined,
-                title: 'AI Proof Requests',
-                subtitle: 'View and manage proof requests',
-                onTap: () => Navigator.push(
+              if (user?.role == 'farmer' || user?.role == 'investor') ...[
+                const SizedBox(height: 24),
+                _buildSectionTitle(theme, 'Tasks & Proofs'),
+                _buildSettingsTile(
                   context,
-                  MaterialPageRoute(builder: (_) => const ProofRequestsScreen()),
+                  icon: Icons.verified_user_outlined,
+                  title: 'AI Proof Requests',
+                  subtitle: 'View and manage proof requests',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ProofRequestsScreen()),
+                  ),
                 ),
-              ),
+              ],
 
               const SizedBox(height: 32),
               SizedBox(
