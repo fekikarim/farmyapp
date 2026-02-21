@@ -1538,9 +1538,10 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     elevation: 0,
                   ),
                 ),
-              ),
+                ),
+              ],
+            ),
           ],
-        ],
         if (isRejected && proof.aiReasoning != null) ...[
           const SizedBox(height: 12),
           Container(
