@@ -13,6 +13,7 @@ import '../screens/kyc/kyc_flow_screen.dart';
 import '../screens/wallet/payment_methods_screen.dart';
 import 'customer/become_worker_screen.dart';
 import 'customer/worker_dashboard_screen.dart';
+import 'investor/hedera_registry_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -200,6 +201,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const PaymentMethodsScreen(),
+                  ),
+                ),
+              ),
+              _buildSettingsTile(
+                context,
+                icon: Icons.hub_outlined,
+                title: 'Hedera Registry',
+                subtitle: 'View your on-chain blockchain records',
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF8259EF), Color(0xFF5B2BE8)],
+                        ),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Text('HCS', style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      )),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+                    ),
+                  ],
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HederaRegistryScreen(),
                   ),
                 ),
               ),
