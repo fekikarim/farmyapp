@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../services/shop_service.dart';
 
 class FarmerRentalRequestsScreen extends StatefulWidget {
@@ -47,8 +48,25 @@ class _FarmerRentalRequestsScreenState
   }
 
   Future<void> _handleApprove(String id) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.camera);
+
+    if (image == null) {
+      // User cancelled taking a photo
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Image proof is required to approve item placement.'),
+            backgroundColor: Colors.orange.shade600,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      return;
+    }
+
     setState(() => _processingId = id);
-    final error = await ShopService.approveItemRequest(id);
+    final error = await ShopService.approveItemRequest(id, proofImage: image);
     if (mounted) {
       setState(() => _processingId = null);
       if (error == null) {

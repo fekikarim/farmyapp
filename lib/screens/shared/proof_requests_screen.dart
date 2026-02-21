@@ -1,0 +1,232 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../services/proof_service.dart';
+import '../../services/auth_service.dart';
+
+class ProofRequestsScreen extends StatefulWidget {
+  const ProofRequestsScreen({super.key});
+
+  @override
+  State<ProofRequestsScreen> createState() => _ProofRequestsScreenState();
+}
+
+class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
+  List<dynamic> _proofs = [];
+  bool _isLoading = true;
+  String? _error;
+  String? _currentUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final user = await AuthService.fetchProfile();
+      _currentUserId = user?.id;
+      final proofs = await ProofService.getMyProofs();
+      if (mounted) {
+        setState(() {
+          _proofs = proofs;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = 'Failed to load proofs. Please try again.';
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _handleSubmitProof(String id) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.camera);
+
+    if (image == null) return;
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('AI is verifying your proof image...'))
+    );
+
+    final errorOrRejectMsg = await ProofService.submitProof(id, image);
+    
+    if (mounted) {
+      if (errorOrRejectMsg == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Proof verified successfully by AI!'),
+            backgroundColor: Colors.green.shade600,
+          )
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorOrRejectMsg),
+            backgroundColor: Colors.red.shade600,
+            duration: const Duration(seconds: 4),
+          )
+        );
+      }
+      _loadData(); // Refresh UI
+    }
+  }
+
+  Widget _buildStatusBadge(String status) {
+    Color color;
+    IconData icon;
+    switch (status.toLowerCase()) {
+      case 'verified':
+        color = Colors.green;
+        icon = Icons.check_circle;
+        break;
+      case 'rejected':
+        color = Colors.red;
+        icon = Icons.cancel;
+        break;
+      case 'expired':
+        color = Colors.grey;
+        icon = Icons.timer_off;
+        break;
+      case 'pending':
+      default:
+        color = Colors.orange;
+        icon = Icons.hourglass_bottom;
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 8),
+          Text(
+            status.toUpperCase(),
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('AI Proof Requests')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('AI Proof Requests'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadData,
+          )
+        ],
+      ),
+      body: _error != null
+          ? Center(child: Text(_error!))
+          : _proofs.isEmpty
+              ? const Center(child: Text('No proof requests found.'))
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _proofs.length,
+                  itemBuilder: (context, index) {
+                    final proof = _proofs[index];
+                    final isFarmer = proof['farmer_id'] == _currentUserId;
+                    final isPending = proof['status'] == 'pending';
+                    final expiresAt = DateTime.parse(proof['expires_at']);
+                    final isExpiredLocal = isPending && expiresAt.isBefore(DateTime.now());
+
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  isFarmer 
+                                    ? 'From: ${proof['investor_name']}'
+                                    : 'To: ${proof['farmer_name']}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                _buildStatusBadge(
+                                  isExpiredLocal ? 'expired' : proof['status']
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            if (isPending && !isExpiredLocal) ...[
+                              Text(
+                                'Must submit before: ${DateFormat('MMM d, h:mm a').format(expiresAt)}',
+                                style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 12),
+                            ],
+                            if (proof['ai_reasoning'] != null) ...[
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.withOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text('AI Notes: ${proof['ai_reasoning']}'),
+                              ),
+                              const SizedBox(height: 12),
+                            ],
+                            if (isFarmer && isPending && !isExpiredLocal) ...[
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  onPressed: () => _handleSubmitProof(proof['id']),
+                                  icon: const Icon(Icons.camera_alt),
+                                  label: const Text('Submit Photo Proof'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blueAccent,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                ),
+                              )
+                            ]
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+    );
+  }
+}

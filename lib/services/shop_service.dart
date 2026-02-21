@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/shop_item_model.dart';
 import 'auth_service.dart';
 
@@ -132,21 +134,46 @@ class ShopService {
     }
   }
 
-  static Future<String?> approveItemRequest(String requestId) async {
+  static Future<String?> approveItemRequest(String requestId, {XFile? proofImage}) async {
     try {
-      final response = await AuthService.authenticatedRequest(
-        'POST',
-        Uri.parse('$_baseUrl/api/v1/item-requests/$requestId/approve'),
+      if (proofImage == null) {
+        // Fallback for non-placement approvals (e.g. buying or if image is optional on backend)
+        final response = await AuthService.authenticatedRequest(
+          'POST',
+          Uri.parse('$_baseUrl/api/v1/item-requests/$requestId/approve'),
+        );
+        if (response.statusCode == 200) return null;
+        final body = jsonDecode(response.body);
+        return body['message'] ?? 'Failed to approve request (Status: ${response.statusCode})';
+      }
+
+      // Handle Multipart request for placement with image
+      final token = await AuthService.getAccessToken();
+      final uri = Uri.parse('$_baseUrl/api/v1/item-requests/$requestId/approve');
+      final request = http.MultipartRequest('POST', uri);
+      
+      if (token != null) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+
+      final bytes = await proofImage.readAsBytes();
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'proof_image',
+          bytes,
+          filename: proofImage.name,
+        )
       );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
       if (response.statusCode == 200) {
         return null;
       }
       final body = jsonDecode(response.body);
-      print(
-        'approveItemRequest Failed: ${response.statusCode} - ${response.body}',
-      );
-      return body['message'] ??
-          'Failed to approve request (Status: ${response.statusCode})';
+      print('approveItemRequest Failed: ${response.statusCode} - ${response.body}');
+      return body['message'] ?? 'Failed to approve request (Status: ${response.statusCode})';
     } catch (e) {
       print('approveItemRequest Error: $e');
       return 'Network error: $e';

@@ -14,6 +14,7 @@ import '../screens/wallet/payment_methods_screen.dart';
 import 'customer/become_worker_screen.dart';
 import 'customer/worker_dashboard_screen.dart';
 import 'investor/hedera_registry_screen.dart';
+import 'shared/proof_requests_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -476,6 +477,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 icon: Icons.info_outline,
                 title: 'About Us - Farmy Team',
                 onTap: () => _showComingSoonDialog(context),
+              ),
+
+              const SizedBox(height: 24),
+              _buildSectionTitle(theme, 'Tasks & Proofs'),
+              _buildSettingsTile(
+                context,
+                icon: Icons.verified_user_outlined,
+                title: 'AI Proof Requests',
+                subtitle: 'View and manage proof requests',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProofRequestsScreen()),
+                ),
               ),
 
               const SizedBox(height: 32),

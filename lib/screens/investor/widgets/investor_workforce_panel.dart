@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../providers/worker_lifecycle_provider.dart';
+import '../../../services/proof_service.dart';
 
 import '../../../models/worker_contract_model.dart';
 import '../../../models/worker_profile_model.dart';
@@ -1164,6 +1165,11 @@ class _ActiveWorkersTab extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(width: 8),
+                _RequestProofButton(
+                  contract: c,
+                  isDark: isDark,
+                ),
+                const SizedBox(width: 8),
                 _RemoveWorkerButton(
                   contract: c,
                   isDark: isDark,
@@ -1173,6 +1179,119 @@ class _ActiveWorkersTab extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+// ── Request Proof Button ──
+class _RequestProofButton extends StatefulWidget {
+  final WorkerContract contract;
+  final bool isDark;
+
+  const _RequestProofButton({
+    required this.contract,
+    required this.isDark,
+  });
+
+  @override
+  State<_RequestProofButton> createState() => _RequestProofButtonState();
+}
+
+class _RequestProofButtonState extends State<_RequestProofButton> {
+  bool _requesting = false;
+
+  Future<void> _handleRequest() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: widget.isDark ? const Color(0xFF2A2D30) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Request Proof',
+          style: TextStyle(
+            color: widget.isDark ? Colors.white : Colors.black87,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          'Do you want to request a photo proof of work from ${widget.contract.workerName ?? "this worker"}?\n\nThey will have 1 hour to submit an AI-verified image. (Limit: 3 per week).',
+          style: TextStyle(
+            color: widget.isDark ? Colors.white70 : Colors.black54,
+            fontSize: 14,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: widget.isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blueAccent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: const Text('Request', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _requesting = true);
+    final errorMsg = await ProofService.requestProof(widget.contract.workerId);
+    
+    if (mounted) {
+      setState(() => _requesting = false);
+      if (errorMsg == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Proof requested! The worker has 1 hour to submit.'),
+            backgroundColor: Colors.green.shade600,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMsg),
+            backgroundColor: Colors.red.shade600,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_requesting) {
+      return const SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(strokeWidth: 2),
+      );
+    }
+    return IconButton(
+      onPressed: _handleRequest,
+      icon: Icon(
+        Icons.camera_alt_outlined,
+        size: 20,
+        color: Colors.blue.shade400,
+      ),
+      tooltip: 'Request AI Proof',
+      style: IconButton.styleFrom(
+        backgroundColor: Colors.blue.withOpacity(0.08),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        padding: const EdgeInsets.all(8),
       ),
     );
   }
