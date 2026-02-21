@@ -1398,8 +1398,55 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     );
                     if (image != null) {
                       final lifecycle = context.read<WorkerLifecycleProvider>();
-                      // In a real flow, we'd show a "submitting" dialog
-                      final error = await ProofService.submitProof(proof.id, image);
+                      final statusNotifier = ValueNotifier<String>('Uploading Image...');
+                      
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (ctx) => AlertDialog(
+                          backgroundColor: isDark ? const Color(0xFF2A2D30) : Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          content: ValueListenableBuilder<String>(
+                            valueListenable: statusNotifier,
+                            builder: (context, status, _) {
+                              return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const SizedBox(height: 10),
+                                  CircularProgressIndicator(color: Colors.blue.shade600),
+                                  const SizedBox(height: 24),
+                                  Text(
+                                    status,
+                                    style: TextStyle(
+                                      color: isDark ? Colors.white : Colors.black87,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Please wait a few moments',
+                                    style: TextStyle(
+                                      color: isDark ? Colors.white38 : Colors.black45,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      );
+
+                      final error = await ProofService.submitProof(
+                        proof.id, 
+                        image,
+                        onStatusUpdate: (status) => statusNotifier.value = status,
+                      );
+
+                      if (context.mounted) Navigator.pop(context);
+                      statusNotifier.dispose();
+
                       if (error == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Proof submitted and verified!')),

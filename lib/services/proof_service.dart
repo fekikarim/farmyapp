@@ -55,8 +55,13 @@ class ProofService {
     }
   }
 
-  static Future<String?> submitProof(String proofId, XFile proofImage) async {
+  static Future<String?> submitProof(
+    String proofId, 
+    XFile proofImage, {
+    Function(String)? onStatusUpdate,
+  }) async {
     try {
+      onStatusUpdate?.call('Uploading Image...');
       final token = await AuthService.getAccessToken();
       final uri = Uri.parse('$_baseUrl/api/v1/proofs/submit-proof/$proofId');
       final request = http.MultipartRequest('POST', uri);
@@ -78,11 +83,12 @@ class ProofService {
       );
 
       final streamedResponse = await request.send();
+      onStatusUpdate?.call('AI Verifying...');
+      
       final response = await http.Response.fromStream(streamedResponse);
       final body = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        // We can optionally pass back the AI verified message, or just return null for success
         return body['message']?.toString().contains('rejected') == true ? body['message'] : null;
       }
       
