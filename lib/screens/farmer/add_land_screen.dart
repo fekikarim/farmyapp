@@ -17,6 +17,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _priceController = TextEditingController(text: '1200.0');
   final _widthController = TextEditingController(text: '10.0');
   final _heightController = TextEditingController(text: '10.0');
   bool _isLoading = false;
@@ -166,6 +167,22 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                 if (v == null || v.isEmpty) return 'Description is required';
                 if (v.length < 20)
                   return 'Please provide more detail (min 20 chars)';
+                return null;
+              },
+            ),
+            const SizedBox(height: 20),
+            _buildInputField(
+              controller: _priceController,
+              label: 'Monthly Rent Price (TND)',
+              hint: '1200.0',
+              icon: Icons.payments_rounded,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              validator: (v) {
+                final val = double.tryParse(v ?? '');
+                if (val == null) return 'Invalid price';
+                if (val <= 0) return 'Price must be greater than 0';
                 return null;
               },
             ),
@@ -843,6 +860,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
       final success = await context.read<LandProvider>().createLand({
         'name': _nameController.text.trim(),
         'description': _descriptionController.text.trim(),
+        'price': double.parse(_priceController.text),
         'width_m': double.parse(_widthController.text),
         'height_m': double.parse(_heightController.text),
         'boundaries': _selectedPoints

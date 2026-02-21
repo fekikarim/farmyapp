@@ -16,6 +16,7 @@ class _EditLandSheetState extends State<EditLandSheet> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
+  late TextEditingController _priceController;
 
   @override
   void initState() {
@@ -24,12 +25,16 @@ class _EditLandSheetState extends State<EditLandSheet> {
     _descriptionController = TextEditingController(
       text: widget.land.description,
     );
+    _priceController = TextEditingController(
+      text: widget.land.price.toString(),
+    );
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
+    _priceController.dispose();
     super.dispose();
   }
 
@@ -40,6 +45,7 @@ class _EditLandSheetState extends State<EditLandSheet> {
     final success = await provider.updateLand(widget.land.id, {
       'name': _nameController.text.trim(),
       'description': _descriptionController.text.trim(),
+      'price': double.tryParse(_priceController.text.trim()) ?? 1200.0,
     });
 
     if (success && mounted) {
@@ -126,6 +132,27 @@ class _EditLandSheetState extends State<EditLandSheet> {
                   ),
                 ),
                 maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _priceController,
+                decoration: InputDecoration(
+                  labelText: 'Monthly Rent Price (TND)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: (isDark ? Colors.white : Colors.black).withOpacity(
+                    0.05,
+                  ),
+                  prefixIcon: const Icon(Icons.payments_rounded),
+                ),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Please enter a price';
+                  if (double.tryParse(value) == null) return 'Invalid number';
+                  return null;
+                },
               ),
               const SizedBox(height: 32),
               SizedBox(

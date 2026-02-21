@@ -24,7 +24,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
 
   bool _isLoading = false;
   bool _acceptedTerms = false;
-  final double _monthlyRent = 1200.0;
+  late final double _monthlyRent = widget.land.price;
   DateTime _startDate = DateTime.now();
   PaymentMethod? _selectedPaymentMethod; 
   bool _highlightTerms = false;

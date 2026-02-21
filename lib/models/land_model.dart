@@ -11,6 +11,7 @@ class Land {
   final int gridWidth;
   final int gridHeight;
   final List<LatLng>? boundaries;
+  final double price;
   final bool isActive;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -26,6 +27,7 @@ class Land {
     this.heightM = 10.0,
     this.gridWidth = 10,
     this.gridHeight = 10,
+    this.price = 1200.0,
     this.boundaries,
     this.isActive = true,
     this.createdAt,
@@ -47,6 +49,7 @@ class Land {
   factory Land.fromJson(Map<String, dynamic> json) {
     final wM = double.tryParse(json['width_m']?.toString() ?? '') ?? 10.0;
     final hM = double.tryParse(json['height_m']?.toString() ?? '') ?? 10.0;
+    final p = double.tryParse(json['price']?.toString() ?? '') ?? 1200.0;
 
     return Land(
       id: json['id']?.toString() ?? '',
@@ -59,6 +62,7 @@ class Land {
           (wM / 1.0).ceil(), // 1.0 = METERS_PER_CELL
       gridHeight: int.tryParse(json['grid_height']?.toString() ?? '') ??
           (hM / 1.0).ceil(),
+      price: p,
       boundaries: json['boundaries'] != null
           ? _parseBoundaries(json['boundaries'])
           : null,
