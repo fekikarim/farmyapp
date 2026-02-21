@@ -252,7 +252,11 @@ class AuthService {
       }
     }
     await _storage.deleteAll();
-    await _googleSignInInstance?.signOut();
+    try {
+      await _googleSignInInstance?.signOut();
+    } catch (e) {
+      print('Google Sign-Out Error: $e');
+    }
   }
 
   static Future<bool> resendVerificationCode(String email) async {

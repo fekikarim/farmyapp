@@ -427,6 +427,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
               ],
+              if (user?.role.toLowerCase() == 'farmer' || user?.role.toLowerCase() == 'investor' || user?.role.toLowerCase() == 'admin') ...[
+                const SizedBox(height: 24),
+                _buildSectionTitle(theme, 'Tasks & Proofs'),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.verified_user_outlined,
+                  title: 'AI Proof Requests',
+                  subtitle: 'View and manage proof requests',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ProofRequestsScreen()),
+                  ),
+                ),
+              ],
 
               const SizedBox(height: 24),
               _buildSectionTitle(theme, 'Appearance'),
@@ -471,28 +485,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
 
               const SizedBox(height: 24),
-              _buildSectionTitle(theme, 'About'),
               _buildSettingsTile(
                 context,
                 icon: Icons.info_outline,
                 title: 'About Us - Farmy Team',
                 onTap: () => _showComingSoonDialog(context),
               ),
-
-              if (user?.role == 'farmer' || user?.role == 'investor') ...[
-                const SizedBox(height: 24),
-                _buildSectionTitle(theme, 'Tasks & Proofs'),
-                _buildSettingsTile(
-                  context,
-                  icon: Icons.verified_user_outlined,
-                  title: 'AI Proof Requests',
-                  subtitle: 'View and manage proof requests',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ProofRequestsScreen()),
-                  ),
-                ),
-              ],
 
               const SizedBox(height: 32),
               SizedBox(
