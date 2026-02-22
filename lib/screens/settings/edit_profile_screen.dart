@@ -389,7 +389,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
       setState(() => _isUploadingPicture = true);
 
       final result = await AuthService.uploadProfilePicture(
-        File(pickedFile.path),
+        pickedFile,
       );
 
       if (result != null && mounted) {

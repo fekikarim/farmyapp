@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:io' show Platform, File;
+import 'dart:io' show Platform;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
@@ -8,6 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:uuid/uuid.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/user_model.dart';
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
@@ -563,7 +564,7 @@ class AuthService {
   }
 
   static Future<Map<String, dynamic>?> uploadProfilePicture(
-    File imageFile,
+    XFile imageFile,
   ) async {
     try {
       final url = Uri.parse('$_baseUrl/api/v1/profile/picture');
@@ -574,13 +575,15 @@ class AuthService {
         request.headers['Authorization'] = 'Bearer $token';
       }
 
-      final mimeType = lookupMimeType(imageFile.path) ?? 'image/jpeg';
+      final mimeType = lookupMimeType(imageFile.name) ?? 'image/jpeg';
       final contentType = MediaType.parse(mimeType);
+      final bytes = await imageFile.readAsBytes();
 
       request.files.add(
-        await http.MultipartFile.fromPath(
+        http.MultipartFile.fromBytes(
           'profile_picture',
-          imageFile.path,
+          bytes,
+          filename: imageFile.name,
           contentType: contentType,
         ),
       );
