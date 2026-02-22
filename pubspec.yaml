@@ -102,6 +102,7 @@ flutter:
     - assets/logo_dark.png
     - assets/logo-no-bg.png
     - assets/logo-app-no-bg.png
+    - assets/images/
     - assets/game_images/
     - assets/game_images/textures/
     - assets/game_images/icons/
@@ -117,13 +118,49 @@ flutter:
     - assets/game_images/images/structure/
     - assets/game_images/images/trees/
     - assets/game_images/images/vegetation/
-    - assets/game_images/3d/outside_tree/
+    - assets/game_images/3d/
     - assets/game_images/3d/outside_fance/
+    - assets/game_images/3d/outside_tree/
+    - assets/game_images/sprites/
+    - assets/game_images/sprites/animals/
+    - assets/game_images/sprites/animals/chicken_layer/
+    - assets/game_images/sprites/animals/chicken_layer/idle/
+    - assets/game_images/sprites/animals/cow_holstein/
+    - assets/game_images/sprites/animals/cow_holstein/idle/
+    - assets/game_images/sprites/animals/cow_jersey/
     - assets/game_images/sprites/animals/cow_jersey/idle/
     - assets/game_images/sprites/animals/cow_jersey/walking/
-    - assets/game_images/sprites/animals/cow_holstein/idle/
-    - assets/game_images/sprites/animals/chicken_layer/idle/
+    - assets/game_images/sprites/animals/goat_dairy/
+    - assets/game_images/sprites/animals/goat_dairy/idle/
+    - assets/game_images/sprites/animals/sheep_merino/
     - assets/game_images/sprites/animals/sheep_merino/idle/
+    - assets/game_images/sprites/machines/
+    - assets/game_images/sprites/machines/harvester_wheat/
+    - assets/game_images/sprites/machines/harvester_wheat/idle/
+    - assets/game_images/sprites/machines/plow_standard/
+    - assets/game_images/sprites/machines/plow_standard/idle/
+    - assets/game_images/sprites/machines/tractor_advanced/
+    - assets/game_images/sprites/machines/tractor_advanced/idle/
+    - assets/game_images/sprites/machines/tractor_basic/
+    - assets/game_images/sprites/machines/tractor_basic/idle/
+    - assets/game_images/sprites/structures/
+    - assets/game_images/sprites/structures/barn_large/
+    - assets/game_images/sprites/structures/barn_large/idle/
+    - assets/game_images/sprites/structures/barn_small/
+    - assets/game_images/sprites/structures/barn_small/idle/
+    - assets/game_images/sprites/structures/greenhouse_basic/
+    - assets/game_images/sprites/structures/greenhouse_basic/idle/
+    - assets/game_images/sprites/structures/silo_grain/
+    - assets/game_images/sprites/structures/silo_grain/idle/
+    - assets/game_images/sprites/structures/well_standard/
+    - assets/game_images/sprites/structures/well_standard/idle/
+    - assets/game_images/sprites/trees/
+    - assets/game_images/sprites/trees/apple_red_delicious/
+    - assets/game_images/sprites/trees/apple_red_delicious/idle/
+    - assets/game_images/sprites/trees/oak_english/
+    - assets/game_images/sprites/trees/oak_english/idle/
+    - assets/game_images/sprites/trees/pine_standard/
+    - assets/game_images/sprites/trees/pine_standard/idle/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
