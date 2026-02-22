@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
 import '../models/shop_item_model.dart';
 import 'auth_service.dart';
 
@@ -157,11 +159,13 @@ class ShopService {
       }
 
       final bytes = await proofImage.readAsBytes();
+      final mimeType = lookupMimeType(proofImage.name) ?? 'image/jpeg';
       request.files.add(
         http.MultipartFile.fromBytes(
           'proof_image',
           bytes,
           filename: proofImage.name,
+          contentType: MediaType.parse(mimeType),
         )
       );
 
