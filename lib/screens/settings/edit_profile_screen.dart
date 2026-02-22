@@ -26,6 +26,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
   bool _isLoading = false;
   bool _isLoadingProfile = true; // robust loading system
   bool _isUploadingPicture = false;
+  bool _isGeneratingAvatar = false;
   bool _hasUnsavedChanges = false;
   int _completenessScore = 0;
 
@@ -420,6 +421,50 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     }
   }
 
+  Future<void> _generateAvatar() async {
+    if (_currentUser.profilePicture == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please upload a profile picture first.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isGeneratingAvatar = true);
+
+    try {
+      final avatarUrl = await AuthService.generateAvatar();
+      
+      if (avatarUrl != null && mounted) {
+        // Soft-sync the state
+        _fetchLiveProfile();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✨ AI Avatar generated successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Generation failed: ${e.toString().replaceAll('Exception: ', '')}',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isGeneratingAvatar = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -628,6 +673,64 @@ class _EditProfileScreenState extends State<EditProfileScreen>
                   ),
                 ),
               ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: Column(
+            children: [
+              OutlinedButton.icon(
+                onPressed: _isGeneratingAvatar || _currentUser.profilePicture == null
+                    ? null
+                    : _generateAvatar,
+                icon: _isGeneratingAvatar
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.auto_awesome),
+                label: Text(_isGeneratingAvatar ? 'Generating...' : 'Generate Avatar'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: theme.colorScheme.primary,
+                  side: BorderSide(color: theme.colorScheme.primary),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+              if (_currentUser.avatar != null) ...[
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: theme.colorScheme.primary.withOpacity(0.5),
+                      width: 2,
+                    ),
+                  ),
+                  child: CircleAvatar(
+                    radius: 40,
+                    backgroundColor: theme.colorScheme.surface,
+                    backgroundImage: NetworkImage(
+                      _currentUser.avatar!.startsWith('http')
+                          ? _currentUser.avatar!
+                          : '${AuthService.baseUrl}${_currentUser.avatar!}',
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Your AI Avatar',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ],
           ),
         ),

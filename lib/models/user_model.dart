@@ -2,6 +2,7 @@ class UserProfile {
   final String? username;
   final String? name;
   final String? picture;
+  final String? avatar;
   final String? coverImage;
   final String? dob;
   final String? country;
@@ -39,6 +40,7 @@ class UserProfile {
     this.username,
     this.name,
     this.picture,
+    this.avatar,
     this.coverImage,
     this.dob,
     this.country,
@@ -70,6 +72,7 @@ class UserProfile {
       username: json['username'],
       name: json['name'],
       picture: json['picture'],
+      avatar: json['avatar'],
       coverImage: json['cover_image'],
       dob: json['dob'],
       country: json['country'],
@@ -114,6 +117,7 @@ class UserProfile {
       'username': username,
       'name': name,
       'picture': picture,
+      'avatar': avatar,
       'cover_image': coverImage,
       'dob': dob,
       'country': country,
@@ -183,6 +187,7 @@ class User {
   // Backwards compatibility getters
   String? get name => profile?.name;
   String? get profilePicture => profile?.picture;
+  String? get avatar => profile?.avatar;
   String? get username => profile?.username;
 
   factory User.fromJson(Map<String, dynamic> json) {

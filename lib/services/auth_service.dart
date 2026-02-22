@@ -606,6 +606,28 @@ class AuthService {
     }
   }
 
+  static Future<String?> generateAvatar() async {
+    try {
+      final response = await authenticatedRequest(
+        'POST',
+        Uri.parse('$_baseUrl/api/v1/profile/avatar/generate'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Sync the result immediately to get the new avatar
+        await fetchProfile();
+        return data['data']['avatar'];
+      } else {
+        final errorBody = jsonDecode(response.body);
+        throw Exception(errorBody['message'] ?? 'Failed to generate avatar');
+      }
+    } catch (e) {
+      print('Generate Avatar Exception: $e');
+      rethrow;
+    }
+  }
+
   static Future<bool> isUsernameAvailable(String username) async {
     try {
       final token = await getAccessToken();
