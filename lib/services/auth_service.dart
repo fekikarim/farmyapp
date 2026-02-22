@@ -611,7 +611,7 @@ class AuthService {
       final response = await authenticatedRequest(
         'POST',
         Uri.parse('$_baseUrl/api/v1/profile/avatar/generate'),
-      );
+      ).timeout(const Duration(minutes: 2));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -708,9 +708,14 @@ class AuthService {
       return response;
     } catch (e) {
       if (e is http.ClientException ||
-          e.toString().contains('SocketException')) {
+          e.toString().contains('SocketException') ||
+          e.toString().contains('TimeoutException')) {
         return http.Response(
-          jsonEncode({'message': 'Server connection failed'}),
+          jsonEncode({
+            'message': e.toString().contains('Timeout')
+                ? 'Request timed out. The server is still processing your avatar, please try again in a moment.'
+                : 'Server connection failed'
+          }),
           503,
           headers: {'content-type': 'application/json'},
         );
