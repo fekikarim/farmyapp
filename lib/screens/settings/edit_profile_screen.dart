@@ -73,13 +73,8 @@ class _EditProfileScreenState extends State<EditProfileScreen>
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to sync profile: ${e.toString().replaceAll('Exception: ', '')}',
-            ),
-            backgroundColor: Colors.red,
-          ),
+        _showErrorAlert(
+          'Failed to sync profile: ${e.toString().replaceAll('Exception: ', '')}',
         );
       }
     } finally {
@@ -246,12 +241,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     }
 
     if (!_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please correct the errors in the form'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _showErrorAlert('Please correct the errors in the form');
       return;
     }
 
@@ -327,12 +317,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
-          ),
-        );
+        _showErrorAlert(e.toString().replaceAll('Exception: ', ''));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -405,13 +390,8 @@ class _EditProfileScreenState extends State<EditProfileScreen>
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Upload failed: ${e.toString().replaceAll('Exception: ', '')}',
-            ),
-            backgroundColor: Colors.red,
-          ),
+        _showErrorAlert(
+          'Upload failed: ${e.toString().replaceAll('Exception: ', '')}',
         );
       }
     } finally {
@@ -449,13 +429,8 @@ class _EditProfileScreenState extends State<EditProfileScreen>
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Generation failed: ${e.toString().replaceAll('Exception: ', '')}',
-            ),
-            backgroundColor: Colors.red,
-          ),
+        _showErrorAlert(
+          'Generation failed: ${e.toString().replaceAll('Exception: ', '')}',
         );
       }
     } finally {
@@ -463,6 +438,28 @@ class _EditProfileScreenState extends State<EditProfileScreen>
         setState(() => _isGeneratingAvatar = false);
       }
     }
+  }
+
+  void _showErrorAlert(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.error_outline, color: Colors.red),
+            SizedBox(width: 8),
+            Text('Error'),
+          ],
+        ),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
