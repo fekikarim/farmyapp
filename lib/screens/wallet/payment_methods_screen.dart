@@ -103,9 +103,23 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                     });
                   },
                 ),
+                if (selectedAmount != null && selectedAmount! > 999999.99)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'Maximum amount is \$999,999.99',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 const SizedBox(height: 30),
                 ElevatedButton(
-                  onPressed: selectedAmount != null && selectedAmount! > 0
+                  onPressed: selectedAmount != null && 
+                             selectedAmount! > 0 && 
+                             selectedAmount! <= 999999.99
                       ? () {
                           Navigator.pop(context);
                           _processCharge(selectedAmount!);

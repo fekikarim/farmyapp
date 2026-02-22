@@ -24,6 +24,7 @@ class _ShopOverlayState extends State<ShopOverlay>
   List<ShopItemType>? _items;
   bool _isLoading = true;
   ShopItemType? _selectedItem;
+  static const double _maxAmount = 999999.99;
 
   @override
   void initState() {
@@ -785,9 +786,23 @@ class _ShopOverlayState extends State<ShopOverlay>
                     });
                   },
                 ),
+                if (selectedAmount != null && selectedAmount! > _maxAmount)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'Maximum amount is \$${_maxAmount.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: selectedAmount != null && selectedAmount! > 0
+                  onPressed: selectedAmount != null && 
+                             selectedAmount! > 0 && 
+                             selectedAmount! <= _maxAmount
                       ? () {
                           Navigator.pop(context);
                           _processCharge(selectedAmount!);
