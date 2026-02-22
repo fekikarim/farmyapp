@@ -17,6 +17,9 @@ class Land {
   final DateTime? updatedAt;
   final List<LandRental> rentals;
   final String? hederaTransactionId;
+  final String? ownerName;
+  final String? ownerEmail;
+  final String? ownerProfilePicture;
 
   Land({
     required this.id,
@@ -34,6 +37,9 @@ class Land {
     this.updatedAt,
     this.rentals = const [],
     this.hederaTransactionId,
+    this.ownerName,
+    this.ownerEmail,
+    this.ownerProfilePicture,
   });
 
   bool get isRented {
@@ -50,6 +56,7 @@ class Land {
     final wM = double.tryParse(json['width_m']?.toString() ?? '') ?? 10.0;
     final hM = double.tryParse(json['height_m']?.toString() ?? '') ?? 10.0;
     final p = double.tryParse(json['price']?.toString() ?? '') ?? 1200.0;
+    final owner = json['owner'];
 
     return Land(
       id: json['id']?.toString() ?? '',
@@ -58,23 +65,32 @@ class Land {
       description: json['description']?.toString(),
       widthM: wM,
       heightM: hM,
-      gridWidth: int.tryParse(json['grid_width']?.toString() ?? '') ??
+      gridWidth:
+          int.tryParse(json['grid_width']?.toString() ?? '') ??
           (wM / 1.0).ceil(), // 1.0 = METERS_PER_CELL
-      gridHeight: int.tryParse(json['grid_height']?.toString() ?? '') ??
+      gridHeight:
+          int.tryParse(json['grid_height']?.toString() ?? '') ??
           (hM / 1.0).ceil(),
       price: p,
       boundaries: json['boundaries'] != null
           ? _parseBoundaries(json['boundaries'])
           : null,
       isActive: json['is_active'] ?? true,
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
+          : null,
       rentals: json['rentals'] != null
           ? (json['rentals'] as List)
                 .map((r) => LandRental.fromJson(r))
                 .toList()
           : [],
       hederaTransactionId: json['hedera_transaction_id']?.toString(),
+      ownerName: owner?['profile']?['name']?.toString(),
+      ownerEmail: owner?['email']?.toString(),
+      ownerProfilePicture: owner?['profile']?['picture']?.toString(),
     );
   }
 
@@ -99,8 +115,10 @@ class Land {
     if (boundaries is List) {
       return boundaries.map((point) {
         if (point is Map) {
-          final lat = double.tryParse(point['latitude']?.toString() ?? '') ?? 0.0;
-          final lng = double.tryParse(point['longitude']?.toString() ?? '') ?? 0.0;
+          final lat =
+              double.tryParse(point['latitude']?.toString() ?? '') ?? 0.0;
+          final lng =
+              double.tryParse(point['longitude']?.toString() ?? '') ?? 0.0;
           return LatLng(lat, lng);
         } else if (point is List && point.length >= 2) {
           final lng = double.tryParse(point[0]?.toString() ?? '') ?? 0.0;

@@ -13,6 +13,7 @@ import '../../services/proof_service.dart';
 import '../../services/auth_service.dart';
 import 'package:image_picker/image_picker.dart';
 import '../shared/contract_negotiation_screen.dart';
+import 'worker_land_details_screen.dart';
 
 class WorkerDashboardScreen extends StatefulWidget {
   const WorkerDashboardScreen({super.key});
@@ -25,6 +26,54 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
+  final Set<String> _invitationActionLoading = <String>{};
+
+  Future<void> _refreshDashboard() async {
+    final workerProvider = context.read<WorkerProvider>();
+    final lifecycle = context.read<WorkerLifecycleProvider>();
+    await Future.wait([
+      workerProvider.refreshWorkerDashboard(),
+      lifecycle.refreshWorkerDashboardLifecycle(),
+    ]);
+  }
+
+  Future<void> _handleInvitationResponse({
+    required WorkerInvitation invitation,
+    required String response,
+  }) async {
+    setState(() => _invitationActionLoading.add(invitation.id));
+    final lifecycle = context.read<WorkerLifecycleProvider>();
+    final workerProvider = context.read<WorkerProvider>();
+
+    final ok = await lifecycle.respondToInvitation(
+      invitationId: invitation.id,
+      response: response,
+    );
+
+    if (ok) {
+      await Future.wait([
+        lifecycle.refreshWorkerDashboardLifecycle(),
+        workerProvider.loadAssignedLands(),
+      ]);
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            ok
+                ? (response == 'approve'
+                      ? 'Invitation accepted successfully.'
+                      : 'Invitation declined successfully.')
+                : (lifecycle.lastError ??
+                      'Unable to process invitation response.'),
+          ),
+          backgroundColor: ok ? Colors.green.shade700 : Colors.red.shade700,
+        ),
+      );
+      setState(() => _invitationActionLoading.remove(invitation.id));
+    }
+  }
 
   @override
   void initState() {
@@ -37,16 +86,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
     _animController.forward();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<WorkerProvider>();
-      provider.loadMyProfile();
-      provider.loadAssignedLands();
-      provider.loadMyTasks();
-
-      final lifecycle = context.read<WorkerLifecycleProvider>();
-      lifecycle.loadMyInvitations();
-      lifecycle.loadMyContracts();
-      lifecycle.loadMyBalance();
-      lifecycle.loadMyProofs();
+      _refreshDashboard();
     });
   }
 
@@ -69,7 +109,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
     final isLoading =
         workerProvider.profileLoading ||
         workerProvider.assignedLandsLoading ||
-        workerProvider.myTasksLoading;
+        workerProvider.myTasksLoading ||
+        lifecycle.myInvitationsLoading ||
+        lifecycle.myContractsLoading;
 
     return Scaffold(
       backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
@@ -83,19 +125,53 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
           : FadeTransition(
               opacity: _fadeAnim,
               child: RefreshIndicator(
-                onRefresh: () async {
-                  await workerProvider.loadMyProfile();
-                  await workerProvider.loadAssignedLands();
-                  await workerProvider.loadMyTasks();
-                  final lifecycle = context.read<WorkerLifecycleProvider>();
-                  await lifecycle.loadMyInvitations();
-                  await lifecycle.loadMyContracts();
-                  await lifecycle.loadMyBalance();
-                  await lifecycle.loadMyProofs();
-                },
+                onRefresh: _refreshDashboard,
                 child: ListView(
                   padding: const EdgeInsets.all(20),
                   children: [
+                    if (workerProvider.profileError != null)
+                      _buildErrorBanner(
+                        title: 'Profile sync issue',
+                        message: workerProvider.profileError!,
+                        isDark: isDark,
+                        onRetry: _refreshDashboard,
+                      ),
+                    if (workerProvider.assignedLandsError != null)
+                      _buildErrorBanner(
+                        title: 'Assigned lands unavailable',
+                        message: workerProvider.assignedLandsError!,
+                        isDark: isDark,
+                        onRetry: () => workerProvider.loadAssignedLands(),
+                      ),
+                    if (workerProvider.myTasksError != null)
+                      _buildErrorBanner(
+                        title: 'Tasks unavailable',
+                        message: workerProvider.myTasksError!,
+                        isDark: isDark,
+                        onRetry: () => workerProvider.loadMyTasks(),
+                      ),
+                    if (lifecycle.myInvitationsError != null)
+                      _buildErrorBanner(
+                        title: 'Invitations unavailable',
+                        message: lifecycle.myInvitationsError!,
+                        isDark: isDark,
+                        onRetry: () => lifecycle.loadMyInvitations(),
+                      ),
+                    if (lifecycle.myContractsError != null)
+                      _buildErrorBanner(
+                        title: 'Contracts unavailable',
+                        message: lifecycle.myContractsError!,
+                        isDark: isDark,
+                        onRetry: () => lifecycle.loadMyContracts(),
+                      ),
+                    if (lifecycle.myProofsError != null)
+                      _buildErrorBanner(
+                        title: 'Proofs unavailable',
+                        message: lifecycle.myProofsError!,
+                        isDark: isDark,
+                        onRetry: () => lifecycle.loadMyProofs(),
+                      ),
+
                     // Profile Status Card
                     if (profile != null) _buildProfileCard(profile, isDark),
                     const SizedBox(height: 20),
@@ -184,7 +260,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                         Icons.landscape_outlined,
                       )
                     else
-                      ...lands.map((land) => _buildLandCard(land, isDark)),
+                      ...lands.map(
+                        (land) => _buildLandCard(land, lifecycle, isDark),
+                      ),
                     const SizedBox(height: 24),
 
                     // ── Lifecycle Loading / Error ──
@@ -303,6 +381,38 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       },
                     ),
 
+                    Builder(
+                      builder: (context) {
+                        final updates =
+                            lifecycle.myInvitations
+                                .where((i) => !i.isPending)
+                                .toList()
+                              ..sort(
+                                (a, b) => (b.createdAt ?? DateTime(1970))
+                                    .compareTo(a.createdAt ?? DateTime(1970)),
+                              );
+                        if (updates.isEmpty) return const SizedBox();
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _sectionHeader(
+                              'Invitation Updates',
+                              Icons.mark_email_read_outlined,
+                              isDark,
+                            ),
+                            const SizedBox(height: 12),
+                            ...updates
+                                .take(5)
+                                .map(
+                                  (inv) =>
+                                      _buildInvitationStatusCard(inv, isDark),
+                                ),
+                            const SizedBox(height: 24),
+                          ],
+                        );
+                      },
+                    ),
+
                     // ── Hiring Proposals Section ──
                     Builder(
                       builder: (context) {
@@ -373,9 +483,12 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                               isDark,
                             ),
                             const SizedBox(height: 12),
-                            ...historyProofs.take(10).map(
-                              (proof) => _buildProofActionCard(proof, isDark),
-                            ),
+                            ...historyProofs
+                                .take(10)
+                                .map(
+                                  (proof) =>
+                                      _buildProofActionCard(proof, isDark),
+                                ),
                             if (historyProofs.length > 10)
                               Center(
                                 child: TextButton(
@@ -803,76 +916,185 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
     );
   }
 
-  Widget _buildLandCard(LandWorker land, bool isDark) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade800 : Colors.white,
+  Widget _buildLandCard(
+    LandWorker land,
+    WorkerLifecycleProvider lifecycle,
+    bool isDark,
+  ) {
+    final relatedContract = lifecycle.myContracts.where(
+      (c) => c.landId == land.landId,
+    );
+    WorkerContract? contract;
+    if (relatedContract.isNotEmpty) {
+      contract = relatedContract.first;
+    }
+
+    final relatedInvitation = lifecycle.myInvitations.where(
+      (i) => i.landId == land.landId,
+    );
+    WorkerInvitation? invitation;
+    if (relatedInvitation.isNotEmpty) {
+      invitation = relatedInvitation.first;
+    }
+
+    final farmerName =
+        contract?.investorName ??
+        invitation?.farmerName ??
+        land.assignerName ??
+        'Farmer';
+    final relationStatus =
+        contract?.statusLabel ??
+        (invitation != null
+            ? (invitation.isApproved
+                  ? 'Invitation Approved'
+                  : invitation.isPending
+                  ? 'Invitation Pending'
+                  : invitation.isDeclined
+                  ? 'Invitation Declined'
+                  : 'Invitation Expired')
+            : null);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.green.shade50,
-              borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => WorkerLandDetailsScreen(assignment: land),
             ),
-            child: Icon(Icons.landscape, color: Colors.green.shade700),
+          );
+        },
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: isDark ? Colors.grey.shade800 : Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  land.landName ?? 'Land',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(height: 4),
-                Row(
+                child: Icon(Icons.landscape, color: Colors.green.shade700),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      land.role,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark
-                            ? Colors.blue.shade300
-                            : Colors.blue.shade600,
-                      ),
+                      land.landName ?? 'Land',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    const SizedBox(width: 12),
-                    Text(
-                      '\$${land.salary.toStringAsFixed(0)}/mo',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark
-                            ? Colors.grey.shade400
-                            : Colors.grey.shade500,
-                      ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Text(
+                          land.role,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark
+                                ? Colors.blue.shade300
+                                : Colors.blue.shade600,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          '\$${land.salary.toStringAsFixed(0)}/mo',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark
+                                ? Colors.grey.shade400
+                                : Colors.grey.shade500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.person_outline,
+                          size: 12,
+                          color: isDark
+                              ? Colors.grey.shade500
+                              : Colors.grey.shade600,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            'Farmer: $farmerName',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: isDark
+                                  ? Colors.grey.shade400
+                                  : Colors.grey.shade600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (relationStatus != null)
+                          Container(
+                            margin: const EdgeInsets.only(left: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              relationStatus,
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w600,
+                                color: isDark
+                                    ? Colors.blue.shade300
+                                    : Colors.blue.shade700,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 8),
+              Column(
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: land.isActive ? Colors.green : Colors.grey,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: isDark ? Colors.grey.shade500 : Colors.grey.shade500,
+                  ),
+                ],
+              ),
+            ],
           ),
-          Container(
-            width: 10,
-            height: 10,
-            decoration: BoxDecoration(
-              color: land.isActive ? Colors.green : Colors.grey,
-              shape: BoxShape.circle,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -981,6 +1203,18 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
   }
 
   Widget _buildInvitationActionCard(WorkerInvitation invitation, bool isDark) {
+    final remaining = invitation.expiresAt?.difference(DateTime.now());
+    final timeLeft = remaining == null
+        ? null
+        : remaining.isNegative
+        ? 'Expired'
+        : remaining.inDays > 0
+        ? '${remaining.inDays}d left'
+        : remaining.inHours > 0
+        ? '${remaining.inHours}h left'
+        : '${remaining.inMinutes}m left';
+    final isSubmitting = _invitationActionLoading.contains(invitation.id);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -1033,6 +1267,29 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                               : Colors.grey.shade600,
                         ),
                       ),
+                    if (invitation.farmerEmail != null)
+                      Text(
+                        invitation.farmerEmail!,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark
+                              ? Colors.grey.shade500
+                              : Colors.grey.shade500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    if (timeLeft != null)
+                      Text(
+                        timeLeft,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark
+                              ? Colors.orange.shade300
+                              : Colors.orange.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -1063,13 +1320,12 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () async {
-                    final lifecycle = context.read<WorkerLifecycleProvider>();
-                    await lifecycle.respondToInvitation(
-                      invitationId: invitation.id,
-                      response: 'decline',
-                    );
-                  },
+                  onPressed: isSubmitting
+                      ? null
+                      : () => _handleInvitationResponse(
+                          invitation: invitation,
+                          response: 'decline',
+                        ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.red,
                     side: const BorderSide(color: Colors.red),
@@ -1084,21 +1340,12 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
               const SizedBox(width: 10),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () async {
-                    final lifecycle = context.read<WorkerLifecycleProvider>();
-                    final success = await lifecycle.respondToInvitation(
-                      invitationId: invitation.id,
-                      response: 'approve',
-                    );
-                    if (mounted && success) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('Invitation accepted!'),
-                          backgroundColor: Colors.green.shade700,
+                  onPressed: isSubmitting
+                      ? null
+                      : () => _handleInvitationResponse(
+                          invitation: invitation,
+                          response: 'approve',
                         ),
-                      );
-                    }
-                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green.shade600,
                     foregroundColor: Colors.white,
@@ -1108,11 +1355,152 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     elevation: 0,
                   ),
-                  child: const Text('Accept'),
+                  child: isSubmitting
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text('Accept'),
                 ),
               ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInvitationStatusCard(WorkerInvitation invitation, bool isDark) {
+    final isApproved = invitation.isApproved;
+    final isDeclined = invitation.isDeclined;
+    final statusColor = isApproved
+        ? Colors.green
+        : isDeclined
+        ? Colors.red
+        : Colors.grey;
+    final statusLabel = isApproved
+        ? 'APPROVED'
+        : isDeclined
+        ? 'DECLINED'
+        : 'EXPIRED';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey.shade800 : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: statusColor.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 18,
+            backgroundColor: statusColor.withOpacity(0.12),
+            child: Icon(
+              isApproved
+                  ? Icons.check_circle_outline
+                  : isDeclined
+                  ? Icons.cancel_outlined
+                  : Icons.timer_off_outlined,
+              color: statusColor,
+              size: 18,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  invitation.farmerName ?? 'Farmer',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  invitation.landName ?? 'Land',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: statusColor.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              statusLabel,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: statusColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorBanner({
+    required String title,
+    required String message,
+    required bool isDark,
+    required VoidCallback onRetry,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.red.withOpacity(0.1) : Colors.red.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.red.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.error_outline, color: Colors.red.shade400, size: 18),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.red.shade300 : Colors.red.shade700,
+                  ),
+                ),
+                Text(
+                  message,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark ? Colors.red.shade200 : Colors.red.shade600,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          TextButton(onPressed: onRetry, child: const Text('Retry')),
         ],
       ),
     );
@@ -1366,7 +1754,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? cardColor.withOpacity(0.05) : cardColor.withOpacity(0.08),
+        color: isDark
+            ? cardColor.withOpacity(0.05)
+            : cardColor.withOpacity(0.08),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: cardColor.withOpacity(0.2)),
       ),
@@ -1381,12 +1771,15 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  isVerified ? Icons.check_circle_outline : 
-                  isRejected ? Icons.error_outline :
-                  isExpired ? Icons.timer_off_outlined :
-                  Icons.camera_alt, 
-                  color: iconColor, 
-                  size: 20
+                  isVerified
+                      ? Icons.check_circle_outline
+                      : isRejected
+                      ? Icons.error_outline
+                      : isExpired
+                      ? Icons.timer_off_outlined
+                      : Icons.camera_alt,
+                  color: iconColor,
+                  size: 20,
                 ),
               ),
               const SizedBox(width: 12),
@@ -1404,26 +1797,41 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      isVerified ? 'Verification Successful' :
-                      isRejected ? 'Verification Failed' :
-                      isExpired ? 'Request Expired' :
-                      (proof.targetType == 'item' ? 'Item Verification' : 'General Land Proof'),
+                      isVerified
+                          ? 'Verification Successful'
+                          : isRejected
+                          ? 'Verification Failed'
+                          : isExpired
+                          ? 'Request Expired'
+                          : (proof.targetType == 'item'
+                                ? 'Item Verification'
+                                : 'General Land Proof'),
                       style: TextStyle(
                         fontSize: 12,
-                        color: isDark ? cardColor.withOpacity(0.7) : cardColor.withOpacity(0.9),
+                        color: isDark
+                            ? cardColor.withOpacity(0.7)
+                            : cardColor.withOpacity(0.9),
                       ),
                     ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.timer_outlined, size: 10, color: isDark ? Colors.blue.shade300 : Colors.blue.shade600),
+                        Icon(
+                          Icons.timer_outlined,
+                          size: 10,
+                          color: isDark
+                              ? Colors.blue.shade300
+                              : Colors.blue.shade600,
+                        ),
                         const SizedBox(width: 4),
                         _ProofCountdown(
                           proof: proof,
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.blue.shade300 : Colors.blue.shade700,
+                            color: isDark
+                                ? Colors.blue.shade300
+                                : Colors.blue.shade700,
                           ),
                         ),
                       ],
@@ -1438,10 +1846,13 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  isVerified ? 'VERIFIED' :
-                  isRejected ? 'REJECTED' :
-                  isExpired ? 'EXPIRED' :
-                  'AI VERIFY',
+                  isVerified
+                      ? 'VERIFIED'
+                      : isRejected
+                      ? 'REJECTED'
+                      : isExpired
+                      ? 'EXPIRED'
+                      : 'AI VERIFY',
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
@@ -1465,7 +1876,10 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   height: 100,
                   width: double.infinity,
                   color: Colors.grey.withOpacity(0.1),
-                  child: const Icon(Icons.broken_image_outlined, color: Colors.grey),
+                  child: const Icon(
+                    Icons.broken_image_outlined,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
             ),
@@ -1477,117 +1891,136 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () async {
-                    final picker = ImagePicker();
-                    final image = await picker.pickImage(
-                      source: ImageSource.camera,
-                      imageQuality: 70,
-                    );
-                    if (image != null) {
-                      final lifecycle = context.read<WorkerLifecycleProvider>();
-                      final statusNotifier = ValueNotifier<String>('Uploading Image...');
-                      
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (ctx) => AlertDialog(
-                          backgroundColor: isDark ? const Color(0xFF2A2D30) : Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                          content: ValueListenableBuilder<String>(
-                            valueListenable: statusNotifier,
-                            builder: (context, status, _) {
-                              return Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const SizedBox(height: 10),
-                                  CircularProgressIndicator(color: Colors.blue.shade600),
-                                  const SizedBox(height: 24),
-                                  Text(
-                                    status,
-                                    style: TextStyle(
-                                      color: isDark ? Colors.white : Colors.black87,
-                                      fontWeight: FontWeight.bold,
+                      final picker = ImagePicker();
+                      final image = await picker.pickImage(
+                        source: ImageSource.camera,
+                        imageQuality: 70,
+                      );
+                      if (image != null) {
+                        final lifecycle = context
+                            .read<WorkerLifecycleProvider>();
+                        final statusNotifier = ValueNotifier<String>(
+                          'Uploading Image...',
+                        );
+
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (ctx) => AlertDialog(
+                            backgroundColor: isDark
+                                ? const Color(0xFF2A2D30)
+                                : Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            content: ValueListenableBuilder<String>(
+                              valueListenable: statusNotifier,
+                              builder: (context, status, _) {
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const SizedBox(height: 10),
+                                    CircularProgressIndicator(
+                                      color: Colors.blue.shade600,
                                     ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Please wait a few moments',
-                                    style: TextStyle(
-                                      color: isDark ? Colors.white38 : Colors.black45,
-                                      fontSize: 12,
+                                    const SizedBox(height: 24),
+                                    Text(
+                                      status,
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Colors.white
+                                            : Colors.black87,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                ],
-                              );
-                            },
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Please wait a few moments',
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Colors.white38
+                                            : Colors.black45,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                  ],
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                      );
-
-                      final error = await ProofService.submitProof(
-                        proof.id, 
-                        image,
-                        onStatusUpdate: (status) => statusNotifier.value = status,
-                      );
-
-                      if (context.mounted) Navigator.pop(context);
-                      statusNotifier.dispose();
-
-                      if (error == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Proof submitted and verified!')),
                         );
-                        lifecycle.loadMyProofs();
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(error), backgroundColor: Colors.red),
+
+                        final error = await ProofService.submitProof(
+                          proof.id,
+                          image,
+                          onStatusUpdate: (status) =>
+                              statusNotifier.value = status,
                         );
+
+                        if (context.mounted) Navigator.pop(context);
+                        statusNotifier.dispose();
+
+                        if (error == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Proof submitted and verified!'),
+                            ),
+                          );
+                          lifecycle.loadMyProofs();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(error),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
                       }
-                    }
-                  },
-                  icon: const Icon(Icons.upload_rounded, size: 18),
-                  label: const Text('Capture & Submit'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade600,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                    },
+                    icon: const Icon(Icons.upload_rounded, size: 18),
+                    label: const Text('Capture & Submit'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade600,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      elevation: 0,
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    elevation: 0,
                   ),
-                ),
                 ),
               ],
             ),
           ],
-        if (isRejected && proof.aiReasoning != null) ...[
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Icon(Icons.info_outline, size: 14, color: Colors.red),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    proof.aiReasoning!,
-                    style: const TextStyle(fontSize: 11, color: Colors.red),
+          if (isRejected && proof.aiReasoning != null) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.info_outline, size: 14, color: Colors.red),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      proof.aiReasoning!,
+                      style: const TextStyle(fontSize: 11, color: Colors.red),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ],
         ],
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
 
   Widget _emptyState(String title, String subtitle, IconData icon) {
     return Container(
@@ -1649,7 +2082,8 @@ class _ProofCountdownState extends State<_ProofCountdown> {
   @override
   void didUpdateWidget(_ProofCountdown oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.proof.id != widget.proof.id || oldWidget.proof.expiresAt != widget.proof.expiresAt) {
+    if (oldWidget.proof.id != widget.proof.id ||
+        oldWidget.proof.expiresAt != widget.proof.expiresAt) {
       _startTimer();
     }
   }
@@ -1662,9 +2096,6 @@ class _ProofCountdownState extends State<_ProofCountdown> {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      widget.proof.timeRemaining,
-      style: widget.style,
-    );
+    return Text(widget.proof.timeRemaining, style: widget.style);
   }
 }

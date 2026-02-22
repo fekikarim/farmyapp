@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/product_model.dart';
 import '../../providers/basket_provider.dart';
+import '../../widgets/profile_preview_sheet.dart';
+import '../../services/auth_service.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -58,8 +60,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: CircleAvatar(
                 backgroundColor: theme.colorScheme.surface.withOpacity(0.8),
                 child: IconButton(
-                  icon: Icon(Icons.arrow_back,
-                      color: theme.colorScheme.onSurface),
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: theme.colorScheme.onSurface,
+                  ),
                   onPressed: () => Navigator.pop(context),
                 ),
               ),
@@ -98,8 +102,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             duration: const Duration(milliseconds: 300),
                             width: i == _currentImageIndex ? 24 : 8,
                             height: 8,
-                            margin:
-                                const EdgeInsets.symmetric(horizontal: 3),
+                            margin: const EdgeInsets.symmetric(horizontal: 3),
                             decoration: BoxDecoration(
                               color: i == _currentImageIndex
                                   ? Colors.white
@@ -155,7 +158,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       const SizedBox(width: 12),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 8),
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(14),
@@ -232,13 +237,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surface,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color:
-                              theme.colorScheme.onSurface.withOpacity(0.08),
+                          color: theme.colorScheme.onSurface.withOpacity(0.08),
                         ),
                       ),
                       child: Row(
@@ -246,8 +252,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           _buildQtyButton(
                             icon: Icons.remove,
                             onTap: _selectedQuantity > 1
-                                ? () => setState(
-                                    () => _selectedQuantity--)
+                                ? () => setState(() => _selectedQuantity--)
                                 : null,
                             theme: theme,
                           ),
@@ -266,8 +271,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           _buildQtyButton(
                             icon: Icons.add,
                             onTap: _selectedQuantity < _maxQuantity
-                                ? () => setState(
-                                    () => _selectedQuantity++)
+                                ? () => setState(() => _selectedQuantity++)
                                 : null,
                             theme: theme,
                           ),
@@ -299,51 +303,77 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color:
-                              theme.colorScheme.onSurface.withOpacity(0.06),
-                        ),
+                    const SizedBox(height: 8),
+                    InkWell(
+                      onTap: () => ProfilePreviewSheet.show(
+                        context,
+                        product.ownerId,
+                        initialUser: product.owner,
                       ),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 22,
-                            backgroundColor:
-                                theme.colorScheme.primary.withOpacity(0.1),
-                            child: Icon(Icons.person,
-                                color: theme.colorScheme.primary, size: 24),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  product.owner?.name ??
-                                      product.owner?.email ??
-                                      'Farmer',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                Text(
-                                  'Verified Seller',
-                                  style: TextStyle(
-                                    color: theme.colorScheme.primary,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
+                      borderRadius: BorderRadius.circular(14),
+                      child: Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surface,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: theme.colorScheme.onSurface.withOpacity(
+                              0.06,
                             ),
                           ),
-                        ],
+                        ),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 22,
+                              backgroundColor: theme.colorScheme.primary
+                                  .withOpacity(0.1),
+                              backgroundImage:
+                                  product.owner?.profile?.picture != null
+                                  ? NetworkImage(
+                                      '${AuthService.baseUrl}${product.owner!.profile!.picture}',
+                                    )
+                                  : null,
+                              child: product.owner?.profile?.picture == null
+                                  ? Icon(
+                                      Icons.person,
+                                      color: theme.colorScheme.primary,
+                                      size: 24,
+                                    )
+                                  : null,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    product.owner?.profile?.name ??
+                                        product.owner?.email.split('@').first ??
+                                        'Farmer',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Verified Seller',
+                                    style: TextStyle(
+                                      color: theme.colorScheme.primary,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(
+                              Icons.chevron_right,
+                              size: 20,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -383,8 +413,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           Text(
                             'Total',
                             style: TextStyle(
-                              color:
-                                  theme.colorScheme.onSurface.withOpacity(0.5),
+                              color: theme.colorScheme.onSurface.withOpacity(
+                                0.5,
+                              ),
                               fontSize: 12,
                             ),
                           ),
@@ -415,13 +446,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.shopping_basket_rounded,
-                                size: 20),
+                            const Icon(Icons.shopping_basket_rounded, size: 20),
                             const SizedBox(width: 8),
                             Text(
-                              inBasket
-                                  ? 'Update Basket'
-                                  : 'Add to Basket',
+                              inBasket ? 'Update Basket' : 'Add to Basket',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 15,

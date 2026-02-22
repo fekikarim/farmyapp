@@ -14,9 +14,11 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   // ─── Invitations State ───
   List<WorkerInvitation> _landInvitations = [];
   bool _landInvitationsLoading = false;
+  String? _landInvitationsError;
 
   List<WorkerInvitation> _myInvitations = [];
   bool _myInvitationsLoading = false;
+  String? _myInvitationsError;
 
   // Approved workers for investor
   List<WorkerProfile> _approvedWorkers = [];
@@ -47,19 +49,23 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   // ─── Balance State ───
   Map<String, dynamic> _myBalance = {};
   bool _balanceLoading = false;
+  String? _balanceError;
 
   // ─── Proofs State ───
   List<ProofRequest> _landProofs = [];
   bool _landProofsLoading = false;
+  String? _landProofsError;
 
   List<ProofRequest> _myProofs = [];
   bool _myProofsLoading = false;
+  String? _myProofsError;
 
   String? _currentLandId;
 
   // ─── Getters ───
   List<WorkerInvitation> get landInvitations => _landInvitations;
   bool get landInvitationsLoading => _landInvitationsLoading;
+  String? get landInvitationsError => _landInvitationsError;
 
   // Convenience aliases
   List<WorkerInvitation> get invitations => _landInvitations;
@@ -73,6 +79,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   List<WorkerInvitation> get myInvitations => _myInvitations;
   bool get myInvitationsLoading => _myInvitationsLoading;
+  String? get myInvitationsError => _myInvitationsError;
 
   List<WorkerProfile> get approvedWorkers => _approvedWorkers;
   bool get approvedWorkersLoading => _approvedWorkersLoading;
@@ -101,6 +108,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   Map<String, dynamic> get myBalance => _myBalance;
   bool get balanceLoading => _balanceLoading;
+  String? get balanceError => _balanceError;
 
   String? get currentLandId => _currentLandId;
 
@@ -108,6 +116,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   List<ProofRequest> get pendingLandProofs =>
       _landProofs.where((p) => p.isPending).toList();
   bool get landProofsLoading => _landProofsLoading;
+  String? get landProofsError => _landProofsError;
 
   List<ProofRequest> get myProofs => _myProofs;
   List<ProofRequest> get pendingMyProofs =>
@@ -115,6 +124,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   List<ProofRequest> get historyMyProofs =>
       _myProofs.where((p) => !p.isPending).toList();
   bool get myProofsLoading => _myProofsLoading;
+  String? get myProofsError => _myProofsError;
 
   // ─── Invitation Actions ───
 
@@ -164,6 +174,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   Future<void> loadLandInvitations(String landId, {String? status}) async {
     _landInvitationsLoading = true;
+    _landInvitationsError = null;
     notifyListeners();
     try {
       _landInvitations = await WorkerLifecycleService.getLandInvitations(
@@ -172,6 +183,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
       );
     } catch (e) {
       _landInvitations = [];
+      _landInvitationsError = e.toString().replaceAll('Exception: ', '');
     } finally {
       _landInvitationsLoading = false;
       notifyListeners();
@@ -184,11 +196,13 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   Future<void> loadMyInvitations() async {
     _myInvitationsLoading = true;
+    _myInvitationsError = null;
     notifyListeners();
     try {
       _myInvitations = await WorkerLifecycleService.getMyInvitations();
     } catch (e) {
       _myInvitations = [];
+      _myInvitationsError = e.toString().replaceAll('Exception: ', '');
     } finally {
       _myInvitationsLoading = false;
       notifyListeners();
@@ -473,11 +487,13 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   Future<void> loadMyBalance() async {
     _balanceLoading = true;
+    _balanceError = null;
     notifyListeners();
     try {
       _myBalance = await WorkerLifecycleService.getMyBalance();
     } catch (e) {
       _myBalance = {};
+      _balanceError = e.toString().replaceAll('Exception: ', '');
     } finally {
       _balanceLoading = false;
       notifyListeners();
@@ -489,6 +505,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   Future<void> loadLandProofs(String landId) async {
     _currentLandId = landId;
     _landProofsLoading = true;
+    _landProofsError = null;
     notifyListeners();
     try {
       final List<dynamic> raw = await ProofService.getMyProofs();
@@ -499,6 +516,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
           .toList();
     } catch (e) {
       _landProofs = [];
+      _landProofsError = e.toString().replaceAll('Exception: ', '');
     } finally {
       _landProofsLoading = false;
       notifyListeners();
@@ -507,16 +525,27 @@ class WorkerLifecycleProvider extends ChangeNotifier {
 
   Future<void> loadMyProofs() async {
     _myProofsLoading = true;
+    _myProofsError = null;
     notifyListeners();
     try {
       final List<dynamic> raw = await ProofService.getMyProofs();
       _myProofs = raw.map((json) => ProofRequest.fromJson(json)).toList();
     } catch (e) {
       _myProofs = [];
+      _myProofsError = e.toString().replaceAll('Exception: ', '');
     } finally {
       _myProofsLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> refreshWorkerDashboardLifecycle() async {
+    await Future.wait([
+      loadMyInvitations(),
+      loadMyContracts(),
+      loadMyBalance(),
+      loadMyProofs(),
+    ]);
   }
 
   Future<bool> suspendContract(String contractId) async {
@@ -720,9 +749,9 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   void handleProofRequested(Map<String, dynamic> data) {
     if (data['proof'] != null) {
       final proof = ProofRequest.fromJson(data['proof']);
-      
+
       // Update land-specific list if it matches the current land
-      if (_currentLandId != null && 
+      if (_currentLandId != null &&
           proof.landId?.toLowerCase() == _currentLandId!.toLowerCase()) {
         if (!_landProofs.any((p) => p.id == proof.id)) {
           _landProofs.insert(0, proof);
@@ -740,7 +769,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
   void handleProofStatusUpdated(Map<String, dynamic> data) {
     if (data['proof'] != null) {
       final proof = ProofRequest.fromJson(data['proof']);
-      
+
       // Update in my list
       final idx = _myProofs.indexWhere((p) => p.id == proof.id);
       if (idx >= 0) {
@@ -750,7 +779,7 @@ class WorkerLifecycleProvider extends ChangeNotifier {
       }
 
       // Update in land list (only if it belongs to the current land)
-      if (_currentLandId != null && 
+      if (_currentLandId != null &&
           proof.landId?.toLowerCase() == _currentLandId!.toLowerCase()) {
         final idxInLand = _landProofs.indexWhere((p) => p.id == proof.id);
         if (idxInLand >= 0) {

@@ -14,6 +14,11 @@ class AuthProvider with ChangeNotifier {
   bool get hasConnectionError => _hasConnectionError;
   bool get isAuthenticated => _user != null;
 
+  void setUser(User user) {
+    _user = user;
+    notifyListeners();
+  }
+
   AuthProvider() {
     _loadUser();
   }
@@ -24,7 +29,7 @@ class AuthProvider with ChangeNotifier {
 
     try {
       _hasConnectionError = false;
-      
+
       // Proactively check server health first
       final isOnline = await AuthService.checkServerHealth();
       if (!isOnline) {
@@ -35,7 +40,9 @@ class AuthProvider with ChangeNotifier {
         return;
       }
 
-      final hasRefreshToken = await AuthService.getAccessToken() != null; // Simple check if we were logged in
+      final hasRefreshToken =
+          await AuthService.getAccessToken() !=
+          null; // Simple check if we were logged in
       if (hasRefreshToken) {
         // Try to refresh tokens first
         final refreshSuccess = await AuthService.refreshTokens();
@@ -296,9 +303,9 @@ class AuthProvider with ChangeNotifier {
     if (_user == null) return false;
     _isLoading = true;
     notifyListeners();
-    
+
     final success = await AuthService.resendVerificationCode(_user!.email);
-    
+
     _isLoading = false;
     notifyListeners();
     return success;
@@ -306,7 +313,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<String?> verifyEmail(String code) async {
     if (_user == null) return 'No user found';
-    
+
     _isLoading = true;
     notifyListeners();
 
@@ -340,7 +347,9 @@ class AuthProvider with ChangeNotifier {
       final success = await AuthService.forgotPassword(email);
       _isLoading = false;
       notifyListeners();
-      return success ? null : 'Failed to send reset code. Please check your email.';
+      return success
+          ? null
+          : 'Failed to send reset code. Please check your email.';
     } catch (e) {
       _isLoading = false;
       notifyListeners();
@@ -348,7 +357,11 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<String?> resetPassword(String email, String code, String newPassword) async {
+  Future<String?> resetPassword(
+    String email,
+    String code,
+    String newPassword,
+  ) async {
     _isLoading = true;
     notifyListeners();
     try {
@@ -363,15 +376,19 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-
   Future<String?> changePassword(String oldPassword, String newPassword) async {
     _isLoading = true;
     notifyListeners();
     try {
-      final success = await AuthService.changePassword(oldPassword, newPassword);
+      final success = await AuthService.changePassword(
+        oldPassword,
+        newPassword,
+      );
       _isLoading = false;
       notifyListeners();
-      return success ? null : 'Failed to change password. Please verify your old password.';
+      return success
+          ? null
+          : 'Failed to change password. Please verify your old password.';
     } catch (e) {
       _isLoading = false;
       notifyListeners();

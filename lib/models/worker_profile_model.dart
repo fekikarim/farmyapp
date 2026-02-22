@@ -15,6 +15,14 @@ class WorkerProfile {
   final String? userProfilePicture;
   final DateTime? createdAt;
 
+  // New extended fields
+  final List<String> certifications;
+  final int? yearsOfExperience;
+  final List<String> preferredTasks;
+  final String? availabilityCalendar;
+  final List<String> languagesSpoken;
+  final Map<String, dynamic>? expectedRateRange;
+
   WorkerProfile({
     required this.id,
     required this.userId,
@@ -31,6 +39,12 @@ class WorkerProfile {
     this.userEmail,
     this.userProfilePicture,
     this.createdAt,
+    this.certifications = const [],
+    this.yearsOfExperience,
+    this.preferredTasks = const [],
+    this.availabilityCalendar,
+    this.languagesSpoken = const [],
+    this.expectedRateRange,
   });
 
   factory WorkerProfile.fromJson(Map<String, dynamic> json) {
@@ -55,6 +69,18 @@ class WorkerProfile {
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'])
           : null,
+      certifications: json['certifications'] != null
+          ? List<String>.from(json['certifications'])
+          : [],
+      yearsOfExperience: json['years_of_experience'],
+      preferredTasks: json['preferred_tasks'] != null
+          ? List<String>.from(json['preferred_tasks'])
+          : [],
+      availabilityCalendar: json['availability_calendar'],
+      languagesSpoken: json['languages_spoken'] != null
+          ? List<String>.from(json['languages_spoken'])
+          : [],
+      expectedRateRange: json['expected_rate_range'],
     );
   }
 
@@ -64,6 +90,12 @@ class WorkerProfile {
       'bio': bio,
       'hourly_rate': hourlyRate,
       'availability': availability,
+      'certifications': certifications,
+      'years_of_experience': yearsOfExperience,
+      'preferred_tasks': preferredTasks,
+      'availability_calendar': availabilityCalendar,
+      'languages_spoken': languagesSpoken,
+      if (expectedRateRange != null) 'expected_rate_range': expectedRateRange,
     };
   }
 

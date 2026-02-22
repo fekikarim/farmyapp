@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../providers/worker_provider.dart';
 import '../../models/worker_profile_model.dart';
 import '../shared/worker_detail_screen.dart';
+import '../../widgets/profile_preview_sheet.dart';
+import '../../services/auth_service.dart';
 
 class WorkerMarketplaceScreen extends StatefulWidget {
   final String landId;
@@ -57,6 +59,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
 
   Widget _buildWorkerCard(WorkerProfile profile) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: () async {
         final invited = await Navigator.push<bool>(
@@ -93,12 +96,17 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
           children: [
             // Avatar
             Hero(
-              tag: 'worker-${profile.id}',
+              tag: 'worker-avatar-${profile.id}',
               child: CircleAvatar(
                 radius: 28,
                 backgroundColor: isDark
                     ? Colors.green.withOpacity(0.2)
                     : Colors.green.shade100,
+                backgroundImage: profile.userProfilePicture != null
+                    ? NetworkImage(
+                        '${AuthService.baseUrl}${profile.userProfilePicture}',
+                      )
+                    : null,
                 child: profile.userProfilePicture == null
                     ? Icon(
                         Icons.person,
@@ -119,16 +127,19 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                   Row(
                     children: [
                       Flexible(
-                        child: Text(
-                          profile.userName ?? 'Worker',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                            color: isDark
-                                ? Colors.white
-                                : const Color(0xFF1F2937),
+                        child: InkWell(
+                          onTap: () =>
+                              ProfilePreviewSheet.show(context, profile.userId),
+                          child: Text(
+                            profile.userName ?? 'Worker',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              color: theme.colorScheme.primary,
+                              decoration: TextDecoration.underline,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (profile.isVerified) ...[

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:io' show Platform;
+import 'dart:io' show Platform, File;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
@@ -9,6 +9,8 @@ import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:uuid/uuid.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/user_model.dart';
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
 
 class AuthService {
   static final String _baseUrl = dotenv.get(
@@ -44,9 +46,9 @@ class AuthService {
 
   static Future<bool> checkServerHealth() async {
     try {
-      final response = await http.get(
-        Uri.parse('$_baseUrl/api/v1/health'),
-      ).timeout(const Duration(seconds: 5));
+      final response = await http
+          .get(Uri.parse('$_baseUrl/api/v1/health'))
+          .timeout(const Duration(seconds: 5));
 
       return response.statusCode == 200;
     } catch (e) {
@@ -78,8 +80,11 @@ class AuthService {
         );
       }
     } catch (e) {
-      if (e is http.ClientException || e.toString().contains('SocketException')) {
-        throw Exception('Server connection failed. Please check your internet.');
+      if (e is http.ClientException ||
+          e.toString().contains('SocketException')) {
+        throw Exception(
+          'Server connection failed. Please check your internet.',
+        );
       }
       print('Register Error: $e');
       rethrow;
@@ -105,8 +110,11 @@ class AuthService {
         throw Exception(body['message'] ?? body['error'] ?? 'Login failed');
       }
     } catch (e) {
-      if (e is http.ClientException || e.toString().contains('SocketException')) {
-        throw Exception('Server connection failed. Please check your internet.');
+      if (e is http.ClientException ||
+          e.toString().contains('SocketException')) {
+        throw Exception(
+          'Server connection failed. Please check your internet.',
+        );
       }
       print('Login Error: $e');
       rethrow;
@@ -510,6 +518,113 @@ class AuthService {
     return null;
   }
 
+  static Future<User?> updateProfile(Map<String, dynamic> updates) async {
+    try {
+      final response = await authenticatedRequest(
+        'PATCH',
+        Uri.parse('$_baseUrl/api/v1/profile/me'),
+        body: jsonEncode(updates),
+      );
+      if (response.statusCode == 200) {
+        return await fetchProfile();
+      } else {
+        final errorBody = jsonDecode(response.body);
+        String errorMessage =
+            errorBody['message'] ?? 'Failed to update profile';
+        if (errorBody['errors'] != null &&
+            errorBody['errors'] is List &&
+            (errorBody['errors'] as List).isNotEmpty) {
+          errorMessage = errorBody['errors'][0]['message'] ?? errorMessage;
+        }
+        throw Exception(errorMessage);
+      }
+    } catch (e) {
+      print('Update Profile Exception: $e');
+      rethrow;
+    }
+  }
+
+  static Future<User?> fetchPublicProfile(String userId) async {
+    try {
+      final response = await authenticatedRequest(
+        'GET',
+        Uri.parse('$_baseUrl/api/v1/auth/users/$userId'),
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)['data'];
+        return User.fromJson(data);
+      } else {
+        throw Exception('Failed to fetch profile');
+      }
+    } catch (e) {
+      print('Fetch Public Profile Error: $e');
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> uploadProfilePicture(
+    File imageFile,
+  ) async {
+    try {
+      final url = Uri.parse('$_baseUrl/api/v1/profile/picture');
+      final request = http.MultipartRequest('POST', url);
+
+      String? token = await getAccessToken();
+      if (token != null) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+
+      final mimeType = lookupMimeType(imageFile.path) ?? 'image/jpeg';
+      final contentType = MediaType.parse(mimeType);
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'profile_picture',
+          imageFile.path,
+          contentType: contentType,
+        ),
+      );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Sync the result immediately
+        await fetchProfile();
+        return data['data'];
+      } else {
+        final errorBody = jsonDecode(response.body);
+        throw Exception(errorBody['message'] ?? 'Failed to upload image');
+      }
+    } catch (e) {
+      print('Upload Profile Picture Exception: $e');
+      rethrow;
+    }
+  }
+
+  static Future<bool> isUsernameAvailable(String username) async {
+    try {
+      final token = await getAccessToken();
+      final response = await http.get(
+        Uri.parse('$_baseUrl/api/v1/profile/check-username/$username'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data']['available'] == true;
+      }
+      return false;
+    } catch (e) {
+      print('Check Username error: $e');
+      return false;
+    }
+  }
+
   static Future<User?> getUserById(String id) async {
     try {
       final response = await authenticatedRequest(
@@ -540,17 +655,17 @@ class AuthService {
 
     final safeHeaders = headers ?? {};
     Future<http.Response> performRequest(String tokenToUse) async {
-       safeHeaders['Authorization'] = 'Bearer $tokenToUse';
-       
-       final request = http.Request(method, url);
-       request.headers.addAll(safeHeaders);
-       
-       if (body != null) {
-         request.body = body is String ? body : jsonEncode(body);
-       }
+      safeHeaders['Authorization'] = 'Bearer $tokenToUse';
 
-       final streamResponse = await request.send();
-       return await http.Response.fromStream(streamResponse);
+      final request = http.Request(method, url);
+      request.headers.addAll(safeHeaders);
+
+      if (body != null) {
+        request.body = body is String ? body : jsonEncode(body);
+      }
+
+      final streamResponse = await request.send();
+      return await http.Response.fromStream(streamResponse);
     }
 
     try {
@@ -561,13 +676,14 @@ class AuthService {
       if (response.statusCode == 401) {
         final refreshed = await refreshTokens();
         if (refreshed) {
-           token = await getAccessToken();
-           response = await performRequest(token!);
+          token = await getAccessToken();
+          response = await performRequest(token!);
         }
       }
       return response;
     } catch (e) {
-      if (e is http.ClientException || e.toString().contains('SocketException')) {
+      if (e is http.ClientException ||
+          e.toString().contains('SocketException')) {
         return http.Response(
           jsonEncode({'message': 'Server connection failed'}),
           503,

@@ -18,17 +18,21 @@ class WorkerProvider extends ChangeNotifier {
   // Land Workers State
   List<LandWorker> _landWorkers = [];
   bool _landWorkersLoading = false;
+  String? _landWorkersError;
   Map<String, dynamic> _workforceStats = {};
 
   // Worker's Assigned Lands
   List<LandWorker> _assignedLands = [];
   bool _assignedLandsLoading = false;
+  String? _assignedLandsError;
 
   // Tasks State
   List<FarmTask> _tasks = [];
   bool _tasksLoading = false;
+  String? _tasksError;
   List<FarmTask> _myTasks = [];
   bool _myTasksLoading = false;
+  String? _myTasksError;
 
   // Getters
   WorkerProfile? get myProfile => _myProfile;
@@ -42,15 +46,19 @@ class WorkerProvider extends ChangeNotifier {
 
   List<LandWorker> get landWorkers => _landWorkers;
   bool get landWorkersLoading => _landWorkersLoading;
+  String? get landWorkersError => _landWorkersError;
   Map<String, dynamic> get workforceStats => _workforceStats;
 
   List<LandWorker> get assignedLands => _assignedLands;
   bool get assignedLandsLoading => _assignedLandsLoading;
+  String? get assignedLandsError => _assignedLandsError;
 
   List<FarmTask> get tasks => _tasks;
   bool get tasksLoading => _tasksLoading;
+  String? get tasksError => _tasksError;
   List<FarmTask> get myTasks => _myTasks;
   bool get myTasksLoading => _myTasksLoading;
+  String? get myTasksError => _myTasksError;
 
   // ─── Worker Profile Actions ───
 
@@ -147,6 +155,7 @@ class WorkerProvider extends ChangeNotifier {
 
   Future<void> loadLandWorkers(String landId) async {
     _landWorkersLoading = true;
+    _landWorkersError = null;
     notifyListeners();
 
     try {
@@ -155,6 +164,7 @@ class WorkerProvider extends ChangeNotifier {
     } catch (e) {
       _landWorkers = [];
       _workforceStats = {};
+      _landWorkersError = e.toString().replaceAll('Exception: ', '');
     } finally {
       _landWorkersLoading = false;
       notifyListeners();
@@ -215,12 +225,14 @@ class WorkerProvider extends ChangeNotifier {
 
   Future<void> loadAssignedLands() async {
     _assignedLandsLoading = true;
+    _assignedLandsError = null;
     notifyListeners();
 
     try {
       _assignedLands = await WorkerService.getMyAssignedLands();
     } catch (e) {
       _assignedLands = [];
+      _assignedLandsError = e.toString().replaceAll('Exception: ', '');
     } finally {
       _assignedLandsLoading = false;
       notifyListeners();
@@ -231,12 +243,14 @@ class WorkerProvider extends ChangeNotifier {
 
   Future<void> loadLandTasks(String landId, {String? status}) async {
     _tasksLoading = true;
+    _tasksError = null;
     notifyListeners();
 
     try {
       _tasks = await TaskService.getLandTasks(landId, status: status);
     } catch (e) {
       _tasks = [];
+      _tasksError = e.toString().replaceAll('Exception: ', '');
     } finally {
       _tasksLoading = false;
       notifyListeners();
@@ -269,16 +283,22 @@ class WorkerProvider extends ChangeNotifier {
 
   Future<void> loadMyTasks() async {
     _myTasksLoading = true;
+    _myTasksError = null;
     notifyListeners();
 
     try {
       _myTasks = await TaskService.getMyTasks();
     } catch (e) {
       _myTasks = [];
+      _myTasksError = e.toString().replaceAll('Exception: ', '');
     } finally {
       _myTasksLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> refreshWorkerDashboard() async {
+    await Future.wait([loadMyProfile(), loadAssignedLands(), loadMyTasks()]);
   }
 
   Future<bool> completeTask({
