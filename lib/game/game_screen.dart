@@ -265,6 +265,11 @@ class _GameScreenState extends State<GameScreen>
     final myRentals = landProvider.myRentals;
 
     bool canManageWorkforce = false;
+    // Farmers who own the land can always manage workforce
+    if (currentUser?.role == 'farmer' && widget.land.ownerId == currentUser?.id) {
+      canManageWorkforce = true;
+    }
+    // Investors with an active rental can also manage workforce
     if (currentUser?.role == 'investor') {
       final activeRental = myRentals
           .where((r) => r.landId == widget.land.id)
