@@ -40,7 +40,9 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WorkerProvider>().loadMarketplace();
+      context.read<WorkerProvider>().loadMarketplace(
+            excludeLandId: widget.landId,
+          );
     });
   }
 
@@ -52,9 +54,10 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
 
   void _applyFilters() {
     context.read<WorkerProvider>().loadMarketplace(
-      skill: _selectedSkillFilter == 'All' ? null : _selectedSkillFilter,
-      minRating: _minRating,
-    );
+          skill: _selectedSkillFilter == 'All' ? null : _selectedSkillFilter,
+          minRating: _minRating,
+          excludeLandId: widget.landId,
+        );
   }
 
   Widget _buildWorkerCard(WorkerProfile profile) {
