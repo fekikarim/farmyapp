@@ -415,17 +415,15 @@ class _WorkforceScreenState extends State<WorkforceScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      floatingActionButton: widget.canHire
-          ? FloatingActionButton.extended(
-              onPressed: _showAddWorkerModal,
-              backgroundColor: Colors.green.shade600,
-              icon: const Icon(Icons.add, color: Colors.white),
-              label: const Text(
-                'Add Worker',
-                style: TextStyle(color: Colors.white),
-              ),
-            )
-          : null,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _showAddWorkerModal,
+        backgroundColor: Colors.green.shade600,
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text(
+          'Add Worker',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
       body: workerProvider.landWorkersLoading
           ? const Center(child: CircularProgressIndicator())
           : FadeTransition(
