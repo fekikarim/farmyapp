@@ -19,6 +19,7 @@ import 'theme/app_theme.dart';
 import 'providers/wallet_provider.dart';
 import 'providers/worker_provider.dart';
 import 'providers/worker_lifecycle_provider.dart';
+import 'providers/subscription_provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/theme_provider.dart';
@@ -61,6 +62,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => BasketProvider()),
         ChangeNotifierProvider(create: (_) => WorkerProvider()),
         ChangeNotifierProvider(create: (_) => WorkerLifecycleProvider()),
+        ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(initialThemeMode: initialTheme),
         ),
@@ -137,6 +139,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _lifecycle = context.read<WorkerLifecycleProvider>();
+    context.read<SubscriptionProvider>().init();
   }
 
   @override
