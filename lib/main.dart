@@ -131,10 +131,17 @@ class AuthWrapper extends StatefulWidget {
 class _AuthWrapperState extends State<AuthWrapper> {
   bool _socketConnected = false;
 
+  WorkerLifecycleProvider? _lifecycle;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _lifecycle = context.read<WorkerLifecycleProvider>();
+  }
+
   @override
   void dispose() {
-    final lifecycle = context.read<WorkerLifecycleProvider>();
-    lifecycle.disposeSocket();
+    _lifecycle?.disposeSocket();
     super.dispose();
   }
 
