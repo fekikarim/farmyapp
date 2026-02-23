@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/subscription_plan.dart';
+import 'subscription_detail_screen.dart';
 
 class CustomerSubscriptionsScreen extends StatelessWidget {
   const CustomerSubscriptionsScreen({super.key});
@@ -93,36 +94,48 @@ class SubscriptionPlanCard extends StatelessWidget {
           ),
         );
       },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              plan.accentColor.withOpacity(0.05),
-              plan.accentColor.withOpacity(0.2),
+      child: GestureDetector(
+        onTap: () => _navigateToDetails(context),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                plan.accentColor.withOpacity(0.05),
+                plan.accentColor.withOpacity(0.2),
+              ],
+            ),
+            border: Border.all(color: plan.accentColor.withOpacity(0.3), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: plan.accentColor.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
             ],
           ),
-          border: Border.all(color: plan.accentColor.withOpacity(0.3), width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: plan.accentColor.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildHeader(context),
+              const Divider(height: 1),
+              _buildFeatures(context),
+              _buildFooter(context),
+            ],
+          ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildHeader(context),
-            const Divider(height: 1),
-            _buildFeatures(context),
-            _buildFooter(context),
-          ],
-        ),
+      ),
+    );
+  }
+
+  void _navigateToDetails(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SubscriptionDetailScreen(plan: plan),
       ),
     );
   }
@@ -245,26 +258,52 @@ class SubscriptionPlanCard extends StatelessWidget {
   Widget _buildFooter(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-      child: ElevatedButton(
-        onPressed: () {
-          _showStaticUpgradeDialog(context);
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: plan.accentColor,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton(
+              onPressed: () => _navigateToDetails(context),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: plan.accentColor),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                'View Details',
+                style: TextStyle(
+                  color: plan.accentColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
-          elevation: 0,
-        ),
-        child: const Text(
-          'Upgrade Now',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+          const SizedBox(width: 12),
+          Expanded(
+            child: ElevatedButton(
+              onPressed: () {
+                _showStaticUpgradeDialog(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: plan.accentColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
+              child: const Text(
+                'Upgrade',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
