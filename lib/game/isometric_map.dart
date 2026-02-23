@@ -349,10 +349,18 @@ class IsometricMapPainter extends CustomPainter {
          if (img != null) {
              canvas.saveLayer(null, Paint()..color = Colors.white.withOpacity(0.7));
              
-             double w = 64;
-             double h = 80;
-             double dx = isoX + (tileWidth - w) / 2;
-             double dy = isoY + tileHeight - (tileHeight / 4) - h;
+             final int fw = placementFootprint!['base_size']?['width'] ?? 1;
+             final int fh = placementFootprint!['base_size']?['height'] ?? 1;
+             
+             double scaleFactor = (fw + fh) / 2.0;
+             double w = tileWidth * 1.3 * scaleFactor;
+             double h = w * (img.height / img.width);
+             
+             double cx = (fw - fh) * tileWidth / 4;
+             double cy = (fw + fh + 1) * tileHeight / 4; // Grounding at ~75% depth
+          
+             double dx = isoX + cx + (tileWidth - w) / 2;
+             double dy = isoY + cy - h;
           
              paintImage(
                 canvas: canvas,
@@ -556,30 +564,19 @@ class IsometricMapPainter extends CustomPainter {
             }
 
             if (img != null) {
-                // Dynamic sizing based on image aspect ratio and footprint
+                // Unified logic for all footprint sizes
                 int fw = task.cellData['footprint_width'] ?? 1;
                 int fh = task.cellData['footprint_height'] ?? 1;
                 
-                double w, h, dx, dy;
+                double scaleFactor = (fw + fh) / 2.0;
+                double w = tileWidth * 1.3 * scaleFactor; 
+                double h = w * (img.height / img.width);
                 
-                if (fw == 1 && fh == 1) {
-                    // OLD LOGIC for 1x1: Place feet at ~75% down the tile depth for exact grounding
-                    w = tileWidth * 1.3;
-                    h = w * (img.height / img.width);
-                    dx = task.isoX + (tileWidth - w) / 2;
-                    dy = task.isoY + (tileHeight * 0.75) - h;
-                } else {
-                    // NEW LOGIC for multi-tile: Center exactly across the footprint
-                    double scaleFactor = (fw + fh) / 2.0;
-                    w = tileWidth * 1.3 * scaleFactor; 
-                    h = w * (img.height / img.width);
-                    
-                    double cx = (fw - fh) * tileWidth / 4;
-                    double cy = (fw + fh) * tileHeight / 4; 
-                    
-                    dx = task.isoX + cx + (tileWidth - w) / 2;
-                    dy = task.isoY + cy - h;
-                }
+                double cx = (fw - fh) * tileWidth / 4;
+                double cy = (fw + fh + 1) * tileHeight / 4; // Grounding at ~75% depth
+                
+                double dx = task.isoX + cx + (tileWidth - w) / 2;
+                double dy = task.isoY + cy - h;
                 
                 paintImage(
                    canvas: canvas,
