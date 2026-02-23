@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../models/land_model.dart';
 import '../../models/land_rental_model.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/game_provider.dart';
 import '../../providers/land_provider.dart';
 import '../screens/investor/widgets/investor_workforce_panel.dart';
 import 'isometric_map.dart';
@@ -64,6 +65,7 @@ class _GameScreenState extends State<GameScreen>
     try {
       final landProvider = context.read<LandProvider>();
       final authProvider = context.read<AuthProvider>();
+      final gameProvider = context.read<GameProvider>();
 
       final futures = await Future.wait([
         LandGridService.fetchLandGrid(widget.land.id),
@@ -73,10 +75,20 @@ class _GameScreenState extends State<GameScreen>
       ]);
 
       if (mounted) {
+        final gridData = futures[0] as Map<String, dynamic>;
         setState(() {
-          _gridData = futures[0] as Map<String, dynamic>;
+          _gridData = gridData;
           _isLoading = false;
         });
+
+        // Load workers assigned to this land
+        final int gw = gridData['grid_width'] ?? widget.land.gridWidth;
+        final int gh = gridData['grid_height'] ?? widget.land.gridHeight;
+        gameProvider.loadWorkersForLand(
+          widget.land.id,
+          gridWidth: gw,
+          gridHeight: gh,
+        );
       }
     } catch (e) {
       print('Error initializing game: $e');
