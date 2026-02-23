@@ -349,15 +349,26 @@ class IsometricMapPainter extends CustomPainter {
          if (img != null) {
              canvas.saveLayer(null, Paint()..color = Colors.white.withOpacity(0.7));
              
-             final int fw = placementFootprint!['base_size']?['width'] ?? 1;
-             final int fh = placementFootprint!['base_size']?['height'] ?? 1;
+             final squares = placementFootprint!['squares'] as List;
+             // Calculate footprint dimensions from squares for accuracy
+             int minX = 0, maxX = 0, minY = 0, maxY = 0;
+             for (var sq in squares) {
+                 int sx = sq['x'] as int;
+                 int sy = sq['y'] as int;
+                 if (sx < minX) minX = sx;
+                 if (sx > maxX) maxX = sx;
+                 if (sy < minY) minY = sy;
+                 if (sy > maxY) maxY = sy;
+             }
+             final int fw = maxX - minX + 1;
+             final int fh = maxY - minY + 1;
              
              double scaleFactor = (fw + fh) / 2.0;
              double w = tileWidth * 1.3 * scaleFactor;
              double h = w * (img.height / img.width);
              
              double cx = (fw - fh) * tileWidth / 4;
-             double cy = (fw + fh + 1) * tileHeight / 4; // Grounding at ~75% depth
+             double cy = (fw + fh) * tileHeight / 2 * 0.9;
           
              double dx = isoX + cx + (tileWidth - w) / 2;
              double dy = isoY + cy - h;
@@ -475,7 +486,14 @@ class IsometricMapPainter extends CustomPainter {
   }
 
   void _paintItem(Canvas canvas, _PaintTask task) {
-    if (task.cellData['is_origin'] == false) return; // Only draw at the origin of a multi-tile footprint
+    final int fw = task.cellData['footprint_width'] ?? 1;
+    final int fh = task.cellData['footprint_height'] ?? 1;
+    final int ox = task.cellData['origin_x'] ?? task.x;
+    final int oy = task.cellData['origin_y'] ?? task.y;
+
+    // To ensure correct isometric depth sorting, multi-tile items must be drawn
+    // when painting their bottom-most tile (highest depth).
+    if (task.x != ox + fw - 1 || task.y != oy + fh - 1) return;
 
     final Map<String, dynamic>? sprites = task.cellData['sprites'];
     final Map<String, dynamic>? state = task.cellData['state'];
@@ -564,16 +582,15 @@ class IsometricMapPainter extends CustomPainter {
             }
 
             if (img != null) {
-                // Unified logic for all footprint sizes
-                int fw = task.cellData['footprint_width'] ?? 1;
-                int fh = task.cellData['footprint_height'] ?? 1;
-                
                 double scaleFactor = (fw + fh) / 2.0;
                 double w = tileWidth * 1.3 * scaleFactor; 
                 double h = w * (img.height / img.width);
                 
-                double cx = (fw - fh) * tileWidth / 4;
-                double cy = (fw + fh + 1) * tileHeight / 4; // Grounding at ~75% depth
+                // Offset calculation relative to the bottom-most tile (task.isoX, task.isoY)
+                // Center X is same as single tile if fw=fh, otherwise shifted
+                double cx = -(fw - fh) * tileWidth / 4;
+                // Grounding at 90% of visual depth relative to bottom-most tile
+                double cy = (fw + fh) * tileHeight / 2 * 0.9 - (fw + fh - 2) * tileHeight / 2;
                 
                 double dx = task.isoX + cx + (tileWidth - w) / 2;
                 double dy = task.isoY + cy - h;
