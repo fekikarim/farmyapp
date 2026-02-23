@@ -161,6 +161,11 @@ flutter:
     - assets/game_images/sprites/trees/oak_english/idle/
     - assets/game_images/sprites/trees/pine_standard/
     - assets/game_images/sprites/trees/pine_standard/idle/
+    - assets/game_images/sprites/player/walk/back_left/
+    - assets/game_images/sprites/player/walk/back_right/
+    - assets/game_images/sprites/player/walk/front_left/
+    - assets/game_images/sprites/player/walk/front_right/
+    - assets/game_images/sprites/player/idle/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

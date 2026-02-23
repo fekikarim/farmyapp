@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
+import 'package:provider/provider.dart';
+import 'package:farmyapp/providers/game_provider.dart';
 import 'asset_manager.dart';
 
 class IsometricMap extends StatefulWidget {
@@ -49,7 +51,7 @@ class _IsometricMapState extends State<IsometricMap> with SingleTickerProviderSt
     super.initState();
     _animationController = AnimationController(
        vsync: this,
-       duration: const Duration(milliseconds: 3000), // Slower animation (3s cycle)
+       duration: const Duration(milliseconds: 3000),
     )..repeat();
   }
 
@@ -66,13 +68,16 @@ class _IsometricMapState extends State<IsometricMap> with SingleTickerProviderSt
     final double totalWidth = (widget.gridWidth + widget.gridHeight + backgroundPadding * 2) * tileWidth / 2 + 200;
     final double totalHeight = (widget.gridWidth + widget.gridHeight + backgroundPadding * 2) * tileHeight / 2 + 200;
 
+    final gameProvider = Provider.of<GameProvider>(context);
+
     return InteractiveViewer(
       constrained: false,
       boundaryMargin: const EdgeInsets.all(500),
       minScale: 0.1,
       maxScale: 4.0,
       child: GestureDetector(
-        onTapUp: (details) => _handleTap(details, backgroundPadding),
+        onTapUp: (details) => _handleTap(details, backgroundPadding, gameProvider, isDoubleClick: false),
+        onDoubleTapDown: (details) => _handleTap(details, backgroundPadding, gameProvider, isDoubleClick: true),
         child: AnimatedBuilder(
           animation: _animationController,
           builder: (context, child) {
@@ -90,6 +95,7 @@ class _IsometricMapState extends State<IsometricMap> with SingleTickerProviderSt
                 placementFootprint: widget.placementFootprint,
                 placementItem: widget.placementItem,
                 animationValue: _animationController.value,
+                workers: gameProvider.workers,
               ),
             );
           }
@@ -98,32 +104,38 @@ class _IsometricMapState extends State<IsometricMap> with SingleTickerProviderSt
     );
   }
 
-  void _handleTap(TapUpDetails details, int padding) {
+  void _handleTap(dynamic details, int padding, GameProvider gameProvider, {required bool isDoubleClick}) {
      final double offsetX = (widget.gridHeight * tileWidth / 2);
      const double offsetY = 100;
 
-     double dx = details.localPosition.dx - offsetX;
-     double dy = details.localPosition.dy - offsetY;
+     Offset localPos = details is TapUpDetails ? details.localPosition : (details as TapDownDetails).localPosition;
 
-     double halfW = tileWidth / 2;
-     double halfH = tileHeight / 2;
+     double dx = localPos.dx - offsetX;
+     double dy = localPos.dy - offsetY;
 
-     double a = dx / halfW;
-     double b = dy / halfH;
+     double a = dx / (tileWidth / 2);
+     double b = dy / (tileHeight / 2);
 
-     int gridX = ((a + b) / 2).floor();
-     int gridY = ((b - a) / 2).floor();
+     double gridX = (a + b) / 2;
+     double gridY = (b - a) / 2;
 
      if (gridX >= 0 && gridX < widget.gridWidth && gridY >= 0 && gridY < widget.gridHeight) {
        setState(() {
-          _selectedX = gridX;
-          _selectedY = gridY;
+          _selectedX = gridX.floor();
+          _selectedY = gridY.floor();
        });
 
+       if (isDoubleClick) {
+         gameProvider.moveClosestWorkerTo(
+           gridX,
+           gridY,
+           gridWidth: widget.gridWidth,
+           gridHeight: widget.gridHeight,
+         );
+       }
+
        if (widget.onTileTap != null) {
-         // During placement mode, we ALWAYS call back so parent can move the ghost.
-         // Validation visuals are handled in the painter.
-         widget.onTileTap!(gridX, gridY);
+         widget.onTileTap!(gridX.floor(), gridY.floor());
        } 
      } else {
         if (_selectedX != null || _selectedY != null) {
@@ -172,6 +184,9 @@ class IsometricMapPainter extends CustomPainter {
   // Animation
   final double animationValue;
 
+  // Workers
+  final List<WorkerState> workers;
+
   // Constants
   static const double tileWidth = 64.0;
   static const double tileHeight = 32.0;
@@ -188,6 +203,7 @@ class IsometricMapPainter extends CustomPainter {
     this.placementFootprint,
     this.placementItem,
     required this.animationValue,
+    required this.workers,
   }) : super(repaint: assetManager);
 
   @override
@@ -195,15 +211,15 @@ class IsometricMapPainter extends CustomPainter {
     double offsetX = (gridHeight * tileWidth / 2);
     double offsetY = 100;
 
-    List<_PaintTask> tasks = [];
+    List<_PaintTask> groundTasks = [];
+    List<_PaintTask> objectTasks = [];
 
-    // 1. Generate Tasks for Ground & Existing Objects
+    // 1. Generate Tasks
     for (int y = -backgroundPadding; y < gridHeight + backgroundPadding; y++) {
       for (int x = -backgroundPadding; x < gridWidth + backgroundPadding; x++) {
         
         bool isForeground = (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight);
         
-        // ... (Logic for trees/fences same as before) ...
         bool isTreeRow = false;
         String? treeAsset;
         String? fenceAsset;
@@ -251,38 +267,78 @@ class IsometricMapPainter extends CustomPainter {
           cellData = matrix[y][x];
         }
 
-        tasks.add(_PaintTask(
+        final groundTask = _PaintTask(
           x: x,
           y: y,
           isoX: isoX,
           isoY: isoY,
           isForeground: isForeground,
-          hasTree: isTreeRow,
-          treeAsset: treeAsset,
-          fenceAsset: fenceAsset,
-          fenceDx: fenceDx,
-          fenceDy: fenceDy,
-          cellData: cellData,
-        ));
+          hasTree: false, // Only items/trees/fences in objectTask
+        );
+        groundTasks.add(groundTask);
+
+        if (isTreeRow || fenceAsset != null || cellData != null) {
+          objectTasks.add(_PaintTask(
+            x: x,
+            y: y,
+            isoX: isoX,
+            isoY: isoY,
+            isForeground: isForeground,
+            hasTree: isTreeRow,
+            treeAsset: treeAsset,
+            fenceAsset: fenceAsset,
+            fenceDx: fenceDx,
+            fenceDy: fenceDy,
+            cellData: cellData,
+          ));
+        }
       }
     }
 
-    // Sort by depth
-    tasks.sort((a, b) {
-      int depthA = a.x + a.y;
-      int depthB = b.x + b.y;
-      if (depthA != depthB) return depthA.compareTo(depthB);
+    // 2. Add each worker to Object Tasks
+    for (final worker in workers) {
+      double workerIsoX = (worker.x - worker.y) * (tileWidth / 2) + offsetX;
+      double workerIsoY = (worker.x + worker.y) * (tileHeight / 2) + offsetY;
+      objectTasks.add(_PaintTask(
+        x: worker.x.floor(),
+        y: worker.y.floor(),
+        isoX: workerIsoX,
+        isoY: workerIsoY,
+        isForeground: true,
+        hasTree: false,
+        isPlayer: true,
+        playerDirection: worker.direction,
+        playerStatus: worker.status,
+        workerName: worker.workerName,
+        workerDepth: worker.x + worker.y,
+      ));
+    }
+
+    // Sort object tasks by depth
+    objectTasks.sort((a, b) {
+      double depthA = a.workerDepth ?? (a.x + a.y).toDouble();
+      double depthB = b.workerDepth ?? (b.x + b.y).toDouble();
+      if ((depthA - depthB).abs() > 0.001) return depthA.compareTo(depthB);
       return a.x.compareTo(b.x);
     });
 
-    // Paint all tasks
     final Paint paint = Paint();
     
-    for (final task in tasks) {
-      _paintTile(canvas, paint, task);
+    // 3. Paint Ground Layer first
+    for (final task in groundTasks) {
+      _paintGround(canvas, paint, task);
+    }
+
+    // 4. Paint Object Layer
+    for (final task in objectTasks) {
+      if (task.isPlayer) {
+        _paintPlayer(canvas, task);
+      } else {
+        _paintObject(canvas, paint, task);
+      }
     }
     
-    // 3. Draw Placement Overlay (On Top)
+    // 5. Draw Placement Overlay (On Top)
     if (placementMode && selectedX != null && selectedY != null && placementFootprint != null && placementItem != null) {
        _paintPlacementOverlay(canvas, offsetX, offsetY);
     }
@@ -391,9 +447,7 @@ class IsometricMapPainter extends CustomPainter {
      canvas.drawCircle(Offset(isoX + tileWidth/2, isoY + tileHeight/2), 10, Paint()..color = Colors.blue.withOpacity(0.5));
   }
 
-  void _paintTile(Canvas canvas, Paint paint, _PaintTask task) {
-    // ... (Base tile painting same as before) ...
-        // 1. Draw Base Tile
+  void _paintGround(Canvas canvas, Paint paint, _PaintTask task) {
     final String assetPath = task.isForeground 
         ? 'assets/game_images/textures/grass_land.jpg'
         : 'assets/game_images/textures/soil_background.jpg';
@@ -426,18 +480,20 @@ class IsometricMapPainter extends CustomPainter {
       canvas.save();
       canvas.translate(task.isoX, task.isoY);
       paint.style = PaintingStyle.stroke;
-      paint.strokeWidth = 1; // Default
+      paint.strokeWidth = 1; 
       paint.color = task.isForeground ? Colors.white.withOpacity(0.2) : Colors.white.withOpacity(0.05);
       canvas.drawPath(path, paint);
       canvas.restore();
     }
+  }
 
-    // 2. Draw Items (Overlay)
+  void _paintObject(Canvas canvas, Paint paint, _PaintTask task) {
+    // 1. Draw Items (Overlay)
     if (task.cellData != null) {
        _paintItem(canvas, task);
     }
 
-    // 3. Draw Trees (Decoration) - unchanged
+    // 2. Draw Trees (Decoration)
     if (task.hasTree && task.treeAsset != null) {
       final ui.Image? treeImg = assetManager.getImage(task.treeAsset!);
       if (treeImg != null) {
@@ -455,7 +511,7 @@ class IsometricMapPainter extends CustomPainter {
       }
     }
 
-    // 4. Draw Fences - unchanged
+    // 3. Draw Fences
     if (task.fenceAsset != null) {
       bool hideFence = false;
       if (selectedX != null && selectedY != null) {
@@ -501,85 +557,32 @@ class IsometricMapPainter extends CustomPainter {
     String status = 'idle';
     if (state != null && state['status'] != null) {
          status = state['status'];
-    } else if (state != null) {
-        // Fallback checks
-        if (state['is_harvested'] == true) status = 'harvested';
-        else if (state['is_ready'] == true) status = 'ready';
-        else if (state['is_walking'] == true) status = 'walking';
-        else if (state['is_processing'] == true) status = 'processing';
-        else if (state['is_finished'] == true) status = 'finished';
     }
 
     String? spriteBase = sprites?[status];
-    
-    // Fallback logic: if specific status is missing or failed to load, try 'idle'
-    bool needsFallback = spriteBase == null;
-    if (spriteBase != null) {
-      String cleanPath = spriteBase;
-      if (cleanPath.startsWith('/')) cleanPath = cleanPath.substring(1);
-      if (assetManager.hasFailed('assets/game_images/$cleanPath/image0.png')) {
-        needsFallback = true;
-      }
-    }
-
-    if (needsFallback) {
-      if (status != 'idle') {
-        spriteBase = sprites?['idle'] ?? sprites?['unharvested'];
-      } else {
-        spriteBase = sprites?['unharvested'];
-      }
-    }
+    if (spriteBase == null) spriteBase = sprites?['idle'];
 
     if (spriteBase != null) {
        if (spriteBase.startsWith('/')) spriteBase = spriteBase.substring(1);
-       // Determine available frames
-       int frameCount = 0;
-       List<ui.Image> frames = [];
+       int maxFrames = assetManager.getFrameCount(spriteBase);
+       if (maxFrames == 0) maxFrames = 24;
+
+       Map<int, ui.Image> loadedFrames = {};
        List<String> missingPaths = [];
+       for (int i = 0; i < maxFrames; i++) {
+           String p = assetManager.getFramePath(spriteBase, i);
+           ui.Image? img = assetManager.getImage(p);
+           if (img != null) loadedFrames[i] = img;
+           else if (!assetManager.hasFailed(p)) missingPaths.add(p);
+       }
+       if (missingPaths.isNotEmpty) assetManager.loadAssets(missingPaths);
        
-        int maxFrames = assetManager.getFrameCount(spriteBase);
-        if (maxFrames == 0) maxFrames = 24; // Increased fallback for cow sprite
-
-        Map<int, ui.Image> loadedFrames = {};
-         for (int i = 0; i < maxFrames; i++) {
-             String p = assetManager.getFramePath(spriteBase, i);
-             ui.Image? img = assetManager.getImage(p);
-             if (img != null) {
-                 loadedFrames[i] = img;
-                 frameCount++;
-             } else {
-                if (!assetManager.hasFailed(p)) {
-                    missingPaths.add(p);
-                }
-            }
-        }
-        
-        // Trigger load for missing
-        if (missingPaths.isNotEmpty) {
-            assetManager.loadAssets(missingPaths);
-        }
-       
-        if (loadedFrames.isNotEmpty) {
-            final bool isActive = task.cellData['is_active'] != false; // Support both bool and 0/1 from JSON
-
-            // Use maxFrames for timing if available, otherwise fallback to 1 to avoid division by zero
-            int totalExpected = maxFrames > 0 ? maxFrames : 24; 
-            
-            int hash = (task.x * 31 + task.y * 17);
-            double adjustedTime = animationValue + (hash % 100) / 100.0;
-
-            // Calculate which frame we SHOULD be showing based on the full expected count
-            int targetFrameIndex = isActive 
-                ? ((adjustedTime * totalExpected) % totalExpected).floor()
-                : 0; // Lock to frame 0 for inactive
-            
-            // Try to find the image for this specific index if it's loaded
-            ui.Image? img = loadedFrames[targetFrameIndex];
-            
-            // Fallback: if target frame not loaded, use the closest available one or first frame
-            if (img == null && loadedFrames.isNotEmpty) {
-                img = loadedFrames.values.first; 
-            }
+       if (loadedFrames.isNotEmpty) {
+           final bool isActive = task.cellData['is_active'] != false;
+           int hash = (task.x * 31 + task.y * 17);
+           double adjustedTime = animationValue + (hash % 100) / 100.0;
+           int targetFrameIndex = isActive ? ((adjustedTime * maxFrames) % maxFrames).floor() : 0;
+           ui.Image? img = loadedFrames[targetFrameIndex] ?? loadedFrames.values.first;
 
             if (img != null) {
                 double scaleFactor = (fw + fh) / 2.0;
@@ -618,13 +621,15 @@ class IsometricMapPainter extends CustomPainter {
     canvas.drawCircle(Offset(task.isoX + tileWidth/2, task.isoY + tileHeight/2), 16, p);
   }
 
+
   @override
   bool shouldRepaint(covariant IsometricMapPainter oldDelegate) {
     return oldDelegate.selectedX != selectedX || 
            oldDelegate.selectedY != selectedY ||
            oldDelegate.matrix != matrix ||
            oldDelegate.placementMode != placementMode ||
-           oldDelegate.animationValue != animationValue; // Repaint on animation
+           oldDelegate.animationValue != animationValue ||
+           oldDelegate.workers != workers;
   }
 }
 
@@ -640,6 +645,11 @@ class _PaintTask {
   final double fenceDx;
   final double fenceDy;
   final dynamic cellData;
+  final bool isPlayer;
+  final String? playerDirection;
+  final String? playerStatus;
+  final String? workerName;   // for name label
+  final double? workerDepth;  // fractional depth for sorting
 
   _PaintTask({
     required this.x,
@@ -653,6 +663,11 @@ class _PaintTask {
     this.fenceDx = 0,
     this.fenceDy = 0,
     this.cellData,
+    this.isPlayer = false,
+    this.playerDirection,
+    this.playerStatus,
+    this.workerName,
+    this.workerDepth,
   });
 }
 
