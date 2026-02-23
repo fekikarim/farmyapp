@@ -602,7 +602,28 @@ class IsometricMapPainter extends CustomPainter {
                    dx = task.isoX + cx + (tileWidth - w) / 2;
                    dy = task.isoY + cy - h;
                }
-               paintImage(canvas: canvas, rect: Rect.fromLTWH(dx, dy, w, h), image: img, fit: BoxFit.contain, colorFilter: isActive ? null : ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.multiply));
+               if (isActive) {
+                   paintImage(
+                     canvas: canvas,
+                     rect: Rect.fromLTWH(dx, dy, w, h),
+                     image: img,
+                     fit: BoxFit.contain,
+                   );
+               } else {
+                   // Disabled/pending: pure black silhouette, alpha preserved
+                   paintImage(
+                     canvas: canvas,
+                     rect: Rect.fromLTWH(dx, dy, w, h),
+                     image: img,
+                     fit: BoxFit.contain,
+                     colorFilter: const ColorFilter.matrix([
+                       0, 0, 0, 0, 0,   // R → 0
+                       0, 0, 0, 0, 0,   // G → 0
+                       0, 0, 0, 0, 0,   // B → 0
+                       0, 0, 0, 1, 0,   // A → original (keeps sprite shape)
+                     ]),
+                   );
+               }
                return;
            }
        }
