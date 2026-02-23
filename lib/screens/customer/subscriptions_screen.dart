@@ -196,7 +196,9 @@ class SubscriptionPlanCard extends StatelessWidget {
                 Text(
                   plan.description,
                   style: TextStyle(
-                    color: Colors.grey.shade600,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.shade400
+                        : Colors.grey.shade600,
                     fontSize: 14,
                   ),
                   maxLines: 2,

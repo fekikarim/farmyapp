@@ -78,12 +78,15 @@ class SubscriptionDetailScreen extends StatelessWidget {
   }
 
   Widget _buildPriceSection(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: plan.accentColor.withOpacity(0.05),
+        color: plan.accentColor.withOpacity(isDark ? 0.15 : 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: plan.accentColor.withOpacity(0.1)),
+        border: Border.all(
+          color: plan.accentColor.withOpacity(isDark ? 0.3 : 0.1),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -93,7 +96,10 @@ class SubscriptionDetailScreen extends StatelessWidget {
             children: [
               Text(
                 'Plan Price',
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                style: TextStyle(
+                  color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                  fontSize: 14,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
@@ -151,13 +157,14 @@ class SubscriptionDetailScreen extends StatelessWidget {
   }
 
   Widget _buildBottomAction(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
             offset: const Offset(0, -5),
             blurRadius: 10,
           ),
