@@ -2,13 +2,47 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../services/auth_service.dart';
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  if (kDebugMode) {
+    print('Handling a background message: ${message.messageId}');
+  }
+}
 
 class PushNotificationService {
   static final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   static final DeviceInfoPlugin _deviceInfo = DeviceInfoPlugin();
+  static final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize() async {
+    // Register background handler
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    // Initialize local notifications
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings();
+    const InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+    await _localNotifications.initialize(initializationSettings);
+
+    // Create Android notification channel
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'high_importance_channel',
+      'High Importance Notifications',
+      description: 'This channel is used for important notifications.',
+      importance: Importance.max,
+    );
+
+    await _localNotifications
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+
     // Request permission
     NotificationSettings settings = await _firebaseMessaging.requestPermission(
       alert: true,
@@ -20,24 +54,17 @@ class PushNotificationService {
       if (kDebugMode) {
         print('User granted permission');
       }
-    } else {
-      if (kDebugMode) {
-        print('User declined or has not accepted permission');
-      }
     }
 
     // Handle foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (kDebugMode) {
         print('Got a message whilst in the foreground!');
-        print('Message data: \${message.data}');
+        print('Message data: ${message.data}');
       }
 
       if (message.notification != null) {
-        if (kDebugMode) {
-          print('Message also contained a notification: \${message.notification}');
-        }
-        // You can show a local notification here if needed
+        _showLocalNotification(message);
       }
     });
 
@@ -46,8 +73,33 @@ class PushNotificationService {
       if (kDebugMode) {
         print('A new onMessageOpenedApp event was published!');
       }
-      // Navigate to specific screen based on data
     });
+
+    // Listen for token refresh
+    _firebaseMessaging.onTokenRefresh.listen((newToken) {
+      syncTokenWithBackend();
+    });
+  }
+
+  static void _showLocalNotification(RemoteMessage message) {
+    RemoteNotification? notification = message.notification;
+    if (notification != null) {
+      _localNotifications.show(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'high_importance_channel',
+            'High Importance Notifications',
+            importance: Importance.max,
+            priority: Priority.high,
+            icon: '@mipmap/ic_launcher',
+          ),
+          iOS: DarwinNotificationDetails(),
+        ),
+      );
+    }
   }
 
   static Future<String?> getToken() async {
@@ -68,7 +120,7 @@ class PushNotificationService {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error getting device fingerprint: \$e');
+        print('Error getting device fingerprint: $e');
       }
     }
     return 'unknown_device';
@@ -92,11 +144,11 @@ class PushNotificationService {
       await AuthService.registerDevice(token, fingerprint, platform);
       
       if (kDebugMode) {
-        print('Device token synced with backend: \$token');
+        print('Device token synced with backend: $token');
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error syncing token: \$e');
+        print('Error syncing token: $e');
       }
     }
   }
