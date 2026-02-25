@@ -437,7 +437,32 @@ class AuthService {
     }
   }
 
+  // --- Push Notifications ---
+
+  static Future<bool> registerDevice(
+    String token,
+    String fingerprint,
+    String platform,
+  ) async {
+    try {
+      final response = await authenticatedRequest(
+        'POST',
+        Uri.parse('$_baseUrl/api/v1/devices/register'),
+        body: jsonEncode({
+          'token': token,
+          'fingerprint': fingerprint,
+          'platform': platform,
+        }),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Register Device Error: $e');
+      return false;
+    }
+  }
+
   // --- Token Management ---
+
 
   static Future<void> _saveAuthData(AuthResponse response) async {
     if (response.tokens != null) {

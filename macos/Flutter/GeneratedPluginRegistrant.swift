@@ -7,6 +7,7 @@ import Foundation
 
 import apple_vision_face_detection
 import desktop_webview_window
+import device_info_plus
 import file_picker
 import file_selector_macos
 import firebase_core
@@ -21,6 +22,7 @@ import window_to_front
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   AppleVisionFaceDetectionPlugin.register(with: registry.registrar(forPlugin: "AppleVisionFaceDetectionPlugin"))
   DesktopWebviewWindowPlugin.register(with: registry.registrar(forPlugin: "DesktopWebviewWindowPlugin"))
+  DeviceInfoPlusMacosPlugin.register(with: registry.registrar(forPlugin: "DeviceInfoPlusMacosPlugin"))
   FilePickerPlugin.register(with: registry.registrar(forPlugin: "FilePickerPlugin"))
   FileSelectorPlugin.register(with: registry.registrar(forPlugin: "FileSelectorPlugin"))
   FLTFirebaseCorePlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseCorePlugin"))

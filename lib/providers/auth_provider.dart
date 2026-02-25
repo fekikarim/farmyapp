@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
+import '../services/notification_service.dart';
+
 
 class AuthProvider with ChangeNotifier {
   User? _user;
@@ -49,12 +51,14 @@ class AuthProvider with ChangeNotifier {
         if (refreshSuccess) {
           // Sync profile from server to ensure latest data (role, name, etc.)
           final userProfile = await AuthService.fetchProfile();
-          if (userProfile != null) {
-            _user = userProfile;
-          } else {
-            // If profile fetch fails but refresh succeeded, try to use local data as fallback
-            _user = await AuthService.getUser();
-          }
+            if (userProfile != null) {
+              _user = userProfile;
+            } else {
+              // If profile fetch fails but refresh succeeded, try to use local data as fallback
+              _user = await AuthService.getUser();
+            }
+            // Sync push token
+            PushNotificationService.syncTokenWithBackend();
         } else {
           // If refresh fails, session is truly dead
           await AuthService.logout();
@@ -117,6 +121,7 @@ class AuthProvider with ChangeNotifier {
         // Fetch full profile after login
         final userProfile = await AuthService.fetchProfile();
         _user = userProfile ?? response.user;
+        PushNotificationService.syncTokenWithBackend();
         _isLoading = false;
         notifyListeners();
         return null; // Success
@@ -144,6 +149,7 @@ class AuthProvider with ChangeNotifier {
         // Fetch full profile after 2FA verification
         final userProfile = await AuthService.fetchProfile();
         _user = userProfile ?? response.user;
+        PushNotificationService.syncTokenWithBackend();
         _tempUserId = null;
         _isLoading = false;
         notifyListeners();
@@ -219,6 +225,7 @@ class AuthProvider with ChangeNotifier {
         // Fetch full profile after registration
         final userProfile = await AuthService.fetchProfile();
         _user = userProfile ?? response.user;
+        PushNotificationService.syncTokenWithBackend();
         _isLoading = false;
         notifyListeners();
         return null; // Success
@@ -248,6 +255,7 @@ class AuthProvider with ChangeNotifier {
         // Fetch full profile after Google login
         final userProfile = await AuthService.fetchProfile();
         _user = userProfile ?? response.user;
+        PushNotificationService.syncTokenWithBackend();
         _isLoading = false;
         notifyListeners();
         return null; // Success
@@ -279,6 +287,7 @@ class AuthProvider with ChangeNotifier {
         // Fetch full profile after GitHub login
         final userProfile = await AuthService.fetchProfile();
         _user = userProfile ?? response.user;
+        PushNotificationService.syncTokenWithBackend();
         _isLoading = false;
         notifyListeners();
         return null; // Success
