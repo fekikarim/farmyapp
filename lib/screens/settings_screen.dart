@@ -17,6 +17,7 @@ import 'investor/hedera_registry_screen.dart';
 import 'shared/proof_requests_screen.dart';
 import '../services/auth_service.dart';
 import '../providers/worker_lifecycle_provider.dart';
+import 'settings/notifications_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -273,6 +274,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const HederaRegistryScreen(),
+                  ),
+                ),
+              ),
+
+              _buildSectionTitle(theme, 'General'),
+              _buildSettingsTile(
+                context,
+                icon: Icons.notifications_none,
+                title: 'Notifications',
+                subtitle: 'View your recent activity and updates',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NotificationsScreen(),
                   ),
                 ),
               ),
