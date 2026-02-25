@@ -89,8 +89,7 @@ class PushNotificationService {
       String fingerprint = await getDeviceFingerprint();
       String platform = getPlatformName();
 
-      final authService = AuthService();
-      await authService.registerDevice(token, fingerprint, platform);
+      await AuthService.registerDevice(token, fingerprint, platform);
       
       if (kDebugMode) {
         print('Device token synced with backend: \$token');
