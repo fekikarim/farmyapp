@@ -4,6 +4,7 @@ import '../../models/subscription_plan.dart';
 import '../../providers/subscription_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/worker_provider.dart';
+import '../../providers/wallet_provider.dart';
 import '../../services/subscription_service.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -379,67 +380,101 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
   }
 
   void _showPaymentBottomSheet(SubscriptionPlan plan) {
-    final authProvider = context.read<AuthProvider>();
-    final user = authProvider.user;
     final price = _selectedCycle == 'monthly' ? plan.price : plan.priceYearly;
+
+    // Fetch fresh wallet balance when sheet opens
+    context.read<WalletProvider>().fetchWalletStatus();
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Select Payment Method',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
+      builder: (sheetContext) => Consumer<WalletProvider>(
+        builder: (ctx, walletProvider, _) {
+          final credits = walletProvider.credits;
+          final isSufficient = credits >= price;
+          final isWalletLoading = walletProvider.isLoading;
+
+          return Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Theme.of(sheetContext).colorScheme.surface,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
             ),
-            const SizedBox(height: 24),
-            _buildPaymentOption(
-              icon: Icons.monetization_on,
-              title: 'Pay with Farmy Credits',
-              subtitle:
-                  'Balance: ${user?.creditsBalance.toStringAsFixed(2)} Credits',
-              onTap: () {
-                Navigator.pop(context);
-                if ((user?.creditsBalance ?? 0) >= price) {
-                  _processCreditUpgrade(plan);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Insufficient Credits! Please add more in Wallet.',
-                      ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Drag handle
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
                     ),
-                  );
-                }
-              },
-              isSufficient: (user?.creditsBalance ?? 0) >= price,
+                  ),
+                ),
+                Text(
+                  'Select Payment Method',
+                  style: Theme.of(
+                    sheetContext,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Total: \$${price.toStringAsFixed(2)} · ${_selectedCycle == 'monthly' ? 'Monthly' : 'Yearly'}',
+                  style: Theme.of(
+                    sheetContext,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                _buildPaymentOption(
+                  icon: Icons.monetization_on,
+                  title: 'Pay with Farmy Credits',
+                  subtitle: isWalletLoading
+                      ? 'Loading balance...'
+                      : 'Balance: \$${credits.toStringAsFixed(2)}',
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    if (isSufficient) {
+                      _processCreditUpgrade(plan);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Insufficient Credits (\$${credits.toStringAsFixed(2)}). Need \$${price.toStringAsFixed(2)}.',
+                          ),
+                          backgroundColor: Colors.red.shade400,
+                        ),
+                      );
+                    }
+                  },
+                  isSufficient: !isWalletLoading && isSufficient,
+                  isLoading: isWalletLoading,
+                ),
+                const SizedBox(height: 12),
+                _buildPaymentOption(
+                  icon: Icons.credit_card,
+                  title: 'Pay with Card (Stripe)',
+                  subtitle: 'Secure credit card payment',
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _processStripeUpgrade(plan);
+                  },
+                  isSufficient: true,
+                ),
+                const SizedBox(height: 32),
+              ],
             ),
-            const SizedBox(height: 12),
-            _buildPaymentOption(
-              icon: Icons.credit_card,
-              title: 'Pay with Card (Stripe)',
-              subtitle: 'Secure credit card payment',
-              onTap: () {
-                Navigator.pop(context);
-                _processStripeUpgrade(plan);
-              },
-              isSufficient: true,
-            ),
-            const SizedBox(height: 32),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -450,6 +485,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
     required String subtitle,
     required VoidCallback onTap,
     required bool isSufficient,
+    bool isLoading = false,
   }) {
     final theme = Theme.of(context);
     return InkWell(
@@ -483,12 +519,33 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
                       color: isSufficient ? null : Colors.grey,
                     ),
                   ),
-                  Text(
-                    subtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: isSufficient ? Colors.grey : Colors.red,
+                  if (isLoading)
+                    Row(
+                      children: [
+                        SizedBox(
+                          height: 12,
+                          width: 12,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 1.5,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          subtitle,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: isSufficient ? Colors.grey : Colors.red,
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
