@@ -1,14 +1,6 @@
 import 'subscription_plan.dart';
 
-enum SubscriptionStatus {
-  newly,
-  trialing,
-  active,
-  past_due,
-  grace,
-  canceled,
-  expired,
-}
+enum SubscriptionStatus { active, expired, cancelled, unknown }
 
 class UserSubscription {
   final String id;
@@ -16,8 +8,9 @@ class UserSubscription {
   final SubscriptionPlan plan;
   final SubscriptionStatus status;
   final DateTime startDate;
-  final DateTime? currentPeriodEnd;
-  final bool cancelAtPeriodEnd;
+  final DateTime? endDate;
+  final bool autoRenew;
+  final String paymentMethod;
   final String? stripePaymentIntentId;
   final String billingCycle;
 
@@ -27,8 +20,9 @@ class UserSubscription {
     required this.plan,
     required this.status,
     required this.startDate,
-    this.currentPeriodEnd,
-    required this.cancelAtPeriodEnd,
+    this.endDate,
+    required this.autoRenew,
+    required this.paymentMethod,
     this.stripePaymentIntentId,
     required this.billingCycle,
   });
@@ -42,10 +36,11 @@ class UserSubscription {
           : SubscriptionPlan.fromId(json['plan_id'] ?? ''),
       status: _parseStatus(json['status']),
       startDate: DateTime.parse(json['start_date']),
-      currentPeriodEnd: json['current_period_end'] != null
-          ? DateTime.parse(json['current_period_end'])
+      endDate: json['end_date'] != null
+          ? DateTime.parse(json['end_date'])
           : null,
-      cancelAtPeriodEnd: json['cancel_at_period_end'] ?? false,
+      autoRenew: json['auto_renew'] ?? false,
+      paymentMethod: json['payment_method'] ?? 'free',
       stripePaymentIntentId: json['stripe_payment_intent_id'],
       billingCycle: json['billing_cycle'] ?? 'monthly',
     );
@@ -53,26 +48,17 @@ class UserSubscription {
 
   static SubscriptionStatus _parseStatus(String? status) {
     switch (status) {
-      case 'trialing':
-        return SubscriptionStatus.trialing;
       case 'active':
         return SubscriptionStatus.active;
-      case 'past_due':
-        return SubscriptionStatus.past_due;
-      case 'grace':
-        return SubscriptionStatus.grace;
-      case 'canceled':
-        return SubscriptionStatus.canceled;
       case 'expired':
         return SubscriptionStatus.expired;
+      case 'cancelled':
+      case 'canceled':
+        return SubscriptionStatus.cancelled;
       default:
-        return SubscriptionStatus.newly;
+        return SubscriptionStatus.unknown;
     }
   }
 
-  bool get isActive =>
-      status == SubscriptionStatus.active ||
-      status == SubscriptionStatus.trialing ||
-      status == SubscriptionStatus.grace;
-  bool get isGrace => status == SubscriptionStatus.grace;
+  bool get isActive => status == SubscriptionStatus.active;
 }

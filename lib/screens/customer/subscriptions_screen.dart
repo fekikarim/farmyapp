@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 import '../../models/subscription_plan.dart';
 import '../../providers/subscription_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/worker_provider.dart';
 import '../../services/subscription_service.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 class SubscriptionsScreen extends StatefulWidget {
   const SubscriptionsScreen({super.key});
@@ -21,6 +23,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
   Widget build(BuildContext context) {
     final subProvider = Provider.of<SubscriptionProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
+    final workerProvider = Provider.of<WorkerProvider>(context);
     final userRole = authProvider.user?.role ?? 'customer';
     final theme = Theme.of(context);
 
@@ -28,9 +31,13 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
     final plans = subProvider.availablePlans.where((p) {
       if (userRole == 'farmer') return p.role == SubscriptionRole.farmer;
       if (userRole == 'investor') return p.role == SubscriptionRole.investor;
-      if (userRole == 'customer')
-        return p.role == SubscriptionRole.customer ||
-            p.role == SubscriptionRole.worker;
+      if (userRole == 'customer') {
+        if (p.role == SubscriptionRole.worker) {
+          final workerProfile = workerProvider.myProfile;
+          return workerProfile != null && workerProfile.isVerified;
+        }
+        return p.role == SubscriptionRole.customer;
+      }
       return true;
     }).toList();
 
@@ -140,10 +147,30 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
 
   Widget _buildPlanCard(SubscriptionPlan plan, SubscriptionProvider provider) {
     final theme = Theme.of(context);
-    final isCurrent = provider.currentSubscription?.plan.id == plan.id;
+    final currentSub = provider.currentSubscription;
+    final isSamePlanFamily = currentSub?.plan.planKey == plan.planKey;
+    final isCurrentCycle =
+        isSamePlanFamily && currentSub?.billingCycle == _selectedCycle;
+    final isCurrent = isCurrentCycle;
+
     final price = _selectedCycle == 'monthly'
         ? plan.price
         : (plan.price * 8).roundToDouble(); // Simplified yearly calc
+
+    String buttonText;
+    if (isSamePlanFamily) {
+      if (isCurrentCycle) {
+        buttonText = 'Current Plan';
+      } else if (_selectedCycle == 'yearly') {
+        buttonText = 'Upgrade to Yearly';
+      } else {
+        buttonText = 'Downgrade to Monthly';
+      }
+    } else {
+      buttonText = 'Get Started';
+    }
+
+    final isButtonDisabled = isCurrent || _isProcessing;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -249,9 +276,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: isCurrent || _isProcessing
-                  ? null
-                  : () => _handleSubscribe(plan),
+              onPressed: isButtonDisabled ? null : () => _handleSubscribe(plan),
               style: ElevatedButton.styleFrom(
                 backgroundColor: plan.accentColor,
                 foregroundColor: Colors.white,
@@ -270,7 +295,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
                         strokeWidth: 2,
                       ),
                     )
-                  : Text(isCurrent ? 'Current Plan' : 'Get Started'),
+                  : Text(buttonText),
             ),
           ),
         ],
@@ -278,41 +303,232 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
     );
   }
 
-  Future<void> _handleSubscribe(SubscriptionPlan plan) async {
+  void _handleSubscribe(SubscriptionPlan plan) {
+    _showPaymentBottomSheet(plan);
+  }
+
+  void _showPaymentBottomSheet(SubscriptionPlan plan) {
+    final authProvider = context.read<AuthProvider>();
+    final user = authProvider.user;
+    final price = _selectedCycle == 'monthly'
+        ? plan.price
+        : (plan.price * 8).roundToDouble();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Select Payment Method',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            _buildPaymentOption(
+              icon: Icons.monetization_on,
+              title: 'Pay with Farmy Credits',
+              subtitle:
+                  'Balance: ${user?.creditsBalance.toStringAsFixed(2)} Credits',
+              onTap: () {
+                Navigator.pop(context);
+                if ((user?.creditsBalance ?? 0) >= price) {
+                  _processCreditUpgrade(plan);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Insufficient Credits! Please add more in Wallet.',
+                      ),
+                    ),
+                  );
+                }
+              },
+              isSufficient: (user?.creditsBalance ?? 0) >= price,
+            ),
+            const SizedBox(height: 12),
+            _buildPaymentOption(
+              icon: Icons.credit_card,
+              title: 'Pay with Card (Stripe)',
+              subtitle: 'Secure credit card payment',
+              onTap: () {
+                Navigator.pop(context);
+                _processStripeUpgrade(plan);
+              },
+              isSufficient: true,
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentOption({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+    required bool isSufficient,
+  }) {
+    final theme = Theme.of(context);
+    return InkWell(
+      onTap: isSufficient ? onTap : null,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
+          borderRadius: BorderRadius.circular(16),
+          color: isSufficient
+              ? Colors.transparent
+              : theme.colorScheme.surfaceVariant.withOpacity(0.5),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: isSufficient ? theme.colorScheme.primary : Colors.grey,
+              size: 32,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: isSufficient ? null : Colors.grey,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: isSufficient ? Colors.grey : Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _processCreditUpgrade(SubscriptionPlan plan) async {
     setState(() => _isProcessing = true);
     try {
-      // 1. Backend: Create Checkout Session (Payment Intent)
-      final result = await SubscriptionService.subscribe(
-        plan.id,
+      await context.read<SubscriptionProvider>().upgradeWithCredits(
+        plan.planKey,
         _selectedCycle,
       );
-      final paymentIntentId = result['paymentIntentId'];
-
-      // 2. Stripe UI integration would go here normally.
-      // For this implementation, we simulate successful payment:
-      await Future.delayed(const Duration(seconds: 2));
-
-      // 3. Confirm with Backend
-      await SubscriptionService.confirmSubscription(
-        plan.id,
-        _selectedCycle,
-        paymentIntentId,
-      );
+      await context.read<AuthProvider>().refreshUser();
 
       if (mounted) {
-        context.read<SubscriptionProvider>().refresh();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Successfully subscribed! Welcome to Premium.'),
+            content: Text(
+              'Successfully upgraded with credits! Welcome to Premium.',
+            ),
           ),
         );
-        Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
+    }
+  }
+
+  Future<void> _processStripeUpgrade(SubscriptionPlan plan) async {
+    setState(() => _isProcessing = true);
+    try {
+      // 1. Create PaymentIntent on backend (returns clientSecret, ephemeralKey, customer, publishableKey)
+      final intentData = await SubscriptionService.createStripePaymentIntent(
+        plan.planKey,
+        _selectedCycle,
+      );
+
+      final clientSecret = intentData['clientSecret'];
+      final ephemeralKey = intentData['ephemeralKey'];
+      final customerId = intentData['customer'];
+      final publishableKey = intentData['publishableKey'];
+
+      if (clientSecret == null ||
+          ephemeralKey == null ||
+          customerId == null ||
+          publishableKey == null) {
+        throw Exception('Invalid payment data received from server');
+      }
+
+      // 2. Set the publishable key
+      Stripe.publishableKey = publishableKey;
+
+      // 3. Initialize Payment Sheet
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          customFlow: false,
+          merchantDisplayName: 'Farmy',
+          customerId: customerId,
+          customerEphemeralKeySecret: ephemeralKey,
+          paymentIntentClientSecret: clientSecret,
+          style: ThemeMode.system,
+        ),
+      );
+
+      // 4. Present Payment Sheet (user enters card details here)
+      await Stripe.instance.presentPaymentSheet();
+
+      // 5. Payment succeeded! The backend webhook will handle activation.
+      // Refresh subscription state to reflect the update.
+      await context.read<SubscriptionProvider>().refresh();
+      await context.read<AuthProvider>().refreshUser();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Payment Successful! Your subscription is now active.',
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } on StripeException catch (e) {
+      // User cancelled or Stripe error
+      if (mounted) {
+        final message = e.error.localizedMessage ?? 'Payment cancelled';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message), backgroundColor: Colors.orange),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Payment Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _isProcessing = false);

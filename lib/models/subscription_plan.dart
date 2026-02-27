@@ -14,11 +14,11 @@ class SubscriptionPlan {
   final IconData icon;
   final SubscriptionRole role;
   final String? badge;
-
-  String get planKey => id.split('_monthly').first.split('_yearly').first;
+  final String planKey;
 
   SubscriptionPlan({
     required this.id,
+    required this.planKey,
     required this.name,
     required this.description,
     required this.price,
@@ -41,6 +41,7 @@ class SubscriptionPlan {
 
     return SubscriptionPlan(
       id: json['id'] ?? '',
+      planKey: planKey,
       name: json['name'] ?? mockPlan.name,
       description: json['description'] ?? mockPlan.description,
       price: double.tryParse(json['price_monthly']?.toString() ?? '0') ?? 0.0,
@@ -79,6 +80,7 @@ class SubscriptionPlan {
     // Farmer Pro
     SubscriptionPlan(
       id: 'farmer_pro_monthly',
+      planKey: 'farmer_pro',
       name: 'Farmer Pro',
       description:
           'Unlock AI-powered crop planning and unlimited land listings.',
@@ -108,6 +110,7 @@ class SubscriptionPlan {
     ),
     SubscriptionPlan(
       id: 'farmer_pro_yearly',
+      planKey: 'farmer_pro',
       name: 'Farmer Pro Yearly',
       description: 'Save 33% with our annual plan.',
       price: 119.99,
@@ -128,6 +131,7 @@ class SubscriptionPlan {
     // Investor Plus
     SubscriptionPlan(
       id: 'investor_plus_monthly',
+      planKey: 'investor_plus',
       name: 'Investor Plus',
       description: 'Get early access to lands and advanced ROI analytics.',
       price: 24.99,
@@ -156,6 +160,7 @@ class SubscriptionPlan {
     // FarmBox (Customer)
     SubscriptionPlan(
       id: 'farmbox_small_monthly',
+      planKey: 'farmbox_small',
       name: 'FarmBox Small',
       description: '5-7 items bi-weekly, vegetables only.',
       price: 29.99,
@@ -179,6 +184,7 @@ class SubscriptionPlan {
     ),
     SubscriptionPlan(
       id: 'farmbox_medium_monthly',
+      planKey: 'farmbox_medium',
       name: 'FarmBox Medium',
       description: 'Weekly delivery of fresh vegetables and fruits.',
       price: 49.99,
@@ -205,6 +211,7 @@ class SubscriptionPlan {
     ),
     SubscriptionPlan(
       id: 'farmbox_large_monthly',
+      planKey: 'farmbox_large',
       name: 'FarmBox Large',
       description: 'Full range of 18-22 items with custom picks.',
       price: 79.99,
@@ -234,6 +241,7 @@ class SubscriptionPlan {
     // Worker Plus
     SubscriptionPlan(
       id: 'worker_plus_monthly',
+      planKey: 'worker_plus',
       name: 'Worker Plus',
       description: 'Boost your visibility and get priority job matching.',
       price: 4.99,

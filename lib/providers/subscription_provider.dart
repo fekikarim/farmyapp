@@ -64,19 +64,14 @@ class SubscriptionProvider with ChangeNotifier {
     }
   }
 
-  Future<void> subscribe(String planKey, String billingCycle) async {
-    // This will be handled by the UI using SubscriptionService.subscribe
-    // and then calling confirmSubscription after Stripe success.
-  }
-
-  Future<void> cancelSubscription() async {
+  Future<void> upgradeWithCredits(String planKey, String billingCycle) async {
     _isLoading = true;
     notifyListeners();
     try {
-      _currentSubscription = await SubscriptionService.cancelSubscription();
+      await SubscriptionService.upgradeWithCredits(planKey, billingCycle);
       await refresh();
     } catch (e) {
-      print('Cancel Subscription Error: $e');
+      print('Upgrade with Credits Error: $e');
       rethrow;
     } finally {
       _isLoading = false;

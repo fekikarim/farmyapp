@@ -252,7 +252,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ? (sub?.plan.name ?? 'Active Plan')
                           : 'Free Tier',
                       subtitle: isActive
-                          ? 'Valid until ${_formatDate(sub!.currentPeriodEnd)}'
+                          ? 'Valid until ${_formatDate(sub!.endDate)}'
                           : 'Upgrade for premium features',
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,

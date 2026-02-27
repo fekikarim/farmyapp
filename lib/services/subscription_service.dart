@@ -39,12 +39,12 @@ class SubscriptionService {
     }
   }
 
-  static Future<Map<String, dynamic>> subscribe(
+  static Future<Map<String, dynamic>> createStripePaymentIntent(
     String planKey,
     String billingCycle,
   ) async {
     final baseUrl = AuthService.baseUrl;
-    final url = Uri.parse('$baseUrl/api/v1/subscriptions/subscribe');
+    final url = Uri.parse('$baseUrl/api/v1/subscriptions/subscribe/stripe');
 
     final response = await AuthService.authenticatedRequest(
       'POST',
@@ -55,50 +55,33 @@ class SubscriptionService {
     if (response.statusCode == 200) {
       return jsonDecode(
         response.body,
-      ); // This will be the Stripe Payment Intent
+      ); // This will be the Stripe Payment Intent (clientSecret and paymentIntentId)
     } else {
       final body = jsonDecode(response.body);
-      throw Exception(body['message'] ?? 'Failed to initiate subscription');
+      throw Exception(
+        body['message'] ?? 'Failed to initiate Stripe subscription',
+      );
     }
   }
 
-  static Future<UserSubscription> confirmSubscription(
+  static Future<UserSubscription> upgradeWithCredits(
     String planKey,
     String billingCycle,
-    String paymentIntentId,
   ) async {
     final baseUrl = AuthService.baseUrl;
-    final url = Uri.parse('$baseUrl/api/v1/subscriptions/confirm');
+    final url = Uri.parse('$baseUrl/api/v1/subscriptions/subscribe/credits');
 
     final response = await AuthService.authenticatedRequest(
       'POST',
       url,
-      body: {
-        'planKey': planKey,
-        'billingCycle': billingCycle,
-        'paymentIntentId': paymentIntentId,
-      },
+      body: {'planKey': planKey, 'billingCycle': billingCycle},
     );
 
     if (response.statusCode == 200) {
       return UserSubscription.fromJson(jsonDecode(response.body));
     } else {
       final body = jsonDecode(response.body);
-      throw Exception(body['message'] ?? 'Failed to confirm subscription');
-    }
-  }
-
-  static Future<UserSubscription> cancelSubscription() async {
-    final baseUrl = AuthService.baseUrl;
-    final url = Uri.parse('$baseUrl/api/v1/subscriptions/cancel');
-
-    final response = await AuthService.authenticatedRequest('POST', url);
-
-    if (response.statusCode == 200) {
-      return UserSubscription.fromJson(jsonDecode(response.body));
-    } else {
-      final body = jsonDecode(response.body);
-      throw Exception(body['message'] ?? 'Failed to cancel subscription');
+      throw Exception(body['message'] ?? 'Failed to upgrade with credits');
     }
   }
 
