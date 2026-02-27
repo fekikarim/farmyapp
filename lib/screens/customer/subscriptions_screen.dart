@@ -28,7 +28,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
     final theme = Theme.of(context);
 
     // Filter plans relevant to the user's role
-    final plans = subProvider.availablePlans.where((p) {
+    final filteredPlans = subProvider.availablePlans.where((p) {
       if (userRole == 'farmer') return p.role == SubscriptionRole.farmer;
       if (userRole == 'investor') return p.role == SubscriptionRole.investor;
       if (userRole == 'customer') {
@@ -40,6 +40,16 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
       }
       return true;
     }).toList();
+
+    // Sort: current plan first, then paid plans, then free plans
+    final currentPlanKey = subProvider.currentSubscription?.plan.planKey;
+    filteredPlans.sort((a, b) {
+      if (a.planKey == currentPlanKey && b.planKey != currentPlanKey) return -1;
+      if (b.planKey == currentPlanKey && a.planKey != currentPlanKey) return 1;
+      if (a.isFree && !b.isFree) return 1;
+      if (!a.isFree && b.isFree) return -1;
+      return 0;
+    });
 
     return Scaffold(
       body: CustomScrollView(
@@ -82,16 +92,13 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
                     _buildShimmerLoading()
                   else if (subProvider.error != null)
                     _buildErrorState(subProvider)
-                  else if (plans.isEmpty)
+                  else if (filteredPlans.isEmpty)
                     _buildEmptyState()
                   else
-                    RefreshIndicator(
-                      onRefresh: () => subProvider.refresh(),
-                      child: Column(
-                        children: plans
-                            .map((plan) => _buildPlanCard(plan, subProvider))
-                            .toList(),
-                      ),
+                    Column(
+                      children: filteredPlans
+                          .map((plan) => _buildPlanCard(plan, subProvider))
+                          .toList(),
                     ),
 
                   const SizedBox(height: 32),
@@ -153,10 +160,10 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
         isSamePlanFamily && currentSub?.billingCycle == _selectedCycle;
     final isCurrent = isCurrentCycle;
 
-    final price = _selectedCycle == 'monthly'
-        ? plan.price
-        : (plan.price * 8).roundToDouble(); // Simplified yearly calc
+    // Dynamic pricing from backend
+    final price = _selectedCycle == 'monthly' ? plan.price : plan.priceYearly;
 
+    // Determine button text
     String buttonText;
     if (isSamePlanFamily) {
       if (isCurrentCycle) {
@@ -164,8 +171,10 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
       } else if (_selectedCycle == 'yearly') {
         buttonText = 'Upgrade to Yearly';
       } else {
-        buttonText = 'Downgrade to Monthly';
+        buttonText = 'Switch to Monthly';
       }
+    } else if (plan.isFree) {
+      buttonText = 'Downgrade to Free';
     } else {
       buttonText = 'Get Started';
     }
@@ -178,7 +187,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: isCurrent
+        border: isSamePlanFamily
             ? Border.all(color: plan.accentColor, width: 2)
             : Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
         boxShadow: [
@@ -196,25 +205,49 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Icon(plan.icon, color: plan.accentColor, size: 32),
-              if (plan.badge != null)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: plan.accentColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    plan.badge!,
-                    style: TextStyle(
-                      color: plan.accentColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 10,
+              Row(
+                children: [
+                  if (isSamePlanFamily)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Text(
+                        'Active',
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  if (plan.badge != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: plan.accentColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        plan.badge!,
+                        style: TextStyle(
+                          color: plan.accentColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -234,19 +267,20 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '\$$price',
+                plan.isFree ? 'Free' : '\$${price.toStringAsFixed(2)}',
                 style: theme.textTheme.displaySmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: plan.accentColor,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8, left: 4),
-                child: Text(
-                  _selectedCycle == 'monthly' ? '/ month' : '/ year',
-                  style: theme.textTheme.bodySmall,
+              if (!plan.isFree)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8, left: 4),
+                  child: Text(
+                    _selectedCycle == 'monthly' ? '/ month' : '/ year',
+                    style: theme.textTheme.bodySmall,
+                  ),
                 ),
-              ),
             ],
           ),
           const SizedBox(height: 24),
@@ -275,28 +309,45 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
-              onPressed: isButtonDisabled ? null : () => _handleSubscribe(plan),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: plan.accentColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                elevation: 0,
-              ),
-              child: _isProcessing
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
+            child: plan.isFree && !isSamePlanFamily
+                ? OutlinedButton(
+                    onPressed: isButtonDisabled
+                        ? null
+                        : () => _handleSubscribe(plan),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.grey,
+                      side: const BorderSide(color: Colors.grey),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                    )
-                  : Text(buttonText),
-            ),
+                    ),
+                    child: Text(buttonText),
+                  )
+                : ElevatedButton(
+                    onPressed: isButtonDisabled
+                        ? null
+                        : () => _handleSubscribe(plan),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: plan.accentColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: _isProcessing
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(buttonText),
+                  ),
           ),
         ],
       ),
@@ -310,9 +361,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
   void _showPaymentBottomSheet(SubscriptionPlan plan) {
     final authProvider = context.read<AuthProvider>();
     final user = authProvider.user;
-    final price = _selectedCycle == 'monthly'
-        ? plan.price
-        : (plan.price * 8).roundToDouble();
+    final price = _selectedCycle == 'monthly' ? plan.price : plan.priceYearly;
 
     showModalBottomSheet(
       context: context,
@@ -498,8 +547,11 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
       // 4. Present Payment Sheet (user enters card details here)
       await Stripe.instance.presentPaymentSheet();
 
-      // 5. Payment succeeded! The backend webhook will handle activation.
-      // Refresh subscription state to reflect the update.
+      // 5. Payment succeeded! Confirm with backend to activate the subscription immediately.
+      final paymentIntentId = intentData['paymentIntentId'];
+      await SubscriptionService.confirmStripePayment(paymentIntentId);
+
+      // 6. Refresh subscription state to reflect the activated subscription.
       await context.read<SubscriptionProvider>().refresh();
       await context.read<AuthProvider>().refreshUser();
 

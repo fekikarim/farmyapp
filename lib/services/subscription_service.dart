@@ -64,6 +64,26 @@ class SubscriptionService {
     }
   }
 
+  static Future<Map<String, dynamic>> confirmStripePayment(
+    String paymentIntentId,
+  ) async {
+    final baseUrl = AuthService.baseUrl;
+    final url = Uri.parse('$baseUrl/api/v1/subscriptions/subscribe/confirm');
+
+    final response = await AuthService.authenticatedRequest(
+      'POST',
+      url,
+      body: {'paymentIntentId': paymentIntentId},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      final body = jsonDecode(response.body);
+      throw Exception(body['message'] ?? 'Failed to confirm payment');
+    }
+  }
+
   static Future<UserSubscription> upgradeWithCredits(
     String planKey,
     String billingCycle,

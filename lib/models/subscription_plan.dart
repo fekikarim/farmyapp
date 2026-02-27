@@ -7,6 +7,7 @@ class SubscriptionPlan {
   final String name;
   final String description;
   final double price;
+  final double priceYearly;
   final String interval;
   final List<String> features;
   final List<String> extendedFeatures;
@@ -16,12 +17,15 @@ class SubscriptionPlan {
   final String? badge;
   final String planKey;
 
+  bool get isFree => price <= 0 && priceYearly <= 0;
+
   SubscriptionPlan({
     required this.id,
     required this.planKey,
     required this.name,
     required this.description,
     required this.price,
+    this.priceYearly = 0.0,
     required this.interval,
     required this.features,
     required this.extendedFeatures,
@@ -45,6 +49,8 @@ class SubscriptionPlan {
       name: json['name'] ?? mockPlan.name,
       description: json['description'] ?? mockPlan.description,
       price: double.tryParse(json['price_monthly']?.toString() ?? '0') ?? 0.0,
+      priceYearly:
+          double.tryParse(json['price_yearly']?.toString() ?? '0') ?? 0.0,
       interval: 'month',
       features: mockPlan.features,
       extendedFeatures: mockPlan.extendedFeatures,

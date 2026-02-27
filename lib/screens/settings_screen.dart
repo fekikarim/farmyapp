@@ -243,43 +243,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   builder: (context, subProvider, _) {
                     final sub = subProvider.currentSubscription;
                     final isActive = sub?.isActive ?? false;
+                    final planName = sub?.plan.name ?? 'Free Tier';
+                    final isFree = sub?.plan.planKey.contains('free') ?? true;
+
+                    String subtitle;
+                    if (!isActive) {
+                      subtitle = 'Upgrade for premium features';
+                    } else if (isFree) {
+                      subtitle = 'No expiration · Free forever';
+                    } else {
+                      subtitle = 'Valid until ${_formatDate(sub!.endDate)}';
+                    }
 
                     return _buildSettingsTile(
                       context,
-                      icon: Icons
-                          .auto_awesome_outlined, // Modern icon for premium feel
-                      title: isActive
-                          ? (sub?.plan.name ?? 'Active Plan')
-                          : 'Free Tier',
-                      subtitle: isActive
-                          ? 'Valid until ${_formatDate(sub!.endDate)}'
-                          : 'Upgrade for premium features',
+                      icon: Icons.auto_awesome_outlined,
+                      title: planName,
+                      subtitle: subtitle,
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (isActive)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.amber.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: Colors.amber,
-                                  width: 1,
-                                ),
-                              ),
-                              child: const Text(
-                                'PRO',
-                                style: TextStyle(
-                                  color: Colors.amber,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10,
-                                ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isFree
+                                  ? Colors.green.withOpacity(0.1)
+                                  : Colors.amber.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: isFree ? Colors.green : Colors.amber,
+                                width: 1,
                               ),
                             ),
+                            child: Text(
+                              isFree ? 'FREE' : 'PRO',
+                              style: TextStyle(
+                                color: isFree ? Colors.green : Colors.amber,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
                           const SizedBox(width: 8),
                           Icon(
                             Icons.arrow_forward_ios_rounded,
