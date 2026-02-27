@@ -187,7 +187,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: isSamePlanFamily
+        border: isCurrentCycle
             ? Border.all(color: plan.accentColor, width: 2)
             : Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
         boxShadow: [
@@ -207,7 +207,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
               Icon(plan.icon, color: plan.accentColor, size: 32),
               Row(
                 children: [
-                  if (isSamePlanFamily)
+                  if (isCurrentCycle)
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
@@ -222,6 +222,26 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
                         'Active',
                         style: TextStyle(
                           color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                        ),
+                      ),
+                    )
+                  else if (isSamePlanFamily)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'Active on ${currentSub?.billingCycle ?? 'monthly'}',
+                        style: const TextStyle(
+                          color: Colors.blue,
                           fontWeight: FontWeight.bold,
                           fontSize: 10,
                         ),
