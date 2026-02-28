@@ -31,6 +31,15 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   void initState() {
     super.initState();
     _motivationalQuote = _quotes[Random().nextInt(_quotes.length)];
+
+    // Proactively load worker profile for customers to check verification status
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final authProvider = context.read<AuthProvider>();
+      if (authProvider.user?.role == 'customer') {
+        context.read<WorkerProvider>().loadMyProfile();
+      }
+    });
   }
 
   @override
@@ -179,13 +188,17 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               // Worker Plus Section for Approved Workers
               Consumer2<WorkerProvider, SubscriptionProvider>(
                 builder: (context, workerProvider, subProvider, _) {
-                  final isWorker = workerProvider.myProfile != null;
+                  final workerProfile = workerProvider.myProfile;
+                  // Only show Worker Plus for VERIFIED workers who don't have it yet
+                  final isVerifiedWorker =
+                      workerProfile != null && workerProfile.isVerified;
                   final hasWorkerPlus =
                       subProvider.currentSubscription?.plan.planKey ==
                       'worker_plus';
 
-                  if (!isWorker || hasWorkerPlus)
+                  if (!isVerifiedWorker || hasWorkerPlus) {
                     return const SizedBox.shrink();
+                  }
 
                   return _buildUpgradeCard(
                     context,

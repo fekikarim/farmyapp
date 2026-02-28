@@ -13,11 +13,13 @@ class ProductProvider with ChangeNotifier {
   List<Product> _myProducts = [];
   List<ProductType> _productTypes = [];
   bool _isLoading = false;
+  String? _error;
 
   List<Product> get products => _products;
   List<Product> get myProducts => _myProducts;
   List<ProductType> get productTypes => _productTypes;
   bool get isLoading => _isLoading;
+  String? get error => _error;
 
   Future<void> fetchProductTypes() async {
     try {
@@ -76,11 +78,15 @@ class ProductProvider with ChangeNotifier {
 
   Future<void> fetchMyProducts() async {
     _isLoading = true;
+    _error = null;
     notifyListeners();
 
     try {
       final user = await AuthService.getUser();
-      if (user == null) return;
+      if (user == null) {
+        _error = 'User not authenticated.';
+        return;
+      }
 
       final uri = Uri.parse(
         '${AuthService.baseUrl}/api/v1/products',
@@ -91,8 +97,11 @@ class ProductProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body)['data'] as List;
         _myProducts = data.map((e) => Product.fromJson(e)).toList();
+      } else {
+        _error = 'Failed to load products: ${response.statusCode}';
       }
     } catch (e) {
+      _error = 'An error occurred while fetching products: $e';
       print('Error fetching my products: $e');
     } finally {
       _isLoading = false;

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/product_provider.dart';
 import '../../providers/subscription_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../widgets/subscription_limit_bar.dart';
 import 'add_product_screen.dart';
 import '../../models/product_model.dart';
@@ -61,16 +62,18 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
   @override
   Widget build(BuildContext context) {
     final productProvider = context.watch<ProductProvider>();
+    final authProvider = context.watch<AuthProvider>();
+    final isFarmer = authProvider.user?.role == 'farmer';
 
     return Scaffold(
       appBar: AppBar(title: const Text('My Products')),
       floatingActionButton: Consumer<SubscriptionProvider>(
         builder: (context, subProvider, _) {
           final productCount = productProvider.myProducts.length;
-          final isAtLimit = !subProvider.isWithinLimit(
-            'product_limit',
-            productCount,
-          );
+          // Apply product limits ONLY for farmers as per subscription plan logic
+          final isAtLimit =
+              isFarmer &&
+              !subProvider.isWithinLimit('product_limit', productCount);
 
           return FloatingActionButton(
             heroTag: 'add_product_fab',
@@ -94,34 +97,121 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
       ),
       body: productProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
+          : productProvider.error != null
+          ? _buildErrorPlaceholder(context, productProvider.error!)
           : RefreshIndicator(
               onRefresh: () =>
                   context.read<ProductProvider>().fetchMyProducts(),
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16,
-                  horizontal: 16,
-                ),
-                itemCount: productProvider.myProducts.length + 1,
-                itemBuilder: (ctx, i) {
-                  if (i == 0) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 24),
-                      child: SubscriptionLimitBar(
-                        limitKey: 'product_limit',
-                        currentCount: productProvider.myProducts.length,
-                        label: 'Product Listings Used',
-                        icon: Icons.inventory_2_outlined,
-                        accentColor: Colors.green,
-                        upgradePlanName: 'Farmer Pro',
+              child: productProvider.myProducts.isEmpty && !isFarmer
+                  ? _buildEmptyPlaceholder(context)
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 16,
                       ),
-                    );
-                  }
-                  final product = productProvider.myProducts[i - 1];
-                  return _buildProductCard(context, product);
-                },
+                      // Only show limit bar for farmers
+                      itemCount: isFarmer
+                          ? productProvider.myProducts.length + 1
+                          : productProvider.myProducts.length,
+                      itemBuilder: (ctx, i) {
+                        if (isFarmer && i == 0) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 24),
+                            child: SubscriptionLimitBar(
+                              limitKey: 'product_limit',
+                              currentCount: productProvider.myProducts.length,
+                              label: 'Product Listings Used',
+                              icon: Icons.inventory_2_outlined,
+                              accentColor: Colors.green,
+                              upgradePlanName: 'Farmer Pro',
+                            ),
+                          );
+                        }
+                        final product = isFarmer
+                            ? productProvider.myProducts[i - 1]
+                            : productProvider.myProducts[i];
+                        return _buildProductCard(context, product);
+                      },
+                    ),
+            ),
+    );
+  }
+
+  Widget _buildErrorPlaceholder(BuildContext context, String error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline_rounded,
+              size: 64,
+              color: Colors.red.shade300,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Oops! Something went wrong',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              error,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () =>
+                  context.read<ProductProvider>().fetchMyProducts(),
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Retry'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyPlaceholder(BuildContext context) {
+    return ListView(
+      children: [
+        SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+        Center(
+          child: Column(
+            children: [
+              Icon(
+                Icons.inventory_2_outlined,
+                size: 64,
+                color: Colors.grey.shade300,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'No products found',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Add your first product to see it here!',
+                style: TextStyle(color: Colors.blueGrey),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
