@@ -57,7 +57,7 @@ class _MainScreenState extends State<MainScreen> {
       screens = [
         const CustomerHomeScreen(),
         const CustomerMarketplaceScreen(),
-        const CustomerSubscriptionsScreen(),
+        const SubscriptionsScreen(),
         const SettingsScreen(),
       ];
       items = const [

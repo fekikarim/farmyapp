@@ -164,6 +164,9 @@ class User {
   final double credits;
   final DateTime? createdAt;
   final int? rentedLandsCount;
+  final String? currentSubscriptionId;
+  final String? subscriptionStatus;
+  final double creditsBalance;
 
   User({
     required this.id,
@@ -178,6 +181,9 @@ class User {
     this.credits = 0.0,
     this.createdAt,
     this.rentedLandsCount,
+    this.currentSubscriptionId,
+    this.subscriptionStatus,
+    this.creditsBalance = 0.0,
   });
 
   // Backwards compatibility getters
@@ -207,6 +213,11 @@ class User {
       rentedLandsCount: json['rentedLandsCount'] != null
           ? int.tryParse(json['rentedLandsCount'].toString())
           : null,
+      currentSubscriptionId: json['current_subscription_id'],
+      subscriptionStatus: json['subscription_status'],
+      creditsBalance:
+          (double.tryParse(json['credits_balance']?.toString() ?? '0.0') ??
+          0.0),
     );
   }
 
@@ -221,6 +232,9 @@ class User {
     bool? isTwoFactorEnabled,
     String? authProvider,
     double? credits,
+    String? currentSubscriptionId,
+    String? subscriptionStatus,
+    double? creditsBalance,
   }) {
     return User(
       id: id ?? this.id,
@@ -233,6 +247,10 @@ class User {
       isTwoFactorEnabled: isTwoFactorEnabled ?? this.isTwoFactorEnabled,
       authProvider: authProvider ?? this.authProvider,
       credits: credits ?? this.credits,
+      currentSubscriptionId:
+          currentSubscriptionId ?? this.currentSubscriptionId,
+      subscriptionStatus: subscriptionStatus ?? this.subscriptionStatus,
+      creditsBalance: creditsBalance ?? this.creditsBalance,
     );
   }
 
@@ -250,6 +268,10 @@ class User {
       'credits': credits,
       if (createdAt != null) 'created_at': createdAt!.toIso8601String(),
       if (rentedLandsCount != null) 'rentedLandsCount': rentedLandsCount,
+      if (currentSubscriptionId != null)
+        'current_subscription_id': currentSubscriptionId,
+      if (subscriptionStatus != null) 'subscription_status': subscriptionStatus,
+      'credits_balance': creditsBalance,
     };
   }
 }

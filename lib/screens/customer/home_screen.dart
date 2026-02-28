@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:math';
 import '../../providers/auth_provider.dart';
+import '../../providers/subscription_provider.dart';
+import '../../providers/worker_provider.dart';
+import 'subscriptions_screen.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
   const CustomerHomeScreen({super.key});
@@ -12,7 +15,7 @@ class CustomerHomeScreen extends StatefulWidget {
 
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   late String _motivationalQuote;
-  
+
   final List<String> _quotes = [
     "The future of agriculture is in your hands.",
     "Support local, eat fresh, live healthy.",
@@ -21,7 +24,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     "Small choices make a big impact on our planet.",
     "Fresh form the farm, straight to your table.",
     "Empowering farmers, feeding the world.",
-    "Sustainability is not a goal, it's a lifestyle."
+    "Sustainability is not a goal, it's a lifestyle.",
   ];
 
   @override
@@ -80,21 +83,28 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                   CircleAvatar(
                     radius: 28,
                     backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                    backgroundImage: user?.profilePicture != null 
-                        ? NetworkImage(user!.profilePicture!) 
+                    backgroundImage: user?.profilePicture != null
+                        ? NetworkImage(user!.profilePicture!)
                         : null,
                     child: user?.profilePicture == null
-                        ? Icon(Icons.person, color: theme.colorScheme.primary, size: 28)
+                        ? Icon(
+                            Icons.person,
+                            color: theme.colorScheme.primary,
+                            size: 28,
+                          )
                         : null,
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 32),
 
               // User Role Badge (Optional but nice)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
@@ -165,6 +175,85 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               ),
 
               // TODO: Add more sections here (Quick Actions, Recent Activity, etc.)
+
+              // Worker Plus Section for Approved Workers
+              Consumer2<WorkerProvider, SubscriptionProvider>(
+                builder: (context, workerProvider, subProvider, _) {
+                  final isWorker = workerProvider.myProfile != null;
+                  final hasWorkerPlus =
+                      subProvider.currentSubscription?.plan.planKey ==
+                      'worker_plus';
+
+                  if (!isWorker || hasWorkerPlus)
+                    return const SizedBox.shrink();
+
+                  return Container(
+                    margin: const EdgeInsets.only(top: 32),
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.purple.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: Colors.purple.withOpacity(0.1)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.purple.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.work_history,
+                                color: Colors.purple,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              'Worker Plus',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.purple,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        const Text(
+                          'Boost your profile, get priority matching, and instant withdrawals.',
+                          style: TextStyle(color: Colors.grey, height: 1.4),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const SubscriptionsScreen(),
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.purple,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text('Upgrade for \$4.99'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

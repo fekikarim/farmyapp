@@ -7,8 +7,6 @@ import '../providers/worker_provider.dart';
 import 'settings/edit_profile_screen.dart';
 import 'settings/change_password_screen.dart';
 import 'settings/enable_2fa_screen.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../../services/kyc_service.dart';
 import '../screens/kyc/kyc_flow_screen.dart';
 import '../screens/wallet/payment_methods_screen.dart';
 import 'customer/become_worker_screen.dart';
@@ -17,6 +15,8 @@ import 'investor/hedera_registry_screen.dart';
 import 'shared/proof_requests_screen.dart';
 import '../services/auth_service.dart';
 import '../providers/worker_lifecycle_provider.dart';
+import '../providers/subscription_provider.dart';
+import 'customer/subscriptions_screen.dart';
 import 'settings/notifications_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -60,7 +60,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       CircleAvatar(
                         radius: 40,
-                        backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                        backgroundColor: theme.colorScheme.primary.withOpacity(
+                          0.1,
+                        ),
                         backgroundImage: user.profilePicture != null
                             ? NetworkImage(
                                 user.profilePicture!.startsWith('http')
@@ -196,17 +198,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(height: 12),
                 // Latest Proof Preview for Workers
-                if (workerProvider.myProfile != null) 
+                if (workerProvider.myProfile != null)
                   Consumer<WorkerLifecycleProvider>(
                     builder: (context, lifecycle, _) {
                       if (lifecycle.myProofs.isEmpty) return const SizedBox();
                       final latest = lifecycle.myProofs.first;
                       if (latest.imageUrl == null) return const SizedBox();
-                      
+
                       return Center(
                         child: Column(
                           children: [
-                            const Text('Latest Submitted Proof', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+                            const Text(
+                              'Latest Submitted Proof',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
+                              ),
+                            ),
                             const SizedBox(height: 4),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(12),
@@ -215,7 +224,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 height: 80,
                                 width: 80,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 20, color: Colors.grey),
+                                errorBuilder: (_, __, ___) => const Icon(
+                                  Icons.broken_image,
+                                  size: 20,
+                                  color: Colors.grey,
+                                ),
                               ),
                             ),
                           ],
@@ -224,6 +237,75 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                 const SizedBox(height: 20),
+
+                // Subscription Section
+                _buildSectionTitle(theme, 'Subscription'),
+                Consumer<SubscriptionProvider>(
+                  builder: (context, subProvider, _) {
+                    final sub = subProvider.currentSubscription;
+                    final isActive = sub?.isActive ?? false;
+                    final planName = sub?.plan.name ?? 'Free Tier';
+                    final isFree = sub?.plan.planKey.contains('free') ?? true;
+
+                    String subtitle;
+                    if (!isActive) {
+                      subtitle = 'Upgrade for premium features';
+                    } else if (isFree) {
+                      subtitle = 'No expiration · Free forever';
+                    } else {
+                      subtitle = 'Valid until ${_formatDate(sub!.endDate)}';
+                    }
+
+                    return _buildSettingsTile(
+                      context,
+                      icon: Icons.auto_awesome_outlined,
+                      title: planName,
+                      subtitle: subtitle,
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isFree
+                                  ? Colors.green.withOpacity(0.1)
+                                  : Colors.amber.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: isFree ? Colors.green : Colors.amber,
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              isFree ? 'FREE' : 'PRO',
+                              style: TextStyle(
+                                color: isFree ? Colors.green : Colors.amber,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 16,
+                            color: theme.colorScheme.onSurface.withOpacity(0.4),
+                          ),
+                        ],
+                      ),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SubscriptionsScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
               ],
 
               _buildSectionTitle(theme, 'Payments'),
@@ -248,25 +330,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [Color(0xFF8259EF), Color(0xFF5B2BE8)],
                         ),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: const Text('HCS', style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                      )),
+                      child: const Text(
+                        'HCS',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Icon(
                       Icons.arrow_forward_ios_rounded,
                       size: 16,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.4),
                     ),
                   ],
                 ),
@@ -475,7 +565,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
               ],
-              if (user?.role.toLowerCase() == 'farmer' || user?.role.toLowerCase() == 'investor' || user?.role.toLowerCase() == 'admin') ...[
+              if (user?.role.toLowerCase() == 'farmer' ||
+                  user?.role.toLowerCase() == 'investor' ||
+                  user?.role.toLowerCase() == 'admin') ...[
                 const SizedBox(height: 24),
                 _buildSectionTitle(theme, 'Tasks & Proofs'),
                 _buildSettingsTile(
@@ -485,7 +577,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   subtitle: 'View and manage proof requests',
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const ProofRequestsScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const ProofRequestsScreen(),
+                    ),
                   ),
                 ),
               ],
@@ -675,5 +769,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context,
       MaterialPageRoute(builder: (context) => KycFlowScreen(role: role)),
     );
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return 'N/A';
+    return '${date.day}/${date.month}/${date.year}';
   }
 }
