@@ -45,7 +45,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
       if (userRole == 'farmer') return p.role == SubscriptionRole.farmer;
       if (userRole == 'investor') return p.role == SubscriptionRole.investor;
       if (userRole == 'customer') {
-        if (p.planKey == 'worker_plus') {
+        if (p.planKey.startsWith('worker_')) {
           final workerProfile = workerProvider.myProfile;
           return workerProfile != null && workerProfile.isVerified;
         }
