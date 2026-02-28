@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../../models/land_model.dart';
+import '../../models/land_rental_model.dart';
 import '../../services/land_service.dart';
+import '../../providers/subscription_provider.dart';
+import '../../providers/land_provider.dart';
+import '../../widgets/subscription_limit_bar.dart';
 import 'rental_checkout_screen.dart';
 import '../farmer/workforce_screen.dart';
 import 'dart:ui';
@@ -21,12 +26,24 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
   late Land _land;
   bool _isLoading = true;
   String? _error;
+  int _activeRentalCount = 0;
 
   @override
   void initState() {
     super.initState();
     _land = widget.land;
     _fetchDetails();
+    _loadRentalCount();
+  }
+
+  void _loadRentalCount() {
+    final landProvider = context.read<LandProvider>();
+    final activeRentals = landProvider.myRentals.where(
+      (r) =>
+          r.paymentStatus != PaymentStatus.cancelled &&
+          (r.rentalEndDate == null || r.rentalEndDate!.isAfter(DateTime.now())),
+    );
+    _activeRentalCount = activeRentals.length;
   }
 
   Future<void> _fetchDetails() async {
@@ -320,7 +337,17 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                   ),
                   const SizedBox(height: 20),
                 ],
-                const SizedBox(height: 100), // Spacer for bottom sheet
+                // Subscription Limit Bar for Investor
+                if (!_land.isRented)
+                  SubscriptionLimitBar(
+                    limitKey: 'rental_limit',
+                    currentCount: _activeRentalCount,
+                    label: 'Rental Slots Used',
+                    icon: Icons.real_estate_agent_rounded,
+                    accentColor: Colors.blue,
+                    upgradePlanName: 'Investor Plus',
+                  ),
+                const SizedBox(height: 240), // Spacer for bottom sheet
               ],
             ),
           ),
@@ -344,13 +371,19 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
   Widget _buildBottomSheet() {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final subProvider = context.watch<SubscriptionProvider>();
+    final isAtRentalLimit = !subProvider.isWithinLimit(
+      'rental_limit',
+      _activeRentalCount,
+    );
+    final isDisabled = _land.isRented || isAtRentalLimit;
 
     return Container(
       padding: EdgeInsets.fromLTRB(
         24,
-        20,
+        16,
         24,
-        MediaQuery.of(context).padding.bottom + 20,
+        MediaQuery.of(context).padding.bottom + 16,
       ),
       decoration: BoxDecoration(
         color: theme.scaffoldBackgroundColor,
@@ -360,86 +393,183 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
           ),
         ),
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Price per month',
-                style: TextStyle(
-                  color: isDark ? Colors.white38 : Colors.black38,
-                  fontSize: 12,
+          // Upgrade banner when at rental limit
+          if (isAtRentalLimit && !_land.isRented) ...[
+            GestureDetector(
+              onTap: () => Navigator.of(context).pushNamed('/subscriptions'),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${NumberFormat('#,###').format(_land.price)} TND',
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.amber.withOpacity(0.15),
+                      Colors.orange.withOpacity(0.1),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.amber.withOpacity(0.3),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    if (!isDark)
+                      BoxShadow(
+                        color: Colors.amber.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(width: 32),
-          Expanded(
-            child: Container(
-              decoration: _land.isRented
-                  ? null
-                  : BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.green.withOpacity(0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(isDark ? 0.1 : 0.8),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.bolt_rounded,
+                        size: 20,
+                        color: Colors.amber,
+                      ),
                     ),
-              child: ElevatedButton(
-                onPressed: _land.isRented
-                    ? null
-                    : () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                RentalCheckoutScreen(land: _land),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Rental Limit reached',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -0.2,
+                            ),
                           ),
-                        );
-                        if (result == true) {
-                          _fetchDetails();
-                        }
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _land.isRented
-                      ? Colors.orange.withOpacity(0.1)
-                      : Colors.green,
-                  foregroundColor: _land.isRented
-                      ? Colors.orange
-                      : Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  elevation: 0,
-                  side: _land.isRented
-                      ? const BorderSide(color: Colors.orange, width: 1.5)
-                      : null,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  disabledBackgroundColor: Colors.orange.withOpacity(0.1),
-                  disabledForegroundColor: Colors.orange,
-                ),
-                child: Text(
-                  _land.isRented ? 'OCCUPIED' : 'RENT NOW',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.1,
-                  ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Unlock unlimited slots with Investor Plus',
+                            style: TextStyle(
+                              color: isDark
+                                  ? Colors.amber.shade200
+                                  : Colors.amber.shade900,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 14,
+                      color: isDark ? Colors.amber : Colors.amber.shade900,
+                    ),
+                  ],
                 ),
               ),
             ),
+            const SizedBox(height: 20),
+          ],
+          Row(
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Price per month',
+                    style: TextStyle(
+                      color: isDark ? Colors.white38 : Colors.black38,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${NumberFormat('#,###').format(_land.price)} TND',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 32),
+              Expanded(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  decoration: isDisabled
+                      ? null
+                      : BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.primaryColor.withOpacity(0.4),
+                              blurRadius: 25,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                  child: ElevatedButton(
+                    onPressed: isDisabled
+                        ? null
+                        : () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    RentalCheckoutScreen(land: _land),
+                              ),
+                            );
+                            if (result == true) {
+                              _fetchDetails();
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _land.isRented
+                          ? Colors.orange.withOpacity(0.1)
+                          : (isAtRentalLimit
+                                ? theme.disabledColor.withOpacity(0.1)
+                                : theme.primaryColor),
+                      foregroundColor: _land.isRented
+                          ? Colors.orange
+                          : (isAtRentalLimit
+                                ? theme.disabledColor
+                                : Colors.white),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      elevation: 0,
+                      side: _land.isRented
+                          ? const BorderSide(color: Colors.orange, width: 2)
+                          : (isAtRentalLimit
+                                ? BorderSide(
+                                    color: theme.disabledColor.withOpacity(0.2),
+                                  )
+                                : null),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Text(
+                      _land.isRented
+                          ? 'OCCUPIED'
+                          : (isAtRentalLimit ? 'LIMIT REACHED' : 'RENT NOW'),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

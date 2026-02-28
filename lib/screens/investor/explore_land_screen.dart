@@ -9,6 +9,7 @@ import '../../providers/land_provider.dart';
 import '../../models/land_model.dart';
 import '../../models/land_rental_model.dart';
 import 'land_details_screen.dart';
+import 'package:farmyapp/widgets/subscription_limit_bar.dart';
 import 'widgets/investor_workforce_panel.dart';
 
 class InvestorExploreLandScreen extends StatefulWidget {
@@ -144,17 +145,33 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                       color: Colors.white,
                       child: ListView.builder(
                         padding: const EdgeInsets.all(20),
-                        itemCount: availableLands.length,
-                        itemBuilder: (context, index) => _InvestorLandCard(
-                          land: availableLands[index],
-                          onTap: (land) => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  LandDetailsScreen(land: land),
+                        itemCount:
+                            availableLands.length + 1, // +1 for limit bar
+                        itemBuilder: (context, index) {
+                          if (index == 0) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: SubscriptionLimitBar(
+                                limitKey: 'rental_limit',
+                                currentCount: provider.myRentals.length,
+                                label: 'Rental Slots Usage',
+                                icon: Icons.vpn_key_rounded,
+                                accentColor: Colors.blue,
+                                upgradePlanName: 'Investor Plus',
+                              ),
+                            );
+                          }
+                          return _InvestorLandCard(
+                            land: availableLands[index - 1],
+                            onTap: (land) => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    LandDetailsScreen(land: land),
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     )
                   : _buildMapView(provider.allLands),

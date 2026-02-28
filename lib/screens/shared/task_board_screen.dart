@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/worker_provider.dart';
+import '../../providers/subscription_provider.dart';
+import '../../widgets/subscription_limit_bar.dart';
 import '../../models/task_model.dart';
 
 class TaskBoardScreen extends StatefulWidget {
@@ -331,10 +333,30 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateTaskSheet,
-        backgroundColor: Colors.green.shade600,
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Consumer<SubscriptionProvider>(
+        builder: (context, subProvider, _) {
+          final taskCount = workerProvider.tasks
+              .where((t) => !t.isCompleted && !t.isVerified)
+              .length;
+          final isAtLimit = !subProvider.isWithinLimit(
+            'task_limit_per_land',
+            taskCount,
+          );
+
+          return FloatingActionButton(
+            heroTag: 'add_task_fab',
+            onPressed: isAtLimit
+                ? () => _showTaskLimitDialog(subProvider.planName)
+                : _showCreateTaskSheet,
+            backgroundColor: isAtLimit
+                ? Colors.amber.shade700
+                : Colors.green.shade600,
+            child: Icon(
+              isAtLimit ? Icons.lock_outline : Icons.add,
+              color: Colors.white,
+            ),
+          );
+        },
       ),
       body: workerProvider.tasksLoading
           ? const Center(child: CircularProgressIndicator())
@@ -368,9 +390,25 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                   onRefresh: () => workerProvider.loadLandTasks(widget.landId),
                   child: ListView.builder(
                     padding: const EdgeInsets.all(20),
-                    itemCount: filtered.length,
-                    itemBuilder: (ctx, i) =>
-                        _buildTaskCard(filtered[i], isDark),
+                    itemCount: filtered.length + 1, // +1 for limit bar
+                    itemBuilder: (ctx, i) {
+                      if (i == 0) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: SubscriptionLimitBar(
+                            limitKey: 'task_limit_per_land',
+                            currentCount: workerProvider.tasks
+                                .where((t) => !t.isCompleted && !t.isVerified)
+                                .length,
+                            label: 'Active Tasks Count',
+                            icon: Icons.task_alt_rounded,
+                            accentColor: Colors.green,
+                            upgradePlanName: 'Farmer Pro',
+                          ),
+                        );
+                      }
+                      return _buildTaskCard(filtered[i - 1], isDark);
+                    },
                   ),
                 );
               }),
@@ -495,6 +533,90 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
         const SizedBox(width: 4),
         Text(text, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
       ],
+    );
+  }
+
+  void _showTaskLimitDialog(String planName) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.amber.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.lock_outline_rounded,
+                color: Colors.amber,
+                size: 40,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Task Limit Reached',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isDark ? Colors.white : Colors.black87,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              "You've reached the active task limit for this land on your $planName plan. Upgrade to Farmer Pro for unlimited tasks!",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isDark ? Colors.white60 : Colors.black54,
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  Navigator.of(context).pushNamed('/subscriptions');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: const Text(
+                  'VIEW PLANS',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.1,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(
+                'Maybe Later',
+                style: TextStyle(
+                  color: isDark ? Colors.white38 : Colors.black38,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

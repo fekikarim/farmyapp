@@ -18,10 +18,30 @@ class SubscriptionProvider with ChangeNotifier {
 
   bool hasEntitlement(String key) => _entitlements[key] == true;
 
+  /// Helper for boolean features (handles both true and 'true' string if necessary,
+  /// but usually the backend returns boolean).
+  bool hasFeature(String key) => _entitlements[key] == true;
+
   num getLimit(String key, num defaultValue) {
     if (_entitlements[key] == null) return defaultValue;
     return _entitlements[key] as num;
   }
+
+  /// Returns true if currentValue is still under the plan limit.
+  /// -1 means unlimited (always returns true).
+  bool isWithinLimit(String key, int currentValue) {
+    final limit = getLimit(key, 0);
+    if (limit == -1) return true;
+    return currentValue < limit;
+  }
+
+  /// Readable plan name, or 'Free' as fallback.
+  String get planName => _currentSubscription?.plan.name ?? 'Farmy Free';
+
+  /// Whether the current plan is a free plan.
+  bool get isFreePlan =>
+      _currentSubscription?.paymentMethod == 'free' ||
+      (_currentSubscription?.plan.price ?? 0) == 0;
 
   Future<void> init() async {
     _isLoading = true;

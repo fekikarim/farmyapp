@@ -187,76 +187,115 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                   if (!isWorker || hasWorkerPlus)
                     return const SizedBox.shrink();
 
-                  return Container(
-                    margin: const EdgeInsets.only(top: 32),
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.purple.withOpacity(0.05),
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.purple.withOpacity(0.1)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.purple.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.work_history,
-                                color: Colors.purple,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            const Text(
-                              'Worker Plus',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.purple,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        const Text(
-                          'Boost your profile, get priority matching, and instant withdrawals.',
-                          style: TextStyle(color: Colors.grey, height: 1.4),
-                        ),
-                        const SizedBox(height: 20),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const SubscriptionsScreen(),
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.purple,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Text('Upgrade for \$4.99'),
-                          ),
-                        ),
-                      ],
-                    ),
+                  return _buildUpgradeCard(
+                    context,
+                    title: 'Worker Plus',
+                    description:
+                        'Boost your profile, get priority matching, and instant withdrawals.',
+                    color: Colors.purple,
+                    icon: Icons.work_history,
+                    price: '\$4.99',
+                  );
+                },
+              ),
+
+              // FarmBox Section for All Customers
+              Consumer<SubscriptionProvider>(
+                builder: (context, subProvider, _) {
+                  final hasFarmBox = subProvider.hasFeature('farmbox_active');
+                  if (hasFarmBox) return const SizedBox.shrink();
+
+                  return _buildUpgradeCard(
+                    context,
+                    title: 'FarmBox Subscription',
+                    description:
+                        'Get fresh, locally grown vegetables delivered to your doorstep weekly!',
+                    color: Colors.orange.shade700,
+                    icon: Icons.local_shipping_rounded,
+                    price: 'From \$29.99',
                   );
                 },
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildUpgradeCard(
+    BuildContext context, {
+    required String title,
+    required String description,
+    required Color color,
+    required IconData icon,
+    required String price,
+  }) {
+    final theme = Theme.of(context);
+    return Container(
+      margin: const EdgeInsets.only(top: 24),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: color.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            description,
+            style: TextStyle(
+              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SubscriptionsScreen()),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: color,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                'Upgrade $price',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

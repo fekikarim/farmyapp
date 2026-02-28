@@ -4,13 +4,15 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import '../../models/land_model.dart';
 import '../../providers/land_provider.dart';
+import '../../providers/subscription_provider.dart';
+import '../../widgets/subscription_limit_bar.dart';
 import 'add_land_screen.dart';
 import 'rental_requests_screen.dart';
 import 'edit_land_sheet.dart';
 import 'workforce_screen.dart';
 import '../../services/auth_service.dart';
 import '../../models/user_model.dart';
-import '../../models/land_rental_model.dart'; // Add this import
+import '../../models/land_rental_model.dart';
 
 class FarmerLandManagementScreen extends StatefulWidget {
   const FarmerLandManagementScreen({super.key});
@@ -196,20 +198,120 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'land_management_fab',
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const FarmerAddLandScreen()),
+      floatingActionButton: Consumer<SubscriptionProvider>(
+        builder: (context, subProvider, _) {
+          final landCount = context.watch<LandProvider>().myLands.length;
+          final isAtLimit = !subProvider.isWithinLimit('land_limit', landCount);
+
+          return FloatingActionButton.extended(
+            heroTag: 'land_management_fab',
+            onPressed: isAtLimit
+                ? () => _showLandLimitDialog(subProvider.planName)
+                : () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FarmerAddLandScreen(),
+                    ),
+                  ),
+            label: Text(
+              isAtLimit ? 'Limit Reached' : 'New Listing',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            icon: Icon(
+              isAtLimit
+                  ? Icons.lock_outline_rounded
+                  : Icons.add_location_alt_outlined,
+            ),
+            backgroundColor: isAtLimit
+                ? Colors.amber.shade700
+                : Colors.green[600],
+            foregroundColor: Colors.white,
+            elevation: 4,
+          );
+        },
+      ),
+    );
+  }
+
+  void _showLandLimitDialog(String planName) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.amber.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.lock_outline_rounded,
+                color: Colors.amber,
+                size: 40,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Land Limit Reached',
+              style: TextStyle(
+                color: isDark ? Colors.white : Colors.black87,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              "You've used all land slots on your $planName plan. Upgrade to Farmer Pro to unlock unlimited lands!",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isDark ? Colors.white60 : Colors.black54,
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  Navigator.of(context).pushNamed('/subscriptions');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: const Text(
+                  'VIEW PLANS',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.1,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(
+                'Maybe Later',
+                style: TextStyle(
+                  color: isDark ? Colors.white38 : Colors.black38,
+                ),
+              ),
+            ),
+          ],
         ),
-        label: Text(
-          'New Listing',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        icon: Icon(Icons.add_location_alt_outlined),
-        backgroundColor: Colors.green[600],
-        foregroundColor: Colors.white,
-        elevation: 4,
       ),
     );
   }
@@ -251,11 +353,26 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
       child: ListView.builder(
         key: const ValueKey('list_view'),
         padding: const EdgeInsets.fromLTRB(20, 10, 20, 100),
-        itemCount: lands.length,
-        itemBuilder: (context, index) => _ModernLandCard(
-          land: lands[index],
-          onDetailTap: (land) => _showLandDetails(land),
-        ),
+        itemCount: lands.length + 1, // +1 for limit bar header
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: SubscriptionLimitBar(
+                limitKey: 'land_limit',
+                currentCount: lands.length,
+                label: 'Land Slots Used',
+                icon: Icons.terrain_rounded,
+                accentColor: Colors.green,
+                upgradePlanName: 'Farmer Pro',
+              ),
+            );
+          }
+          return _ModernLandCard(
+            land: lands[index - 1],
+            onDetailTap: (land) => _showLandDetails(land),
+          );
+        },
       ),
     );
   }

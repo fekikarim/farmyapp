@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/land_provider.dart';
-import '../../models/land_rental_model.dart'; 
+import '../../models/land_rental_model.dart';
+import '../../widgets/subscription_limit_bar.dart';
 import 'package:intl/intl.dart';
 
 class InvestorMyInvestmentsScreen extends StatefulWidget {
@@ -43,6 +44,25 @@ class _InvestorMyInvestmentsScreenState
 
           return Column(
             children: [
+              // Subscription Limit Bar
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                child: SubscriptionLimitBar(
+                  limitKey: 'rental_limit',
+                  currentCount: provider.myRentals
+                      .where(
+                        (r) =>
+                            r.paymentStatus != PaymentStatus.cancelled &&
+                            (r.rentalEndDate == null ||
+                                r.rentalEndDate!.isAfter(DateTime.now())),
+                      )
+                      .length,
+                  label: 'Rental Slots Used',
+                  icon: Icons.real_estate_agent_rounded,
+                  accentColor: Colors.blue,
+                  upgradePlanName: 'Investor Plus',
+                ),
+              ),
               _buildOverviewCard(provider.myRentals),
               Expanded(
                 child: ListView.builder(
@@ -58,21 +78,28 @@ class _InvestorMyInvestmentsScreenState
                           child: Icon(Icons.landscape, color: Colors.white),
                         ),
                         title: Text(
-                          rental.land?.name ?? 'Land Plot #${rental.landId.substring(0, 8)}',
+                          rental.land?.name ??
+                              'Land Plot #${rental.landId.substring(0, 8)}',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 4),
-                            Text('Rent: ${NumberFormat('#,###').format(rental.monthlyRent)} TND/mo'),
+                            Text(
+                              'Rent: ${NumberFormat('#,###').format(rental.monthlyRent)} TND/mo',
+                            ),
                             if (rental.rentalEndDate != null)
                               Text(
                                 'Ends: ${DateFormat('MMM dd, yyyy').format(rental.rentalEndDate!)}',
                                 style: TextStyle(
-                                    color: (rental.rentalEndDate!.difference(DateTime.now()).inDays <= 30) 
-                                        ? Colors.orange 
-                                        : Colors.grey
+                                  color:
+                                      (rental.rentalEndDate!
+                                              .difference(DateTime.now())
+                                              .inDays <=
+                                          30)
+                                      ? Colors.orange
+                                      : Colors.grey,
                                 ),
                               ),
                           ],
@@ -121,29 +148,31 @@ class _InvestorMyInvestmentsScreenState
     for (var rental in rentals) {
       // Calculate total contract value
       if (rental.rentalEndDate != null) {
-         final durationInMonths = (rental.rentalEndDate!.year - rental.rentalStartDate.year) * 12 + 
-                                  (rental.rentalEndDate!.month - rental.rentalStartDate.month);
-         // Adjust for partial months if needed, but simple diff is fine for now
-         // Actually, let's just use monthlyRent * duration roughly
-         // Or if paymentStatus is paid, we assume it's fully paid? 
-         // Let's assume Total Capital = sum of all rental contracts (monthly * months)
-         if (durationInMonths > 0) {
-            totalCapital += rental.monthlyRent * durationInMonths;
-         } else {
-            totalCapital += rental.monthlyRent; // At least 1 month
-         }
+        final durationInMonths =
+            (rental.rentalEndDate!.year - rental.rentalStartDate.year) * 12 +
+            (rental.rentalEndDate!.month - rental.rentalStartDate.month);
+        // Adjust for partial months if needed, but simple diff is fine for now
+        // Actually, let's just use monthlyRent * duration roughly
+        // Or if paymentStatus is paid, we assume it's fully paid?
+        // Let's assume Total Capital = sum of all rental contracts (monthly * months)
+        if (durationInMonths > 0) {
+          totalCapital += rental.monthlyRent * durationInMonths;
+        } else {
+          totalCapital += rental.monthlyRent; // At least 1 month
+        }
       }
 
-      if (rental.paymentStatus == PaymentStatus.paid) { // Assuming enum match
-         activeLands++;
-         
-         // Check expiry
-         if (rental.rentalEndDate != null) {
-             final daysUntilExpiry = rental.rentalEndDate!.difference(now).inDays;
-             if (daysUntilExpiry > 0 && daysUntilExpiry <= 30) {
-                 expiringSoon++;
-             }
-         }
+      if (rental.paymentStatus == PaymentStatus.paid) {
+        // Assuming enum match
+        activeLands++;
+
+        // Check expiry
+        if (rental.rentalEndDate != null) {
+          final daysUntilExpiry = rental.rentalEndDate!.difference(now).inDays;
+          if (daysUntilExpiry > 0 && daysUntilExpiry <= 30) {
+            expiringSoon++;
+          }
+        }
       }
     }
 

@@ -19,6 +19,7 @@ import 'screens/reset_password_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/auth/verify_2fa_screen.dart';
 import 'screens/no_internet_screen.dart';
+import 'screens/customer/subscriptions_screen.dart';
 import 'theme/app_theme.dart';
 import 'providers/wallet_provider.dart';
 import 'providers/worker_provider.dart';
@@ -39,12 +40,9 @@ final RouteObserver<ModalRoute<void>> routeObserver =
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await PushNotificationService.initialize();
   await dotenv.load(fileName: ".env");
-
 
   // Load saved theme
   final prefs = await SharedPreferences.getInstance();
@@ -116,6 +114,7 @@ class MyApp extends StatelessWidget {
             '/forgot-password': (context) => const ForgotPasswordScreen(),
             '/verify-2fa': (context) => const Verify2FAScreen(),
             '/main': (context) => const MainScreen(),
+            '/subscriptions': (context) => const SubscriptionsScreen(),
           },
           onGenerateRoute: (settings) {
             if (settings.name == '/reset-password') {
