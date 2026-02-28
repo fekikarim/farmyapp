@@ -33,7 +33,7 @@ class UserSubscription {
       userId: json['user_id'],
       plan: json['plan'] is Map<String, dynamic>
           ? SubscriptionPlan.fromJson(json['plan'])
-          : SubscriptionPlan.fromId(json['plan_id'] ?? ''),
+          : SubscriptionPlan.fromJson({'id': json['plan_id'] ?? ''}),
       status: _parseStatus(json['status']),
       startDate: DateTime.parse(json['start_date']),
       endDate: json['end_date'] != null

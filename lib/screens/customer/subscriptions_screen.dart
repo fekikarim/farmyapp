@@ -183,7 +183,8 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
     final currentSub = provider.currentSubscription;
     final isSamePlanFamily = currentSub?.plan.planKey == plan.planKey;
     final isCurrentCycle =
-        isSamePlanFamily && currentSub?.billingCycle == _selectedCycle;
+        isSamePlanFamily &&
+        (plan.isFree || currentSub?.billingCycle == _selectedCycle);
     final isCurrent = isCurrentCycle;
 
     // Dynamic pricing from backend
