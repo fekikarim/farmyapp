@@ -1,0 +1,138 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/subscription_provider.dart';
+
+/// A widget that conditionally renders its [child] based on the user's
+/// entitlements. If the feature is locked, it shows [lockedChild] or
+/// a default lock overlay.
+class FeatureGate extends StatelessWidget {
+  /// The entitlement key to check (e.g., 'ai_crop_planner', 'premium_assets').
+  final String featureKey;
+
+  /// The child to render if the feature is unlocked.
+  final Widget child;
+
+  /// Optional widget to show when the feature is locked.
+  /// If null, the child is hidden entirely.
+  final Widget? lockedChild;
+
+  /// If true, tapping the locked area opens an upgrade dialog.
+  final bool showUpgradeOnTap;
+
+  const FeatureGate({
+    super.key,
+    required this.featureKey,
+    required this.child,
+    this.lockedChild,
+    this.showUpgradeOnTap = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<SubscriptionProvider>(
+      builder: (context, subProvider, _) {
+        final hasFeature = subProvider.hasEntitlement(featureKey);
+
+        if (hasFeature) {
+          return child;
+        }
+
+        // Feature is locked
+        if (lockedChild != null) {
+          return GestureDetector(
+            onTap: showUpgradeOnTap
+                ? () => _showUpgradeDialog(context, featureKey)
+                : null,
+            child: lockedChild!,
+          );
+        }
+
+        // Default: hide entirely
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  static void _showUpgradeDialog(BuildContext context, String featureKey) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.lock_outline, color: Colors.amber, size: 28),
+            SizedBox(width: 8),
+            Text('Upgrade Required'),
+          ],
+        ),
+        content: Text(
+          'This feature ($featureKey) is available on a premium plan. '
+          'Upgrade your subscription to unlock it.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Later'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              // Navigate to subscription screen
+              Navigator.of(context).pushNamed('/subscriptions');
+            },
+            child: const Text('View Plans'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A widget that conditionally renders its [child] based on the user's
+/// numeric limit. If the limit is reached, it shows [lockedChild] or
+/// a default lock overlay.
+class LimitGate extends StatelessWidget {
+  /// The limit key to check (e.g., 'land_limit', 'rental_limit').
+  final String limitKey;
+
+  /// The current usage count.
+  final int currentCount;
+
+  /// The child to render if within limits.
+  final Widget child;
+
+  /// Optional widget to show when the limit is reached.
+  final Widget? lockedChild;
+
+  const LimitGate({
+    super.key,
+    required this.limitKey,
+    required this.currentCount,
+    required this.child,
+    this.lockedChild,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<SubscriptionProvider>(
+      builder: (context, subProvider, _) {
+        final limit = subProvider.getLimit(limitKey, 0);
+
+        // -1 means unlimited
+        if (limit == -1 || currentCount < limit) {
+          return child;
+        }
+
+        // Limit reached
+        if (lockedChild != null) {
+          return lockedChild!;
+        }
+
+        return GestureDetector(
+          onTap: () => FeatureGate._showUpgradeDialog(context, limitKey),
+          child: Opacity(opacity: 0.5, child: AbsorbPointer(child: child)),
+        );
+      },
+    );
+  }
+}

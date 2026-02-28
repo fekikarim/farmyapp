@@ -1,6 +1,6 @@
 import 'subscription_plan.dart';
 
-enum SubscriptionStatus { active, expired, cancelled, unknown }
+enum SubscriptionStatus { active, expired, cancelled, pastDue, unknown }
 
 class UserSubscription {
   final String id;
@@ -13,6 +13,7 @@ class UserSubscription {
   final String paymentMethod;
   final String? stripePaymentIntentId;
   final String billingCycle;
+  final Map<String, dynamic>? entitlementsSnapshot;
 
   UserSubscription({
     required this.id,
@@ -25,6 +26,7 @@ class UserSubscription {
     required this.paymentMethod,
     this.stripePaymentIntentId,
     required this.billingCycle,
+    this.entitlementsSnapshot,
   });
 
   factory UserSubscription.fromJson(Map<String, dynamic> json) {
@@ -43,6 +45,10 @@ class UserSubscription {
       paymentMethod: json['payment_method'] ?? 'free',
       stripePaymentIntentId: json['stripe_payment_intent_id'],
       billingCycle: json['billing_cycle'] ?? 'monthly',
+      entitlementsSnapshot:
+          json['entitlements_snapshot'] is Map<String, dynamic>
+          ? json['entitlements_snapshot']
+          : null,
     );
   }
 
@@ -55,6 +61,8 @@ class UserSubscription {
       case 'cancelled':
       case 'canceled':
         return SubscriptionStatus.cancelled;
+      case 'past_due':
+        return SubscriptionStatus.pastDue;
       default:
         return SubscriptionStatus.unknown;
     }
