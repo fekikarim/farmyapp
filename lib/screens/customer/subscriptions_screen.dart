@@ -21,6 +21,18 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
   bool _isProcessing = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final authProvider = context.read<AuthProvider>();
+      if (authProvider.user?.role == 'customer') {
+        context.read<WorkerProvider>().loadMyProfile();
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final subProvider = Provider.of<SubscriptionProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
@@ -33,11 +45,12 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
       if (userRole == 'farmer') return p.role == SubscriptionRole.farmer;
       if (userRole == 'investor') return p.role == SubscriptionRole.investor;
       if (userRole == 'customer') {
-        if (p.role == SubscriptionRole.worker) {
+        if (p.planKey == 'worker_plus') {
           final workerProfile = workerProvider.myProfile;
           return workerProfile != null && workerProfile.isVerified;
         }
-        return p.role == SubscriptionRole.customer;
+        return p.role == SubscriptionRole.customer ||
+            p.role == SubscriptionRole.worker;
       }
       return true;
     }).toList();
@@ -89,10 +102,22 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
                 children: [
                   _buildCycleToggle(),
                   const SizedBox(height: 24),
-                  if (subProvider.isLoading)
+                  if (subProvider.isLoading ||
+                      (userRole == 'customer' && workerProvider.profileLoading))
                     _buildShimmerLoading()
                   else if (subProvider.error != null)
-                    _buildErrorState(subProvider)
+                    _buildErrorState(
+                      title: 'Failed to load subscriptions',
+                      message: subProvider.error!,
+                      onRetry: () => subProvider.refresh(),
+                    )
+                  else if (userRole == 'customer' &&
+                      workerProvider.profileError != null)
+                    _buildErrorState(
+                      title: 'Failed to load worker profile',
+                      message: workerProvider.profileError!,
+                      onRetry: () => workerProvider.loadMyProfile(),
+                    )
                   else if (filteredPlans.isEmpty)
                     _buildEmptyState()
                   else
@@ -681,7 +706,11 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
     );
   }
 
-  Widget _buildErrorState(SubscriptionProvider provider) {
+  Widget _buildErrorState({
+    required String title,
+    required String message,
+    required VoidCallback onRetry,
+  }) {
     final theme = Theme.of(context);
     return Center(
       child: Column(
@@ -689,19 +718,16 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
           const SizedBox(height: 40),
           Icon(Icons.error_outline, size: 64, color: theme.colorScheme.error),
           const SizedBox(height: 16),
-          Text(
-            'Failed to load subscriptions',
-            style: theme.textTheme.titleMedium,
-          ),
+          Text(title, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           Text(
-            provider.error!,
+            message,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.grey, fontSize: 13),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
-            onPressed: () => provider.refresh(),
+            onPressed: onRetry,
             icon: const Icon(Icons.refresh),
             label: const Text('Try Again'),
           ),
