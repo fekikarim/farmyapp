@@ -9,80 +9,60 @@ class WelcomeScreen extends StatefulWidget {
   State<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    );
-
-    _fadeAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
-    );
-
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-          CurvedAnimation(
-            parent: _controller,
-            curve: const Interval(0.4, 1.0, curve: Curves.easeOutCubic),
-          ),
-        );
-
-    _controller.forward();
-  }
+  final List<Map<String, String>> _pages = [
+    {
+      'role': 'customer',
+      'image': 'assets/welcome/customer-welcome-component.png',
+      'title': 'Welcome to Farmy!',
+      'subtitle':
+          'Support local farmers and enjoy fresh, sustainable products directly from the source.',
+    },
+    {
+      'role': 'worker',
+      'image': 'assets/welcome/worker-welcome-component.png',
+      'title': 'Join the Workforce',
+      'subtitle':
+          'Connect with modern farms and start your productive journey in sustainable agriculture.',
+    },
+    {
+      'role': 'farmer',
+      'image': 'assets/welcome/farmer-welcome-component.png',
+      'title': 'Empowering Farmers',
+      'subtitle':
+          'Your journey to digital farm management starts here. Let\'s grow your business together!',
+    },
+    {
+      'role': 'investor',
+      'image': 'assets/welcome/investor-welcome-component.png',
+      'title': 'Invest in the Future',
+      'subtitle':
+          'Explore sustainable opportunities and grow your green agricultural portfolio with us.',
+    },
+  ];
 
   @override
   void dispose() {
-    _controller.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
-  String get _welcomeImage {
-    switch (widget.role.toLowerCase()) {
-      case 'farmer':
-        return 'assets/welcome/farmer-welcome-component.png';
-      case 'investor':
-        return 'assets/welcome/investor-welcome-component.png';
-      case 'worker':
-        return 'assets/welcome/worker-welcome-component.png';
-      case 'customer':
-      default:
-        return 'assets/welcome/customer-welcome-component.png';
+  void _onNext() {
+    if (_currentPage < _pages.length - 1) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOutCubic,
+      );
+    } else {
+      _onFinish();
     }
   }
 
-  String get _title {
-    switch (widget.role.toLowerCase()) {
-      case 'farmer':
-        return 'Welcome, Modern Farmer!';
-      case 'investor':
-        return 'Welcome, Visionary Investor!';
-      case 'worker':
-        return 'Welcome to the Field, Worker!';
-      default:
-        return 'Welcome to Farmy!';
-    }
-  }
-
-  String get _subtitle {
-    switch (widget.role.toLowerCase()) {
-      case 'farmer':
-        return 'Your journey to digital farm management starts here. Let\'s grow together!';
-      case 'investor':
-        return 'Explore sustainable opportunities and grow your agricultural portfolio.';
-      case 'worker':
-        return 'Connect with farms and start your productive journey today.';
-      default:
-        return 'Support local farmers and enjoy fresh, sustainable products directly.';
-    }
+  void _onFinish() {
+    Navigator.of(context).pushReplacementNamed('/main');
   }
 
   @override
@@ -99,7 +79,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppTheme.primaryColor.withOpacity(0.05),
+              AppTheme.primaryColor.withOpacity(0.1),
               Theme.of(context).scaffoldBackgroundColor,
             ],
           ),
@@ -107,85 +87,134 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         child: SafeArea(
           child: Column(
             children: [
-              const Spacer(),
-              // Animated Illustration
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: SlideTransition(
-                  position: _slideAnimation,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Image.asset(
-                      _welcomeImage,
-                      width: size.width * 0.85,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Icon(
-                          Icons.celebration,
-                          size: 150,
-                          color: AppTheme.primaryColor,
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 48),
-              // Animated Content
-              FadeTransition(
-                opacity: _fadeAnimation,
+              // Skip Button
+              Align(
+                alignment: Alignment.topRight,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Column(
-                    children: [
-                      Text(
-                        _title,
-                        style: Theme.of(context).textTheme.headlineMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.primaryColor,
-                            ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        _subtitle,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: isDark ? Colors.white70 : Colors.black54,
-                          height: 1.5,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const Spacer(),
-              // Animated Button
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: ElevatedButton(
-                    onPressed: () =>
-                        Navigator.of(context).pushReplacementNamed('/main'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(double.infinity, 60),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      elevation: 8,
-                      shadowColor: AppTheme.primaryColor.withOpacity(0.4),
-                    ),
-                    child: const Text(
-                      'Let\'s Get Started',
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextButton(
+                    onPressed: _onFinish,
+                    child: Text(
+                      'Skip',
                       style: TextStyle(
-                        fontSize: 18,
+                        color: AppTheme.primaryColor.withOpacity(0.8),
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
                       ),
+                    ),
+                  ),
+                ),
+              ),
+
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentPage = index;
+                    });
+                  },
+                  itemCount: _pages.length,
+                  itemBuilder: (context, index) {
+                    final page = _pages[index];
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Illustration
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Image.asset(
+                            page['image']!,
+                            width: size.width * 0.85,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                Icons.celebration,
+                                size: 150,
+                                color: AppTheme.primaryColor,
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                        // Text Content
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 32),
+                          child: Column(
+                            children: [
+                              Text(
+                                page['title']!,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.primaryColor,
+                                    ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                page['subtitle']!,
+                                style: Theme.of(context).textTheme.bodyLarge
+                                    ?.copyWith(
+                                      color: isDark
+                                          ? Colors.white70
+                                          : Colors.black54,
+                                      height: 1.5,
+                                    ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+
+              // Page Indicators
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(_pages.length, (index) {
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    height: 8,
+                    width: _currentPage == index ? 24 : 8,
+                    decoration: BoxDecoration(
+                      color: _currentPage == index
+                          ? AppTheme.primaryColor
+                          : AppTheme.primaryColor.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  );
+                }),
+              ),
+
+              const SizedBox(height: 32),
+
+              // Action Button
+              Padding(
+                padding: const EdgeInsets.fromLTRB(32, 0, 32, 32),
+                child: ElevatedButton(
+                  onPressed: _onNext,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryColor,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 60),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    elevation: 8,
+                    shadowColor: AppTheme.primaryColor.withOpacity(0.4),
+                  ),
+                  child: Text(
+                    _currentPage == _pages.length - 1 ? 'Finish' : 'Continue',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
                     ),
                   ),
                 ),
