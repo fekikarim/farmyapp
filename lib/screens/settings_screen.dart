@@ -546,7 +546,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     title: Text(
-                      'Show Game Bubble',
+                      'Enable Game Edge Panel',
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
@@ -557,9 +557,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         color: theme.colorScheme.onSurface.withOpacity(0.5),
                       ),
                     ),
-                    value: gameProvider.shouldShowBubble,
+                    value: gameProvider.showEdgePanel,
                     onChanged: (value) {
-                      gameProvider.setBubbleVisibility(value);
+                      gameProvider.setEdgePanelVisibility(value);
                     },
                     activeColor: Colors.red,
                   ),

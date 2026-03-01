@@ -27,7 +27,12 @@ class WorkerState {
     this.status = 'idle',
   });
 
-  void moveTo(double tx, double ty, VoidCallback onUpdate, VoidCallback onStop) {
+  void moveTo(
+    double tx,
+    double ty,
+    VoidCallback onUpdate,
+    VoidCallback onStop,
+  ) {
     targetX = tx;
     targetY = ty;
     status = 'walking';
@@ -72,13 +77,13 @@ class WorkerState {
 }
 
 class GameProvider with ChangeNotifier {
-  bool _shouldShowBubble = true;
+  bool _showEdgePanel = true;
   bool _isLoading = true;
   bool _workersLoading = false;
 
   List<WorkerState> _workers = [];
 
-  bool get shouldShowBubble => _shouldShowBubble;
+  bool get showEdgePanel => _showEdgePanel;
   bool get isLoading => _isLoading;
   bool get workersLoading => _workersLoading;
   List<WorkerState> get workers => _workers;
@@ -88,12 +93,18 @@ class GameProvider with ChangeNotifier {
   }
 
   /// Load workers assigned to a specific land from the API.
-  Future<void> loadWorkersForLand(String landId, {int gridWidth = 10, int gridHeight = 10}) async {
+  Future<void> loadWorkersForLand(
+    String landId, {
+    int gridWidth = 10,
+    int gridHeight = 10,
+  }) async {
     _workersLoading = true;
     notifyListeners();
 
     try {
-      final List<LandWorker> landWorkers = await WorkerService.getLandWorkers(landId);
+      final List<LandWorker> landWorkers = await WorkerService.getLandWorkers(
+        landId,
+      );
 
       // Cancel all running movement timers
       for (var w in _workers) {
@@ -107,16 +118,18 @@ class GameProvider with ChangeNotifier {
         if (!lw.isActive) continue; // Only show active workers
 
         // Spread workers in a horizontal line starting from (1, 1)
-        double startX = 1.0 + (i % 4).toDouble();  // Max 4 per row
+        double startX = 1.0 + (i % 4).toDouble(); // Max 4 per row
         double startY = 1.0 + (i ~/ 4).toDouble();
 
-        _workers.add(WorkerState(
-          workerId: lw.workerId,
-          workerName: lw.workerName ?? 'Worker',
-          workerPicture: lw.workerProfilePicture,
-          x: startX.clamp(0, gridWidth - 1.0),
-          y: startY.clamp(0, gridHeight - 1.0),
-        ));
+        _workers.add(
+          WorkerState(
+            workerId: lw.workerId,
+            workerName: lw.workerName ?? 'Worker',
+            workerPicture: lw.workerProfilePicture,
+            x: startX.clamp(0, gridWidth - 1.0),
+            y: startY.clamp(0, gridHeight - 1.0),
+          ),
+        );
       }
     } catch (e) {
       debugPrint('Error loading workers: $e');
@@ -127,7 +140,12 @@ class GameProvider with ChangeNotifier {
   }
 
   /// Move the closest worker to the given isometric tile coordinates.
-  void moveClosestWorkerTo(double tx, double ty, {int? gridWidth, int? gridHeight}) {
+  void moveClosestWorkerTo(
+    double tx,
+    double ty, {
+    int? gridWidth,
+    int? gridHeight,
+  }) {
     if (_workers.isEmpty) return;
 
     // Clamp target to grid bounds
@@ -155,7 +173,7 @@ class GameProvider with ChangeNotifier {
     notifyListeners();
     try {
       final prefs = await SharedPreferences.getInstance();
-      _shouldShowBubble = prefs.getBool('show_game_bubble') ?? true;
+      _showEdgePanel = prefs.getBool('enable_edge_panel') ?? true;
     } catch (e) {
       debugPrint('Error loading game settings: $e');
     } finally {
@@ -164,12 +182,12 @@ class GameProvider with ChangeNotifier {
     }
   }
 
-  Future<void> setBubbleVisibility(bool visible) async {
-    _shouldShowBubble = visible;
+  Future<void> setEdgePanelVisibility(bool visible) async {
+    _showEdgePanel = visible;
     notifyListeners();
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('show_game_bubble', visible);
+      await prefs.setBool('enable_edge_panel', visible);
     } catch (e) {
       debugPrint('Error saving game settings: $e');
     }

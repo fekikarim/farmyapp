@@ -30,7 +30,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/theme_provider.dart';
 
 import 'providers/game_provider.dart';
-import 'widgets/game_bubble.dart';
+import 'widgets/edge_panel.dart';
 
 import 'utils/global_keys.dart';
 
@@ -95,7 +95,7 @@ class MyApp extends StatelessWidget {
           themeMode: themeProvider.themeMode,
           navigatorObservers: [routeObserver],
           builder: (context, child) {
-            return GameBubbleOverlay(
+            return GameEdgePanelOverlay(
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: () {
