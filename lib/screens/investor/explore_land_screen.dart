@@ -10,7 +10,7 @@ import '../../models/land_model.dart';
 import '../../models/land_rental_model.dart';
 import 'land_details_screen.dart';
 import 'package:farmyapp/widgets/subscription_limit_bar.dart';
-import 'widgets/investor_workforce_panel.dart';
+import 'widgets/investor_workforce_screen.dart';
 
 class InvestorExploreLandScreen extends StatefulWidget {
   const InvestorExploreLandScreen({super.key});
@@ -24,7 +24,6 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
   ViewMode _currentMode = ViewMode.list;
   bool _isSatellite = true;
   bool _is3D = false;
-  bool _showWorkforcePanel = false; // Added state
   final MapController _mapController = MapController();
 
   @override
@@ -57,127 +56,115 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return PopScope(
-      canPop: !_showWorkforcePanel,
-      onPopInvoked: (didPop) {
-        if (didPop) return;
-        if (_showWorkforcePanel) {
-          setState(() {
-            _showWorkforcePanel = false;
-          });
-        }
-      },
-      child: Scaffold(
-        backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: Text(
-            'Explore Lands',
-            style: TextStyle(
-              color: theme.textTheme.titleLarge?.color,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Explore Lands',
+          style: TextStyle(
+            color: theme.textTheme.titleLarge?.color,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withOpacity(0.05)
+                  : Colors.black.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                _ToggleItem(
+                  icon: Icons.list_rounded,
+                  isSelected: _currentMode == ViewMode.list,
+                  onTap: () => setState(() => _currentMode = ViewMode.list),
+                ),
+                _ToggleItem(
+                  icon: Icons.layers_rounded,
+                  isSelected: _currentMode == ViewMode.ar,
+                  onTap: () => setState(() => _currentMode = ViewMode.ar),
+                ),
+              ],
             ),
           ),
-          actions: [
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-              decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withOpacity(0.05)
-                    : Colors.black.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  _ToggleItem(
-                    icon: Icons.list_rounded,
-                    isSelected: _currentMode == ViewMode.list,
-                    onTap: () => setState(() => _currentMode = ViewMode.list),
-                  ),
-                  _ToggleItem(
-                    icon: Icons.layers_rounded,
-                    isSelected: _currentMode == ViewMode.ar,
-                    onTap: () => setState(() => _currentMode = ViewMode.ar),
-                  ),
-                ],
-              ),
+          IconButton(
+            icon: Icon(
+              Icons.notifications_none_rounded,
+              color: theme.iconTheme.color,
             ),
-            IconButton(
-              icon: Icon(
-                Icons.notifications_none_rounded,
-                color: theme.iconTheme.color,
-              ),
-              onPressed: () {},
-            ),
-            const SizedBox(width: 8),
-          ],
-        ),
-        body: Consumer<LandProvider>(
-          builder: (context, provider, child) {
-            if (provider.isLoading && provider.allLands.isEmpty) {
-              return _buildSkeletonLoader();
-            }
+            onPressed: () {},
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: Consumer<LandProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading && provider.allLands.isEmpty) {
+            return _buildSkeletonLoader();
+          }
 
-            if (provider.error != null && provider.allLands.isEmpty) {
-              return _buildErrorState(provider.error!);
-            }
+          if (provider.error != null && provider.allLands.isEmpty) {
+            return _buildErrorState(provider.error!);
+          }
 
-            if (provider.allLands.isEmpty) {
-              return _buildEmptyState();
-            }
+          if (provider.allLands.isEmpty) {
+            return _buildEmptyState();
+          }
 
-            final availableLands = _currentMode == ViewMode.list
-                ? provider.allLands.where((l) => !l.isRented).toList()
-                : provider.allLands;
+          final availableLands = _currentMode == ViewMode.list
+              ? provider.allLands.where((l) => !l.isRented).toList()
+              : provider.allLands;
 
-            if (availableLands.isEmpty && _currentMode == ViewMode.list) {
-              return _buildEmptyState();
-            }
+          if (availableLands.isEmpty && _currentMode == ViewMode.list) {
+            return _buildEmptyState();
+          }
 
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 400),
-              child: _currentMode == ViewMode.list
-                  ? RefreshIndicator(
-                      onRefresh: _loadData,
-                      backgroundColor: Colors.green,
-                      color: Colors.white,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(20),
-                        itemCount:
-                            availableLands.length + 1, // +1 for limit bar
-                        itemBuilder: (context, index) {
-                          if (index == 0) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: SubscriptionLimitBar(
-                                limitKey: 'rental_limit',
-                                currentCount: provider.myRentals.length,
-                                label: 'Rental Slots Usage',
-                                icon: Icons.vpn_key_rounded,
-                                accentColor: Colors.blue,
-                                upgradePlanName: 'Investor Plus',
-                              ),
-                            );
-                          }
-                          return _InvestorLandCard(
-                            land: availableLands[index - 1],
-                            onTap: (land) => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    LandDetailsScreen(land: land),
-                              ),
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 400),
+            child: _currentMode == ViewMode.list
+                ? RefreshIndicator(
+                    onRefresh: _loadData,
+                    backgroundColor: Colors.green,
+                    color: Colors.white,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(20),
+                      itemCount: availableLands.length + 1, // +1 for limit bar
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: SubscriptionLimitBar(
+                              limitKey: 'rental_limit',
+                              currentCount: provider.myRentals.length,
+                              label: 'Rental Slots Usage',
+                              icon: Icons.vpn_key_rounded,
+                              accentColor: Colors.blue,
+                              upgradePlanName: 'Investor Plus',
                             ),
                           );
-                        },
-                      ),
-                    )
-                  : _buildMapView(provider.allLands),
-            );
-          },
-        ),
+                        }
+                        return _InvestorLandCard(
+                          land: availableLands[index - 1],
+                          onTap: (land) => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  LandDetailsScreen(land: land),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                : _buildMapView(provider.allLands),
+          );
+        },
       ),
     );
   }
@@ -268,33 +255,6 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
           ],
         ),
 
-        // Workforce Side Panel Overlay (Slide Transition)
-        if (activeLand != null) // Condition changed
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeOutCubic,
-            right: _showWorkforcePanel
-                ? 0
-                : -MediaQuery.of(context).size.width * 0.75,
-            top: 0,
-            bottom: 0,
-            width:
-                MediaQuery.of(context).size.width * 0.75, // Narrower 75% width
-            child: Material(
-              elevation: 16,
-              color: Colors.transparent,
-              child: InvestorWorkforcePanel(
-                landId: activeLand.id, // Use activeLand
-                landName: activeLand.name, // Use activeLand
-                onClose: () {
-                  setState(() {
-                    _showWorkforcePanel = false;
-                  });
-                },
-              ),
-            ),
-          ),
-
         // Game Controls Overlay (Bottom Right)
         Positioned(
           bottom: 24,
@@ -310,20 +270,24 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                   child: FloatingActionButton.extended(
                     heroTag: 'workforce_fab',
                     onPressed: () {
-                      setState(() {
-                        _showWorkforcePanel = !_showWorkforcePanel;
-                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => InvestorWorkforceScreen(
+                            landId: activeLand!.id,
+                            landName: activeLand.name,
+                          ),
+                        ),
+                      );
                     },
                     backgroundColor: Colors.blue.shade600,
-                    icon: Icon(
-                      _showWorkforcePanel
-                          ? Icons.close_rounded
-                          : Icons.engineering_rounded,
+                    icon: const Icon(
+                      Icons.engineering_rounded,
                       color: Colors.white,
                     ),
-                    label: Text(
-                      _showWorkforcePanel ? 'Close Panel' : 'Workforce',
-                      style: const TextStyle(
+                    label: const Text(
+                      'Workforce',
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),

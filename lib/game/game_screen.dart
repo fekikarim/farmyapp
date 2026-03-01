@@ -6,7 +6,7 @@ import '../../models/land_rental_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/game_provider.dart';
 import '../../providers/land_provider.dart';
-import '../screens/investor/widgets/investor_workforce_panel.dart';
+import '../screens/investor/widgets/investor_workforce_screen.dart';
 import 'isometric_map.dart';
 import 'land_grid_service.dart';
 import 'shop_overlay.dart';
@@ -29,7 +29,6 @@ class _GameScreenState extends State<GameScreen>
   bool _isLoading = true;
   String _loadingMessage = 'Initializing...';
   double? _loadingProgress;
-  bool _showWorkforcePanel = false;
 
   // Animation for Floating Menu
   late AnimationController _menuController;
@@ -266,7 +265,8 @@ class _GameScreenState extends State<GameScreen>
 
     bool canManageWorkforce = false;
     // Farmers who own the land can always manage workforce
-    if (currentUser?.role == 'farmer' && widget.land.ownerId == currentUser?.id) {
+    if (currentUser?.role == 'farmer' &&
+        widget.land.ownerId == currentUser?.id) {
       canManageWorkforce = true;
     }
     // Investors with an active rental can also manage workforce
@@ -283,16 +283,9 @@ class _GameScreenState extends State<GameScreen>
     }
 
     return PopScope(
-      canPop: !_showWorkforcePanel && !_isMenuOpen && !_isPlacing,
+      canPop: !_isMenuOpen && !_isPlacing,
       onPopInvoked: (didPop) {
         if (didPop) return;
-
-        if (_showWorkforcePanel) {
-          setState(() {
-            _showWorkforcePanel = false;
-          });
-          return;
-        }
 
         if (_isMenuOpen) {
           _toggleMenu();
@@ -335,32 +328,9 @@ class _GameScreenState extends State<GameScreen>
                     externalSelectionX: _pendingX,
                     externalSelectionY: _pendingY,
                   ),
-                  // Workforce Panel
-                  if (canManageWorkforce)
-                    AnimatedPositioned(
-                      duration: const Duration(milliseconds: 400),
-                      curve: Curves.easeOutCubic,
-                      right: _showWorkforcePanel ? 0 : -400,
-                      top: 0,
-                      bottom: 0,
-                      width: 400,
-                      child: Material(
-                        elevation: 16,
-                        color: Colors.transparent,
-                        child: InvestorWorkforcePanel(
-                          landId: widget.land.id,
-                          landName: widget.land.name,
-                          onClose: () {
-                            setState(() {
-                              _showWorkforcePanel = false;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
                 ],
               ),
-        floatingActionButton: !_isLoading && !_isPlacing && !_showWorkforcePanel
+        floatingActionButton: !_isLoading && !_isPlacing
             ? _buildAnimatedFloatingMenu(canManageWorkforce)
             : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -553,9 +523,15 @@ class _GameScreenState extends State<GameScreen>
               delay: 0,
               onTap: () {
                 _toggleMenu();
-                setState(() {
-                  _showWorkforcePanel = !_showWorkforcePanel;
-                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => InvestorWorkforceScreen(
+                      landId: widget.land.id,
+                      landName: widget.land.name,
+                    ),
+                  ),
+                );
               },
             ),
 
