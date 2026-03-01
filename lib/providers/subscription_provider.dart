@@ -54,15 +54,19 @@ class SubscriptionProvider with ChangeNotifier {
       (_currentSubscription?.plan.price ?? 0) == 0;
 
   bool _initialized = false;
+  String? _lastFetchedRole;
 
-  Future<void> init() async {
-    if (_initialized) return;
+  Future<void> init({String? role}) async {
+    if (_initialized && role == _lastFetchedRole) return;
     _initialized = true;
     _isLoading = true;
     notifyListeners();
     try {
       await refresh();
-      if (_availablePlans.isEmpty) await fetchPlans();
+      // Always fetch plans if role changes or if plans are empty
+      if (_availablePlans.isEmpty || role != _lastFetchedRole) {
+        await fetchPlans(role: role);
+      }
     } catch (e) {
       _error = e.toString();
       print('SubscriptionProvider Init Error: $e');
@@ -87,13 +91,18 @@ class SubscriptionProvider with ChangeNotifier {
   }
 
   Future<void> fetchPlans({String? role}) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
     try {
-      _error = null;
       _availablePlans = await SubscriptionService.getPlans(role: role);
-      notifyListeners();
+      _lastFetchedRole = role;
     } catch (e) {
       _error = e.toString();
       print('Fetch Plans Error: $e');
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }
@@ -163,7 +172,8 @@ class SubscriptionProvider with ChangeNotifier {
     _hasSubscription = null;
     _checkError = null;
     _isCheckingSubscription = false;
-    _initialized = false; // allow init() to run again on next login
+    _initialized = false;
+    _lastFetchedRole = null; // Important: Clear last role on logout
     _availablePlans = [];
     _currentSubscription = null;
     _entitlements = {};

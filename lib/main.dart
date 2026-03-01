@@ -159,7 +159,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
       // Use post-frame to avoid calling notifyListeners during build
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          context.read<SubscriptionProvider>().init();
+          final authProvider = context.read<AuthProvider>();
+          context.read<SubscriptionProvider>().init(
+            role: authProvider.user?.role,
+          );
         }
       });
     }

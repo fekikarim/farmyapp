@@ -61,15 +61,15 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
         if (mounted) _cardsController.forward();
       });
 
-      // Load plans if not already loaded
+      // Load plans if not already loaded (with role context)
       final subProvider = context.read<SubscriptionProvider>();
       final authProvider = context.read<AuthProvider>();
-      if (subProvider.availablePlans.isEmpty) {
-        subProvider.fetchPlans(role: authProvider.user?.role);
-      }
+      final userRole = authProvider.user?.role;
+
+      subProvider.init(role: userRole);
 
       // Load worker profile if customer (to check worker plan eligibility)
-      if (authProvider.user?.role == 'customer') {
+      if (userRole == 'customer') {
         context.read<WorkerProvider>().loadMyProfile();
       }
     });
@@ -87,11 +87,12 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
     String? userRole,
     WorkerProvider workerProvider,
   ) {
+    // Role mapping: convert string role to SubscriptionRole enum for strict check
+    final SubscriptionRole? currentRole = _parseRole(userRole);
+
     return plans.where((p) {
-      if (userRole == 'farmer') return p.role == SubscriptionRole.farmer;
-      if (userRole == 'investor') return p.role == SubscriptionRole.investor;
+      // 1. If we are a customer, we can see CUSTOMER plans OR WORKER plans (if verified)
       if (userRole == 'customer') {
-        // Only show worker plans if the customer has a verified worker profile
         if (p.planKey.startsWith('worker_')) {
           final profile = workerProvider.myProfile;
           return profile != null && profile.isVerified;
@@ -99,7 +100,10 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
         return p.role == SubscriptionRole.customer ||
             p.role == SubscriptionRole.worker;
       }
-      return true;
+
+      // 2. For all other roles (Farmer, Investor), match strictly
+      // This ensures we ONLY see our own role's free/paid plans
+      return p.role == currentRole;
     }).toList()..sort((a, b) {
       // Free plans first, paid plans last
       if (a.isFree && !b.isFree) return -1;
@@ -109,6 +113,22 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
       final priceB = _selectedCycle == 'monthly' ? b.price : b.priceYearly;
       return priceA.compareTo(priceB);
     });
+  }
+
+  SubscriptionRole? _parseRole(String? roleName) {
+    if (roleName == null) return null;
+    switch (roleName.toLowerCase()) {
+      case 'farmer':
+        return SubscriptionRole.farmer;
+      case 'investor':
+        return SubscriptionRole.investor;
+      case 'worker':
+        return SubscriptionRole.worker;
+      case 'customer':
+        return SubscriptionRole.customer;
+      default:
+        return null;
+    }
   }
 
   Future<void> _handleSelectPlan(SubscriptionPlan plan) async {
@@ -279,64 +299,74 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
 
               // Main content
               SafeArea(
-                child: Column(
-                  children: [
-                    // Animated header
-                    FadeTransition(
-                      opacity: _headerFade,
-                      child: SlideTransition(
-                        position: _headerSlide,
-                        child: _Header(isDark: isDark),
-                      ),
-                    ),
-
-                    // Billing toggle
-                    FadeTransition(
-                      opacity: _headerFade,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 8,
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 600),
+                    child: Column(
+                      children: [
+                        // Animated header
+                        FadeTransition(
+                          opacity: _headerFade,
+                          child: SlideTransition(
+                            position: _headerSlide,
+                            child: _Header(isDark: isDark),
+                          ),
                         ),
-                        child: _BillingToggle(
-                          selected: _selectedCycle,
-                          onChanged: (val) =>
-                              setState(() => _selectedCycle = val),
-                        ),
-                      ),
-                    ),
 
-                    const SizedBox(height: 8),
-
-                    // Plans list
-                    Expanded(
-                      child: subProvider.isLoading
-                          ? _ShimmerLoading(isDark: isDark)
-                          : subProvider.error != null
-                          ? _ErrorState(
-                              message: subProvider.error!,
-                              onRetry: () =>
-                                  subProvider.fetchPlans(role: userRole),
-                            )
-                          : filteredPlans.isEmpty
-                          ? const _EmptyState()
-                          : ListView.builder(
-                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
-                              itemCount: filteredPlans.length,
-                              itemBuilder: (context, i) {
-                                return _AnimatedPlanCard(
-                                  plan: filteredPlans[i],
-                                  cycle: _selectedCycle,
-                                  index: i,
-                                  controller: _cardsController,
-                                  isProcessing: _isProcessing,
-                                  onSelect: () =>
-                                      _handleSelectPlan(filteredPlans[i]),
-                                );
-                              },
+                        // Billing toggle
+                        FadeTransition(
+                          opacity: _headerFade,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 8,
                             ),
+                            child: _BillingToggle(
+                              selected: _selectedCycle,
+                              onChanged: (val) =>
+                                  setState(() => _selectedCycle = val),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        // Plans list
+                        Expanded(
+                          child: subProvider.isLoading
+                              ? _ShimmerLoading(isDark: isDark)
+                              : subProvider.error != null
+                              ? _ErrorState(
+                                  message: subProvider.error!,
+                                  onRetry: () =>
+                                      subProvider.fetchPlans(role: userRole),
+                                )
+                              : filteredPlans.isEmpty
+                              ? const _EmptyState()
+                              : ListView.builder(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    20,
+                                    0,
+                                    20,
+                                    32,
+                                  ),
+                                  itemCount: filteredPlans.length,
+                                  itemBuilder: (context, i) {
+                                    return _AnimatedPlanCard(
+                                      plan: filteredPlans[i],
+                                      cycle: _selectedCycle,
+                                      index: i,
+                                      controller: _cardsController,
+                                      isProcessing: _isProcessing,
+                                      onSelect: () =>
+                                          _handleSelectPlan(filteredPlans[i]),
+                                    );
+                                  },
+                                ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
 
