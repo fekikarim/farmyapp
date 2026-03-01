@@ -108,6 +108,7 @@ flutter:
     - assets/logo-no-bg.png
     - assets/logo-app-no-bg.png
     - assets/images/
+    - assets/welcome/
     - assets/game_images/
     - assets/game_images/textures/
     - assets/game_images/icons/
