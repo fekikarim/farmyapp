@@ -22,6 +22,7 @@ import 'settings_screen.dart';
 
 // Shared
 import 'marketplace/my_products_screen.dart';
+import 'vendor/vendor_delivery_dashboard.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -87,6 +88,7 @@ class _MainScreenState extends State<MainScreen> {
         const FarmerAnalyticsScreen(),
         const FarmerLandManagementScreen(),
         const MyProductsScreen(),
+        const VendorDeliveryDashboard(),
         const FarmerMyFarmsScreen(),
         const SettingsScreen(),
       ];
@@ -107,6 +109,11 @@ class _MainScreenState extends State<MainScreen> {
           label: 'Products',
         ),
         BottomNavigationBarItem(
+          icon: Icon(Icons.local_shipping_outlined),
+          activeIcon: Icon(Icons.local_shipping),
+          label: 'Deliveries',
+        ),
+        BottomNavigationBarItem(
           icon: Icon(Icons.agriculture_outlined),
           activeIcon: Icon(Icons.agriculture),
           label: 'My Farms',
@@ -122,6 +129,7 @@ class _MainScreenState extends State<MainScreen> {
         const InvestorExploreLandScreen(),
         const InvestorMyInvestmentsScreen(),
         const MyProductsScreen(), // Updated: Replaced Activities with Products
+        const VendorDeliveryDashboard(),
         const InvestorRevenueScreen(),
         const SettingsScreen(),
       ];
@@ -137,9 +145,14 @@ class _MainScreenState extends State<MainScreen> {
           label: 'Investments',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.inventory_2_outlined), // Changed icon
+          icon: Icon(Icons.inventory_2_outlined),
           activeIcon: Icon(Icons.inventory_2),
-          label: 'Products', // Changed label
+          label: 'Products',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.local_shipping_outlined),
+          activeIcon: Icon(Icons.local_shipping),
+          label: 'Deliveries',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_balance_wallet_outlined),
