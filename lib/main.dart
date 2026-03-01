@@ -20,6 +20,7 @@ import 'screens/main_screen.dart';
 import 'screens/auth/verify_2fa_screen.dart';
 import 'screens/no_internet_screen.dart';
 import 'screens/customer/subscriptions_screen.dart';
+import 'screens/subscription/mandatory_pricing_screen.dart';
 import 'theme/app_theme.dart';
 import 'providers/wallet_provider.dart';
 import 'providers/worker_provider.dart';
@@ -141,13 +142,27 @@ class AuthWrapper extends StatefulWidget {
 class _AuthWrapperState extends State<AuthWrapper> {
   bool _socketConnected = false;
 
+  // Guards — prevent repeat initialisation across rebuilds
+  bool _initDone = false;
+  bool _subscriptionCheckStarted = false;
+
   WorkerLifecycleProvider? _lifecycle;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _lifecycle = context.read<WorkerLifecycleProvider>();
-    context.read<SubscriptionProvider>().init();
+
+    // Run init exactly once
+    if (!_initDone) {
+      _initDone = true;
+      // Use post-frame to avoid calling notifyListeners during build
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<SubscriptionProvider>().init();
+        }
+      });
+    }
   }
 
   @override
@@ -156,48 +171,97 @@ class _AuthWrapperState extends State<AuthWrapper> {
     super.dispose();
   }
 
-  void _connectSocket(BuildContext context) {
+  void _connectSocket() {
     if (_socketConnected) return;
     _socketConnected = true;
-    // Connect socket after frame to ensure providers are ready
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WorkerLifecycleProvider>().initSocket();
+      if (mounted) context.read<WorkerLifecycleProvider>().initSocket();
     });
   }
 
-  void _disconnectSocket(BuildContext context) {
+  void _disconnectSocket() {
     if (!_socketConnected) return;
     _socketConnected = false;
     context.read<WorkerLifecycleProvider>().disposeSocket();
   }
 
+  /// Called from build() — starts the async check ONCE via post-frame callback.
+  /// Never calls setState() directly; the provider's notifyListeners() drives rebuilds.
+  void _maybeStartSubscriptionCheck() {
+    if (_subscriptionCheckStarted) return;
+    final subProvider = context.read<SubscriptionProvider>();
+    // Already determined — no need to query API
+    if (subProvider.hasSubscription != null) {
+      _subscriptionCheckStarted = true;
+      return;
+    }
+    _subscriptionCheckStarted = true;
+    // Defer to avoid triggering side effects during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<SubscriptionProvider>().checkSubscriptionExistence();
+      }
+    });
+  }
+
+  /// Called from build() when user logs out — resets the check flag for next login.
+  void _handleLogout() {
+    if (_subscriptionCheckStarted) {
+      _subscriptionCheckStarted = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<SubscriptionProvider>().resetSubscriptionCheck();
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Pure reads — no side effects, no setState, no async calls here
     final authProvider = Provider.of<AuthProvider>(context);
+    final subProvider = Provider.of<SubscriptionProvider>(context);
 
+    // ── Initialising ─────────────────────────────────────────────────────────
     if (authProvider.isInitializing) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    // ── Network error ─────────────────────────────────────────────────────────
     if (authProvider.hasConnectionError) {
       return NoInternetScreen(onRetry: authProvider.retryLoadUser);
     }
 
+    // ── Authenticated ─────────────────────────────────────────────────────────
     if (authProvider.isAuthenticated) {
       final user = authProvider.user;
       if (user != null) {
-        if (user.isBanned) {
-          return const BannedScreen();
-        }
-        if (!user.isVerified) {
-          return const VerifyScreen();
-        }
+        if (user.isBanned) return const BannedScreen();
+        if (!user.isVerified) return const VerifyScreen();
       }
-      _connectSocket(context);
+
+      // Kick off subscription existence check (safe — runs in post-frame)
+      _maybeStartSubscriptionCheck();
+
+      // Waiting for the check to complete
+      if (subProvider.isCheckingSubscription ||
+          subProvider.hasSubscription == null) {
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      }
+
+      // No subscription history → mandatory pricing gate
+      if (subProvider.hasSubscription == false) {
+        return const MandatoryPricingScreen();
+      }
+
+      // All good → main app
+      _connectSocket();
       return const MainScreen();
     }
 
-    _disconnectSocket(context);
+    // ── Logged out ────────────────────────────────────────────────────────────
+    _handleLogout();
+    _disconnectSocket();
     return const LoginScreen();
   }
 }

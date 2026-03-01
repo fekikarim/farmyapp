@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import 'subscription/mandatory_pricing_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   final String role;
@@ -62,7 +63,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   void _onFinish() {
-    Navigator.of(context).pushReplacementNamed('/main');
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const MandatoryPricingScreen()),
+    );
   }
 
   @override

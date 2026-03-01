@@ -111,4 +111,25 @@ class SubscriptionService {
     final url = Uri.parse('$baseUrl/api/v1/subscriptions/seed');
     await AuthService.authenticatedRequest('POST', url);
   }
+
+  /// Checks if the user has any subscription history (>0 entries).
+  /// Returns { hasSubscription, subscription (nullable) }
+  static Future<Map<String, dynamic>> checkSubscriptionExistence() async {
+    final baseUrl = AuthService.baseUrl;
+    final url = Uri.parse('$baseUrl/api/v1/subscriptions/has-subscription');
+
+    final response = await AuthService.authenticatedRequest('GET', url);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return {
+        'hasSubscription': data['hasSubscription'] ?? false,
+        'activeSubscription': data['activeSubscription'] != null
+            ? UserSubscription.fromJson(data['activeSubscription'])
+            : null,
+      };
+    } else {
+      throw Exception('Failed to check subscription existence');
+    }
+  }
 }

@@ -10,11 +10,21 @@ class SubscriptionProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _error;
 
+  // Subscription existence gate
+  bool? _hasSubscription; // null = not yet checked
+  bool _isCheckingSubscription = false;
+  String? _checkError;
+
   UserSubscription? get currentSubscription => _currentSubscription;
   Map<String, dynamic> get entitlements => _entitlements;
   List<SubscriptionPlan> get availablePlans => _availablePlans;
   bool get isLoading => _isLoading;
   String? get error => _error;
+
+  // Whether user has any subscription history (null = not yet determined)
+  bool? get hasSubscription => _hasSubscription;
+  bool get isCheckingSubscription => _isCheckingSubscription;
+  String? get checkError => _checkError;
 
   bool hasEntitlement(String key) => _entitlements[key] == true;
 
@@ -43,12 +53,16 @@ class SubscriptionProvider with ChangeNotifier {
       _currentSubscription?.paymentMethod == 'free' ||
       (_currentSubscription?.plan.price ?? 0) == 0;
 
+  bool _initialized = false;
+
   Future<void> init() async {
+    if (_initialized) return;
+    _initialized = true;
     _isLoading = true;
     notifyListeners();
     try {
       await refresh();
-      await fetchPlans();
+      if (_availablePlans.isEmpty) await fetchPlans();
     } catch (e) {
       _error = e.toString();
       print('SubscriptionProvider Init Error: $e');
@@ -90,6 +104,8 @@ class SubscriptionProvider with ChangeNotifier {
     try {
       await SubscriptionService.upgradeWithCredits(planKey, billingCycle);
       await refresh();
+      // Mark as subscribed after successful upgrade
+      _hasSubscription = true;
     } catch (e) {
       print('Upgrade with Credits Error: $e');
       rethrow;
@@ -97,5 +113,60 @@ class SubscriptionProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  /// Checks if the user has any subscription history.
+  /// Caches the result so it only hits the network once per session.
+  Future<bool> checkSubscriptionExistence() async {
+    // Return cached value if already checked
+    if (_hasSubscription != null) return _hasSubscription!;
+
+    // Already running — don't double-call
+    if (_isCheckingSubscription) return false;
+
+    _isCheckingSubscription = true;
+    _checkError = null;
+    // Do NOT call notifyListeners() here — it would trigger a rebuild while
+    // AuthWrapper is still processing, causing setState-during-build errors.
+    // The AuthWrapper reads isCheckingSubscription reactively after the future completes.
+
+    try {
+      final result = await SubscriptionService.checkSubscriptionExistence();
+      _hasSubscription = result['hasSubscription'] as bool;
+      // If active subscription returned, update local state too
+      if (result['activeSubscription'] != null &&
+          _currentSubscription == null) {
+        _currentSubscription = result['activeSubscription'] as UserSubscription;
+      }
+      return _hasSubscription!;
+    } catch (e) {
+      _checkError = e.toString();
+      print('Check Subscription Existence Error: $e');
+      // On error, don't block the user — assume they have a subscription
+      _hasSubscription = true;
+      return true;
+    } finally {
+      _isCheckingSubscription = false;
+      // Only one notifyListeners call — at the very end after all state is settled
+      notifyListeners();
+    }
+  }
+
+  /// Called after a successful subscription to immediately update the gate state.
+  void markSubscribed() {
+    _hasSubscription = true;
+    notifyListeners();
+  }
+
+  /// Resets the subscription existence check (called on logout).
+  void resetSubscriptionCheck() {
+    _hasSubscription = null;
+    _checkError = null;
+    _isCheckingSubscription = false;
+    _initialized = false; // allow init() to run again on next login
+    _availablePlans = [];
+    _currentSubscription = null;
+    _entitlements = {};
+    notifyListeners();
   }
 }
