@@ -11,7 +11,6 @@ import 'customer/marketplace_screen.dart';
 import 'farmer/analytics_screen.dart';
 // import 'farmer/products_screen.dart'; // Replaced by new implementation
 import 'farmer/land_management_screen.dart';
-import 'farmer/my_farms_screen.dart';
 
 // Investor Screens
 import 'investor/explore_land_screen.dart';
@@ -89,7 +88,6 @@ class _MainScreenState extends State<MainScreen> {
         const FarmerLandManagementScreen(),
         const MyProductsScreen(),
         const VendorDeliveryDashboard(),
-        const FarmerMyFarmsScreen(),
         const SettingsScreen(),
       ];
       items = const [
@@ -112,11 +110,6 @@ class _MainScreenState extends State<MainScreen> {
           icon: Icon(Icons.local_shipping_outlined),
           activeIcon: Icon(Icons.local_shipping),
           label: 'Deliveries',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.agriculture_outlined),
-          activeIcon: Icon(Icons.agriculture),
-          label: 'My Farms',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings_outlined),
