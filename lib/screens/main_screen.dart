@@ -15,7 +15,7 @@ import 'farmer/my_farms_screen.dart';
 
 // Investor Screens
 import 'investor/explore_land_screen.dart';
-import 'investor/my_investments_screen.dart';
+// import 'investor/my_investments_screen.dart'; // Moved to Settings
 // import 'investor/farming_activities_screen.dart';
 import 'investor/revenue_screen.dart';
 import 'settings_screen.dart';
@@ -127,8 +127,7 @@ class _MainScreenState extends State<MainScreen> {
     } else if (role == 'investor') {
       screens = [
         const InvestorExploreLandScreen(),
-        const InvestorMyInvestmentsScreen(),
-        const MyProductsScreen(), // Updated: Replaced Activities with Products
+        const MyProductsScreen(),
         const VendorDeliveryDashboard(),
         const InvestorRevenueScreen(),
         const SettingsScreen(),
@@ -138,11 +137,6 @@ class _MainScreenState extends State<MainScreen> {
           icon: Icon(Icons.explore_outlined),
           activeIcon: Icon(Icons.explore),
           label: 'Explore',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.monetization_on_outlined),
-          activeIcon: Icon(Icons.monetization_on),
-          label: 'Investments',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.inventory_2_outlined),

@@ -18,6 +18,8 @@ import '../providers/worker_lifecycle_provider.dart';
 import '../providers/subscription_provider.dart';
 import 'customer/subscriptions_screen.dart';
 import 'settings/notifications_screen.dart';
+import 'investor/my_investments_screen.dart';
+import 'customer/my_orders_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -455,6 +457,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               if (user?.role == 'customer') ...[
                 const SizedBox(height: 24),
+                _buildSectionTitle(theme, 'Orders'),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.receipt_long_outlined,
+                  title: 'My Orders',
+                  subtitle: 'Track and manage your purchases',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const MyOrdersScreen()),
+                  ),
+                ),
+                const SizedBox(height: 24),
                 _buildSectionTitle(theme, 'Verification'),
                 _buildSettingsTile(
                   context,
@@ -519,6 +533,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
 
               if (user?.role == 'investor') ...[
+                const SizedBox(height: 24),
+                _buildSectionTitle(theme, 'Investments'),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.monetization_on_outlined,
+                  title: 'My Investments',
+                  subtitle: 'View and manage your land investments',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const InvestorMyInvestmentsScreen(),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 24),
                 _buildSectionTitle(theme, 'Game Features'),
                 Container(

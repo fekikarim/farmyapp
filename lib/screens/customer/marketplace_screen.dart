@@ -8,6 +8,7 @@ import '../../providers/wallet_provider.dart';
 import '../../widgets/marketplace/product_card.dart';
 import 'product_detail_screen.dart';
 import 'basket_screen.dart';
+import 'my_orders_screen.dart';
 import '../wallet/payment_methods_screen.dart';
 
 class CustomerMarketplaceScreen extends StatefulWidget {
@@ -71,31 +72,29 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
     _searchDebounce = Timer(const Duration(milliseconds: 400), () {
       setState(() => _searchQuery = query.trim().toLowerCase());
       context.read<ProductProvider>().fetchProducts(
-            status: 'available',
-            search: query.trim().isEmpty ? null : query.trim(),
-            productTypeId: _selectedCategoryId,
-          );
+        status: 'available',
+        search: query.trim().isEmpty ? null : query.trim(),
+        productTypeId: _selectedCategoryId,
+      );
     });
   }
 
   void _onCategorySelected(String? categoryId) {
     setState(() => _selectedCategoryId = categoryId);
     context.read<ProductProvider>().fetchProducts(
-          status: 'available',
-          search:
-              _searchQuery.isEmpty ? null : _searchQuery,
-          productTypeId: categoryId,
-        );
+      status: 'available',
+      search: _searchQuery.isEmpty ? null : _searchQuery,
+      productTypeId: categoryId,
+    );
   }
 
   Future<void> _onRefresh() async {
     await Future.wait([
       context.read<ProductProvider>().fetchProducts(
-            status: 'available',
-            search:
-                _searchQuery.isEmpty ? null : _searchQuery,
-            productTypeId: _selectedCategoryId,
-          ),
+        status: 'available',
+        search: _searchQuery.isEmpty ? null : _searchQuery,
+        productTypeId: _selectedCategoryId,
+      ),
       context.read<WalletProvider>().fetchWalletStatus(),
     ]);
   }
@@ -134,8 +133,7 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                         children: [
                           Text(
                             'Marketplace',
-                            style:
-                                theme.textTheme.headlineMedium?.copyWith(
+                            style: theme.textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.w800,
                               fontSize: 28,
                             ),
@@ -148,30 +146,38 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) =>
-                                          const PaymentMethodsScreen()),
+                                    builder: (_) =>
+                                        const PaymentMethodsScreen(),
+                                  ),
                                 ).then((_) {
                                   // Refresh wallet when returning
-                                  context.read<WalletProvider>().fetchWalletStatus();
+                                  context
+                                      .read<WalletProvider>()
+                                      .fetchWalletStatus();
                                 });
                               },
                               borderRadius: BorderRadius.circular(14),
                               child: Container(
                                 padding: const EdgeInsets.fromLTRB(12, 6, 8, 6),
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary.withOpacity(0.1),
+                                  color: theme.colorScheme.primary.withOpacity(
+                                    0.1,
+                                  ),
                                   borderRadius: BorderRadius.circular(14),
                                   border: Border.all(
-                                    color: theme.colorScheme.primary.withOpacity(0.2),
+                                    color: theme.colorScheme.primary
+                                        .withOpacity(0.2),
                                     width: 1,
                                   ),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.account_balance_wallet_rounded,
-                                        size: 16,
-                                        color: theme.colorScheme.primary),
+                                    Icon(
+                                      Icons.account_balance_wallet_rounded,
+                                      size: 16,
+                                      color: theme.colorScheme.primary,
+                                    ),
                                     const SizedBox(width: 6),
                                     Text(
                                       wallet.credits.toStringAsFixed(2),
@@ -188,8 +194,11 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                                         color: theme.colorScheme.primary,
                                         shape: BoxShape.circle,
                                       ),
-                                      child: const Icon(Icons.add,
-                                          size: 12, color: Colors.white),
+                                      child: const Icon(
+                                        Icons.add,
+                                        size: 12,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -199,12 +208,70 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                         ],
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        'Fresh products from local farmers',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color:
-                              theme.colorScheme.onSurface.withOpacity(0.5),
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Fresh products from local farmers',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurface.withOpacity(
+                                  0.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const MyOrdersScreen(),
+                                  ),
+                                );
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary.withOpacity(
+                                    0.1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: theme.colorScheme.primary
+                                        .withOpacity(0.2),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.receipt_long_rounded,
+                                      size: 16,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'My Orders',
+                                      style: TextStyle(
+                                        color: theme.colorScheme.primary,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 18),
 
@@ -228,14 +295,17 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                             hintText: 'Search products...',
                             prefixIcon: Icon(
                               Icons.search_rounded,
-                              color: theme.colorScheme.onSurface
-                                  .withOpacity(0.4),
+                              color: theme.colorScheme.onSurface.withOpacity(
+                                0.4,
+                              ),
                             ),
                             suffixIcon: _searchQuery.isNotEmpty
                                 ? IconButton(
-                                    icon: Icon(Icons.close_rounded,
-                                        color: theme.colorScheme.onSurface
-                                            .withOpacity(0.4)),
+                                    icon: Icon(
+                                      Icons.close_rounded,
+                                      color: theme.colorScheme.onSurface
+                                          .withOpacity(0.4),
+                                    ),
                                     onPressed: () {
                                       _searchController.clear();
                                       _onSearchChanged('');
@@ -246,7 +316,9 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                             enabledBorder: InputBorder.none,
                             focusedBorder: InputBorder.none,
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 14),
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
                           ),
                         ),
                       ),
@@ -291,27 +363,22 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                   child: Center(child: CircularProgressIndicator()),
                 )
               else if (productProvider.products.isEmpty)
-                SliverFillRemaining(
-                  child: _buildEmptyState(theme),
-                )
+                SliverFillRemaining(child: _buildEmptyState(theme))
               else
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
                   sliver: SliverGrid(
-                    delegate: SliverChildBuilderDelegate(
-                      (ctx, i) {
-                        final product = productProvider.products[i];
-                        return ProductCard(
-                          product: product,
-                          onTap: () => _openProductDetail(product),
-                        );
-                      },
-                      childCount: productProvider.products.length,
-                    ),
-                    gridDelegate:
-                        SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount:
-                          MediaQuery.of(context).size.width > 600 ? 3 : 2,
+                    delegate: SliverChildBuilderDelegate((ctx, i) {
+                      final product = productProvider.products[i];
+                      return ProductCard(
+                        product: product,
+                        onTap: () => _openProductDetail(product),
+                      );
+                    }, childCount: productProvider.products.length),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: MediaQuery.of(context).size.width > 600
+                          ? 3
+                          : 2,
                       childAspectRatio: 0.62,
                       crossAxisSpacing: 14,
                       mainAxisSpacing: 14,
@@ -335,9 +402,10 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
             label: Text(
               '${basket.totalQuantity}',
               style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700),
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             backgroundColor: Colors.red.shade400,
             child: const Icon(Icons.shopping_basket_rounded, size: 22),
@@ -389,8 +457,7 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
     Navigator.push(
       context,
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) =>
-            ProductDetailScreen(product: product),
+        pageBuilder: (_, __, ___) => ProductDetailScreen(product: product),
         transitionsBuilder: (_, anim, __, child) {
           return SlideTransition(
             position: Tween<Offset>(
@@ -412,10 +479,10 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
         pageBuilder: (_, __, ___) => const BasketScreen(),
         transitionsBuilder: (_, anim, __, child) {
           return SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, 1),
-              end: Offset.zero,
-            ).animate(CurvedAnimation(parent: anim, curve: Curves.easeOutCubic)),
+            position: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
+                .animate(
+                  CurvedAnimation(parent: anim, curve: Curves.easeOutCubic),
+                ),
             child: child,
           );
         },
