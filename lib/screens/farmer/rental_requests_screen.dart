@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/shop_service.dart';
+import '../../widgets/profile_preview_sheet.dart';
 
 class FarmerRentalRequestsScreen extends StatefulWidget {
   const FarmerRentalRequestsScreen({super.key});
@@ -56,7 +57,9 @@ class _FarmerRentalRequestsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Image proof is required to approve item placement.'),
+            content: const Text(
+              'Image proof is required to approve item placement.',
+            ),
             backgroundColor: Colors.orange.shade600,
             behavior: SnackBarBehavior.floating,
           ),
@@ -583,39 +586,47 @@ class _FarmerRentalRequestsScreenState
               child: Row(
                 children: [
                   // Avatar
-                  Container(
-                    width: 52,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: avatarUrl == null
-                          ? LinearGradient(
-                              colors: [
-                                Colors.green.shade400,
-                                Colors.green.shade600,
-                              ],
+                  GestureDetector(
+                    onTap: () {
+                      final investorId = user['_id'] ?? user['id'];
+                      if (investorId != null) {
+                        ProfilePreviewSheet.show(context, investorId);
+                      }
+                    },
+                    child: Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: avatarUrl == null
+                            ? LinearGradient(
+                                colors: [
+                                  Colors.green.shade400,
+                                  Colors.green.shade600,
+                                ],
+                              )
+                            : null,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.green.withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: avatarUrl != null
+                          ? ClipOval(
+                              child: Image.network(
+                                avatarUrl,
+                                fit: BoxFit.cover,
+                                width: 52,
+                                height: 52,
+                                errorBuilder: (_, __, ___) =>
+                                    _buildDefaultAvatar(investorName),
+                              ),
                             )
-                          : null,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.green.withOpacity(0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                          : _buildDefaultAvatar(investorName),
                     ),
-                    child: avatarUrl != null
-                        ? ClipOval(
-                            child: Image.network(
-                              avatarUrl,
-                              fit: BoxFit.cover,
-                              width: 52,
-                              height: 52,
-                              errorBuilder: (_, __, ___) =>
-                                  _buildDefaultAvatar(investorName),
-                            ),
-                          )
-                        : _buildDefaultAvatar(investorName),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
