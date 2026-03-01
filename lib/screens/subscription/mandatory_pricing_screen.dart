@@ -8,6 +8,7 @@ import '../../models/subscription_plan.dart';
 import '../../providers/subscription_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/wallet_provider.dart';
+import '../../providers/worker_provider.dart';
 import '../../services/subscription_service.dart';
 import '../../theme/app_theme.dart';
 
@@ -66,6 +67,11 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
       if (subProvider.availablePlans.isEmpty) {
         subProvider.fetchPlans(role: authProvider.user?.role);
       }
+
+      // Load worker profile if customer (to check worker plan eligibility)
+      if (authProvider.user?.role == 'customer') {
+        context.read<WorkerProvider>().loadMyProfile();
+      }
     });
   }
 
@@ -79,16 +85,25 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
   List<SubscriptionPlan> _getFilteredPlans(
     List<SubscriptionPlan> plans,
     String? userRole,
+    WorkerProvider workerProvider,
   ) {
     return plans.where((p) {
       if (userRole == 'farmer') return p.role == SubscriptionRole.farmer;
       if (userRole == 'investor') return p.role == SubscriptionRole.investor;
-      // For customer/worker: show customer plans
-      return p.role == SubscriptionRole.customer;
+      if (userRole == 'customer') {
+        // Only show worker plans if the customer has a verified worker profile
+        if (p.planKey.startsWith('worker_')) {
+          final profile = workerProvider.myProfile;
+          return profile != null && profile.isVerified;
+        }
+        return p.role == SubscriptionRole.customer ||
+            p.role == SubscriptionRole.worker;
+      }
+      return true;
     }).toList()..sort((a, b) {
-      // Paid plans first, free plans last
-      if (a.isFree && !b.isFree) return 1;
-      if (!a.isFree && b.isFree) return -1;
+      // Free plans first, paid plans last
+      if (a.isFree && !b.isFree) return -1;
+      if (!a.isFree && b.isFree) return 1;
       // Within paid: sort by price ascending
       final priceA = _selectedCycle == 'monthly' ? a.price : a.priceYearly;
       final priceB = _selectedCycle == 'monthly' ? b.price : b.priceYearly;
@@ -241,12 +256,14 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
   Widget build(BuildContext context) {
     final subProvider = Provider.of<SubscriptionProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
+    final workerProvider = Provider.of<WorkerProvider>(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final userRole = authProvider.user?.role ?? 'customer';
 
     final filteredPlans = _getFilteredPlans(
       subProvider.availablePlans,
       userRole,
+      workerProvider,
     );
 
     return PopScope(
