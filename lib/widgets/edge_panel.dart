@@ -16,31 +16,44 @@ class GameEdgePanelOverlay extends StatefulWidget {
 }
 
 class _GameEdgePanelOverlayState extends State<GameEdgePanelOverlay>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _slideAnimation;
+
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+
   bool _isOpen = false;
   bool _isHiddenForSheet = false;
 
   final double _panelWidth = 90.0;
-  final double _handleWidth = 24.0;
-  final double _handleHeight = 64.0;
+  final double _handleWidth = 32.0;
+  final double _handleHeight = 72.0;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 300),
     );
     _slideAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic),
+    );
+
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
+    _pulseAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -124,35 +137,64 @@ class _GameEdgePanelOverlayState extends State<GameEdgePanelOverlay>
                         }
                       },
                       onTap: _togglePanel,
-                      child: Container(
-                        width: _handleWidth,
-                        height: _handleHeight,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(16),
-                            bottomLeft: Radius.circular(16),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.15),
-                              blurRadius: 6,
-                              offset: const Offset(-2, 0),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: 3.5,
-                            height: 24,
+                      child: AnimatedBuilder(
+                        animation: _pulseAnimation,
+                        builder: (context, child) {
+                          // Stop pulsing when open
+                          final double pulse = _isOpen
+                              ? 0.0
+                              : _pulseAnimation.value;
+
+                          return Container(
+                            width: _handleWidth,
+                            height: _handleHeight,
                             decoration: BoxDecoration(
-                              color: Theme.of(
-                                context,
-                              ).dividerColor.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(2),
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color(0xFF10B981), // Emerald 500
+                                  Color(0xFF047857), // Emerald 700
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(24),
+                                bottomLeft: Radius.circular(24),
+                              ),
+                              border: Border.all(
+                                color: Colors.greenAccent.withOpacity(
+                                  0.3 + 0.4 * pulse,
+                                ),
+                                width: 1.5,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.greenAccent.withOpacity(
+                                    0.2 + 0.4 * pulse,
+                                  ),
+                                  blurRadius: 8 + 8 * pulse,
+                                  spreadRadius: 1 + 2 * pulse,
+                                  offset: const Offset(-2, 0),
+                                ),
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 4,
+                                  offset: const Offset(-2, 2),
+                                ),
+                              ],
                             ),
-                          ),
-                        ),
+                            child: Center(
+                              child: Transform.scale(
+                                scale: 1.0 + 0.15 * pulse,
+                                child: Icon(
+                                  Icons.videogame_asset_rounded,
+                                  color: Colors.white.withOpacity(0.95),
+                                  size: 18,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
 
