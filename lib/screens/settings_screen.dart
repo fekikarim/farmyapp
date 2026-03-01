@@ -114,7 +114,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                             ),
                           ),
-                          if (workerProvider.myProfile != null) ...[
+                          if (workerProvider.myProfile != null &&
+                              user.role == 'customer') ...[
                             const SizedBox(height: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(
