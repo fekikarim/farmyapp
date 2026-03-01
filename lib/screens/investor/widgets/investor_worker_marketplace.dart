@@ -65,161 +65,206 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final provider = context.watch<WorkerProvider>();
-
     final workers = provider.marketplace;
 
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E2125) : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            // Handle Bar
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(top: 12, bottom: 20),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: (isDark ? Colors.white : Colors.black).withOpacity(
-                    0.1,
-                  ),
-                  borderRadius: BorderRadius.circular(4),
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F172A),
+      body: Stack(
+        children: [
+          // Dark Background Gradient
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
                 ),
               ),
             ),
-
-            // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Hire Workers',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Find professionals for ${widget.landName}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: isDark ? Colors.white54 : Colors.black54,
-                          ),
-                        ),
-                      ],
-                    ),
+          ),
+          SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
                   ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close_rounded),
-                    style: IconButton.styleFrom(
-                      backgroundColor: (isDark ? Colors.white : Colors.black)
-                          .withOpacity(0.05),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Search & Filters
-            SizedBox(
-              height: 40,
-              child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                scrollDirection: Axis.horizontal,
-                itemCount: _skills.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 10),
-                itemBuilder: (context, index) {
-                  final skill = _skills[index];
-                  final isSelected =
-                      (_selectedSkill == null && skill == 'All') ||
-                      _selectedSkill == skill;
-                  return FilterChip(
-                    label: Text(skill),
-                    selected: isSelected,
-                    onSelected: (_) => _onSkillSelected(skill),
-                    backgroundColor: (isDark ? Colors.white : Colors.black)
-                        .withOpacity(0.05),
-                    selectedColor: Colors.green.withOpacity(0.2),
-                    labelStyle: TextStyle(
-                      color: isSelected
-                          ? Colors.green
-                          : (isDark ? Colors.white70 : Colors.black87),
-                      fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(
-                        color: isSelected ? Colors.green : Colors.transparent,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        onPressed: () => Navigator.pop(context),
                       ),
-                    ),
-                    showCheckmark: false,
-                  );
-                },
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Divider
-            Divider(
-              height: 1,
-              color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
-            ),
-
-            // List
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  await provider.loadMarketplace(
-                    skill: _selectedSkill,
-                    excludeLandId: widget.landId,
-                  );
-                },
-                child:
-                    provider.marketplaceLoading && provider.marketplace.isEmpty
-                    ? _buildShimmerList(isDark)
-                    : workers.isEmpty
-                    ? ListView(
-                        children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.4,
-                            child: _buildEmptyState(isDark),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'HIRE WORKERS',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.5,
                           ),
-                        ],
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(24),
-                        itemCount: workers.length,
-                        itemBuilder: (context, index) => _MarketplaceWorkerCard(
-                          worker: workers[index],
-                          isDark: isDark,
-                          onHire: () => _openWorkerDetails(workers[index]),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       ),
-              ),
+                      Flexible(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.greenAccent.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.location_on_rounded,
+                                size: 12,
+                                color: Colors.greenAccent,
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  widget.landName.toUpperCase(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // Search & Filters
+                SizedBox(
+                  height: 40,
+                  child: ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _skills.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                    itemBuilder: (context, index) {
+                      final skill = _skills[index];
+                      final isSelected =
+                          (_selectedSkill == null && skill == 'All') ||
+                          _selectedSkill == skill;
+                      return FilterChip(
+                        label: Text(
+                          skill.toUpperCase(),
+                          style: TextStyle(
+                            color: isSelected
+                                ? Colors.greenAccent
+                                : Colors.white70,
+                            fontWeight: isSelected
+                                ? FontWeight.w900
+                                : FontWeight.bold,
+                            fontSize: 11,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        selected: isSelected,
+                        onSelected: (_) => _onSkillSelected(skill),
+                        backgroundColor: Colors.white.withOpacity(0.05),
+                        selectedColor: Colors.greenAccent.withOpacity(0.15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: BorderSide(
+                            color: isSelected
+                                ? Colors.greenAccent.withOpacity(0.5)
+                                : Colors.white.withOpacity(0.1),
+                          ),
+                        ),
+                        showCheckmark: false,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // List
+                Expanded(
+                  child: RefreshIndicator(
+                    color: Colors.greenAccent,
+                    backgroundColor: const Color(0xFF1E293B),
+                    onRefresh: () async {
+                      await provider.loadMarketplace(
+                        skill: _selectedSkill,
+                        excludeLandId: widget.landId,
+                      );
+                    },
+                    child:
+                        provider.marketplaceLoading &&
+                            provider.marketplace.isEmpty
+                        ? _buildShimmerList()
+                        : workers.isEmpty
+                        ? Scrollbar(
+                            child: ListView(
+                              children: [
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.5,
+                                  child: _buildEmptyState(),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.separated(
+                            padding: const EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                              top: 16,
+                              bottom: 40,
+                            ),
+                            itemCount: workers.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: 16),
+                            itemBuilder: (context, index) =>
+                                _MarketplaceWorkerCard(
+                                  worker: workers[index],
+                                  onHire: () =>
+                                      _openWorkerDetails(workers[index]),
+                                ),
+                          ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -243,7 +288,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
     });
   }
 
-  Widget _buildEmptyState(bool isDark) {
+  Widget _buildEmptyState() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -251,59 +296,51 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: (isDark ? Colors.white : Colors.black).withOpacity(0.03),
+              color: Colors.white.withOpacity(0.03),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.search_off_rounded,
               size: 48,
-              color: (isDark ? Colors.white : Colors.black).withOpacity(0.2),
+              color: Colors.white.withOpacity(0.2),
             ),
           ),
           const SizedBox(height: 20),
-          Text(
-            'No Workers Found',
+          const Text(
+            'NO WORKERS FOUND',
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: isDark ? Colors.white : Colors.black87,
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.5,
+              color: Colors.white70,
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Try adjusting your filters',
-            style: TextStyle(
-              fontSize: 14,
-              color: isDark ? Colors.white54 : Colors.black54,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.white54),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildShimmerList(bool isDark) {
+  Widget _buildShimmerList() {
     return ListView.separated(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       physics: const NeverScrollableScrollPhysics(),
       itemCount: 6,
       separatorBuilder: (_, __) => const SizedBox(height: 16),
       itemBuilder: (_, __) => Shimmer.fromColors(
-        baseColor: isDark
-            ? Colors.white.withOpacity(0.05)
-            : Colors.grey.shade200,
-        highlightColor: isDark
-            ? Colors.white.withOpacity(0.1)
-            : Colors.grey.shade100,
+        baseColor: Colors.white.withOpacity(0.05),
+        highlightColor: Colors.white.withOpacity(0.1),
         child: Container(
-          height: 100,
+          height: 110,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withOpacity(0.03) : Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
-            ),
+            color: Colors.white.withOpacity(0.03),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white.withOpacity(0.08)),
           ),
           child: Row(
             children: [
@@ -315,8 +352,8 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      height: 18,
-                      width: 140,
+                      height: 16,
+                      width: 120,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(4),
@@ -326,7 +363,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
                     Row(
                       children: [
                         Container(
-                          height: 18,
+                          height: 16,
                           width: 50,
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -335,7 +372,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
                         ),
                         const SizedBox(width: 6),
                         Container(
-                          height: 18,
+                          height: 16,
                           width: 60,
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -343,15 +380,6 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      height: 12,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
                     ),
                   ],
                 ),
@@ -362,7 +390,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Container(
-                    height: 20,
+                    height: 18,
                     width: 50,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -371,7 +399,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
                   ),
                   const SizedBox(height: 6),
                   Container(
-                    height: 12,
+                    height: 10,
                     width: 40,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -390,61 +418,69 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
 
 class _MarketplaceWorkerCard extends StatelessWidget {
   final WorkerProfile worker;
-  final bool isDark;
   final VoidCallback onHire;
 
-  const _MarketplaceWorkerCard({
-    required this.worker,
-    required this.isDark,
-    required this.onHire,
-  });
+  const _MarketplaceWorkerCard({required this.worker, required this.onHire});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.03) : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF1E293B), // Slate-800
+            Color(0xFF0F172A), // Slate-900
+          ],
         ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
         boxShadow: [
-          if (!isDark)
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onHire,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                Hero(
-                  tag: 'marketplace_avatar_${worker.id}',
-                  child: CircleAvatar(
-                    radius: 28,
-                    backgroundColor: isDark
-                        ? Colors.white.withOpacity(0.1)
-                        : Colors.grey.shade100,
-                    backgroundImage: worker.userProfilePicture != null
-                        ? NetworkImage(worker.userProfilePicture!)
-                        : null,
-                    child: worker.userProfilePicture == null
-                        ? Icon(
-                            Icons.person,
-                            color: isDark ? Colors.white54 : Colors.grey,
-                            size: 28,
-                          )
-                        : null,
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.greenAccent.withOpacity(0.2),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: Hero(
+                    tag: 'marketplace_avatar_${worker.id}',
+                    child: CircleAvatar(
+                      radius: 26,
+                      backgroundColor: Colors.white.withOpacity(0.1),
+                      backgroundImage: worker.userProfilePicture != null
+                          ? NetworkImage(worker.userProfilePicture!)
+                          : null,
+                      child: worker.userProfilePicture == null
+                          ? const Icon(
+                              Icons.person,
+                              color: Colors.white54,
+                              size: 26,
+                            )
+                          : null,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -456,11 +492,12 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                         children: [
                           Flexible(
                             child: Text(
-                              worker.userName ?? 'Worker',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white : Colors.black87,
+                              (worker.userName ?? 'Worker').toUpperCase(),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.0,
+                                color: Colors.white,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -468,72 +505,79 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                           ),
                           if (worker.isVerified) ...[
                             const SizedBox(width: 6),
-                            Icon(
+                            const Icon(
                               Icons.verified,
                               size: 14,
-                              color: Colors.blue.shade400,
+                              color: Colors.blueAccent,
                             ),
                           ],
                         ],
                       ),
-                      const SizedBox(height: 6),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
                         children: worker.skills
                             .take(2)
                             .map(
-                              (skill) => Flexible(
-                                child: Container(
-                                  margin: const EdgeInsets.only(right: 6),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
+                              (skill) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.1),
                                   ),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        (isDark ? Colors.white : Colors.black)
-                                            .withOpacity(0.05),
-                                    borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  skill.toUpperCase(),
+                                  style: const TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.5,
+                                    color: Colors.white70,
                                   ),
-                                  child: Text(
-                                    skill,
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: isDark
-                                          ? Colors.white70
-                                          : Colors.black54,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             )
                             .toList(),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.star_rounded,
                             size: 14,
-                            color: Colors.amber,
+                            color: Colors.amberAccent,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             worker.rating.toStringAsFixed(1),
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white70 : Colors.black87,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white70,
                             ),
                           ),
                           const SizedBox(width: 12),
+                          const Icon(
+                            Icons.task_alt,
+                            size: 12,
+                            color: Colors.white38,
+                          ),
+                          const SizedBox(width: 4),
                           Text(
-                            '${worker.completedTasks} tasks',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isDark ? Colors.white38 : Colors.black38,
+                            '${worker.completedTasks} TASKS',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                              color: Colors.white38,
                             ),
                           ),
                         ],
@@ -547,17 +591,44 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                   children: [
                     Text(
                       '${worker.hourlyRate.toStringAsFixed(0)} TND',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green.shade400,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.greenAccent,
+                        letterSpacing: 0.5,
                       ),
                     ),
-                    Text(
-                      'per hour',
+                    const SizedBox(height: 2),
+                    const Text(
+                      'PER HOUR',
                       style: TextStyle(
-                        fontSize: 10,
-                        color: isDark ? Colors.white38 : Colors.black38,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                        color: Colors.white38,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.greenAccent.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.greenAccent.withOpacity(0.5),
+                        ),
+                      ),
+                      child: const Text(
+                        'HIRE',
+                        style: TextStyle(
+                          color: Colors.greenAccent,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
                       ),
                     ),
                   ],
