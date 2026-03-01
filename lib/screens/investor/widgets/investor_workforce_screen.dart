@@ -7,6 +7,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../providers/worker_lifecycle_provider.dart';
 import '../../../services/proof_service.dart';
 import '../../../services/auth_service.dart';
+import '../../../../widgets/profile_preview_sheet.dart';
 
 import '../../../models/worker_contract_model.dart';
 import '../../../models/worker_profile_model.dart';
@@ -777,30 +778,33 @@ class _ApprovedWorkersTab extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.greenAccent.withOpacity(0.2),
-                            blurRadius: 10,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Colors.white.withOpacity(0.1),
-                        backgroundImage: w.userProfilePicture != null
-                            ? NetworkImage(w.userProfilePicture!)
-                            : null,
-                        child: w.userProfilePicture == null
-                            ? const Icon(
-                                Icons.person,
-                                color: Colors.white54,
-                                size: 24,
-                              )
-                            : null,
+                    GestureDetector(
+                      onTap: () => ProfilePreviewSheet.show(context, w.userId),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.greenAccent.withOpacity(0.2),
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Colors.white.withOpacity(0.1),
+                          backgroundImage: w.userProfilePicture != null
+                              ? NetworkImage(w.userProfilePicture!)
+                              : null,
+                          child: w.userProfilePicture == null
+                              ? const Icon(
+                                  Icons.person,
+                                  color: Colors.white54,
+                                  size: 24,
+                                )
+                              : null,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -1057,21 +1061,29 @@ class _NegotiationCard extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: statusColor.withOpacity(0.2),
-                            blurRadius: 10,
-                            spreadRadius: 2,
+                    GestureDetector(
+                      onTap: () =>
+                          ProfilePreviewSheet.show(context, contract.workerId),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: statusColor.withOpacity(0.2),
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 20,
+                          backgroundColor: statusColor.withOpacity(0.15),
+                          child: Icon(
+                            Icons.person,
+                            color: statusColor,
+                            size: 20,
                           ),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: statusColor.withOpacity(0.15),
-                        child: Icon(Icons.person, color: statusColor, size: 20),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -1301,46 +1313,50 @@ class _ActiveWorkersTab extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    Stack(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: badgeColor.withOpacity(0.2),
-                                blurRadius: 10,
-                                spreadRadius: 2,
-                              ),
-                            ],
-                          ),
-                          child: CircleAvatar(
-                            radius: 20,
-                            backgroundColor: badgeColor.withOpacity(0.15),
-                            child: Icon(
-                              Icons.person,
-                              color: badgeColor,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: Container(
-                            width: 12,
-                            height: 12,
+                    GestureDetector(
+                      onTap: () =>
+                          ProfilePreviewSheet.show(context, c.workerId),
+                      child: Stack(
+                        children: [
+                          Container(
                             decoration: BoxDecoration(
-                              color: dotColor,
                               shape: BoxShape.circle,
-                              border: Border.all(
-                                color: const Color(0xFF1E293B),
-                                width: 2,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: badgeColor.withOpacity(0.2),
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: CircleAvatar(
+                              radius: 20,
+                              backgroundColor: badgeColor.withOpacity(0.15),
+                              child: Icon(
+                                Icons.person,
+                                color: badgeColor,
+                                size: 20,
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: Container(
+                              width: 12,
+                              height: 12,
+                              decoration: BoxDecoration(
+                                color: dotColor,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: const Color(0xFF1E293B),
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -1770,24 +1786,28 @@ class _ProofsTab extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: color.withOpacity(0.2),
-                            blurRadius: 10,
-                            spreadRadius: 2,
+                    GestureDetector(
+                      onTap: () =>
+                          ProfilePreviewSheet.show(context, p.farmerId),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: color.withOpacity(0.2),
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 20,
+                          backgroundColor: color.withOpacity(0.15),
+                          child: Icon(
+                            _getStatusIcon(p.status),
+                            color: color,
+                            size: 20,
                           ),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: color.withOpacity(0.15),
-                        child: Icon(
-                          _getStatusIcon(p.status),
-                          color: color,
-                          size: 20,
                         ),
                       ),
                     ),
