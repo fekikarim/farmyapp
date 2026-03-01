@@ -21,8 +21,7 @@ class BasketProvider with ChangeNotifier {
   bool get isEmpty => _items.isEmpty;
   int get itemCount => _items.length;
 
-  int get totalQuantity =>
-      _items.fold(0, (sum, item) => sum + item.quantity);
+  int get totalQuantity => _items.fold(0, (sum, item) => sum + item.quantity);
 
   double get subtotalTND =>
       _items.fold(0.0, (sum, item) => sum + item.subtotal);
@@ -67,8 +66,9 @@ class BasketProvider with ChangeNotifier {
   /// Add product to basket. If already present, increments quantity.
   /// Returns true if added, false if stock limit reached.
   bool addToBasket(Product product, {int quantity = 1}) {
-    final existingIndex =
-        _items.indexWhere((item) => item.product.id == product.id);
+    final existingIndex = _items.indexWhere(
+      (item) => item.product.id == product.id,
+    );
 
     if (existingIndex >= 0) {
       // Product already in basket — increment quantity
@@ -100,8 +100,7 @@ class BasketProvider with ChangeNotifier {
 
   /// Update the quantity for a basket item. Removes if qty <= 0.
   bool updateQuantity(String productId, int newQuantity) {
-    final index =
-        _items.indexWhere((item) => item.product.id == productId);
+    final index = _items.indexWhere((item) => item.product.id == productId);
     if (index < 0) return false;
 
     if (newQuantity <= 0) {
@@ -119,16 +118,14 @@ class BasketProvider with ChangeNotifier {
 
   /// Increment quantity by 1
   bool incrementQuantity(String productId) {
-    final index =
-        _items.indexWhere((item) => item.product.id == productId);
+    final index = _items.indexWhere((item) => item.product.id == productId);
     if (index < 0) return false;
     return updateQuantity(productId, _items[index].quantity + 1);
   }
 
   /// Decrement quantity by 1 (removes if hits 0)
   bool decrementQuantity(String productId) {
-    final index =
-        _items.indexWhere((item) => item.product.id == productId);
+    final index = _items.indexWhere((item) => item.product.id == productId);
     if (index < 0) return false;
     return updateQuantity(productId, _items[index].quantity - 1);
   }
@@ -139,8 +136,7 @@ class BasketProvider with ChangeNotifier {
 
   /// Get quantity of a product in basket (0 if not present)
   int getQuantityInBasket(String productId) {
-    final index =
-        _items.indexWhere((item) => item.product.id == productId);
+    final index = _items.indexWhere((item) => item.product.id == productId);
     return index >= 0 ? _items[index].quantity : 0;
   }
 
@@ -168,7 +164,8 @@ class BasketProvider with ChangeNotifier {
         final response = await AuthService.authenticatedRequest(
           'POST',
           Uri.parse(
-              '${AuthService.baseUrl}/api/v1/products/${item.product.id}/buy'),
+            '${AuthService.baseUrl}/api/v1/products/${item.product.id}/buy',
+          ),
           body: jsonEncode({'quantity': item.quantity}),
         );
 
@@ -177,6 +174,7 @@ class BasketProvider with ChangeNotifier {
           results[item.product.id] = {
             'success': true,
             'message': data['message'] ?? 'Purchase successful',
+            'purchase_id': data['purchase_id'],
           };
         } else {
           results[item.product.id] = {
@@ -199,15 +197,15 @@ class BasketProvider with ChangeNotifier {
     _isCheckingOut = false;
 
     if (failedItems.isNotEmpty) {
-      _checkoutError =
-          '${failedItems.length} item(s) could not be purchased';
+      _checkoutError = '${failedItems.length} item(s) could not be purchased';
     }
 
     notifyListeners();
     _saveToStorage();
 
-    final successCount =
-        results.values.where((r) => r['success'] == true).length;
+    final successCount = results.values
+        .where((r) => r['success'] == true)
+        .length;
     return {
       'totalItems': results.length,
       'successCount': successCount,

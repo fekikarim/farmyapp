@@ -4,6 +4,8 @@ import '../../providers/basket_provider.dart';
 import '../../providers/product_provider.dart';
 import '../../providers/wallet_provider.dart';
 import '../../widgets/marketplace/basket_item_tile.dart';
+import 'my_orders_screen.dart';
+import 'track_order_screen.dart';
 
 class BasketScreen extends StatelessWidget {
   const BasketScreen({super.key});
@@ -103,8 +105,7 @@ class BasketScreen extends StatelessWidget {
             icon: const Icon(Icons.storefront_rounded, size: 20),
             label: const Text('Browse Products'),
             style: ElevatedButton.styleFrom(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
@@ -115,8 +116,12 @@ class BasketScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCheckoutSection(BuildContext context, ThemeData theme,
-      BasketProvider basket, WalletProvider wallet) {
+  Widget _buildCheckoutSection(
+    BuildContext context,
+    ThemeData theme,
+    BasketProvider basket,
+    WalletProvider wallet,
+  ) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       decoration: BoxDecoration(
@@ -146,9 +151,7 @@ class BasketScreen extends StatelessWidget {
               theme: theme,
             ),
             const SizedBox(height: 8),
-            Divider(
-              color: theme.colorScheme.onSurface.withOpacity(0.08),
-            ),
+            Divider(color: theme.colorScheme.onSurface.withOpacity(0.08)),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -195,8 +198,8 @@ class BasketScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.primary,
                   foregroundColor: Colors.white,
-                  disabledBackgroundColor:
-                      theme.colorScheme.primary.withOpacity(0.5),
+                  disabledBackgroundColor: theme.colorScheme.primary
+                      .withOpacity(0.5),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -209,15 +212,18 @@ class BasketScreen extends StatelessWidget {
                         width: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                         ),
                       )
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.shopping_cart_checkout_rounded,
-                              size: 20),
+                          const Icon(
+                            Icons.shopping_cart_checkout_rounded,
+                            size: 20,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             'Checkout (${basket.itemCount} items)',
@@ -249,8 +255,11 @@ class BasketScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _handleCheckout(BuildContext context, BasketProvider basket,
-      WalletProvider wallet) async {
+  Future<void> _handleCheckout(
+    BuildContext context,
+    BasketProvider basket,
+    WalletProvider wallet,
+  ) async {
     // Check balance
     if (wallet.credits < basket.totalTND) {
       if (!context.mounted) return;
@@ -259,7 +268,8 @@ class BasketScreen extends StatelessWidget {
         builder: (ctx) => AlertDialog(
           title: const Text('Insufficient Funds'),
           content: Text(
-              'Your balance is ${wallet.credits.toStringAsFixed(2)} Credits, but the total is ${basket.totalTND.toStringAsFixed(2)} TND.\n\nPlease top up your wallet.'),
+            'Your balance is ${wallet.credits.toStringAsFixed(2)} Credits, but the total is ${basket.totalTND.toStringAsFixed(2)} TND.\n\nPlease top up your wallet.',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
@@ -306,7 +316,8 @@ class BasketScreen extends StatelessWidget {
             onPressed: () => Navigator.pop(ctx, true),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: const Text('Confirm'),
           ),
@@ -330,23 +341,135 @@ class BasketScreen extends StatelessWidget {
 
     ScaffoldMessenger.of(context).clearSnackBars();
     if (failCount == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.celebration_rounded,
-                  color: Colors.white, size: 20),
-              const SizedBox(width: 8),
-              Text('$successCount item(s) purchased successfully!'),
-            ],
-          ),
-          backgroundColor: Colors.green.shade600,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
+      // Collect purchase IDs for tracking
+      final purchaseIds = <String>[];
+      final details = result['details'] as Map<String, dynamic>;
+      for (final entry in details.values) {
+        if (entry['success'] == true && entry['purchase_id'] != null) {
+          purchaseIds.add(entry['purchase_id'] as String);
+        }
+      }
+
+      // Show success dialog with tracking option
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) {
+          final theme = Theme.of(ctx);
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 28,
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade50,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.check_circle_rounded,
+                    color: Colors.green.shade600,
+                    size: 44,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Order Placed!',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 22,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '$successCount item(s) purchased successfully.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                if (purchaseIds.length == 1)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                TrackOrderScreen(orderId: purchaseIds.first),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.local_shipping_rounded, size: 18),
+                      label: const Text('Track Order'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                    ),
+                  )
+                else if (purchaseIds.length > 1)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const MyOrdersScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.receipt_long_rounded, size: 18),
+                      label: const Text('View My Orders'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'Back to Marketplace',
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface.withOpacity(0.5),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       );
-      Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -355,8 +478,9 @@ class BasketScreen extends StatelessWidget {
           ),
           backgroundColor: Colors.orange.shade700,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           duration: const Duration(seconds: 4),
         ),
       );
