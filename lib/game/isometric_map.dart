@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:provider/provider.dart';
 import 'package:farmyapp/providers/game_provider.dart';
+import 'package:farmyapp/widgets/radial_action_menu.dart';
 import 'asset_manager.dart';
 
 class IsometricMap extends StatefulWidget {
@@ -9,6 +10,7 @@ class IsometricMap extends StatefulWidget {
   final int gridHeight;
   final List<dynamic> matrix;
   final Function(int x, int y)? onTileTap;
+  final Function(String actionId, int x, int y, dynamic itemData)? onItemAction;
   
   // Placement Mode Props
   final bool placementMode;
@@ -23,6 +25,7 @@ class IsometricMap extends StatefulWidget {
     required this.gridHeight,
     required this.matrix,
     this.onTileTap,
+    this.onItemAction,
     this.placementMode = false,
     this.placementFootprint,
     this.placementItem,
@@ -43,6 +46,13 @@ class _IsometricMapState extends State<IsometricMap> with SingleTickerProviderSt
   int? _selectedX;
   int? _selectedY;
   
+  // Radial Menu State
+  int? _menuGridX;
+  int? _menuGridY;
+  double? _menuPixelX;
+  double? _menuPixelY;
+  dynamic _menuItemData;
+
   // Animation
   late AnimationController _animationController;
 
@@ -81,22 +91,44 @@ class _IsometricMapState extends State<IsometricMap> with SingleTickerProviderSt
         child: AnimatedBuilder(
           animation: _animationController,
           builder: (context, child) {
-            return CustomPaint(
-              size: Size(totalWidth, totalHeight),
-              painter: IsometricMapPainter(
-                gridWidth: widget.gridWidth,
-                gridHeight: widget.gridHeight,
-                matrix: widget.matrix,
-                selectedX: widget.placementMode ? widget.externalSelectionX : _selectedX,
-                selectedY: widget.placementMode ? widget.externalSelectionY : _selectedY,
-                backgroundPadding: backgroundPadding,
-                assetManager: AssetManager(),
-                placementMode: widget.placementMode,
-                placementFootprint: widget.placementFootprint,
-                placementItem: widget.placementItem,
-                animationValue: _animationController.value,
-                workers: gameProvider.workers,
-              ),
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                CustomPaint(
+                  size: Size(totalWidth, totalHeight),
+                  painter: IsometricMapPainter(
+                    gridWidth: widget.gridWidth,
+                    gridHeight: widget.gridHeight,
+                    matrix: widget.matrix,
+                    selectedX: widget.placementMode ? widget.externalSelectionX : _selectedX,
+                    selectedY: widget.placementMode ? widget.externalSelectionY : _selectedY,
+                    backgroundPadding: backgroundPadding,
+                    assetManager: AssetManager(),
+                    placementMode: widget.placementMode,
+                    placementFootprint: widget.placementFootprint,
+                    placementItem: widget.placementItem,
+                    animationValue: _animationController.value,
+                    workers: gameProvider.workers,
+                  ),
+                ),
+                if (_menuGridX != null && _menuGridY != null && _menuPixelX != null && _menuPixelY != null)
+                  Positioned(
+                    // canvasR = radius(75) + btnRadius(24) + 6 = 105
+                    left: _menuPixelX! - 105,
+                    top: _menuPixelY! - 105,
+                    child: RadialActionMenu(
+                      actions: _getActionsFor(_menuItemData),
+                      radius: 75,
+                      onActionSelected: (actionId) {
+                        if (widget.onItemAction != null) {
+                           widget.onItemAction!(actionId, _menuGridX!, _menuGridY!, _menuItemData);
+                        }
+                        _closeMenu();
+                      },
+                      onDismiss: _closeMenu,
+                    ),
+                  ),
+              ],
             );
           }
         ),
@@ -105,10 +137,87 @@ class _IsometricMapState extends State<IsometricMap> with SingleTickerProviderSt
   }
 
   void _handleTap(dynamic details, int padding, GameProvider gameProvider, {required bool isDoubleClick}) {
+     if (_menuGridX != null) {
+       _closeMenu();
+       return;
+     }
+
      final double offsetX = (widget.gridHeight * tileWidth / 2);
      const double offsetY = 100;
 
      Offset localPos = details is TapUpDetails ? details.localPosition : (details as TapDownDetails).localPosition;
+
+     // 1. Check for item clicks using screen-space bounding boxes
+     if (!widget.placementMode && !isDoubleClick) {
+         dynamic clickedItem;
+         int clickedBlockX = -1;
+         int clickedBlockY = -1;
+
+         // Iterate from front to back to catch foreground items first
+         for (int y = widget.gridHeight - 1; y >= 0; y--) {
+            for (int x = widget.gridWidth - 1; x >= 0; x--) {
+               dynamic item = widget.matrix[y][x];
+               if (item != null) {
+                  int ox = item['origin_x'] ?? x;
+                  int oy = item['origin_y'] ?? y;
+                  int fw = item['footprint_width'] ?? 1;
+                  int fh = item['footprint_height'] ?? 1;
+                  
+                  // Only check the item once
+                  if (x != ox + fw - 1 || y != oy + fh - 1) continue;
+
+                  double isoX = (ox - oy) * (tileWidth / 2) + offsetX;
+                  double isoY = (ox + oy) * (tileHeight / 2) + offsetY;
+
+                  double scaleFactor = (fw == 1 && fh == 1) ? 1.0 : (fw + fh) / 2.0;
+                  double w = tileWidth * 1.3 * scaleFactor;
+                  double h = w * 1.5; // fallback aspect ratio
+
+                  // Get actual image dimensions if loaded
+                  final sprites = item['sprites'];
+                  final state = item['state'];
+                  String status = state?['status'] ?? 'idle';
+                  String? spriteBase = sprites?[status] ?? sprites?['idle'];
+                  if (spriteBase != null) {
+                     if (spriteBase.startsWith('/')) spriteBase = spriteBase.substring(1);
+                     String framePath = 'assets/game_images/$spriteBase/image0.png';
+                     ui.Image? img = AssetManager().getImage(framePath);
+                     if (img != null) {
+                         h = w * (img.height / img.width);
+                     }
+                  }
+
+                  double itemDx = 0;
+                  double itemDy = 0;
+                  if (fw == 1 && fh == 1) {
+                      itemDx = isoX + (tileWidth - w) / 2;
+                      itemDy = isoY + (tileHeight * 0.75) - h;
+                  } else {
+                      double cx = (fw - fh) * tileWidth / 4;
+                      double cy = (fw + fh) * tileHeight / 4; 
+                      itemDx = isoX + cx + (tileWidth - w) / 2;
+                      itemDy = isoY + cy - h;
+                  }
+
+                  Rect hitBox = Rect.fromLTWH(itemDx, itemDy, w, h);
+                  if (hitBox.contains(localPos)) {
+                      clickedItem = item;
+                      clickedBlockX = ox;  
+                      clickedBlockY = oy;
+                      break;
+                  }
+               }
+            }
+            if (clickedItem != null) break;
+         }
+
+         if (clickedItem != null) {
+             _openMenu(clickedBlockX, clickedBlockY, clickedItem, offsetX, offsetY);
+             return; 
+         }
+     }
+
+     // 2. Gridded Tile Tap (fallback for ground clicks, worker movement)
 
      double dx = localPos.dx - offsetX;
      double dy = localPos.dy - offsetY;
@@ -120,9 +229,12 @@ class _IsometricMapState extends State<IsometricMap> with SingleTickerProviderSt
      double gridY = (b - a) / 2;
 
      if (gridX >= 0 && gridX < widget.gridWidth && gridY >= 0 && gridY < widget.gridHeight) {
+       int ix = gridX.floor();
+       int iy = gridY.floor();
+
        setState(() {
-          _selectedX = gridX.floor();
-          _selectedY = gridY.floor();
+          _selectedX = ix;
+          _selectedY = iy;
        });
 
        if (isDoubleClick) {
@@ -132,10 +244,15 @@ class _IsometricMapState extends State<IsometricMap> with SingleTickerProviderSt
            gridWidth: widget.gridWidth,
            gridHeight: widget.gridHeight,
          );
+       } else if (!widget.placementMode) {
+          // Open menu if an item is tapped
+          if (widget.matrix[iy][ix] != null) {
+            _openMenu(ix, iy, widget.matrix[iy][ix], offsetX, offsetY);
+          }
        }
 
        if (widget.onTileTap != null) {
-         widget.onTileTap!(gridX.floor(), gridY.floor());
+         widget.onTileTap!(ix, iy);
        } 
      } else {
         if (_selectedX != null || _selectedY != null) {
@@ -145,6 +262,65 @@ class _IsometricMapState extends State<IsometricMap> with SingleTickerProviderSt
            });
         }
      }
+  }
+
+  void _openMenu(int x, int y, dynamic itemData, double offsetX, double offsetY) {
+     int ox = itemData['origin_x'] ?? x;
+     int oy = itemData['origin_y'] ?? y;
+     int fw = itemData['footprint_width'] ?? 1;
+     int fh = itemData['footprint_height'] ?? 1;
+
+     double isoX = (ox - oy) * (tileWidth / 2) + offsetX;
+     double isoY = (ox + oy) * (tileHeight / 2) + offsetY;
+
+     // Navigate to the visual center of the footprint
+     double cx = (fw - fh) * tileWidth / 4;
+     double cy = (fw + fh) * tileHeight / 4; 
+
+     double targetX = isoX + cx + tileWidth / 2;
+     // Raise the menu a bit above the item's bottom
+     double targetY = isoY + cy - tileHeight;
+
+     setState(() {
+       _menuGridX = x;
+       _menuGridY = y;
+       _menuItemData = itemData;
+       _menuPixelX = targetX;
+       _menuPixelY = targetY;
+     });
+  }
+
+  void _closeMenu() {
+    setState(() {
+      _menuGridX = null;
+      _menuGridY = null;
+      _menuPixelX = null;
+      _menuPixelY = null;
+      _menuItemData = null;
+    });
+  }
+
+  List<RadialMenuAction> _getActionsFor(dynamic itemData) {
+     List<RadialMenuAction> actions = [];
+     
+     actions.add(RadialMenuAction(
+        id: 'info',
+        icon: Icons.info_outline,
+        backgroundColor: Colors.blueAccent,
+        tooltip: 'Info'
+     ));
+
+     // If item is harvestable or produces something
+     if (itemData['asset_category'] == 'animal' || itemData['asset_category'] == 'tree') {
+       actions.add(RadialMenuAction(
+          id: 'collect',
+          icon: Icons.pan_tool_rounded,
+          backgroundColor: Colors.amber,
+          tooltip: 'Collect'
+       ));
+     }
+
+     return actions;
   }
 
   bool _isPlacementValid(int x, int y) {

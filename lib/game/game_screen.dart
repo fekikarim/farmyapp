@@ -202,6 +202,47 @@ class _GameScreenState extends State<GameScreen>
     return true;
   }
 
+  void _onItemAction(String actionId, int x, int y, dynamic itemData) {
+     final String name = itemData['details']?['name'] ?? 'Item';
+     if (actionId == 'info') {
+       showModalBottomSheet(
+          context: context,
+          builder: (context) {
+             return Container(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                   mainAxisSize: MainAxisSize.min,
+                   crossAxisAlignment: CrossAxisAlignment.start,
+                   children: [
+                      Text(name, style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 8),
+                      Text('Category: ${itemData['asset_category']}'),
+                      if (itemData['state'] != null)
+                        Text('Status: ${itemData['state']['status']}'),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                           onPressed: () => Navigator.pop(context),
+                           child: const Text('Close'),
+                        ),
+                      )
+                   ],
+                )
+             );
+          }
+       );
+     } else if (actionId == 'collect') {
+       // Placeholder for harvesting API call
+       ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+             content: Text('Gathering resources from $name...'),
+             backgroundColor: Colors.amber,
+          )
+       );
+     }
+  }
+
   Future<void> _handlePlacement() async {
     if (_placementItem == null ||
         _pendingX == null ||
@@ -321,6 +362,7 @@ class _GameScreenState extends State<GameScreen>
                         _gridData!['grid_height'] ?? widget.land.gridHeight,
                     matrix: _gridData!['matrix'],
                     onTileTap: _isPlacing ? _onMapTap : null,
+                    onItemAction: _onItemAction,
                     // Pass placement data to map
                     placementMode: _isPlacing,
                     placementFootprint: _placementFootprint,
