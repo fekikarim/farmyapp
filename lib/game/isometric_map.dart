@@ -311,7 +311,7 @@ class _IsometricMapState extends State<IsometricMap> with SingleTickerProviderSt
      ));
 
      // If item is harvestable or produces something
-     if (itemData['asset_category'] == 'animal' || itemData['asset_category'] == 'tree') {
+     if (itemData['category'] == 'animal' || itemData['category'] == 'tree') {
        actions.add(RadialMenuAction(
           id: 'collect',
           icon: Icons.pan_tool_rounded,

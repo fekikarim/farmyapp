@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../../models/land_model.dart';
 import '../../models/land_rental_model.dart';
@@ -12,6 +13,8 @@ import 'land_grid_service.dart';
 import 'shop_overlay.dart';
 import 'inventory_overlay.dart';
 import '../services/shop_service.dart';
+import '../../services/auth_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'asset_manager.dart';
 
 class GameScreen extends StatefulWidget {
@@ -203,44 +206,275 @@ class _GameScreenState extends State<GameScreen>
   }
 
   void _onItemAction(String actionId, int x, int y, dynamic itemData) {
-     final String name = itemData['details']?['name'] ?? 'Item';
-     if (actionId == 'info') {
-       showModalBottomSheet(
-          context: context,
-          builder: (context) {
-             return Container(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                   mainAxisSize: MainAxisSize.min,
-                   crossAxisAlignment: CrossAxisAlignment.start,
-                   children: [
-                      Text(name, style: Theme.of(context).textTheme.titleLarge),
-                      const SizedBox(height: 8),
-                      Text('Category: ${itemData['asset_category']}'),
-                      if (itemData['state'] != null)
-                        Text('Status: ${itemData['state']['status']}'),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                           onPressed: () => Navigator.pop(context),
-                           child: const Text('Close'),
+    if (actionId == 'info') {
+      _showItemInfoSheet(itemData, x, y);
+    } else if (actionId == 'collect') {
+      final gameProvider = Provider.of<GameProvider>(context, listen: false);
+
+      if (gameProvider.workers.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No workers available to send!'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      // Target the origin tile of the item (centre of the item's footprint)
+      final int ox = itemData['origin_x'] ?? x;
+      final int oy = itemData['origin_y'] ?? y;
+      final int fw = itemData['footprint_width'] ?? 1;
+      final int fh = itemData['footprint_height'] ?? 1;
+
+      // Aim for the visual centre of the footprint
+      final double targetX = ox + (fw - 1) / 2.0;
+      final double targetY = oy + (fh - 1) / 2.0;
+
+      final int gridW = _gridData?['grid_width'] ?? widget.land.gridWidth;
+      final int gridH = _gridData?['grid_height'] ?? widget.land.gridHeight;
+
+      gameProvider.moveClosestWorkerTo(
+        targetX,
+        targetY,
+        gridWidth: gridW,
+        gridHeight: gridH,
+      );
+
+      final String varCode = itemData['variant_code'] ?? 'item';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Worker dispatched to collect from $varCode!'),
+          backgroundColor: Colors.green.shade700,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+
+  void _showItemInfoSheet(dynamic itemData, int x, int y) {
+    // Grid cell keys from backend: category, variant_id, variant_code, state,
+    // sprites, is_active, origin_x, origin_y, footprint_width, footprint_height
+    final String category    = itemData['category'] as String? ?? 'unknown';
+    final String variantId   = itemData['variant_id'] as String? ?? '';
+    final String variantCode = itemData['variant_code'] as String? ?? '';
+    final state              = itemData['state'] as Map<String, dynamic>?;
+    final bool isActive      = itemData['is_active'] != false;
+    final int fw             = itemData['footprint_width'] ?? 1;
+    final int fh             = itemData['footprint_height'] ?? 1;
+
+    final String status = state?['status'] ?? (isActive ? 'active' : 'inactive');
+    final Color statusColor = status == 'active' || status == 'idle'
+        ? Colors.green
+        : status == 'working'
+            ? Colors.blue
+            : Colors.orange;
+
+    final String categoryLabel = category
+        .replaceAll('_', ' ')
+        .split(' ')
+        .map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : w)
+        .join(' ');
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return FutureBuilder<Map<String, dynamic>?>(
+          future: _fetchVariantDetails(category, variantId),
+          builder: (ctx, snap) {
+            final variant = snap.data;
+            // Name: from type.name; fallback to variant_code
+            final String name = variant?['type']?['name'] ?? variantCode;
+            final String description = variant?['type']?['description'] ?? '';
+            final Map<String, dynamic> attrs =
+                Map<String, dynamic>.from(variant?['attributes'] ?? {});
+
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              padding: EdgeInsets.only(
+                left: 20, right: 20, top: 20,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 40, height: 4,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade400,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+
+                  // Title row
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      )
-                   ],
-                )
-             );
-          }
-       );
-     } else if (actionId == 'collect') {
-       // Placeholder for harvesting API call
-       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-             content: Text('Gathering resources from $name...'),
-             backgroundColor: Colors.amber,
-          )
-       );
-     }
+                        child: Icon(
+                          _categoryIcon(category),
+                          color: Colors.green.shade700,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            snap.connectionState == ConnectionState.waiting
+                                ? const SizedBox(
+                                    height: 20,
+                                    child: LinearProgressIndicator(minHeight: 3))
+                                : Text(name,
+                                    style: Theme.of(context).textTheme.titleLarge
+                                        ?.copyWith(fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 2),
+                            Text(categoryLabel,
+                                style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+                          ],
+                        ),
+                      ),
+                      // Status chip
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: statusColor.withOpacity(0.15),
+                          border: Border.all(color: statusColor.withOpacity(0.5)),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 7, height: 7,
+                              decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle),
+                            ),
+                            const SizedBox(width: 5),
+                            Text(status,
+                                style: TextStyle(
+                                    color: statusColor,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  if (description.isNotEmpty) ...[
+                    const SizedBox(height: 14),
+                    Text(description,
+                        style: TextStyle(color: Colors.grey.shade700, height: 1.4)),
+                  ],
+
+                  const SizedBox(height: 16),
+
+                  // Stats
+                  Wrap(
+                    spacing: 10, runSpacing: 8,
+                    children: [
+                      _statChip(Icons.grid_3x3, 'Position', '($x, $y)'),
+                      _statChip(Icons.aspect_ratio, 'Size', '${fw}×$fh tiles'),
+                      if (variant?['base_price'] != null)
+                        _statChip(Icons.monetization_on_outlined, 'Base price',
+                            '${variant!['base_price']}'),
+                      // Render any extra attributes from the variant
+                      for (final entry in attrs.entries)
+                        if (entry.value != null)
+                          _statChip(Icons.info_outline, entry.key.replaceAll('_', ' '),
+                              '${entry.value}'),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () => Navigator.pop(ctx),
+                      icon: const Icon(Icons.check),
+                      label: const Text('Got it'),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>?> _fetchVariantDetails(
+      String category, String variantId) async {
+    if (variantId.isEmpty) return null;
+    try {
+      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final response = await AuthService.authenticatedRequest(
+        'GET',
+        Uri.parse('$baseUrl/api/v1/assets/$category/variants/$variantId'),
+      );
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        return body['data'] as Map<String, dynamic>?;
+      }
+    } catch (e) {
+      debugPrint('_fetchVariantDetails error: $e');
+    }
+    return null;
+  }
+
+
+
+
+  Widget _statChip(IconData icon, String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: Colors.grey.shade600),
+          const SizedBox(width: 5),
+          Text('$label: ',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+          Text(value,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
+
+  IconData _categoryIcon(String? category) {
+    switch (category) {
+      case 'animal':     return Icons.pets;
+      case 'tree':       return Icons.park;
+      case 'vegetation': return Icons.grass;
+      case 'machine':    return Icons.agriculture;
+      case 'structure':  return Icons.home_work;
+      default:           return Icons.category;
+    }
   }
 
   Future<void> _handlePlacement() async {
