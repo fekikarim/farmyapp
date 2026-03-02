@@ -17,6 +17,9 @@ class SubscriptionPlan {
   final String? badge;
   final String planKey;
 
+  /// Raw entitlements map from the backend (for fallback gating logic).
+  final Map<String, dynamic> entitlements;
+
   bool get isFree => price <= 0 && priceYearly <= 0;
 
   SubscriptionPlan({
@@ -33,6 +36,7 @@ class SubscriptionPlan {
     required this.icon,
     required this.role,
     this.badge,
+    this.entitlements = const {},
   });
 
   factory SubscriptionPlan.fromJson(Map<String, dynamic> json) {
@@ -45,10 +49,15 @@ class SubscriptionPlan {
         double.tryParse(json['price_yearly']?.toString() ?? '0') ?? 0.0;
     final role = _parseRole(json['role'] ?? '');
 
-    final dynamic entitlements = json['entitlements'];
+    final dynamic rawEntitlements = json['entitlements'];
+    final Map<String, dynamic> entitlementsMap =
+        rawEntitlements is Map<String, dynamic>
+        ? Map<String, dynamic>.from(rawEntitlements)
+        : {};
+
     List<String> dynamicFeatures = [];
-    if (entitlements != null && entitlements is Map<String, dynamic>) {
-      entitlements.forEach((key, value) {
+    if (entitlementsMap.isNotEmpty) {
+      entitlementsMap.forEach((key, value) {
         String featureName = _formatFeatureName(key);
         if (value == true) {
           dynamicFeatures.add(featureName);
@@ -122,6 +131,7 @@ class SubscriptionPlan {
       icon: dynamicIcon,
       role: role,
       badge: dynamicBadge,
+      entitlements: entitlementsMap,
     );
   }
 

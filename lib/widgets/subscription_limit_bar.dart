@@ -27,6 +27,12 @@ class SubscriptionLimitBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<SubscriptionProvider>(
       builder: (context, subProvider, _) {
+        // While entitlements are still loading, hide the bar to avoid
+        // showing incorrect limits (default 0) before data arrives.
+        if (subProvider.isLoading || subProvider.isAnyLoading) {
+          return const SizedBox.shrink();
+        }
+
         final limit = subProvider.getLimit(limitKey, 0);
 
         // -1 means unlimited — don't show bar

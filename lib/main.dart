@@ -211,16 +211,33 @@ class _AuthWrapperState extends State<AuthWrapper> {
     });
   }
 
-  /// Called from build() when user logs out — resets the check flag for next login.
+  /// Called from build() when user logs out — resets ALL flags for next login.
   void _handleLogout() {
-    if (_subscriptionCheckStarted) {
+    if (_subscriptionCheckStarted || _initDone) {
       _subscriptionCheckStarted = false;
+      _initDone = false;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           context.read<SubscriptionProvider>().resetSubscriptionCheck();
         }
       });
     }
+  }
+
+  /// Ensures subscription data is loaded for the current user.
+  /// Covers the case where didChangeDependencies already fired but
+  /// _initDone was still true from the previous session.
+  void _maybeInitSubscription() {
+    if (_initDone) return;
+    _initDone = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final authProvider = context.read<AuthProvider>();
+        context.read<SubscriptionProvider>().init(
+          role: authProvider.user?.role,
+        );
+      }
+    });
   }
 
   @override
@@ -246,6 +263,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
         if (user.isBanned) return const BannedScreen();
         if (!user.isVerified) return const VerifyScreen();
       }
+
+      // Ensure subscription data is initialized for the current user
+      _maybeInitSubscription();
 
       // Kick off subscription existence check (safe — runs in post-frame)
       _maybeStartSubscriptionCheck();

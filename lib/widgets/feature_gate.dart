@@ -31,6 +31,12 @@ class FeatureGate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<SubscriptionProvider>(
       builder: (context, subProvider, _) {
+        // While entitlements are still loading, show the child optimistically
+        // to avoid flashing a "locked" state for users who actually have access.
+        if (subProvider.isLoading || subProvider.isAnyLoading) {
+          return child;
+        }
+
         final hasFeature = subProvider.hasEntitlement(featureKey);
 
         if (hasFeature) {
@@ -116,6 +122,11 @@ class LimitGate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<SubscriptionProvider>(
       builder: (context, subProvider, _) {
+        // While entitlements are still loading, allow access optimistically
+        if (subProvider.isLoading || subProvider.isAnyLoading) {
+          return child;
+        }
+
         final limit = subProvider.getLimit(limitKey, 0);
 
         // -1 means unlimited

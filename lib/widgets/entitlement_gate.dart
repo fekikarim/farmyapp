@@ -19,6 +19,12 @@ class EntitlementGate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<SubscriptionProvider>(
       builder: (context, provider, _) {
+        // While entitlements are still loading, show the child optimistically
+        // to avoid flashing a "locked" state for users who actually have access.
+        if (provider.isLoading || provider.isAnyLoading) {
+          return child;
+        }
+
         if (provider.hasEntitlement(entitlementKey)) {
           return child;
         }
