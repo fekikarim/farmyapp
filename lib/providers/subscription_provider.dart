@@ -160,7 +160,7 @@ class SubscriptionProvider with ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
-      if (!_initCompleter!.isCompleted) {
+      if (_initCompleter != null && !_initCompleter!.isCompleted) {
         _initCompleter!.complete();
       }
     }
@@ -178,7 +178,7 @@ class SubscriptionProvider with ChangeNotifier {
     try {
       await _refreshSubscriptionInternal();
     } finally {
-      if (!_refreshCompleter!.isCompleted) {
+      if (_refreshCompleter != null && !_refreshCompleter!.isCompleted) {
         _refreshCompleter!.complete();
       }
     }

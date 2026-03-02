@@ -156,20 +156,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _lifecycle = context.read<WorkerLifecycleProvider>();
-
-    // Run init exactly once
-    if (!_initDone) {
-      _initDone = true;
-      // Use post-frame to avoid calling notifyListeners during build
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          final authProvider = context.read<AuthProvider>();
-          context.read<SubscriptionProvider>().init(
-            role: authProvider.user?.role,
-          );
-        }
-      });
-    }
   }
 
   @override
