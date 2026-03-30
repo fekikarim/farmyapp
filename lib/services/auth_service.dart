@@ -22,16 +22,20 @@ class AuthService {
   static const _storage = FlutterSecureStorage();
 
   static GoogleSignIn? get _googleSignInInstance {
+    final String? serverClientId = dotenv.maybeGet('GOOGLE_CLIENT_ID');
+    if (serverClientId == null) {
+      print('Warning: GOOGLE_CLIENT_ID not found in .env');
+      return null;
+    }
+
     if (kIsWeb)
       return GoogleSignIn(
-        serverClientId:
-            '207350526659-uc61dhrc5htldf5q7dq5293ac9v75cbt.apps.googleusercontent.com',
+        serverClientId: serverClientId,
       );
     try {
       if (Platform.isAndroid || Platform.isIOS) {
         return GoogleSignIn(
-          serverClientId:
-              '207350526659-uc61dhrc5htldf5q7dq5293ac9v75cbt.apps.googleusercontent.com',
+          serverClientId: serverClientId,
         );
       }
     } catch (_) {}
