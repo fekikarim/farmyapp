@@ -399,14 +399,14 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(farm['name'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text(farm['name'] ?? 'Unknown Farm', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
                         const SizedBox(height: 4),
-                        Text('${farm['price']} TND/m', style: const TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold)),
+                        Text('${farm['price'] ?? '0'} TND/m', style: const TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold)),
                         const Spacer(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(farm['weatherRiskScore'], style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                            Text(farm['weatherRiskScore'] ?? 'N/A', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
                             const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.green),
                           ],
                         ),
