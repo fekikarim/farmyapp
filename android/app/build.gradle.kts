@@ -11,7 +11,7 @@ plugins {
 android {
     namespace = "com.example.farmyapp"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "25.2.9519653"
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

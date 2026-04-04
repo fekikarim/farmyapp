@@ -11,17 +11,20 @@ import 'customer/marketplace_screen.dart';
 import 'farmer/analytics_screen.dart';
 // import 'farmer/products_screen.dart'; // Replaced by new implementation
 import 'farmer/land_management_screen.dart';
+// import 'farmer/my_farms_screen.dart';
 
 // Investor Screens
 import 'investor/explore_land_screen.dart';
-// import 'investor/my_investments_screen.dart'; // Moved to Settings
+import 'investor/my_investments_screen.dart';
 // import 'investor/farming_activities_screen.dart';
 import 'investor/revenue_screen.dart';
 import 'settings_screen.dart';
 
 // Shared
 import 'marketplace/my_products_screen.dart';
-import 'vendor/vendor_delivery_dashboard.dart';
+
+// Agent
+import 'investment_agent_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -87,7 +90,7 @@ class _MainScreenState extends State<MainScreen> {
         const FarmerAnalyticsScreen(),
         const FarmerLandManagementScreen(),
         const MyProductsScreen(),
-        const VendorDeliveryDashboard(),
+        const SizedBox(), // FarmerMyFarmsScreen() removed
         const SettingsScreen(),
       ];
       items = const [
@@ -107,9 +110,9 @@ class _MainScreenState extends State<MainScreen> {
           label: 'Products',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.local_shipping_outlined),
-          activeIcon: Icon(Icons.local_shipping),
-          label: 'Deliveries',
+          icon: Icon(Icons.agriculture_outlined),
+          activeIcon: Icon(Icons.agriculture),
+          label: 'My Farms',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings_outlined),
@@ -120,8 +123,8 @@ class _MainScreenState extends State<MainScreen> {
     } else if (role == 'investor') {
       screens = [
         const InvestorExploreLandScreen(),
-        const MyProductsScreen(),
-        const VendorDeliveryDashboard(),
+        const InvestorMyInvestmentsScreen(),
+        const MyProductsScreen(), // Updated: Replaced Activities with Products
         const InvestorRevenueScreen(),
         const SettingsScreen(),
       ];
@@ -132,14 +135,14 @@ class _MainScreenState extends State<MainScreen> {
           label: 'Explore',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.inventory_2_outlined),
-          activeIcon: Icon(Icons.inventory_2),
-          label: 'Products',
+          icon: Icon(Icons.monetization_on_outlined),
+          activeIcon: Icon(Icons.monetization_on),
+          label: 'Investments',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.local_shipping_outlined),
-          activeIcon: Icon(Icons.local_shipping),
-          label: 'Deliveries',
+          icon: Icon(Icons.inventory_2_outlined), // Changed icon
+          activeIcon: Icon(Icons.inventory_2),
+          label: 'Products', // Changed label
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_balance_wallet_outlined),
@@ -186,6 +189,18 @@ class _MainScreenState extends State<MainScreen> {
 
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: screens),
+      floatingActionButton: role == 'investor' 
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const InvestmentAgentScreen()),
+                );
+              },
+              backgroundColor: Theme.of(context).primaryColor,
+              child: const Icon(Icons.smart_toy, color: Colors.white),
+            )
+          : null,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
