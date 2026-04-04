@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:marquee/marquee.dart';
 import '../services/investment_agent_service.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -380,10 +381,23 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                       style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.blueAccent),
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Text(
-                      data, 
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                      overflow: TextOverflow.ellipsis,
+                    const SizedBox(height: 2),
+                    SizedBox(
+                      height: 16,
+                      child: Marquee(
+                        text: data,
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        scrollAxis: Axis.horizontal,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        blankSpace: 40.0,
+                        velocity: 30.0,
+                        pauseAfterRound: const Duration(seconds: 1),
+                        startPadding: 0.0,
+                        accelerationDuration: const Duration(seconds: 1),
+                        accelerationCurve: Curves.linear,
+                        decelerationDuration: const Duration(milliseconds: 500),
+                        decelerationCurve: Curves.easeOut,
+                      ),
                     ),
                   ],
                 ),
