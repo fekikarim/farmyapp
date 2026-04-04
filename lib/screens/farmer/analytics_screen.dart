@@ -4,6 +4,7 @@ import '../../providers/wallet_provider.dart';
 import '../../providers/product_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../models/product_model.dart';
+import '../farmer_agent_screen.dart';
 
 class FarmerAnalyticsScreen extends StatefulWidget {
   const FarmerAnalyticsScreen({super.key});
@@ -149,18 +150,46 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
   }
 
   Widget _buildAdvancedAnalyticsContent() {
-    return const Card(
+    return Card(
       elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: EdgeInsets.all(24),
-        child: Center(
-          child: Column(
-            children: [
-              Icon(Icons.insights_rounded, size: 48, color: Colors.green),
-              SizedBox(height: 12),
-              Text('Advanced Charts & Forecasts Loading...'),
-            ],
-          ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.auto_awesome, size: 24, color: Colors.green),
+                SizedBox(width: 12),
+                Text('Production Strategy', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Get a deep analysis of your current production overhead, potential yield, and profit-maximization strategies powered by AI.',
+              style: TextStyle(color: Colors.grey, fontSize: 13),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const FarmerAgentScreen()),
+                  );
+                },
+                icon: const Icon(Icons.psychology),
+                label: const Text('Consult Production Guru'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade700,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

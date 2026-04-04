@@ -25,6 +25,7 @@ import 'marketplace/my_products_screen.dart';
 
 // Agent
 import 'investment_agent_screen.dart';
+import 'farmer_agent_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -189,16 +190,24 @@ class _MainScreenState extends State<MainScreen> {
 
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: screens),
-      floatingActionButton: role == 'investor' 
-          ? FloatingActionButton(
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      floatingActionButton: (role == 'investor' || role == 'farmer')
+          ? FloatingActionButton.small(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const InvestmentAgentScreen()),
-                );
+                if (role == 'investor') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => InvestmentAgentScreen()),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => FarmerAgentScreen()),
+                  );
+                }
               },
               backgroundColor: Theme.of(context).primaryColor,
-              child: const Icon(Icons.smart_toy, color: Colors.white),
+              child: const Icon(Icons.smart_toy, color: Colors.white, size: 20),
             )
           : null,
       bottomNavigationBar: Container(
