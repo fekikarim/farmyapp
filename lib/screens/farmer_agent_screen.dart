@@ -4,11 +4,15 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 
 class FarmerAgentScreen extends StatefulWidget {
   final String? landId;
+  final String? initialMessage;
+  final Map<String, dynamic>? initialContext;
 
-  const FarmerAgentScreen({super.key, this.landId});
+  const FarmerAgentScreen({super.key, this.landId, this.initialMessage, this.initialContext});
 
   @override
   State<FarmerAgentScreen> createState() => _FarmerAgentScreenState();
@@ -18,13 +22,88 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _chatScrollController = ScrollController();
   List<Map<String, dynamic>> _messages = [];
+  List<dynamic> _history = [];
+  String? _sessionId;
   bool _isLoading = false;
   Map<String, dynamic>? _context;
 
   @override
   void initState() {
     super.initState();
-    _fetchAnalysis(); // Get initial snapshot
+    _loadHistory();
+    if (widget.initialMessage != null) {
+       WidgetsBinding.instance.addPostFrameCallback((_) {
+        _messageController.text = widget.initialMessage!;
+        _sendMessage();
+      });
+    } else {
+      _fetchAnalysis(); // Get initial snapshot
+    }
+  }
+
+  Future<void> _loadHistory() async {
+    try {
+      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final response = await AuthService.authenticatedRequest(
+        'GET',
+        Uri.parse('$baseUrl/api/v1/farmer-agent/history'),
+      );
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        setState(() {
+          _history = body['data'];
+        });
+      }
+    } catch (e) {
+      debugPrint('FarmerAgent History Error: $e');
+    }
+  }
+
+  Future<void> _loadSession(String sessionId) async {
+    setState(() => _isLoading = true);
+    try {
+      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final response = await AuthService.authenticatedRequest(
+        'GET',
+        Uri.parse('$baseUrl/api/v1/farmer-agent/session/$sessionId'),
+      );
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        final session = body['data'];
+        setState(() {
+          _sessionId = sessionId;
+          _messages = List<Map<String, dynamic>>.from(session['messages'] ?? []);
+          _context = session['context_data'];
+        });
+        Navigator.pop(context); // Close drawer
+      }
+    } catch (e) {
+      debugPrint('FarmerAgent Load Session Error: $e');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _deleteSession(String sessionId) async {
+    try {
+      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final response = await AuthService.authenticatedRequest(
+        'DELETE',
+        Uri.parse('$baseUrl/api/v1/farmer-agent/session/$sessionId'),
+      );
+      if (response.statusCode == 200) {
+        if (_sessionId == sessionId) {
+          setState(() {
+            _sessionId = null;
+            _messages = [];
+            _context = null;
+          });
+        }
+        _loadHistory();
+      }
+    } catch (e) {
+      debugPrint('FarmerAgent Delete Error: $e');
+    }
   }
 
   Future<void> _fetchAnalysis() async {
@@ -36,6 +115,7 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
         Uri.parse('$baseUrl/api/v1/farmer-agent/analyze'),
         body: jsonEncode({
           if (widget.landId != null) 'landId': widget.landId,
+          if (_sessionId != null) 'sessionId': _sessionId,
         }),
       );
 
@@ -43,12 +123,15 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
         final body = jsonDecode(response.body);
         setState(() {
           _context = body['data']['context'];
+          _sessionId = body['data']['sessionId'];
           _messages.add({
             'role': 'assistant',
             'content': body['data']['analysis'],
             'timestamp': DateTime.now().toIso8601String(),
           });
         });
+        _loadHistory();
+        Future.delayed(const Duration(milliseconds: 100), () => _scrollToBottom());
       }
     } catch (e) {
       debugPrint('FarmerAgentScreen Error: $e');
@@ -72,27 +155,29 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
     });
 
     try {
-      // Re-using the analysis endpoint for now but we could add a chat endpoint
-      // For brevity, we pass context as "preferences" or prompt
       final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
       final response = await AuthService.authenticatedRequest(
         'POST',
         Uri.parse('$baseUrl/api/v1/farmer-agent/analyze'),
         body: jsonEncode({
           'landId': widget.landId,
-          'question': text, // The backend needs to handle this
+          'question': text,
+          'sessionId': _sessionId,
         }),
       );
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         setState(() {
+          _sessionId = body['data']['sessionId'];
           _messages.add({
             'role': 'assistant',
             'content': body['data']['analysis'],
             'timestamp': DateTime.now().toIso8601String(),
           });
         });
+        _loadHistory();
+        Future.delayed(const Duration(milliseconds: 100), () => _scrollToBottom());
       }
     } finally {
       setState(() => _isLoading = false);
@@ -112,7 +197,29 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.history),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+              tooltip: 'Session History',
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.add_comment_outlined),
+            onPressed: () {
+              setState(() {
+                _sessionId = null;
+                _messages = [];
+                _context = null;
+              });
+              _fetchAnalysis();
+            },
+            tooltip: 'New Session',
+          )
+        ],
       ),
+      endDrawer: _buildHistoryDrawer(),
       body: Column(
         children: [
           if (_context != null) 
@@ -122,6 +229,7 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
             ),
           Expanded(
             child: ListView.builder(
+              controller: _chatScrollController,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: _messages.length,
               itemBuilder: (ctx, idx) {
@@ -147,7 +255,7 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
                         h3: TextStyle(color: isUser ? Colors.white : theme.textTheme.titleSmall?.color, fontWeight: FontWeight.bold),
                         strong: TextStyle(color: isUser ? Colors.white : theme.textTheme.bodyLarge?.color, fontWeight: FontWeight.bold),
                         listBullet: TextStyle(color: isUser ? Colors.white70 : theme.textTheme.bodySmall?.color, fontSize: 14),
-                        blockquote: BoxDecoration(
+                        blockquoteDecoration: BoxDecoration(
                           color: isUser ? Colors.white12 : theme.dividerColor.withOpacity(0.05),
                           borderRadius: BorderRadius.circular(4),
                         ),
@@ -202,6 +310,65 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _scrollToBottom() {
+    if (_chatScrollController.hasClients) {
+      _chatScrollController.animateTo(
+        _chatScrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  Widget _buildHistoryDrawer() {
+    final theme = Theme.of(context);
+    return Drawer(
+      child: Column(
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(color: Colors.green.shade800),
+            child: const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.history_edu_rounded, color: Colors.white, size: 40),
+                  SizedBox(height: 12),
+                  Text(
+                    'Harvest Chronicles',
+                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: _history.isEmpty
+                ? const Center(child: Text('No history yet'))
+                : ListView.builder(
+                    itemCount: _history.length,
+                    itemBuilder: (context, index) {
+                      final session = _history[index];
+                      final date = DateTime.parse(session['createdAt']);
+                      return ListTile(
+                        leading: const Icon(Icons.forum_outlined, color: Colors.green),
+                        title: Text(session['title'] ?? 'Farm Analysis', maxLines: 1, overflow: TextOverflow.ellipsis),
+                        subtitle: Text(DateFormat('MMM d, HH:mm').format(date)),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
+                          onPressed: () => _deleteSession(session['id']),
+                        ),
+                        onTap: () => _loadSession(session['id']),
+                        selected: _sessionId == session['id'],
+                        selectedTileColor: Colors.green.withOpacity(0.1),
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
     );
   }
