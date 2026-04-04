@@ -104,7 +104,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
 
     try {
       final result = await _agentService.getRecommendations(text, sessionId: _sessionId, userContext: userContext);
-      if (result != null) {
+      if (result != null && mounted) {
         setState(() {
           _sessionId = result['sessionId'];
           _messages = List<Map<String, dynamic>>.from(result['history'] ?? []);
@@ -115,11 +115,15 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
         _loadHistory();
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to reach AI Strategy Analyst.')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to reach AI Strategy Analyst.')),
+        );
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -297,11 +301,21 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     final market = _lastTools?['market'];
     final weather = _lastTools?['weather'];
 
-    // Handle API-Ninjas structure: {'Wheat': { price: ...}, ...} or old string structure
+    // Handle API-Ninjas structure: {'Wheat': { price: ...}, ...}
     String marketDisplay = 'Stable';
     if (market != null) {
       if (market is Map && market.containsKey('Wheat')) {
-        marketDisplay = "Wheat: \$${market['Wheat']['price']}";
+        final wheat = market['Wheat'];
+        final price = (wheat is Map) ? wheat['price'] : wheat;
+        if (price != null) {
+          final priceStr = price.toString();
+          // Only add $ if it doesn't already have a prefix (like "Simulated" or "$")
+          if (priceStr.startsWith('Simulated') || priceStr.startsWith('\$')) {
+            marketDisplay = "Wheat: $priceStr";
+          } else {
+            marketDisplay = "Wheat: \$$priceStr";
+          }
+        }
       } else if (market.containsKey('grainPrice')) {
         marketDisplay = market['grainPrice'];
       }
@@ -356,12 +370,23 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
             children: [
               Icon(icon, size: 16, color: Colors.blueAccent),
               const SizedBox(width: 8),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
-                  Text(data, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title, 
+                      style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      data, 
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
