@@ -61,7 +61,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
         elevation: 0,
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -122,9 +122,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                       ),
               ),
               const SizedBox(height: 24),
-              Expanded(
-                child: _buildResultContent(),
-              ),
+              _buildResultContent(),
             ],
           ),
         ),
@@ -139,6 +137,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     if (_isLoading) {
       return Center(
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const CircularProgressIndicator(),
