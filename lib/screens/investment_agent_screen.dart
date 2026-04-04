@@ -284,6 +284,21 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
   }
 
   Widget _buildLiveToolsRow() {
+    final market = _lastTools?['market'];
+    final weather = _lastTools?['weather'];
+
+    // Handle API-Ninjas structure: {'Wheat': { price: ...}, ...} or old string structure
+    String marketDisplay = 'Stable';
+    if (market != null) {
+      if (market is Map && market.containsKey('Wheat')) {
+        marketDisplay = "Wheat: \$${market['Wheat']['price']}";
+      } else if (market.containsKey('grainPrice')) {
+        marketDisplay = market['grainPrice'];
+      }
+    }
+
+    String weatherDisplay = weather?['temp'] ?? weather?['temperature'] ?? '24°C';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -296,18 +311,18 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
             _buildSmallToolCard(
               title: 'Market',
               icon: Icons.trending_up,
-              data: _lastTools!['market']['grainPrice'],
+              data: marketDisplay,
               onTap: () {
-                 _messageController.text = "Explain the current market trend for me.";
+                 _messageController.text = "Explain the current market trend for Wheat and Corn.";
               }
             ),
             const SizedBox(width: 8),
             _buildSmallToolCard(
               title: 'Weather',
               icon: Icons.wb_sunny_outlined,
-              data: _lastTools!['weather']['temperature'] ?? '24°C',
+              data: weatherDisplay,
               onTap: () {
-                 _messageController.text = "Tell me more about the weather forecast.";
+                 _messageController.text = "Tell me more about the weather forecast for my region.";
               }
             ),
           ],
@@ -370,11 +385,13 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                 ),
                 child: InkWell(
                   onTap: () {
-                    final landObj = Land.fromJson(farm['fullData']);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => LandDetailsScreen(land: landObj)),
-                    );
+                    if (farm['fullData'] != null) {
+                      final landObj = Land.fromJson(farm['fullData']);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => LandDetailsScreen(land: landObj)),
+                      );
+                    }
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(12),
