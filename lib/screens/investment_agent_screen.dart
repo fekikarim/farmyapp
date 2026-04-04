@@ -148,7 +148,18 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
       appBar: AppBar(
         title: const Text('Strategic Portfolio Analyst'),
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.history),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+              tooltip: 'Session History',
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.add_comment_outlined),
             onPressed: () {
@@ -163,7 +174,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
           )
         ],
       ),
-      drawer: _buildHistoryDrawer(),
+      endDrawer: _buildHistoryDrawer(),
       body: Column(
         children: [
           Expanded(

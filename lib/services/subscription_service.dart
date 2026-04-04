@@ -62,11 +62,13 @@ class SubscriptionService {
     return _withRetry('getCurrentSubscription', () async {
       final baseUrl = AuthService.baseUrl;
       final url = Uri.parse('$baseUrl/api/v1/subscriptions/current');
+      debugPrint('[SubscriptionService] Fetching Current Sub from: $url');
 
       final response = await AuthService.authenticatedRequest(
         'GET',
         url,
       ).timeout(_defaultTimeout);
+      debugPrint('[SubscriptionService] Status Code: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);

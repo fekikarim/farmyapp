@@ -108,6 +108,10 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
         title: const Text('Production Guru'),
         backgroundColor: Colors.green.shade800,
         foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Column(
         children: [
@@ -130,14 +134,29 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
                     padding: const EdgeInsets.all(14),
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     decoration: BoxDecoration(
-                      color: isUser ? Colors.green.shade700 : Colors.grey.shade100,
+                      color: isUser ? theme.primaryColor : theme.cardColor,
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4)],
+                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)],
                     ),
                     child: MarkdownBody(
                       data: msg['content'],
                       styleSheet: MarkdownStyleSheet(
-                        p: TextStyle(color: isUser ? Colors.white : Colors.black, fontSize: 13),
+                        p: TextStyle(color: isUser ? Colors.white : theme.textTheme.bodyMedium?.color, fontSize: 13, height: 1.4),
+                        h1: TextStyle(color: isUser ? Colors.white : theme.textTheme.titleLarge?.color, fontWeight: FontWeight.bold),
+                        h2: TextStyle(color: isUser ? Colors.white : theme.textTheme.titleMedium?.color, fontWeight: FontWeight.bold),
+                        h3: TextStyle(color: isUser ? Colors.white : theme.textTheme.titleSmall?.color, fontWeight: FontWeight.bold),
+                        strong: TextStyle(color: isUser ? Colors.white : theme.textTheme.bodyLarge?.color, fontWeight: FontWeight.bold),
+                        listBullet: TextStyle(color: isUser ? Colors.white70 : theme.textTheme.bodySmall?.color, fontSize: 14),
+                        blockquote: BoxDecoration(
+                          color: isUser ? Colors.white12 : theme.dividerColor.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        code: TextStyle(
+                          backgroundColor: isUser ? Colors.black26 : theme.dividerColor.withOpacity(0.1),
+                          color: isUser ? Colors.white : theme.primaryColor,
+                          fontFamily: 'monospace',
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ),
@@ -146,26 +165,31 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
             ),
           ),
           if (_isLoading) const LinearProgressIndicator(),
-          _buildInputArea(),
+          _buildInputArea(theme),
         ],
       ),
     );
   }
 
-  Widget _buildInputArea() {
+  Widget _buildInputArea(ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, border: Border(top: BorderSide(color: Colors.grey.shade200))),
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor, 
+        border: Border(top: BorderSide(color: theme.dividerColor.withOpacity(0.1)))
+      ),
       child: SafeArea(
         child: Row(
           children: [
             Expanded(
               child: TextField(
                 controller: _messageController,
+                style: TextStyle(color: theme.textTheme.bodyMedium?.color),
                 decoration: InputDecoration(
                   hintText: 'Ask your guru...',
+                  hintStyle: TextStyle(color: theme.hintColor),
                   filled: true,
-                  fillColor: Colors.grey.shade50,
+                  fillColor: theme.cardColor,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
                 ),
                 onSubmitted: (_) => _sendMessage(),

@@ -36,7 +36,7 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Analytics')),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
