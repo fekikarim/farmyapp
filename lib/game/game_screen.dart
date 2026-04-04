@@ -12,6 +12,7 @@ import 'isometric_map.dart';
 import 'land_grid_service.dart';
 import 'shop_overlay.dart';
 import 'inventory_overlay.dart';
+import '../screens/investment_agent_screen.dart';
 import '../services/shop_service.dart';
 import '../../services/auth_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -810,6 +811,31 @@ class _GameScreenState extends State<GameScreen>
                 );
               },
             ),
+          
+          // AI Advisor Button
+          _buildMenuItem(
+            label: 'AI Advisor',
+            icon: Icons.auto_awesome,
+            color: Colors.purpleAccent,
+            textColor: Colors.white,
+            delay: 25,
+            onTap: () {
+              _toggleMenu();
+              final auth = context.read<AuthProvider>();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => InvestmentAgentScreen(
+                    initialMessage: "Analyse my current farm and wallet. What should be my next strategic move in this game session?",
+                    initialContext: {
+                      'landId': widget.land.id,
+                      'walletBalance': auth.user?.creditsBalance ?? 0,
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
 
           // Inventory Button
           _buildMenuItem(

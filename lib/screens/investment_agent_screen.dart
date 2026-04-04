@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import '../services/investment_agent_service.dart';
+import 'dart:convert';
 import 'package:intl/intl.dart';
 import '../models/land_model.dart';
 import 'investor/land_details_screen.dart';
+import '../services/land_service.dart';
+import '../services/auth_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class InvestmentAgentScreen extends StatefulWidget {
   final Map<String, dynamic>? initialContext;
@@ -265,8 +269,14 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                         MarkdownBody(
                           data: msg['content'].toString(),
                           shrinkWrap: true,
+                          onTapLink: (text, href, title) {
+                            if (href != null) {
+                              _handleInteractiveLink(href);
+                            }
+                          },
                           styleSheet: MarkdownStyleSheet(
                             p: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 13, height: 1.4),
+                            a: TextStyle(color: Theme.of(context).primaryColor, decoration: TextDecoration.underline, fontWeight: FontWeight.bold),
                           ),
                         ),
                         if (index == _messages.length - 1 && !isUser) ...[
@@ -459,5 +469,209 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
         ),
       ),
     );
+  }
+
+  void _handleInteractiveLink(String href) async {
+    final uri = Uri.parse(href);
+    if (uri.scheme == 'farmy') {
+      if (uri.host == 'land') {
+        final landId = uri.pathSegments.isNotEmpty ? uri.pathSegments[0] : null;
+        if (landId != null) {
+          _showLoadingOverlay();
+          try {
+            final land = await LandService.getLandById(landId);
+            if (mounted && land != null) {
+              Navigator.pop(context); // Remove loading
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => LandDetailsScreen(land: land)),
+              );
+            }
+          } catch (e) {
+            if (mounted) Navigator.pop(context);
+          }
+        }
+      } else if (uri.host == 'asset') {
+        // farmy://asset/category/variantId
+        if (uri.pathSegments.length >= 2) {
+          final category = uri.pathSegments[0];
+          final variantId = uri.pathSegments[1];
+          _showAssetInfoSheet(category, variantId);
+        }
+      } else if (uri.host == 'worker') {
+        final workerId = uri.pathSegments.isNotEmpty ? uri.pathSegments[0] : null;
+        if (workerId != null) {
+          _showWorkerInfoSheet(workerId);
+        }
+      }
+    }
+  }
+
+  void _showLoadingOverlay() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  void _showWorkerInfoSheet(String workerId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return FutureBuilder<Map<String, dynamic>?>(
+          future: _fetchWorkerDetails(workerId),
+          builder: (ctx, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final worker = snap.data;
+            if (worker == null) return const SizedBox();
+
+            final String name = worker['user']?['profile']?['name'] ?? 'Worker';
+            final String bio = worker['bio'] ?? '';
+            final String rating = worker['rating']?.toString() ?? '0.0';
+            final String rate = worker['hourly_rate']?.toString() ?? '0';
+
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const Text('LABOR MARKET', style: TextStyle(color: Colors.blueAccent, fontSize: 10, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 12),
+                  if (bio.isNotEmpty) Text(bio, style: const TextStyle(fontSize: 14)),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      _statChip('Rate', '$rate TND/hr'),
+                      const SizedBox(width: 8),
+                      _statChip('Rating', '$rating/5.0'),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('Close'),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>?> _fetchWorkerDetails(String workerId) async {
+    try {
+      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final response = await AuthService.authenticatedRequest(
+        'GET',
+        Uri.parse('$baseUrl/api/v1/worker-profile/$workerId'),
+      );
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        return body['data'] as Map<String, dynamic>?;
+      }
+    } catch (e) {
+      debugPrint('_fetchWorkerDetails error: $e');
+    }
+    return null;
+  }
+
+  void _showAssetInfoSheet(String category, String variantId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return FutureBuilder<Map<String, dynamic>?>(
+          future: _fetchVariantDetails(category, variantId),
+          builder: (ctx, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final variant = snap.data;
+            if (variant == null) return const SizedBox();
+
+            final String name = variant['type']?['name'] ?? variant['variant_code'] ?? 'Item';
+            final String description = variant['type']?['description'] ?? '';
+            final Map<String, dynamic> attrs = Map<String, dynamic>.from(variant['attributes'] ?? {});
+
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text(category.toUpperCase(), style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                  const SizedBox(height: 12),
+                  if (description.isNotEmpty) Text(description, style: const TextStyle(fontSize: 14)),
+                  const SizedBox(height: 16),
+                  const Text('Specifications:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      _statChip('Price', variant['base_price'].toString()),
+                      for (var attr in attrs.entries) _statChip(attr.key, attr.value.toString()),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('Close'),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _statChip(String label, String value) {
+    return Chip(
+      label: Text('$label: $value', style: const TextStyle(fontSize: 10)),
+      backgroundColor: Colors.grey.withOpacity(0.1),
+    );
+  }
+
+  Future<Map<String, dynamic>?> _fetchVariantDetails(String category, String variantId) async {
+    try {
+      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final response = await AuthService.authenticatedRequest(
+        'GET',
+        Uri.parse('$baseUrl/api/v1/assets/$category/variants/$variantId'),
+      );
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        return body['data'] as Map<String, dynamic>?;
+      }
+    } catch (e) {
+      debugPrint('_fetchVariantDetails error: $e');
+    }
+    return null;
   }
 }
