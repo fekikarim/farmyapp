@@ -2,9 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import '../services/investment_agent_service.dart';
 import 'package:intl/intl.dart';
+import '../models/land_model.dart';
+import 'investor/land_details_screen.dart';
 
 class InvestmentAgentScreen extends StatefulWidget {
-  const InvestmentAgentScreen({super.key});
+  final Map<String, dynamic>? initialContext;
+  final String? initialMessage;
+
+  const InvestmentAgentScreen({
+    super.key,
+    this.initialContext,
+    this.initialMessage,
+  });
 
   @override
   State<InvestmentAgentScreen> createState() => _InvestmentAgentScreenState();
@@ -17,6 +26,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
   
   List<Map<String, dynamic>> _messages = [];
   List<dynamic> _availableFarms = [];
+  Map<String, dynamic>? _lastTools;
   String? _sessionId;
   bool _isLoading = false;
   List<dynamic> _history = [];
@@ -25,6 +35,16 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
   void initState() {
     super.initState();
     _loadHistory();
+    if (widget.initialMessage != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _sendInitialMessage();
+      });
+    }
+  }
+
+  void _sendInitialMessage() {
+    _messageController.text = widget.initialMessage!;
+    _sendMessage(userContext: widget.initialContext);
   }
 
   Future<void> _loadHistory() async {
@@ -40,7 +60,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     if (session != null) {
       setState(() {
         _sessionId = sessionId;
-        _messages = List<Map<String, dynamic>>.from(session['messages']);
+        _messages = List<Map<String, dynamic>>.from(session['messages'] ?? []);
         _availableFarms = session['context_data'] ?? [];
       });
       Navigator.pop(context); // Close drawer
@@ -49,7 +69,21 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     setState(() => _isLoading = false);
   }
 
-  void _sendMessage() async {
+  Future<void> _deleteSession(String sessionId) async {
+    final success = await _agentService.deleteSession(sessionId);
+    if (success) {
+      if (_sessionId == sessionId) {
+        setState(() {
+          _sessionId = null;
+          _messages = [];
+          _availableFarms = [];
+        });
+      }
+      _loadHistory();
+    }
+  }
+
+  void _sendMessage({Map<String, dynamic>? userContext}) async {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
@@ -65,12 +99,13 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     _scrollToBottom();
 
     try {
-      final result = await _agentService.getRecommendations(text, sessionId: _sessionId);
+      final result = await _agentService.getRecommendations(text, sessionId: _sessionId, userContext: userContext);
       if (result != null) {
         setState(() {
           _sessionId = result['sessionId'];
-          _messages = List<Map<String, dynamic>>.from(result['history']);
+          _messages = List<Map<String, dynamic>>.from(result['history'] ?? []);
           _availableFarms = result['farms'] ?? [];
+          _lastTools = result['tools'];
         });
         _scrollToBottom();
         _loadHistory();
@@ -103,6 +138,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Strategic Portfolio Analyst'),
+        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.add_comment_outlined),
@@ -111,6 +147,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                 _sessionId = null;
                 _messages = [];
                 _availableFarms = [];
+                _lastTools = null;
               });
             },
             tooltip: 'New Session',
@@ -159,6 +196,10 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                   leading: const Icon(Icons.history_edu),
                   title: Text(session['title'] ?? 'Strategy Session', maxLines: 1, overflow: TextOverflow.ellipsis),
                   subtitle: Text(DateFormat('MMM d, HH:mm').format(date)),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
+                    onPressed: () => _deleteSession(session['id']),
+                  ),
                   onTap: () => _loadSession(session['id']),
                   selected: _sessionId == session['id'],
                 );
@@ -185,7 +226,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Tell me your budget and risk preference, and I will draft a diversified portfolio across our top performing farms.',
+              'Tell me your budget and risk preference, or ask about current market and weather trends.',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey),
             ),
@@ -223,12 +264,15 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                       children: [
                         MarkdownBody(
                           data: msg['content'].toString(),
+                          shrinkWrap: true,
                           styleSheet: MarkdownStyleSheet(
-                            p: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
+                            p: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 13, height: 1.4),
                           ),
                         ),
-                        if (index == _messages.length - 1 && !isUser && _availableFarms.isNotEmpty)
-                          _buildFarmSuggestions(),
+                        if (index == _messages.length - 1 && !isUser) ...[
+                          if (_lastTools != null) _buildLiveToolsRow(),
+                          if (_availableFarms.isNotEmpty) _buildFarmSuggestions(),
+                        ],
                       ],
                     ),
             ),
@@ -239,50 +283,118 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     );
   }
 
+  Widget _buildLiveToolsRow() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 12.0),
+          child: Text('Consulted Live Data:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.blueAccent)),
+        ),
+        Row(
+          children: [
+            _buildSmallToolCard(
+              title: 'Market',
+              icon: Icons.trending_up,
+              data: _lastTools!['market']['grainPrice'],
+              onTap: () {
+                 _messageController.text = "Explain the current market trend for me.";
+              }
+            ),
+            const SizedBox(width: 8),
+            _buildSmallToolCard(
+              title: 'Weather',
+              icon: Icons.wb_sunny_outlined,
+              data: _lastTools!['weather']['temperature'] ?? '24°C',
+              onTap: () {
+                 _messageController.text = "Tell me more about the weather forecast.";
+              }
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSmallToolCard({required String title, required IconData icon, required String data, required VoidCallback onTap}) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.blue.withOpacity(0.1)),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, size: 16, color: Colors.blueAccent),
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+                  Text(data, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildFarmSuggestions() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 12.0),
-          child: Text('Discussed Farms:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          child: Text('Suggested Real Estate:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.green)),
         ),
         SizedBox(
-          height: 120,
+          height: 125,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: _availableFarms.length,
             itemBuilder: (context, fIdx) {
               final farm = _availableFarms[fIdx];
-              return InkWell(
-                onTap: () {
-                  _messageController.text = "Tell me more about ${farm['name']}. Why is it a good choice?";
-                },
-                child: Container(
-                  width: 160,
-                  margin: const EdgeInsets.only(right: 12),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.2)),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(farm['name'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
-                      const SizedBox(height: 4),
-                      Text('\$${farm['price']}', style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 12, fontWeight: FontWeight.bold)),
-                      const Spacer(),
-                      Row(
-                        children: [
-                          const Icon(Icons.wb_sunny_outlined, size: 10, color: Colors.orange),
-                          const SizedBox(width: 4),
-                          Text(farm['weatherRiskScore'], style: const TextStyle(fontSize: 10)),
-                        ],
-                      ),
-                    ],
+              return Container(
+                width: 170,
+                margin: const EdgeInsets.only(right: 12),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.green.withOpacity(0.1)),
+                ),
+                child: InkWell(
+                  onTap: () {
+                    final landObj = Land.fromJson(farm['fullData']);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => LandDetailsScreen(land: landObj)),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(farm['name'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        const SizedBox(height: 4),
+                        Text('${farm['price']} TND/m', style: const TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold)),
+                        const Spacer(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(farm['weatherRiskScore'], style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                            const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.green),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -308,7 +420,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
               child: TextField(
                 controller: _messageController,
                 decoration: InputDecoration(
-                  hintText: 'Enter preferences or ask details...',
+                  hintText: 'Enter preferences or ask analysis...',
                   hintStyle: const TextStyle(fontSize: 14),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
                   filled: true,
@@ -322,8 +434,8 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
             CircleAvatar(
               backgroundColor: theme.primaryColor,
               child: IconButton(
-                icon: const Icon(Icons.send, color: Colors.white, size: 20),
-                onPressed: _sendMessage,
+                icon: const Icon(Icons.insights, color: Colors.white, size: 20),
+                onPressed: () => _sendMessage(),
               ),
             ),
           ],

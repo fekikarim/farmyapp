@@ -7,6 +7,7 @@ import '../../providers/auth_provider.dart';
 import '../../widgets/subscription_limit_bar.dart';
 import 'add_product_screen.dart';
 import '../../models/product_model.dart';
+import '../investment_agent_screen.dart';
 
 class MyProductsScreen extends StatefulWidget {
   const MyProductsScreen({super.key});
@@ -66,7 +67,34 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
     final isFarmer = authProvider.user?.role == 'farmer';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Products')),
+      appBar: AppBar(
+        title: const Text('My Products'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.auto_awesome, color: Colors.green),
+            onPressed: () {
+              final products = context.read<ProductProvider>();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => InvestmentAgentScreen(
+                    initialMessage: "Analyse my current product inventory. Are these good products to hold or should I focus on something else based on the market?",
+                    initialContext: {
+                      'inventory': products.myProducts.map((p) => {
+                        'title': p.title,
+                        'price': p.price,
+                        'quantity': p.quantity,
+                        'status': p.status.name,
+                      }).toList(),
+                    },
+                  ),
+                ),
+              );
+            },
+            tooltip: 'Analyze Inventory',
+          ),
+        ],
+      ),
       floatingActionButton: Consumer<SubscriptionProvider>(
         builder: (context, subProvider, _) {
           final productCount = productProvider.myProducts.length;

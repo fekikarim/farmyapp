@@ -4,6 +4,7 @@ import '../../providers/land_provider.dart';
 import '../../models/land_rental_model.dart';
 import '../../widgets/subscription_limit_bar.dart';
 import 'package:intl/intl.dart';
+import '../investment_agent_screen.dart';
 
 class InvestorMyInvestmentsScreen extends StatefulWidget {
   const InvestorMyInvestmentsScreen({super.key});
@@ -31,6 +32,30 @@ class _InvestorMyInvestmentsScreenState
           'My Investments',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.auto_awesome, color: Colors.green),
+            onPressed: () {
+              final provider = context.read<LandProvider>();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => InvestmentAgentScreen(
+                    initialMessage: "Analyze my current investment portfolio and suggest improvements or diversification.",
+                    initialContext: {
+                      'portfolio': provider.myRentals.map((r) => {
+                        'landName': r.land?.name,
+                        'monthlyRent': r.monthlyRent,
+                        'status': r.paymentStatus.name,
+                      }).toList(),
+                    },
+                  ),
+                ),
+              );
+            },
+            tooltip: 'Analyze Portfolio',
+          ),
+        ],
       ),
       body: Consumer<LandProvider>(
         builder: (context, provider, child) {

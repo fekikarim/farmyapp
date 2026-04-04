@@ -4,6 +4,7 @@ import '../../providers/wallet_provider.dart';
 import '../../providers/product_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../models/product_model.dart';
+import '../investment_agent_screen.dart';
 
 class InvestorRevenueScreen extends StatefulWidget {
   const InvestorRevenueScreen({super.key});
@@ -36,7 +37,32 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
         .fold(0.0, (sum, item) => sum + item.price);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Revenue')),
+      appBar: AppBar(
+        title: const Text('Revenue'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.auto_awesome, color: Colors.green),
+            onPressed: () {
+              final wallet = context.read<WalletProvider>();
+              final products = context.read<ProductProvider>();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => InvestmentAgentScreen(
+                    initialMessage: "Analyze my revenue sources and suggest ways to maximize my profits based on current market trends.",
+                    initialContext: {
+                      'revenue': wallet.credits,
+                      'inventory_value': products.myProducts.fold(0.0, (sum, p) => sum + p.price),
+                      'sold_count': products.myProducts.where((p) => p.status == ProductStatus.sold).length,
+                    },
+                  ),
+                ),
+              );
+            },
+            tooltip: 'Analyze Revenue',
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(

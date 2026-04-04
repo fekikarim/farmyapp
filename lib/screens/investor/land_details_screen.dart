@@ -9,8 +9,9 @@ import '../../services/land_service.dart';
 import '../../providers/subscription_provider.dart';
 import '../../providers/land_provider.dart';
 import '../../widgets/subscription_limit_bar.dart';
-import 'rental_checkout_screen.dart';
 import '../farmer/workforce_screen.dart';
+import '../investment_agent_screen.dart';
+import 'rental_checkout_screen.dart';
 import 'dart:ui';
 
 class LandDetailsScreen extends StatefulWidget {
@@ -118,6 +119,28 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
             ),
             onPressed: () => Navigator.pop(context),
           ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: IconButton(
+                icon: const Icon(Icons.auto_awesome, color: Colors.green),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => InvestmentAgentScreen(
+                        initialMessage: "Tell me about ${_land.name}. Is it a good strategic investment for me?",
+                        initialContext: {
+                          'targetLand': _land.toJson(),
+                        },
+                      ),
+                    ),
+                  );
+                },
+                tooltip: 'Ask AI Analyst',
+              ),
+            ),
+          ],
           flexibleSpace: FlexibleSpaceBar(
             background: Stack(
               fit: StackFit.expand,
