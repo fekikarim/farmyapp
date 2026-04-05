@@ -5,12 +5,38 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../services/auth_service.dart';
 import '../providers/game_provider.dart';
 
-class TaskAssignmentSheet extends StatefulWidget {
+// Static helper to show the sheet properly
+void showTaskAssignmentSheet(
+  BuildContext context, {
+  required dynamic itemData,
+  required String category,
+  required String variantId,
+  required int gridWidth,
+  required int gridHeight,
+  required String landId,
+}) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: false,
+    builder: (ctx) => _TaskAssignmentSheetContent(
+      itemData: itemData,
+      category: category,
+      variantId: variantId,
+      gridWidth: gridWidth,
+      gridHeight: gridHeight,
+      landId: landId,
+    ),
+  );
+}
+
+class TaskAssignmentSheet extends StatelessWidget {
   final dynamic itemData;
   final String category;
   final String variantId;
   final int gridWidth;
   final int gridHeight;
+  final String landId;
 
   const TaskAssignmentSheet({
     Key? key,
@@ -19,13 +45,44 @@ class TaskAssignmentSheet extends StatefulWidget {
     required this.variantId,
     required this.gridWidth,
     required this.gridHeight,
+    required this.landId,
   }) : super(key: key);
 
   @override
-  State<TaskAssignmentSheet> createState() => _TaskAssignmentSheetState();
+  Widget build(BuildContext context) {
+    return _TaskAssignmentSheetContent(
+      itemData: itemData,
+      category: category,
+      variantId: variantId,
+      gridWidth: gridWidth,
+      gridHeight: gridHeight,
+      landId: landId,
+    );
+  }
 }
 
-class _TaskAssignmentSheetState extends State<TaskAssignmentSheet> {
+class _TaskAssignmentSheetContent extends StatefulWidget {
+  final dynamic itemData;
+  final String category;
+  final String variantId;
+  final int gridWidth;
+  final int gridHeight;
+  final String landId;
+
+  const _TaskAssignmentSheetContent({
+    required this.itemData,
+    required this.category,
+    required this.variantId,
+    required this.gridWidth,
+    required this.gridHeight,
+    required this.landId,
+  });
+
+  @override
+  State<_TaskAssignmentSheetContent> createState() => _TaskAssignmentSheetContentState();
+}
+
+class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent> {
   bool _isLoading = true;
   List<dynamic> _tasks = [];
   String? _error;
@@ -43,7 +100,7 @@ class _TaskAssignmentSheetState extends State<TaskAssignmentSheet> {
         'GET',
         Uri.parse('$baseUrl/api/v1/asset-tasks/variant/${widget.variantId}'),
       );
-      
+
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         if (mounted) {
@@ -53,12 +110,12 @@ class _TaskAssignmentSheetState extends State<TaskAssignmentSheet> {
           });
         }
       } else {
-        throw Exception('Failed to load tasks');
+        throw Exception('Server returned ${response.statusCode}');
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Error fetching tasks';
+          _error = 'Error fetching tasks: $e';
           _isLoading = false;
         });
       }
@@ -66,7 +123,6 @@ class _TaskAssignmentSheetState extends State<TaskAssignmentSheet> {
   }
 
   Future<void> _assignTask(dynamic taskDef, GameProvider gameProvider) async {
-    // Determine closest worker
     int fw = widget.itemData['footprint_width'] ?? 1;
     int fh = widget.itemData['footprint_height'] ?? 1;
     int ox = widget.itemData['origin_x'] ?? 0;
@@ -74,32 +130,32 @@ class _TaskAssignmentSheetState extends State<TaskAssignmentSheet> {
     double targetX = ox + (fw - 1) / 2.0;
     double targetY = oy + (fh - 1) / 2.0;
 
-    String? workerId = gameProvider.getClosestAvailableWorkerId(targetX, targetY);
-    
+    final String? workerId = gameProvider.getClosestAvailableWorkerId(targetX, targetY);
+
     if (workerId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No available workers found!'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No available workers!'), backgroundColor: Colors.red),
+        );
+      }
       return;
     }
 
-    try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (c) => const Center(child: CircularProgressIndicator()),
-      );
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (c) => const Center(child: CircularProgressIndicator()),
+    );
 
+    try {
       final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
-      final landId = widget.itemData['land_id'] ?? '';
+      final landId = widget.landId;  // Use the explicitly passed landId
       final placedItemId = widget.itemData['id'] ?? '';
 
       final response = await AuthService.authenticatedRequest(
         'POST',
-        Uri.parse('$baseUrl/api/v1/tasks/lands/$landId/tasks'), // Check task route later
+        Uri.parse('$baseUrl/api/v1/tasks/lands/$landId/tasks'),
         body: {
           'title': taskDef['description'] ?? 'Task',
           'description': taskDef['description'],
@@ -112,40 +168,86 @@ class _TaskAssignmentSheetState extends State<TaskAssignmentSheet> {
         },
       );
 
-      Navigator.pop(context); // Close dialog
+      if (mounted && Navigator.canPop(context)) Navigator.pop(context);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Move worker visually
-        gameProvider.moveClosestWorkerTo(
+        // Mark the specific assigned worker as busy immediately
+        gameProvider.setWorkerBusy(workerId);
+
+        // Walk THAT specific worker to the task location (not the closest arbitrary one)
+        gameProvider.moveWorkerById(
+          workerId,
           targetX,
           targetY,
           gridWidth: widget.gridWidth,
           gridHeight: widget.gridHeight,
         );
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Task assigned to closest worker!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.pop(context); // Close sheet
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Task assigned!'), backgroundColor: Colors.green),
+          );
+          Navigator.pop(context);
+        }
       } else {
         final body = jsonDecode(response.body);
-        print('Backend error: $body');
-        throw Exception(body['message'] ?? 'Failed to assign');
+        throw Exception(body['message'] ?? 'Failed to assign task');
       }
     } catch (e) {
       if (mounted) {
-        if (Navigator.canPop(context)) Navigator.pop(context); // Close dialog
+        if (Navigator.canPop(context)) Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
         );
       }
     }
+  }
+
+  Widget _buildTaskRow(dynamic task, int availableCount, GameProvider gameProvider) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  (task['action'] as String? ?? 'task').toUpperCase(),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  task['description'] as String? ?? '',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          SizedBox(
+            width: 90,
+            child: ElevatedButton(
+              onPressed: availableCount > 0
+                  ? () => _assignTask(task, gameProvider)
+                  : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber,
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: const Text('Assign', style: TextStyle(fontSize: 13)),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -153,114 +255,93 @@ class _TaskAssignmentSheetState extends State<TaskAssignmentSheet> {
     final gameProvider = Provider.of<GameProvider>(context);
     final availableCount = gameProvider.workers.where((w) => w.availability == 'available').length;
 
-    return Container(
-      width: double.infinity,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.7,
-      ),
-      decoration: BoxDecoration(
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      child: ColoredBox(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      padding: EdgeInsets.only(
-        left: 20, right: 20, top: 16,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Center(
-            child: Container(
-              width: 40, height: 4,
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade400,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Assign Task',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: availableCount > 0 ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '$availableCount Available Workers',
-                  style: TextStyle(
-                    color: availableCount > 0 ? Colors.green.shade700 : Colors.red.shade700,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Handle bar
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          
-          if (_isLoading)
-            const Center(child: Padding(
-              padding: EdgeInsets.all(32.0),
-              child: CircularProgressIndicator(),
-            ))
-          else if (_error != null)
-            Center(child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Text(_error!, style: TextStyle(color: Colors.red)),
-            ))
-          else if (_tasks.isEmpty)
-            const Center(child: Padding(
-              padding: EdgeInsets.all(32.0),
-              child: Text('No tasks available for this item.'),
-            ))
-          else
-            Flexible(
-              child: ListView.separated(
-                shrinkWrap: true,
-                itemCount: _tasks.length,
-                separatorBuilder: (ctx, idx) => const Divider(),
-                itemBuilder: (ctx, idx) {
-                  final task = _tasks[idx];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(task['action']?.toUpperCase() ?? 'TASK', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                              const SizedBox(height: 4),
-                              Text(task['description'] ?? '', style: TextStyle(color: Colors.grey.shade600)),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        ElevatedButton(
-                          onPressed: availableCount > 0 ? () => _assignTask(task, gameProvider) : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.amber,
-                            foregroundColor: Colors.black,
-                          ),
-                          child: const Text('Assign'),
-                        ),
-                      ],
+
+                // Header row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Assign Task',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     ),
-                  );
-                },
-              ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: availableCount > 0
+                            ? Colors.green.withOpacity(0.12)
+                            : Colors.red.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '$availableCount Available',
+                        style: TextStyle(
+                          color: availableCount > 0 ? Colors.green.shade700 : Colors.red.shade700,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+
+                // Content
+                if (_isLoading)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else if (_error != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    child: Center(
+                      child: Text(_error!, style: const TextStyle(color: Colors.red)),
+                    ),
+                  )
+                else if (_tasks.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Center(child: Text('No tasks defined for this item.')),
+                  )
+                else
+                  // Use a simple Column for the tasks list, no ListView scrolling issues
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (final task in _tasks)
+                        _buildTaskRow(task, availableCount, gameProvider),
+                    ],
+                  ),
+
+                const SizedBox(height: 16),
+              ],
             ),
-        ],
+          ),
+        ),
       ),
     );
   }

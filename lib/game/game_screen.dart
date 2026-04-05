@@ -218,17 +218,29 @@ class _GameScreenState extends State<GameScreen>
       
       final int gridW = _gridData?['grid_width'] ?? widget.land.gridWidth;
       final int gridH = _gridData?['grid_height'] ?? widget.land.gridHeight;
+      // Use land_id from item data (now included by backend) or fall back to current land
+      final String landId = (itemData['land_id'] as String?)?.isNotEmpty == true
+          ? itemData['land_id'] as String
+          : widget.land.id;
+
+      // Capture the existing GameProvider BEFORE opening the modal,
+      // so the sheet operates on the SAME instance (not a new detached one).
+      final gameProvider = Provider.of<GameProvider>(context, listen: false);
 
       showModalBottomSheet(
         context: context,
-        isScrollControlled: true,
+        isScrollControlled: false,
         backgroundColor: Colors.transparent,
-        builder: (ctx) => TaskAssignmentSheet(
-          itemData: itemData,
-          category: category,
-          variantId: variantId,
-          gridWidth: gridW,
-          gridHeight: gridH,
+        builder: (ctx) => ChangeNotifierProvider<GameProvider>.value(
+          value: gameProvider,
+          child: TaskAssignmentSheet(
+            itemData: itemData,
+            category: category,
+            variantId: variantId,
+            gridWidth: gridW,
+            gridHeight: gridH,
+            landId: landId,
+          ),
         ),
       );
     }

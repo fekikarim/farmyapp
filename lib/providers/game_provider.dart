@@ -9,7 +9,7 @@ class WorkerState {
   final String workerId;
   final String workerName;
   final String? workerPicture;
-  final String availability;
+  String availability; // mutable: 'available' | 'busy'
   double x;
   double y;
   double? targetX;
@@ -103,6 +103,8 @@ class GameProvider with ChangeNotifier {
     _workersLoading = true;
     notifyListeners();
 
+    currentLandId = landId; // Remember which land workers are on
+
     try {
       final List<LandWorker> landWorkers = await WorkerService.getLandWorkers(
         landId,
@@ -113,26 +115,40 @@ class GameProvider with ChangeNotifier {
         w.stop();
       }
 
-      // Spread workers in a line at top-left of the land
+      // Load saved positions from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+
       _workers = [];
       for (int i = 0; i < landWorkers.length; i++) {
         final lw = landWorkers[i];
         if (!lw.isActive) continue; // Only show active workers
 
-        // Spread workers in a horizontal line starting from (1, 1)
-        double startX = 1.0 + (i % 4).toDouble(); // Max 4 per row
-        double startY = 1.0 + (i ~/ 4).toDouble();
+        // Try to restore saved position, otherwise fall back to default spread
+        final String posKey = 'worker_pos_${landId}_${lw.workerId}';
+        final String? savedPos = prefs.getString(posKey);
 
-        _workers.add(
-          WorkerState(
-            workerId: lw.workerId,
-            workerName: lw.workerName ?? 'Worker',
-            workerPicture: lw.workerProfilePicture,
-            availability: lw.workerAvailability ?? 'available',
-            x: startX.clamp(0, gridWidth - 1.0),
-            y: startY.clamp(0, gridHeight - 1.0),
-          ),
+        double startX;
+        double startY;
+        if (savedPos != null) {
+          final parts = savedPos.split(',');
+          startX = double.tryParse(parts[0]) ?? (1.0 + (i % 4));
+          startY = double.tryParse(parts[1]) ?? (1.0 + (i ~/ 4));
+        } else {
+          // Default: spread workers in a horizontal line starting from (1, 1)
+          startX = 1.0 + (i % 4).toDouble();
+          startY = 1.0 + (i ~/ 4).toDouble();
+        }
+
+        final workerState = WorkerState(
+          workerId: lw.workerId,
+          workerName: lw.workerName ?? 'Worker',
+          workerPicture: lw.workerProfilePicture,
+          availability: lw.workerAvailability ?? 'available',
+          x: startX.clamp(0, gridWidth - 1.0),
+          y: startY.clamp(0, gridHeight - 1.0),
         );
+
+        _workers.add(workerState);
       }
     } catch (e) {
       debugPrint('Error loading workers: $e');
@@ -143,13 +159,17 @@ class GameProvider with ChangeNotifier {
   }
 
   /// Move the closest worker to the given isometric tile coordinates.
+  /// onlyAvailable: if true (default for double-click), ignores busy workers.
   void moveClosestWorkerTo(
     double tx,
     double ty, {
     int? gridWidth,
     int? gridHeight,
+    String? landId,
+    bool onlyAvailable = false,
   }) {
     if (_workers.isEmpty) return;
+    final effectiveLandId = landId ?? currentLandId;
 
     // Clamp target to grid bounds
     double clampedX = tx;
@@ -157,10 +177,16 @@ class GameProvider with ChangeNotifier {
     if (gridWidth != null) clampedX = clampedX.clamp(0.0, gridWidth - 0.1);
     if (gridHeight != null) clampedY = clampedY.clamp(0.0, gridHeight - 0.1);
 
-    // Find closest worker by Manhattan distance
-    WorkerState closest = _workers.first;
+    // Filter by availability if requested (double-click should not move busy workers)
+    final eligibleWorkers = onlyAvailable
+        ? _workers.where((w) => w.availability == 'available').toList()
+        : _workers;
+    if (eligibleWorkers.isEmpty) return;
+
+    // Find closest eligible worker by Manhattan distance
+    WorkerState closest = eligibleWorkers.first;
     double minDist = double.infinity;
-    for (var w in _workers) {
+    for (var w in eligibleWorkers) {
       double dist = (w.x - clampedX).abs() + (w.y - clampedY).abs();
       if (dist < minDist) {
         minDist = dist;
@@ -168,7 +194,48 @@ class GameProvider with ChangeNotifier {
       }
     }
 
-    closest.moveTo(clampedX, clampedY, notifyListeners, notifyListeners);
+    closest.moveTo(clampedX, clampedY, notifyListeners, () {
+      // Save position to SharedPreferences when worker stops moving
+      _saveWorkerPosition(effectiveLandId, closest.workerId, closest.x, closest.y);
+      notifyListeners();
+    });
+  }
+
+  /// Moves a specific worker by ID to the given target coordinates.
+  /// Used after task assignment so exactly the assigned worker walks to the task.
+  void moveWorkerById(
+    String workerId,
+    double tx,
+    double ty, {
+    int? gridWidth,
+    int? gridHeight,
+  }) {
+    final worker = _workers.where((w) => w.workerId == workerId).firstOrNull;
+    if (worker == null) return;
+
+    double clampedX = tx;
+    double clampedY = ty;
+    if (gridWidth != null) clampedX = clampedX.clamp(0.0, gridWidth - 0.1);
+    if (gridHeight != null) clampedY = clampedY.clamp(0.0, gridHeight - 0.1);
+
+    worker.moveTo(clampedX, clampedY, notifyListeners, () {
+      _saveWorkerPosition(currentLandId, worker.workerId, worker.x, worker.y);
+      notifyListeners();
+    });
+  }
+
+
+  String currentLandId = '';
+
+  /// Saves a worker's position to SharedPreferences.
+  Future<void> _saveWorkerPosition(String landId, String workerId, double x, double y) async {
+    if (landId.isEmpty) return;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('worker_pos_${landId}_$workerId', '$x,$y');
+    } catch (e) {
+      debugPrint('Failed to save worker position: $e');
+    }
   }
 
   /// Finds and returns the ID of the closest available worker to a given point.
@@ -188,6 +255,24 @@ class GameProvider with ChangeNotifier {
     }
     
     return closest.workerId;
+  }
+
+  /// Marks a worker as busy locally (after task assignment) so the UI updates immediately.
+  void setWorkerBusy(String workerId) {
+    final worker = _workers.where((w) => w.workerId == workerId).firstOrNull;
+    if (worker != null) {
+      worker.availability = 'busy';
+      notifyListeners();
+    }
+  }
+
+  /// Marks a worker as available locally (after task completion).
+  void setWorkerAvailable(String workerId) {
+    final worker = _workers.where((w) => w.workerId == workerId).firstOrNull;
+    if (worker != null) {
+      worker.availability = 'available';
+      notifyListeners();
+    }
   }
 
   Future<void> _loadSettings() async {

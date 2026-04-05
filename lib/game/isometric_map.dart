@@ -243,6 +243,7 @@ class _IsometricMapState extends State<IsometricMap> with SingleTickerProviderSt
            gridY,
            gridWidth: widget.gridWidth,
            gridHeight: widget.gridHeight,
+           onlyAvailable: true, // Never move busy workers on double-click
          );
        } else if (!widget.placementMode) {
           // Open menu if an item is tapped
@@ -486,6 +487,7 @@ class IsometricMapPainter extends CustomPainter {
         playerStatus: worker.status,
         workerName: worker.workerName,
         workerDepth: worker.x + worker.y,
+        workerIsBusy: worker.availability == 'busy',
       ));
     }
 
@@ -851,7 +853,12 @@ class IsometricMapPainter extends CustomPainter {
 
         // Draw worker name label above sprite
         if (task.workerName != null) {
-          _paintWorkerLabel(canvas, task.workerName!, task.isoX + tileWidth / 2, dy - 4);
+          _paintWorkerLabel(canvas, task.workerName!, task.isoX + tileWidth / 2, dy - 4, isBusy: task.workerIsBusy);
+        }
+
+        // Draw busy badge overlay
+        if (task.workerIsBusy) {
+          _paintBusyBadge(canvas, task.isoX + tileWidth * 0.8, dy + fixedH * 0.05);
         }
     } else {
         final Paint shadowPaint = Paint()..color = Colors.black.withOpacity(0.2);
@@ -866,18 +873,46 @@ class IsometricMapPainter extends CustomPainter {
     }
   }
 
-  void _paintWorkerLabel(Canvas canvas, String name, double cx, double topY) {
+  void _paintBusyBadge(Canvas canvas, double cx, double cy) {
+    // Red circle badge
+    final badgePaint = Paint()..color = const Color(0xFFE53935);
+    canvas.drawCircle(Offset(cx, cy), 6, badgePaint);
+
+    // White border
+    final borderPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    canvas.drawCircle(Offset(cx, cy), 6, borderPaint);
+
+    // Hourglass icon (two triangles)
+    final iconPaint = Paint()..color = Colors.white;
+    final Path top = Path()
+      ..moveTo(cx - 3, cy - 4)
+      ..lineTo(cx + 3, cy - 4)
+      ..lineTo(cx, cy)
+      ..close();
+    final Path bot = Path()
+      ..moveTo(cx - 3, cy + 4)
+      ..lineTo(cx + 3, cy + 4)
+      ..lineTo(cx, cy)
+      ..close();
+    canvas.drawPath(top, iconPaint);
+    canvas.drawPath(bot, iconPaint);
+  }
+
+  void _paintWorkerLabel(Canvas canvas, String name, double cx, double topY, {bool isBusy = false}) {
     const double fontSize = 9.0;
     const double padding = 3.0;
 
     final textPainter = TextPainter(
       text: TextSpan(
-        text: name,
-        style: const TextStyle(
+        text: isBusy ? '$name  ⏳' : name,
+        style: TextStyle(
           color: Colors.white,
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
-          shadows: [Shadow(color: Colors.black, blurRadius: 2)],
+          shadows: const [Shadow(color: Colors.black, blurRadius: 2)],
         ),
       ),
       textDirection: TextDirection.ltr,
@@ -886,12 +921,14 @@ class IsometricMapPainter extends CustomPainter {
     final double labelW = textPainter.width + padding * 2;
     final double labelH = textPainter.height + padding;
 
+    final Color bgColor = isBusy ? const Color(0xCCE53935) : Colors.black.withOpacity(0.55);
+
     final RRect bgRect = RRect.fromRectAndRadius(
       Rect.fromLTWH(cx - labelW / 2, topY - labelH - 2, labelW, labelH),
       const Radius.circular(3),
     );
 
-    canvas.drawRRect(bgRect, Paint()..color = Colors.black.withOpacity(0.55));
+    canvas.drawRRect(bgRect, Paint()..color = bgColor);
     textPainter.paint(canvas, Offset(cx - textPainter.width / 2, topY - labelH - 2 + padding / 2));
   }
 
@@ -924,6 +961,7 @@ class _PaintTask {
   final String? playerStatus;
   final String? workerName;   // for name label
   final double? workerDepth;  // fractional depth for sorting
+  final bool workerIsBusy;    // whether worker has an active task
 
   _PaintTask({
     required this.x,
@@ -942,6 +980,7 @@ class _PaintTask {
     this.playerStatus,
     this.workerName,
     this.workerDepth,
+    this.workerIsBusy = false,
   });
 }
 
