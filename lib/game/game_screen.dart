@@ -13,6 +13,7 @@ import 'land_grid_service.dart';
 import 'shop_overlay.dart';
 import 'inventory_overlay.dart';
 import '../../widgets/task_assignment_sheet.dart';
+import '../../widgets/worker_tasks_sheet.dart';
 import '../screens/investment_agent_screen.dart';
 import '../services/shop_service.dart';
 import '../../services/auth_service.dart';
@@ -805,7 +806,21 @@ class _GameScreenState extends State<GameScreen>
               },
             ),
           
+          if (context.read<AuthProvider>().user?.role == 'worker')
+            _buildMenuItem(
+              label: 'My Tasks',
+              icon: Icons.assignment_rounded,
+              color: Colors.amberAccent,
+              textColor: Colors.black,
+              delay: 0,
+              onTap: () {
+                _toggleMenu();
+                showWorkerTasksSheet(context, landId: widget.land.id);
+              },
+            ),
+
           // AI Advisor Button
+          if (context.read<AuthProvider>().user?.role != 'worker')
           _buildMenuItem(
             label: 'AI Advisor',
             icon: Icons.auto_awesome,
@@ -831,6 +846,7 @@ class _GameScreenState extends State<GameScreen>
           ),
 
           // Inventory Button
+          if (context.read<AuthProvider>().user?.role != 'worker')
           _buildMenuItem(
             label: 'Inventory',
             icon: Icons.inventory_2_rounded,
@@ -844,6 +860,7 @@ class _GameScreenState extends State<GameScreen>
           ),
 
           // Shop Button
+          if (context.read<AuthProvider>().user?.role != 'worker')
           _buildMenuItem(
             label: 'Shop',
             icon: Icons.storefront_rounded,

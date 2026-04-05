@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/land_worker_model.dart';
 import '../services/worker_service.dart';
+import '../services/socket_service.dart';
 
 /// Holds runtime state for a single worker on the map.
 class WorkerState {
@@ -114,6 +115,19 @@ class GameProvider with ChangeNotifier {
       for (var w in _workers) {
         w.stop();
       }
+      
+      // Listen for socket events to update available dynamically when a task is completed remotely
+      final socketService = SocketService();
+      socketService.off('worker_task_completed'); // Clear old listener to prevent duplicates
+      socketService.on('worker_task_completed', (data) {
+        if (data is Map<String, dynamic>) {
+           final completedWorkerId = data['workerId'];
+           final landIdEvent = data['landId'];
+           if (landIdEvent == currentLandId) { // Verify it's for current land
+             setWorkerAvailable(completedWorkerId);
+           }
+        }
+      });
 
       // Load saved positions from SharedPreferences
       final prefs = await SharedPreferences.getInstance();

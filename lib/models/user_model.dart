@@ -167,6 +167,7 @@ class User {
   final String? currentSubscriptionId;
   final String? subscriptionStatus;
   final double creditsBalance;
+  final bool hasWorkerProfile;
 
   User({
     required this.id,
@@ -184,6 +185,7 @@ class User {
     this.currentSubscriptionId,
     this.subscriptionStatus,
     this.creditsBalance = 0.0,
+    this.hasWorkerProfile = false,
   });
 
   // Backwards compatibility getters
@@ -218,6 +220,7 @@ class User {
       creditsBalance:
           (double.tryParse(json['credits_balance']?.toString() ?? '0.0') ??
           0.0),
+      hasWorkerProfile: json['has_worker_profile'] ?? false,
     );
   }
 
@@ -235,6 +238,7 @@ class User {
     String? currentSubscriptionId,
     String? subscriptionStatus,
     double? creditsBalance,
+    bool? hasWorkerProfile,
   }) {
     return User(
       id: id ?? this.id,
@@ -251,6 +255,7 @@ class User {
           currentSubscriptionId ?? this.currentSubscriptionId,
       subscriptionStatus: subscriptionStatus ?? this.subscriptionStatus,
       creditsBalance: creditsBalance ?? this.creditsBalance,
+      hasWorkerProfile: hasWorkerProfile ?? this.hasWorkerProfile,
     );
   }
 
@@ -272,6 +277,7 @@ class User {
         'current_subscription_id': currentSubscriptionId,
       if (subscriptionStatus != null) 'subscription_status': subscriptionStatus,
       'credits_balance': creditsBalance,
+      'has_worker_profile': hasWorkerProfile,
     };
   }
 }

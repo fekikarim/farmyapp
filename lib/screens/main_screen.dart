@@ -211,8 +211,11 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: screens),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      floatingActionButton: (role == 'investor' || role == 'farmer')
-          ? FloatingActionButton.small(
+      floatingActionButton: Builder(
+        builder: (context) {
+          if (role == 'investor' || role == 'farmer') {
+            return FloatingActionButton.small(
+              heroTag: 'agent_fab',
               onPressed: () {
                 if (role == 'investor') {
                   Navigator.push(
@@ -228,8 +231,24 @@ class _MainScreenState extends State<MainScreen> {
               },
               backgroundColor: Theme.of(context).primaryColor,
               child: const Icon(Icons.smart_toy, color: Colors.white, size: 20),
-            )
-          : null,
+            );
+          } else if (role == 'customer' && user.hasWorkerProfile) {
+            return FloatingActionButton.extended(
+              heroTag: 'worker_tasks_fab',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const WorkerTasksScreen()),
+                );
+              },
+              icon: const Icon(Icons.assignment, color: Colors.black),
+              label: const Text('My Worker Tasks', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+              backgroundColor: Colors.amberAccent,
+            );
+          }
+          return const SizedBox.shrink();
+        }
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
