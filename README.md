@@ -13,6 +13,7 @@
 - [2. Vision & Business Context](#2-vision--business-context)
 - [3. Product Capabilities](#3-product-capabilities)
 - [4. Technical Architecture](#4-technical-architecture)
+- [Game Design System Reference](#game-design-system-reference)
 - [5. Repository Structure](#5-repository-structure)
 - [6. Tech Stack](#6-tech-stack)
 - [7. Getting Started](#7-getting-started)
@@ -178,6 +179,12 @@ flowchart TD
     T --> UI2
     T --> UI3
 ```
+
+  ### Game Design System Reference
+
+  For a complete technical breakdown of gameplay architecture, rendering logic, asset pipeline, backend game contracts, and enhancement guidance, see:
+
+  - [docs/GAME_DESIGN_SYSTEM.md](docs/GAME_DESIGN_SYSTEM.md)
 
 ---
 
