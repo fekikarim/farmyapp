@@ -12,6 +12,7 @@ import 'isometric_map.dart';
 import 'land_grid_service.dart';
 import 'shop_overlay.dart';
 import 'inventory_overlay.dart';
+import '../../widgets/task_assignment_sheet.dart';
 import '../screens/investment_agent_screen.dart';
 import '../services/shop_service.dart';
 import '../../services/auth_service.dart';
@@ -209,45 +210,25 @@ class _GameScreenState extends State<GameScreen>
   void _onItemAction(String actionId, int x, int y, dynamic itemData) {
     if (actionId == 'info') {
       _showItemInfoSheet(itemData, x, y);
-    } else if (actionId == 'collect') {
-      final gameProvider = Provider.of<GameProvider>(context, listen: false);
+    } else if (actionId == 'tasks') {
+      final category = itemData['category'] as String? ?? '';
+      final variantId = itemData['variant_id'] as String? ?? '';
 
-      if (gameProvider.workers.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No workers available to send!'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-
-      // Target the origin tile of the item (centre of the item's footprint)
-      final int ox = itemData['origin_x'] ?? x;
-      final int oy = itemData['origin_y'] ?? y;
-      final int fw = itemData['footprint_width'] ?? 1;
-      final int fh = itemData['footprint_height'] ?? 1;
-
-      // Aim for the visual centre of the footprint
-      final double targetX = ox + (fw - 1) / 2.0;
-      final double targetY = oy + (fh - 1) / 2.0;
-
+      if (category.isEmpty || variantId.isEmpty) return;
+      
       final int gridW = _gridData?['grid_width'] ?? widget.land.gridWidth;
       final int gridH = _gridData?['grid_height'] ?? widget.land.gridHeight;
 
-      gameProvider.moveClosestWorkerTo(
-        targetX,
-        targetY,
-        gridWidth: gridW,
-        gridHeight: gridH,
-      );
-
-      final String varCode = itemData['variant_code'] ?? 'item';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Worker dispatched to collect from $varCode!'),
-          backgroundColor: Colors.green.shade700,
-          behavior: SnackBarBehavior.floating,
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (ctx) => TaskAssignmentSheet(
+          itemData: itemData,
+          category: category,
+          variantId: variantId,
+          gridWidth: gridW,
+          gridHeight: gridH,
         ),
       );
     }

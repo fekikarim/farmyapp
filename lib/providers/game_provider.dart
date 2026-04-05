@@ -9,6 +9,7 @@ class WorkerState {
   final String workerId;
   final String workerName;
   final String? workerPicture;
+  final String availability;
   double x;
   double y;
   double? targetX;
@@ -21,6 +22,7 @@ class WorkerState {
     required this.workerId,
     required this.workerName,
     this.workerPicture,
+    this.availability = 'available',
     this.x = 1,
     this.y = 1,
     this.direction = 'front_left',
@@ -126,6 +128,7 @@ class GameProvider with ChangeNotifier {
             workerId: lw.workerId,
             workerName: lw.workerName ?? 'Worker',
             workerPicture: lw.workerProfilePicture,
+            availability: lw.workerAvailability ?? 'available',
             x: startX.clamp(0, gridWidth - 1.0),
             y: startY.clamp(0, gridHeight - 1.0),
           ),
@@ -166,6 +169,25 @@ class GameProvider with ChangeNotifier {
     }
 
     closest.moveTo(clampedX, clampedY, notifyListeners, notifyListeners);
+  }
+
+  /// Finds and returns the ID of the closest available worker to a given point.
+  String? getClosestAvailableWorkerId(double tx, double ty) {
+    final availableWorkers = _workers.where((w) => w.availability == 'available').toList();
+    if (availableWorkers.isEmpty) return null;
+
+    WorkerState closest = availableWorkers.first;
+    double minDist = double.infinity;
+    
+    for (var w in availableWorkers) {
+      double dist = (w.x - tx).abs() + (w.y - ty).abs(); // Manhattan distance
+      if (dist < minDist) {
+        minDist = dist;
+        closest = w;
+      }
+    }
+    
+    return closest.workerId;
   }
 
   Future<void> _loadSettings() async {

@@ -23,6 +23,9 @@ import 'settings_screen.dart';
 // Shared
 import 'marketplace/my_products_screen.dart';
 
+// Worker
+import 'worker/tasks_screen.dart';
+
 // Agent
 import 'investment_agent_screen.dart';
 import 'farmer_agent_screen.dart';
@@ -149,6 +152,23 @@ class _MainScreenState extends State<MainScreen> {
           icon: Icon(Icons.account_balance_wallet_outlined),
           activeIcon: Icon(Icons.account_balance_wallet),
           label: 'Revenue',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings_outlined),
+          activeIcon: Icon(Icons.settings),
+          label: 'Settings',
+        ),
+      ];
+    } else if (role == 'worker') {
+      screens = [
+        const WorkerTasksScreen(),
+        const SettingsScreen(),
+      ];
+      items = const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.assignment_outlined),
+          activeIcon: Icon(Icons.assignment),
+          label: 'Tasks',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings_outlined),

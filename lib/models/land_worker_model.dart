@@ -14,6 +14,7 @@ class LandWorker {
   final String? workerName;
   final String? workerEmail;
   final String? workerProfilePicture;
+  final String? workerAvailability;
   final String? assignerName;
 
   // Land info (when fetching worker's assigned lands)
@@ -34,6 +35,7 @@ class LandWorker {
     this.workerName,
     this.workerEmail,
     this.workerProfilePicture,
+    this.workerAvailability,
     this.assignerName,
     this.landName,
     this.landOwnerId,
@@ -63,6 +65,7 @@ class LandWorker {
       workerName: worker?['profile']?['name'] ?? worker?['email'],
       workerEmail: worker?['email'],
       workerProfilePicture: worker?['profile']?['picture'],
+      workerAvailability: json['worker_availability'] ?? 'available',
       assignerName: assigner?['profile']?['name'] ?? assigner?['email'],
       landName: land?['name'],
       landOwnerId: land?['owner_id'],
