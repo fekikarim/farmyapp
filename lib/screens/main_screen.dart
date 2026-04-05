@@ -161,10 +161,7 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ];
     } else if (role == 'worker') {
-      screens = [
-        const WorkerTasksScreen(),
-        const SettingsScreen(),
-      ];
+      screens = [const WorkerTasksScreen(), const SettingsScreen()];
       items = const [
         BottomNavigationBarItem(
           icon: Icon(Icons.assignment_outlined),
@@ -214,24 +211,43 @@ class _MainScreenState extends State<MainScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: Builder(
         builder: (context) {
-          if (role == 'investor' || role == 'farmer') {
+          if (role == 'investor') {
             return FloatingActionButton.small(
               heroTag: 'agent_fab',
               onPressed: () {
-                if (role == 'investor') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => InvestmentAgentScreen()),
-                  );
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => FarmerAgentScreen()),
-                  );
-                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => InvestmentAgentScreen()),
+                );
               },
               backgroundColor: Theme.of(context).primaryColor,
               child: const Icon(Icons.smart_toy, color: Colors.white, size: 20),
+            );
+          } else if (role == 'farmer' && _currentIndex == 1) {
+            return FloatingActionButton.small(
+              heroTag: 'agent_fab',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => FarmerAgentScreen()),
+                );
+              },
+              backgroundColor: Theme.of(context).primaryColor,
+              child: const Icon(Icons.smart_toy, color: Colors.white, size: 20),
+            );
+          } else if (role == 'farmer' && _currentIndex != 1) {
+            return FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AIChatbotScreen(),
+                  ),
+                );
+              },
+              backgroundColor: Theme.of(context).primaryColor,
+              child: const Icon(Icons.smart_toy, color: Colors.white),
+              tooltip: 'AI Farming Assistant',
             );
           } else if (role == 'customer' && user.hasWorkerProfile) {
             return FloatingActionButton.extended(
@@ -243,12 +259,18 @@ class _MainScreenState extends State<MainScreen> {
                 );
               },
               icon: const Icon(Icons.assignment, color: Colors.black),
-              label: const Text('My Worker Tasks', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+              label: const Text(
+                'My Worker Tasks',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               backgroundColor: Colors.amberAccent,
             );
           }
           return const SizedBox.shrink();
-        }
+        },
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -276,17 +298,6 @@ class _MainScreenState extends State<MainScreen> {
           items: items,
         ),
       ),
-      floatingActionButton: role == 'farmer' && _currentIndex != 1 ? FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AIChatbotScreen()),
-          );
-        },
-        backgroundColor: Theme.of(context).primaryColor,
-        child: const Icon(Icons.smart_toy, color: Colors.white),
-        tooltip: 'AI Farming Assistant',
-      ) : null,
     );
   }
 }

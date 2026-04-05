@@ -72,6 +72,18 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
         title: const Text('My Products'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.people, color: Colors.blue),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SmartMatchingScreen(),
+                ),
+              );
+            },
+            tooltip: 'Smart Matching',
+          ),
+          IconButton(
             icon: const Icon(Icons.auto_awesome, color: Colors.green),
             onPressed: () {
               final products = context.read<ProductProvider>();
@@ -79,14 +91,19 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => InvestmentAgentScreen(
-                    initialMessage: "Analyse my current product inventory. Are these good products to hold or should I focus on something else based on the market?",
+                    initialMessage:
+                        "Analyse my current product inventory. Are these good products to hold or should I focus on something else based on the market?",
                     initialContext: {
-                      'inventory': products.myProducts.map((p) => {
-                        'title': p.title,
-                        'price': p.price,
-                        'quantity': p.quantity,
-                        'status': p.status.name,
-                      }).toList(),
+                      'inventory': products.myProducts
+                          .map(
+                            (p) => {
+                              'title': p.title,
+                              'price': p.price,
+                              'quantity': p.quantity,
+                              'status': p.status.name,
+                            },
+                          )
+                          .toList(),
                     },
                   ),
                 ),
