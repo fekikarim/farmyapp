@@ -5,6 +5,7 @@ import '../../models/product_model.dart';
 import '../../providers/product_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/basket_provider.dart';
+import '../../providers/recommendations_provider.dart';
 import '../../providers/wallet_provider.dart';
 import '../../widgets/marketplace/product_card.dart';
 import '../../widgets/recommendations/ai_section.dart';
@@ -28,6 +29,7 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
   String? _selectedCategoryId;
   String _searchQuery = '';
   bool _isInitialized = false;
+  int _aiRefreshSignal = 0;
 
   late AnimationController _fabAnimController;
   late Animation<double> _fabScaleAnim;
@@ -53,12 +55,27 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
 
     final productProvider = context.read<ProductProvider>();
     final walletProvider = context.read<WalletProvider>();
+    final authProvider = context.read<AuthProvider>();
+    final recommendationsProvider = context
+        .read<SmartRecommendationsProvider>();
 
-    await Future.wait([
+    final futures = <Future<void>>[
       productProvider.fetchProducts(status: 'available'),
       productProvider.fetchProductTypes(),
       walletProvider.fetchWalletStatus(),
-    ]);
+    ];
+
+    final user = authProvider.user;
+    if (user != null) {
+      futures.add(
+        recommendationsProvider.fetchProductRecommendations(
+          user.id,
+          forceRefresh: true,
+        ),
+      );
+    }
+
+    await Future.wait(futures);
   }
 
   @override
@@ -91,14 +108,75 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
   }
 
   Future<void> _onRefresh() async {
-    await Future.wait([
+    final authProvider = context.read<AuthProvider>();
+    final recommendationsProvider = context
+        .read<SmartRecommendationsProvider>();
+
+    final futures = <Future<void>>[
       context.read<ProductProvider>().fetchProducts(
         status: 'available',
         search: _searchQuery.isEmpty ? null : _searchQuery,
         productTypeId: _selectedCategoryId,
       ),
       context.read<WalletProvider>().fetchWalletStatus(),
-    ]);
+    ];
+
+    final user = authProvider.user;
+    if (user != null) {
+      futures.add(
+        recommendationsProvider.fetchProductRecommendations(
+          user.id,
+          forceRefresh: true,
+        ),
+      );
+    }
+
+    await Future.wait(futures);
+
+    if (mounted) {
+      setState(() => _aiRefreshSignal++);
+    }
+  }
+
+  Product _productFromRecommendation(Map<String, dynamic> product) {
+    ProductStatus status;
+    final statusValue = (product['status'] ?? 'hidden')
+        .toString()
+        .toLowerCase();
+    if (statusValue == 'available') {
+      status = ProductStatus.available;
+    } else if (statusValue == 'sold') {
+      status = ProductStatus.sold;
+    } else {
+      status = ProductStatus.hidden;
+    }
+
+    final owner = product['owner'];
+    final productType = product['productType'];
+    final createdAtRaw = product['created_at'] ?? product['createdAt'];
+    final images = (product['images'] is List)
+        ? (product['images'] as List)
+              .where((image) => image != null)
+              .map((image) => image.toString())
+              .toList()
+        : <String>[];
+
+    return Product(
+      id: (product['id'] ?? '').toString(),
+      title: (product['title'] ?? 'Recommended Product').toString(),
+      description: product['description']?.toString(),
+      price: double.tryParse((product['price'] ?? '0').toString()) ?? 0,
+      quantity: double.tryParse((product['quantity'] ?? '0').toString()) ?? 0,
+      unit: (product['unit'] ?? 'unit').toString(),
+      status: status,
+      images: images,
+      ownerId: (product['owner_id'] ?? owner?['id'] ?? '').toString(),
+      productTypeId: (product['product_type_id'] ?? productType?['id'] ?? '')
+          .toString(),
+      createdAt: createdAtRaw != null
+          ? DateTime.tryParse(createdAtRaw.toString()) ?? DateTime.now()
+          : DateTime.now(),
+    );
   }
 
   @override
@@ -136,8 +214,7 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                           Expanded(
                             child: Text(
                               'Marketplace',
-                              style:
-                                  theme.textTheme.headlineMedium?.copyWith(
+                              style: theme.textTheme.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 28,
                               ),
@@ -153,30 +230,42 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (_) =>
-                                              const PaymentMethodsScreen()),
+                                        builder: (_) =>
+                                            const PaymentMethodsScreen(),
+                                      ),
                                     ).then((_) {
                                       // Refresh wallet when returning
-                                      context.read<WalletProvider>().fetchWalletStatus();
+                                      context
+                                          .read<WalletProvider>()
+                                          .fetchWalletStatus();
                                     });
                                   },
                                   borderRadius: BorderRadius.circular(14),
                                   child: Container(
-                                    padding: const EdgeInsets.fromLTRB(12, 6, 8, 6),
+                                    padding: const EdgeInsets.fromLTRB(
+                                      12,
+                                      6,
+                                      8,
+                                      6,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: theme.colorScheme.primary.withOpacity(0.1),
+                                      color: theme.colorScheme.primary
+                                          .withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(14),
                                       border: Border.all(
-                                        color: theme.colorScheme.primary.withOpacity(0.2),
+                                        color: theme.colorScheme.primary
+                                            .withOpacity(0.2),
                                         width: 1,
                                       ),
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(Icons.account_balance_wallet_rounded,
-                                            size: 16,
-                                            color: theme.colorScheme.primary),
+                                        Icon(
+                                          Icons.account_balance_wallet_rounded,
+                                          size: 16,
+                                          color: theme.colorScheme.primary,
+                                        ),
                                         const SizedBox(width: 6),
                                         Text(
                                           wallet.credits.toStringAsFixed(2),
@@ -193,8 +282,11 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                                             color: theme.colorScheme.primary,
                                             shape: BoxShape.circle,
                                           ),
-                                          child: const Icon(Icons.add,
-                                              size: 12, color: Colors.white),
+                                          child: const Icon(
+                                            Icons.add,
+                                            size: 12,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -364,7 +456,7 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                         : 'CUSTOMER';
                     String title = 'Best products for you';
                     String subtitle = 'Smart product recommendations';
-                    
+
                     if (userRole == 'FARMER') {
                       title = 'Best buyer for your product';
                       subtitle = 'AI-powered matching for optimal sales';
@@ -372,25 +464,14 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                       title = 'Best farms to invest in';
                       subtitle = 'Top investment opportunities near you';
                     }
-                    
+
                     return AIRecommendationsSection(
                       type: 'products',
                       customTitle: title,
                       customSubtitle: subtitle,
+                      refreshSignal: _aiRefreshSignal,
                       onItemTap: (product) {
-                        _openProductDetail(Product(
-                          id: product['id'],
-                          title: product['title'],
-                          description: product['description'],
-                          price: double.tryParse(product['price']?.toString() ?? '0') ?? 0,
-                          quantity: double.tryParse(product['quantity']?.toString() ?? '0') ?? 0,
-                          unit: product['unit'] ?? '',
-                          status: product['status'] == 'available' ? ProductStatus.available : ProductStatus.hidden,
-                          images: List<String>.from(product['images'] ?? []),
-                          ownerId: product['owner_id'] ?? '',
-                          productTypeId: product['product_type_id'] ?? '',
-                          createdAt: DateTime.now(),
-                        ));
+                        _openProductDetail(_productFromRecommendation(product));
                       },
                     );
                   },

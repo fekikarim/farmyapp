@@ -12,6 +12,7 @@ class AIRecommendationsSection extends StatefulWidget {
   final Function(Map<String, dynamic>)? onItemTap;
   final String? customTitle;
   final String? customSubtitle;
+  final int refreshSignal;
 
   const AIRecommendationsSection({
     super.key,
@@ -21,10 +22,12 @@ class AIRecommendationsSection extends StatefulWidget {
     this.onItemTap,
     this.customTitle,
     this.customSubtitle,
+    this.refreshSignal = 0,
   });
 
   @override
-  State<AIRecommendationsSection> createState() => _AIRecommendationsSectionState();
+  State<AIRecommendationsSection> createState() =>
+      _AIRecommendationsSectionState();
 }
 
 class _AIRecommendationsSectionState extends State<AIRecommendationsSection>
@@ -50,16 +53,30 @@ class _AIRecommendationsSectionState extends State<AIRecommendationsSection>
     super.dispose();
   }
 
-  void _loadRecommendations() {
+  @override
+  void didUpdateWidget(covariant AIRecommendationsSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.refreshSignal != widget.refreshSignal) {
+      _loadRecommendations(forceRefresh: true);
+    }
+  }
+
+  void _loadRecommendations({bool forceRefresh = false}) {
     final auth = context.read<AuthProvider>();
     if (auth.user == null) return;
 
     final provider = context.read<SmartRecommendationsProvider>();
 
     if (widget.type == 'products') {
-      provider.fetchProductRecommendations(auth.user!.id);
+      provider.fetchProductRecommendations(
+        auth.user!.id,
+        forceRefresh: forceRefresh,
+      );
     } else if (widget.type == 'lands') {
-      provider.fetchLandRecommendations(auth.user!.id);
+      provider.fetchLandRecommendations(
+        auth.user!.id,
+        forceRefresh: forceRefresh,
+      );
     }
 
     _animController.forward();
@@ -80,14 +97,18 @@ class _AIRecommendationsSectionState extends State<AIRecommendationsSection>
     );
   }
 
-  Widget _buildProductsSection(BuildContext context, ThemeData theme, SmartRecommendationsProvider provider) {
+  Widget _buildProductsSection(
+    BuildContext context,
+    ThemeData theme,
+    SmartRecommendationsProvider provider,
+  ) {
     if (provider.isProductsLoading) {
       return _buildSkeletonLoader(theme);
     }
 
     if (provider.productsError != null) {
       return _buildErrorState(context, theme, provider.productsError!, () {
-        _loadRecommendations();
+        _loadRecommendations(forceRefresh: true);
       });
     }
 
@@ -132,7 +153,8 @@ class _AIRecommendationsSectionState extends State<AIRecommendationsSection>
                       ),
                     ),
                     Text(
-                      widget.customSubtitle ?? 'Smart matchings based on your preferences',
+                      widget.customSubtitle ??
+                          'Smart matchings based on your preferences',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: Colors.grey.shade600,
                       ),
@@ -177,14 +199,18 @@ class _AIRecommendationsSectionState extends State<AIRecommendationsSection>
     );
   }
 
-  Widget _buildLandsSection(BuildContext context, ThemeData theme, SmartRecommendationsProvider provider) {
+  Widget _buildLandsSection(
+    BuildContext context,
+    ThemeData theme,
+    SmartRecommendationsProvider provider,
+  ) {
     if (provider.isLandsLoading) {
       return _buildSkeletonLoader(theme);
     }
 
     if (provider.landsError != null) {
       return _buildErrorState(context, theme, provider.landsError!, () {
-        _loadRecommendations();
+        _loadRecommendations(forceRefresh: true);
       });
     }
 
@@ -208,11 +234,7 @@ class _AIRecommendationsSectionState extends State<AIRecommendationsSection>
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(
-                  Icons.eco,
-                  color: Colors.white,
-                  size: 20,
-                ),
+                child: const Icon(Icons.eco, color: Colors.white, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -226,7 +248,8 @@ class _AIRecommendationsSectionState extends State<AIRecommendationsSection>
                       ),
                     ),
                     Text(
-                      widget.customSubtitle ?? 'Lands matched to your investment profile',
+                      widget.customSubtitle ??
+                          'Lands matched to your investment profile',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: Colors.grey.shade600,
                       ),
@@ -247,7 +270,8 @@ class _AIRecommendationsSectionState extends State<AIRecommendationsSection>
             itemBuilder: (context, index) {
               final land = provider.landRecommendations[index];
               final matchScore = (land['matchScore'] as num?)?.toInt() ?? 0;
-              final reasoning = land['aiReasoning'] ?? 'Great investment opportunity';
+              final reasoning =
+                  land['aiReasoning'] ?? 'Great investment opportunity';
 
               return Padding(
                 padding: const EdgeInsets.only(right: 12),
@@ -314,9 +338,31 @@ class _AIRecommendationsSectionState extends State<AIRecommendationsSection>
     String error,
     VoidCallback onRetry,
   ) {
-    // Check if error is about location not set
-    bool isLocationError = error.contains('location') || error.contains('Location');
-    
+    final lower = error.toLowerCase();
+    final isLocationError =
+        lower.contains('location not set') || lower.contains('location');
+    final isRouteMissingError =
+        lower.contains('resource not found') || lower.contains('not found');
+    final isConnectivityError =
+        lower.contains('connection failed') ||
+        lower.contains('timed out') ||
+        lower.contains('socketexception') ||
+        lower.contains('503');
+
+    final title = isLocationError
+        ? 'Location Required'
+        : isConnectivityError
+        ? 'Connection Problem'
+        : 'Failed to Load Recommendations';
+
+    final subtitle = isLocationError
+        ? 'Please update your location in settings to get personalized recommendations'
+        : isRouteMissingError
+        ? 'Recommendation service is being upgraded. Pull to refresh shortly; marketplace data fallback remains available.'
+        : isConnectivityError
+        ? 'Unable to reach the recommendation service right now. Check your connection and retry.'
+        : error;
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Card(
@@ -327,23 +373,17 @@ class _AIRecommendationsSectionState extends State<AIRecommendationsSection>
               Icon(
                 isLocationError ? Icons.location_off : Icons.error_outline,
                 size: 48,
-                color: isLocationError ? Colors.orange.shade400 : Colors.red.shade400,
+                color: isLocationError
+                    ? Colors.orange.shade400
+                    : Colors.red.shade400,
               ),
               const SizedBox(height: 12),
-              Text(
-                isLocationError ? 'Location Required' : 'Failed to Load Recommendations',
-                style: theme.textTheme.titleMedium,
-              ),
+              Text(title, style: theme.textTheme.titleMedium),
               const SizedBox(height: 4),
               Text(
-                isLocationError 
-                  ? 'Please update your location in settings to get personalized recommendations'
-                  : error,
+                subtitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
               const SizedBox(height: 12),
               if (isLocationError)
@@ -358,9 +398,9 @@ class _AIRecommendationsSectionState extends State<AIRecommendationsSection>
               else
                 ElevatedButton.icon(
                   onPressed: onRetry,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
-              ),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
+                ),
             ],
           ),
         ),
@@ -376,23 +416,13 @@ class _AIRecommendationsSectionState extends State<AIRecommendationsSection>
           padding: const EdgeInsets.all(32),
           child: Column(
             children: [
-              Icon(
-                Icons.search_off,
-                size: 48,
-                color: Colors.grey.shade400,
-              ),
+              Icon(Icons.search_off, size: 48, color: Colors.grey.shade400),
               const SizedBox(height: 12),
-              Text(
-                message,
-                style: theme.textTheme.titleMedium,
-              ),
+              Text(message, style: theme.textTheme.titleMedium),
               const SizedBox(height: 4),
               Text(
                 'Try updating your profile preferences',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
             ],
           ),
