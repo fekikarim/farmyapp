@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../../providers/land_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../models/land_model.dart';
+import '../../widgets/recommendations/ai_section.dart';
 import 'land_details_screen.dart';
 
 class InvestorExploreLandScreen extends StatefulWidget {
@@ -122,18 +124,58 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                     onRefresh: _loadData,
                     backgroundColor: Colors.green,
                     color: Colors.white,
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(20),
-                      itemCount: availableLands.length,
-                      itemBuilder: (context, index) => _InvestorLandCard(
-                        land: availableLands[index],
-                        onTap: (land) => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LandDetailsScreen(land: land),
+                    child: CustomScrollView(
+                      slivers: [
+                        // ── AI Smart Recommendations Section ──
+                        SliverToBoxAdapter(
+                          child: Consumer<AuthProvider>(
+                            builder: (context, authProvider, _) {
+                              String title = 'Best farm to invest in';
+                              String subtitle = 'Top investment opportunities near you';
+                              
+                              return AIRecommendationsSection(
+                                type: 'lands',
+                                customTitle: title,
+                                customSubtitle: subtitle,
+                                onItemTap: (land) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LandDetailsScreen(
+                                        land: Land.fromJson(land),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
                           ),
                         ),
-                      ),
+                        // ── Land List ──
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              if (index == 0) {
+                                return const SizedBox(height: 8);
+                              }
+                              final landIndex = index - 1;
+                              if (landIndex >= availableLands.length) {
+                                return const SizedBox(height: 20);
+                              }
+                              return _InvestorLandCard(
+                                land: availableLands[landIndex],
+                                onTap: (land) => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LandDetailsScreen(land: land),
+                                  ),
+                                ),
+                              );
+                            },
+                            childCount: availableLands.length + 2,
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 : _buildMapView(provider.allLands),
@@ -519,26 +561,26 @@ class _InvestorLandCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => onTap(land),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 24),
+        margin: const EdgeInsets.only(bottom: 18),
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           color: theme.cardColor,
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
+            color: (isDark ? Colors.white : Colors.black).withOpacity(0.06),
           ),
           boxShadow: [
             BoxShadow(
-              color: (isDark ? Colors.black : Colors.grey).withOpacity(0.3),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
+              color: (isDark ? Colors.black : Colors.grey).withOpacity(0.22),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: Column(
           children: [
             SizedBox(
-              height: 160,
+              height: 180,
               child: Stack(
                 children: [
                   IgnorePointer(
@@ -606,8 +648,8 @@ class _InvestorLandCard extends StatelessWidget {
                     right: 0,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
+                        horizontal: 18,
+                        vertical: 14,
                       ),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -627,7 +669,7 @@ class _InvestorLandCard extends StatelessWidget {
                               land.name,
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 20,
+                                fontSize: 22,
                                 fontWeight: FontWeight.bold,
                                 shadows: [
                                   Shadow(blurRadius: 8, color: Colors.black),
@@ -644,7 +686,7 @@ class _InvestorLandCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
               child: Column(
                 children: [
                   Row(
