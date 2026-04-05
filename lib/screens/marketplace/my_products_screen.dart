@@ -8,6 +8,7 @@ import '../../widgets/subscription_limit_bar.dart';
 import 'add_product_screen.dart';
 import '../../models/product_model.dart';
 import '../investment_agent_screen.dart';
+import '../smart_matching_screen.dart';
 
 class MyProductsScreen extends StatefulWidget {
   const MyProductsScreen({super.key});

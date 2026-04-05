@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/product_model.dart';
 import '../../providers/product_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/basket_provider.dart';
 import '../../providers/wallet_provider.dart';
 import '../../widgets/marketplace/product_card.dart';
+import '../../widgets/recommendations/ai_section.dart';
 import 'product_detail_screen.dart';
 import 'basket_screen.dart';
 import 'my_orders_screen.dart';
@@ -131,79 +133,75 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Marketplace',
-                            style: theme.textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 28,
-                            ),
-                          ),
-                          // Credits chip
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        const PaymentMethodsScreen(),
-                                  ),
-                                ).then((_) {
-                                  // Refresh wallet when returning
-                                  context
-                                      .read<WalletProvider>()
-                                      .fetchWalletStatus();
-                                });
-                              },
-                              borderRadius: BorderRadius.circular(14),
-                              child: Container(
-                                padding: const EdgeInsets.fromLTRB(12, 6, 8, 6),
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary.withOpacity(
-                                    0.1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(
-                                    color: theme.colorScheme.primary
-                                        .withOpacity(0.2),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.account_balance_wallet_rounded,
-                                      size: 16,
-                                      color: theme.colorScheme.primary,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      wallet.credits.toStringAsFixed(2),
-                                      style: TextStyle(
-                                        color: theme.colorScheme.primary,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Container(
-                                      padding: const EdgeInsets.all(2),
-                                      decoration: BoxDecoration(
-                                        color: theme.colorScheme.primary,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(
-                                        Icons.add,
-                                        size: 12,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                          Expanded(
+                            child: Text(
+                              'Marketplace',
+                              style:
+                                  theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 28,
                               ),
                             ),
+                          ),
+                          Row(
+                            children: [
+                              // Credits chip
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) =>
+                                              const PaymentMethodsScreen()),
+                                    ).then((_) {
+                                      // Refresh wallet when returning
+                                      context.read<WalletProvider>().fetchWalletStatus();
+                                    });
+                                  },
+                                  borderRadius: BorderRadius.circular(14),
+                                  child: Container(
+                                    padding: const EdgeInsets.fromLTRB(12, 6, 8, 6),
+                                    decoration: BoxDecoration(
+                                      color: theme.colorScheme.primary.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(14),
+                                      border: Border.all(
+                                        color: theme.colorScheme.primary.withOpacity(0.2),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.account_balance_wallet_rounded,
+                                            size: 16,
+                                            color: theme.colorScheme.primary),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          wallet.credits.toStringAsFixed(2),
+                                          style: TextStyle(
+                                            color: theme.colorScheme.primary,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Container(
+                                          padding: const EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                            color: theme.colorScheme.primary,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(Icons.add,
+                                              size: 12, color: Colors.white),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -352,6 +350,50 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                       ),
                     ],
                   ),
+                ),
+              ),
+
+              const SliverToBoxAdapter(child: SizedBox(height: 8)),
+
+              // ── AI Recommendations Section ──
+              SliverToBoxAdapter(
+                child: Consumer<AuthProvider>(
+                  builder: (context, authProvider, _) {
+                    final userRole = authProvider.user?.role != null
+                        ? authProvider.user!.role.toUpperCase()
+                        : 'CUSTOMER';
+                    String title = 'Best products for you';
+                    String subtitle = 'Smart product recommendations';
+                    
+                    if (userRole == 'FARMER') {
+                      title = 'Best buyer for your product';
+                      subtitle = 'AI-powered matching for optimal sales';
+                    } else if (userRole == 'INVESTOR') {
+                      title = 'Best farms to invest in';
+                      subtitle = 'Top investment opportunities near you';
+                    }
+                    
+                    return AIRecommendationsSection(
+                      type: 'products',
+                      customTitle: title,
+                      customSubtitle: subtitle,
+                      onItemTap: (product) {
+                        _openProductDetail(Product(
+                          id: product['id'],
+                          title: product['title'],
+                          description: product['description'],
+                          price: double.tryParse(product['price']?.toString() ?? '0') ?? 0,
+                          quantity: double.tryParse(product['quantity']?.toString() ?? '0') ?? 0,
+                          unit: product['unit'] ?? '',
+                          status: product['status'] == 'available' ? ProductStatus.available : ProductStatus.hidden,
+                          images: List<String>.from(product['images'] ?? []),
+                          ownerId: product['owner_id'] ?? '',
+                          productTypeId: product['product_type_id'] ?? '',
+                          createdAt: DateTime.now(),
+                        ));
+                      },
+                    );
+                  },
                 ),
               ),
 

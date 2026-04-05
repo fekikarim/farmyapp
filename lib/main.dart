@@ -10,6 +10,7 @@ import 'providers/auth_provider.dart';
 import 'providers/land_provider.dart';
 import 'providers/product_provider.dart';
 import 'providers/basket_provider.dart';
+import 'providers/recommendations_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
 import 'screens/verify_screen.dart';
@@ -75,6 +76,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
         ChangeNotifierProvider(create: (_) => DeliveryProvider()),
         ChangeNotifierProvider(create: (_) => VendorDeliveryProvider()),
+        ChangeNotifierProvider(create: (_) => SmartRecommendationsProvider()),
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(initialThemeMode: initialTheme),
         ),

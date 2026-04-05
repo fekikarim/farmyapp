@@ -22,6 +22,7 @@ import 'settings_screen.dart';
 
 // Shared
 import 'marketplace/my_products_screen.dart';
+import 'ai_chatbot_screen.dart';
 
 // Worker
 import 'worker/tasks_screen.dart';
@@ -275,6 +276,17 @@ class _MainScreenState extends State<MainScreen> {
           items: items,
         ),
       ),
+      floatingActionButton: role == 'farmer' && _currentIndex != 1 ? FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AIChatbotScreen()),
+          );
+        },
+        backgroundColor: Theme.of(context).primaryColor,
+        child: const Icon(Icons.smart_toy, color: Colors.white),
+        tooltip: 'AI Farming Assistant',
+      ) : null,
     );
   }
 }
