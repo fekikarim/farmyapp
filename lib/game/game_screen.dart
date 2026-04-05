@@ -837,7 +837,7 @@ class _GameScreenState extends State<GameScreen>
                     initialMessage: "Analyse my current farm and wallet. What should be my next strategic move in this game session?",
                     initialContext: {
                       'landId': widget.land.id,
-                      'walletBalance': auth.user?.creditsBalance ?? 0,
+                      'credits': auth.user?.credits ?? 0,
                     },
                   ),
                 ),

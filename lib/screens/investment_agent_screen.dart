@@ -9,6 +9,8 @@ import 'investor/land_details_screen.dart';
 import '../services/land_service.dart';
 import '../services/auth_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class InvestmentAgentScreen extends StatefulWidget {
   final Map<String, dynamic>? initialContext;
@@ -153,6 +155,35 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
+          // Credits display
+          Consumer<AuthProvider>(
+            builder: (context, auth, _) => Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                margin: const EdgeInsets.only(right: 8),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.green.withOpacity(0.3)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.monetization_on, color: Colors.green, size: 14),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${auth.user?.credits.toStringAsFixed(2) ?? "0.00"}',
+                      style: const TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
           Builder(
             builder: (context) => IconButton(
               icon: const Icon(Icons.history),

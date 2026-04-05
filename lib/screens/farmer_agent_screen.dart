@@ -376,9 +376,9 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
   Widget _buildSummaryCards() {
     return Row(
       children: [
-        _statCard('Capital', '${_context!['totalInvested']} TND', Icons.account_balance_wallet, Colors.blue),
-        const SizedBox(width: 12),
-        _statCard('Producing', '${_context!['activeAssetsCount']}', Icons.eco, Colors.green),
+        _statCard('Credits', '${_context!['currentCredits'] ?? 0} TND', Icons.monetization_on, Colors.orange),
+        const SizedBox(width: 8),
+        _statCard('Assets', '${_context!['activeAssetsCount'] ?? 0}', Icons.eco, Colors.green),
       ],
     );
   }
