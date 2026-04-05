@@ -9,6 +9,7 @@ import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:uuid/uuid.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/user_model.dart';
+import 'location_service.dart';
 
 class AuthService {
   static final String _baseUrl = dotenv.get(
@@ -69,6 +70,8 @@ class AuthService {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
         if (!authResponse.require2fa) {
           await _saveAuthData(authResponse);
+          // Sync GPS location after successful registration
+          await syncLocationOnAuth();
         }
         return authResponse;
       } else {
@@ -98,6 +101,8 @@ class AuthService {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
         if (!authResponse.require2fa) {
           await _saveAuthData(authResponse);
+          // Sync GPS location after successful login
+          await syncLocationOnAuth();
         }
         return authResponse;
       } else {
@@ -149,6 +154,8 @@ class AuthService {
                 final authResponse = AuthResponse.fromJson(data);
                 if (!authResponse.require2fa) {
                   await _saveAuthData(authResponse);
+                  // Sync GPS location after successful Google sign-in
+                  await syncLocationOnAuth();
                 }
                 return authResponse;
               } else if (data['waiting'] == true) {
@@ -186,6 +193,9 @@ class AuthService {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
         if (!authResponse.require2fa) {
           await _saveAuthData(authResponse);
+          // Sync GPS location after successful Google sign-in
+
+          await syncLocationOnAuth();
         }
         return authResponse;
       }
@@ -228,6 +238,9 @@ class AuthService {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
         if (!authResponse.require2fa) {
           await _saveAuthData(authResponse);
+          // Sync GPS location after successful GitHub sign-in
+
+          await syncLocationOnAuth();
         }
         return authResponse;
       }
@@ -534,7 +547,7 @@ class AuthService {
     if (token != null) headers['Authorization'] = 'Bearer $token';
     headers['Content-Type'] = 'application/json';
 
-    final safeHeaders = headers ?? {};
+    final safeHeaders = headers;
     Future<http.Response> performRequest(String tokenToUse) async {
        safeHeaders['Authorization'] = 'Bearer $tokenToUse';
        
@@ -573,4 +586,48 @@ class AuthService {
       rethrow;
     }
   }
+
+  /// Update user location on backend
+  static Future<bool> updateUserLocation(Map<String, double> location) async {
+    try {
+      print('📍 Updating user location on backend...');
+      
+      final response = await authenticatedRequest(
+        'PATCH',
+        Uri.parse('$_baseUrl/api/v1/auth/location'),
+        body: jsonEncode({
+          'latitude': location['latitude'],
+          'longitude': location['longitude'],
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('✅ Location updated on backend');
+        return true;
+      } else {
+        print('❌ Failed to update location: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('❌ Update Location Error: $e');
+      return false;
+    }
+  }
+
+  /// Fetch GPS location and sync with backend
+  static Future<void> syncLocationOnAuth() async {
+    try {
+      print('📍 Syncing GPS location...');
+      final location = await LocationService.getCurrentLocation();
+      
+      if (location != null) {
+        await updateUserLocation(location);
+      } else {
+        print('⚠️ Could not fetch GPS location');
+      }
+    } catch (e) {
+      print('❌ Sync Location Error: $e');
+    }
+  }
 }
+

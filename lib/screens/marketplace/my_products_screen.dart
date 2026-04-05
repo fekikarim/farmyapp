@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/product_provider.dart';
 import 'add_product_screen.dart';
 import '../../models/product_model.dart';
+import '../smart_matching_screen.dart';
 
 class MyProductsScreen extends StatefulWidget {
   const MyProductsScreen({super.key});
@@ -60,7 +61,21 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
     final productProvider = context.watch<ProductProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Products')),
+      appBar: AppBar(
+        title: const Text('My Products'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.people),
+            tooltip: 'Smart Matching',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SmartMatchingScreen()),
+              );
+            },
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'add_product_fab',
         onPressed: () async {
