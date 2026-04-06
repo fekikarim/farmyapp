@@ -20,6 +20,7 @@ import 'customer/subscriptions_screen.dart';
 import 'settings/notifications_screen.dart';
 import 'investor/my_investments_screen.dart';
 import 'customer/my_orders_screen.dart';
+import 'settings/about_us/screens/about_us_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -660,7 +661,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 context,
                 icon: Icons.info_outline,
                 title: 'About Us - Farmy Team',
-                onTap: () => _showComingSoonDialog(context),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AboutUsScreen()),
+                ),
               ),
 
               const SizedBox(height: 32),
@@ -773,22 +777,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      ),
-    );
-  }
-
-  void _showComingSoonDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Coming Soon'),
-        content: const Text('This feature is currently under development.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
       ),
     );
   }
