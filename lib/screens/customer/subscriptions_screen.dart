@@ -6,8 +6,11 @@ import '../../providers/auth_provider.dart';
 import '../../providers/worker_provider.dart';
 import '../../providers/wallet_provider.dart';
 import '../../services/subscription_service.dart';
+import '../../services/stripe_runtime_service.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+
+enum _SubscriptionPaymentMethod { credits, stripe }
 
 class SubscriptionsScreen extends StatefulWidget {
   const SubscriptionsScreen({super.key});
@@ -20,6 +23,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
     with SingleTickerProviderStateMixin {
   String _selectedCycle = 'monthly';
   bool _isProcessing = false;
+  static const String _stripeReturnUrl = 'farmyapp://stripe-redirect';
   late AnimationController _animationController;
 
   @override
@@ -582,11 +586,13 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
 
   // ─── Subscribe Flow ────────────────────────────────────────────────
 
-  void _handleSubscribe(SubscriptionPlan plan) {
+  Future<void> _handleSubscribe(SubscriptionPlan plan) async {
+    if (_isProcessing) return;
+
     if (plan.isFree) {
       _showDowngradeConfirmation(plan);
     } else {
-      _showPaymentBottomSheet(plan);
+      await _showPaymentBottomSheet(plan);
     }
   }
 
@@ -704,12 +710,14 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
     );
   }
 
-  void _showPaymentBottomSheet(SubscriptionPlan plan) {
+  Future<void> _showPaymentBottomSheet(SubscriptionPlan plan) async {
+    if (_isProcessing) return;
+
     final price = _selectedCycle == 'monthly' ? plan.price : plan.priceYearly;
 
     context.read<WalletProvider>().fetchWalletStatus();
 
-    showModalBottomSheet(
+    final selectedMethod = await showModalBottomSheet<_SubscriptionPaymentMethod>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -770,23 +778,10 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                       ? 'Loading balance...'
                       : 'Balance: \$${credits.toStringAsFixed(2)}',
                   onTap: () {
-                    Navigator.pop(sheetContext);
-                    if (isSufficient) {
-                      _processCreditUpgrade(plan);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Insufficient Credits (\$${credits.toStringAsFixed(2)}). Need \$${price.toStringAsFixed(2)}.',
-                          ),
-                          backgroundColor: Colors.red.shade400,
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      );
-                    }
+                    Navigator.pop(
+                      sheetContext,
+                      _SubscriptionPaymentMethod.credits,
+                    );
                   },
                   isSufficient: !isWalletLoading && isSufficient,
                   isLoading: isWalletLoading,
@@ -797,10 +792,12 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                   title: 'Pay with Card (Stripe)',
                   subtitle: 'Secure credit card payment',
                   onTap: () {
-                    Navigator.pop(sheetContext);
-                    _processStripeUpgrade(plan);
+                    Navigator.pop(
+                      sheetContext,
+                      _SubscriptionPaymentMethod.stripe,
+                    );
                   },
-                  isSufficient: true,
+                  isSufficient: !_isProcessing,
                 ),
               ],
             ),
@@ -808,6 +805,19 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
         },
       ),
     );
+
+    if (!mounted || selectedMethod == null) return;
+
+    // Let the modal dismiss animation fully complete before presenting Stripe UI.
+    await Future<void>.delayed(const Duration(milliseconds: 220));
+    if (!mounted) return;
+
+    if (selectedMethod == _SubscriptionPaymentMethod.credits) {
+      await _processCreditUpgrade(plan);
+      return;
+    }
+
+    await _processStripeUpgrade(plan);
   }
 
   Widget _buildPaymentOption({
@@ -893,6 +903,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
     SubscriptionPlan plan, {
     bool isDowngrade = false,
   }) async {
+    if (_isProcessing) return;
     setState(() => _isProcessing = true);
     try {
       await context.read<SubscriptionProvider>().upgradeWithCredits(
@@ -965,22 +976,30 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
   }
 
   Future<void> _processStripeUpgrade(SubscriptionPlan plan) async {
+    if (_isProcessing) return;
+
     setState(() => _isProcessing = true);
+    String? paymentIntentId;
+
     try {
       final intentData = await SubscriptionService.createStripePaymentIntent(
         plan.planKey,
         _selectedCycle,
+        _nextPaymentRequestId(),
       );
 
       final clientSecret = intentData['clientSecret'];
       final ephemeralKey = intentData['ephemeralKey'];
       final customerId = intentData['customer'];
       final publishableKey = intentData['publishableKey'];
+      paymentIntentId = intentData['paymentIntentId']?.toString();
 
       if (clientSecret == null ||
           ephemeralKey == null ||
           customerId == null ||
-          publishableKey == null) {
+          publishableKey == null ||
+          paymentIntentId == null ||
+          paymentIntentId.isEmpty) {
         throw const SubscriptionException(
           'Invalid payment data received from server. Please try again.',
           code: 'invalid_response',
@@ -988,96 +1007,146 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
         );
       }
 
-      Stripe.publishableKey = publishableKey;
-
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          customFlow: false,
-          merchantDisplayName: 'Farmy',
-          customerId: customerId,
-          customerEphemeralKeySecret: ephemeralKey,
-          paymentIntentClientSecret: clientSecret,
-          style: ThemeMode.system,
-        ),
+      await SubscriptionService.cachePendingStripePayment(
+        paymentIntentId: paymentIntentId,
+        planKey: plan.planKey,
+        billingCycle: _selectedCycle,
       );
 
-      await Stripe.instance.presentPaymentSheet();
+      await StripeRuntimeService.configure(
+        publishableKey: publishableKey.toString(),
+      );
+
+      await StripeRuntimeService.runSerializedPaymentSheet(() async {
+        await Stripe.instance.initPaymentSheet(
+          paymentSheetParameters: SetupPaymentSheetParameters(
+            customFlow: false,
+            merchantDisplayName: 'Farmy',
+            customerId: customerId.toString(),
+            customerEphemeralKeySecret: ephemeralKey.toString(),
+            paymentIntentClientSecret: clientSecret.toString(),
+            style: ThemeMode.system,
+            returnURL: _stripeReturnUrl,
+            allowsDelayedPaymentMethods: false,
+          ),
+        );
+
+        await Stripe.instance.presentPaymentSheet();
+      });
 
       // Payment succeeded — confirm with backend
-      final paymentIntentId = intentData['paymentIntentId'];
       await SubscriptionService.confirmStripePayment(paymentIntentId);
+      await SubscriptionService.clearPendingStripePayment();
 
       // Refresh subscription state
       await context.read<SubscriptionProvider>().refresh();
+      context.read<SubscriptionProvider>().markSubscribed();
       await context.read<AuthProvider>().refreshUser();
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white, size: 20),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Payment Successful! Your subscription is now active.',
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.green,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-      }
+      _showPaymentSnack(
+        'Payment successful. Your subscription is now active.',
+        Colors.green,
+      );
     } on StripeException catch (e) {
-      if (mounted) {
-        final message = e.error.localizedMessage ?? 'Payment cancelled';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-            backgroundColor: Colors.orange,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
+      if (paymentIntentId != null) {
+        final recovered = await _recoverStripePayment(paymentIntentId);
+        if (!recovered) {
+          final isUserCancelled = e.error.code == FailureCode.Canceled;
+          final message = isUserCancelled
+              ? 'Payment was cancelled.'
+              : (e.error.localizedMessage ?? 'Payment could not be completed.');
+          _showPaymentSnack(message, Colors.orange);
+        }
+      } else {
+        _showPaymentSnack(
+          e.error.localizedMessage ?? 'Payment was cancelled.',
+          Colors.orange,
         );
       }
     } on SubscriptionException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.message),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
+      if (paymentIntentId != null) {
+        final recovered = await _recoverStripePayment(paymentIntentId);
+        if (!recovered) {
+          _showPaymentSnack(
+            e.isRetryable
+                ? 'Payment submitted. We are verifying it in the background.'
+                : e.message,
+            e.isRetryable ? Colors.orange : Colors.red,
+          );
+        }
+      } else {
+        _showPaymentSnack(e.message, Colors.red);
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Payment Error: ${_friendlyErrorMessage(e.toString())}',
-            ),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
+      if (paymentIntentId != null) {
+        await _recoverStripePayment(paymentIntentId);
       }
+      _showPaymentSnack(
+        'Payment error: ${_friendlyErrorMessage(e.toString())}',
+        Colors.red,
+      );
     } finally {
       if (mounted) setState(() => _isProcessing = false);
     }
+  }
+
+  Future<bool> _recoverStripePayment(String paymentIntentId) async {
+    try {
+      final statusPayload = await SubscriptionService.getStripePaymentStatus(
+        paymentIntentId,
+      );
+      final status = statusPayload['status']?.toString() ?? 'processing';
+
+      if (status == 'succeeded') {
+        await SubscriptionService.clearPendingStripePayment();
+        await context.read<SubscriptionProvider>().refresh();
+        context.read<SubscriptionProvider>().markSubscribed();
+        await context.read<AuthProvider>().refreshUser();
+
+        _showPaymentSnack(
+          'Payment confirmed and your subscription is active.',
+          Colors.green,
+        );
+        return true;
+      }
+
+      if (status == 'cancelled' || status == 'failed') {
+        await SubscriptionService.clearPendingStripePayment();
+        return false;
+      }
+
+      _showPaymentSnack(
+        'Payment is still processing. We will sync your subscription automatically.',
+        Colors.orange,
+      );
+      return false;
+    } on SubscriptionException catch (e) {
+      if (e.isRetryable || e.isNetworkError) {
+        _showPaymentSnack(
+          'Payment status check is delayed. We will keep syncing in the background.',
+          Colors.orange,
+        );
+        return false;
+      }
+      return false;
+    }
+  }
+
+  String _nextPaymentRequestId() {
+    return DateTime.now().microsecondsSinceEpoch.toString();
+  }
+
+  void _showPaymentSnack(String message, Color color) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
   }
 
   // ─── UI States ─────────────────────────────────────────────────────

@@ -5,6 +5,7 @@ import '../../models/worker_contract_model.dart';
 import '../../models/contract_negotiation_model.dart';
 import '../../providers/worker_lifecycle_provider.dart';
 import '../../services/auth_service.dart';
+import '../../services/stripe_runtime_service.dart';
 import '../../services/worker_lifecycle_service.dart';
 
 class ContractNegotiationScreen extends StatefulWidget {
@@ -18,6 +19,8 @@ class ContractNegotiationScreen extends StatefulWidget {
 }
 
 class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
+  static const String _stripeReturnUrl = 'farmyapp://stripe-redirect';
+
   final _commentController = TextEditingController();
   final _salaryController = TextEditingController();
   final _scrollController = ScrollController();
@@ -640,23 +643,27 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
         return;
       }
 
-      // Configure Stripe
-      Stripe.publishableKey = publishableKey;
-
-      // Initialize PaymentSheet
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          customFlow: false,
-          merchantDisplayName: 'Farmy',
-          customerId: customerId,
-          customerEphemeralKeySecret: ephemeralKey,
-          paymentIntentClientSecret: clientSecret,
-          style: ThemeMode.system,
-        ),
+      await StripeRuntimeService.configure(
+        publishableKey: publishableKey.toString(),
       );
 
-      // Present PaymentSheet — user enters card details
-      await Stripe.instance.presentPaymentSheet();
+      await StripeRuntimeService.runSerializedPaymentSheet(() async {
+        await Stripe.instance.initPaymentSheet(
+          paymentSheetParameters: SetupPaymentSheetParameters(
+            customFlow: false,
+            merchantDisplayName: 'Farmy',
+            customerId: customerId.toString(),
+            customerEphemeralKeySecret: ephemeralKey.toString(),
+            paymentIntentClientSecret: clientSecret.toString(),
+            style: ThemeMode.system,
+            returnURL: _stripeReturnUrl,
+            allowsDelayedPaymentMethods: false,
+          ),
+        );
+
+        // Present PaymentSheet — user enters card details
+        await Stripe.instance.presentPaymentSheet();
+      });
 
       // If we reach here, payment was submitted (not necessarily succeeded).
       // Contract activation will happen via webhook.

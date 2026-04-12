@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'auth_service.dart';
 import '../models/subscription_plan.dart';
 import '../models/user_subscription.dart';
@@ -33,6 +34,9 @@ class SubscriptionService {
   static const Duration _defaultTimeout = Duration(seconds: 15);
   static const int _maxRetries = 2;
   static const Duration _retryBaseDelay = Duration(milliseconds: 500);
+  static const String _pendingStripePaymentKey =
+      'pending_subscription_stripe_payment';
+  static const Duration _pendingPaymentTtl = Duration(hours: 6);
 
   // ─── Plans ───────────────────────────────────────────────────────────
 
@@ -90,15 +94,24 @@ class SubscriptionService {
   static Future<Map<String, dynamic>> createStripePaymentIntent(
     String planKey,
     String billingCycle,
+    String? requestId,
   ) async {
     // No retry for payment initiation — single attempt
     final baseUrl = AuthService.baseUrl;
     final url = Uri.parse('$baseUrl/api/v1/subscriptions/subscribe/stripe');
 
+    final payload = <String, dynamic>{
+      'planKey': planKey,
+      'billingCycle': billingCycle,
+    };
+    if (requestId != null && requestId.isNotEmpty) {
+      payload['requestId'] = requestId;
+    }
+
     final response = await AuthService.authenticatedRequest(
       'POST',
       url,
-      body: {'planKey': planKey, 'billingCycle': billingCycle},
+      body: payload,
     ).timeout(const Duration(seconds: 20));
 
     if (response.statusCode == 200) {
@@ -124,6 +137,109 @@ class SubscriptionService {
       return jsonDecode(response.body);
     } else {
       throw _parseError(response, 'Failed to confirm payment');
+    }
+  }
+
+  static Future<Map<String, dynamic>> getStripePaymentStatus(
+    String paymentIntentId,
+  ) async {
+    return _withRetry('getStripePaymentStatus', () async {
+      final baseUrl = AuthService.baseUrl;
+      final url = Uri.parse(
+        '$baseUrl/api/v1/subscriptions/subscribe/status/$paymentIntentId',
+      );
+
+      final response = await AuthService.authenticatedRequest(
+        'GET',
+        url,
+      ).timeout(_defaultTimeout);
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      }
+
+      throw _parseError(response, 'Failed to fetch Stripe payment status');
+    });
+  }
+
+  static Future<void> cachePendingStripePayment({
+    required String paymentIntentId,
+    required String planKey,
+    required String billingCycle,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = <String, dynamic>{
+      'paymentIntentId': paymentIntentId,
+      'planKey': planKey,
+      'billingCycle': billingCycle,
+      'createdAt': DateTime.now().toUtc().toIso8601String(),
+    };
+    await prefs.setString(_pendingStripePaymentKey, jsonEncode(data));
+  }
+
+  static Future<Map<String, dynamic>?> getPendingStripePayment() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_pendingStripePaymentKey);
+    if (raw == null || raw.isEmpty) return null;
+
+    try {
+      final data = jsonDecode(raw) as Map<String, dynamic>;
+      final paymentIntentId = data['paymentIntentId']?.toString();
+      if (paymentIntentId == null || paymentIntentId.isEmpty) {
+        await clearPendingStripePayment();
+        return null;
+      }
+
+      final createdAtRaw = data['createdAt']?.toString();
+      if (createdAtRaw != null) {
+        final createdAt = DateTime.tryParse(createdAtRaw);
+        if (createdAt != null) {
+          final age = DateTime.now().toUtc().difference(createdAt.toUtc());
+          if (age > _pendingPaymentTtl) {
+            await clearPendingStripePayment();
+            return null;
+          }
+        }
+      }
+
+      return data;
+    } catch (_) {
+      await clearPendingStripePayment();
+      return null;
+    }
+  }
+
+  static Future<void> clearPendingStripePayment() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_pendingStripePaymentKey);
+  }
+
+  static Future<Map<String, dynamic>?> reconcilePendingStripePayment() async {
+    final pending = await getPendingStripePayment();
+    if (pending == null) return null;
+
+    final paymentIntentId = pending['paymentIntentId']?.toString();
+    if (paymentIntentId == null || paymentIntentId.isEmpty) {
+      await clearPendingStripePayment();
+      return null;
+    }
+
+    try {
+      final paymentStatus = await getStripePaymentStatus(paymentIntentId);
+      final status = paymentStatus['status']?.toString() ?? 'processing';
+      final isTerminal =
+          status == 'succeeded' || status == 'cancelled' || status == 'failed';
+
+      if (isTerminal) {
+        await clearPendingStripePayment();
+      }
+
+      return {'pending': pending, ...paymentStatus};
+    } on SubscriptionException catch (e) {
+      if (e.statusCode == 403 || e.statusCode == 404) {
+        await clearPendingStripePayment();
+      }
+      rethrow;
     }
   }
 
@@ -192,19 +308,28 @@ class SubscriptionService {
     String message = fallbackMessage;
     String? code;
     int statusCode = 500;
+    bool? retryableFlag;
 
     try {
       statusCode = response.statusCode;
       final body = jsonDecode(response.body);
-      message = body['message'] ?? fallbackMessage;
-      code = body['code'];
+      final errorBody = body['error'];
+      message =
+          errorBody?['message']?.toString() ??
+          body['message']?.toString() ??
+          fallbackMessage;
+      code = errorBody?['code']?.toString() ?? body['code']?.toString();
+      if (errorBody?['retryable'] is bool) {
+        retryableFlag = errorBody['retryable'] as bool;
+      }
     } catch (_) {}
 
     final isRetryable =
+        retryableFlag ??
         statusCode == 503 ||
-        statusCode == 502 ||
-        statusCode == 504 ||
-        statusCode == 429;
+            statusCode == 502 ||
+            statusCode == 504 ||
+            statusCode == 429;
 
     return SubscriptionException(
       message,

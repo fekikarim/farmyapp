@@ -184,6 +184,27 @@ class SubscriptionProvider with ChangeNotifier {
     }
   }
 
+  /// Reconciles any pending Stripe payment left from an interrupted app flow.
+  /// Returns the resolved status when a pending payment existed.
+  Future<String?> reconcilePendingStripePayment() async {
+    try {
+      final result = await SubscriptionService.reconcilePendingStripePayment();
+      if (result == null) return null;
+
+      final status = result['status']?.toString() ?? 'processing';
+
+      if (status == 'succeeded') {
+        await _refreshSubscriptionInternal();
+        _hasSubscription = true;
+      }
+
+      return status;
+    } catch (e) {
+      debugPrint('Pending Stripe payment reconciliation failed: $e');
+      return null;
+    }
+  }
+
   /// Full refresh of both subscription and plans (for pull-to-refresh).
   Future<void> fullRefresh({String? role}) async {
     _isLoading = true;

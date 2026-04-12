@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_stripe/flutter_stripe.dart';
 import '../services/auth_service.dart';
+import '../services/stripe_runtime_service.dart';
 
 class PaymentMethod {
   final String id;
@@ -46,6 +46,8 @@ class PaymentMethod {
 }
 
 class WalletProvider with ChangeNotifier {
+  static const String _stripeReturnUrl = 'farmyapp://stripe-redirect';
+
   double _credits = 0.0;
   List<PaymentMethod> _paymentMethods = [];
   bool _isLoading = false;
@@ -99,22 +101,26 @@ class WalletProvider with ChangeNotifier {
       final customerId = data['customer'];
       final publishableKey = data['publishableKey'];
 
-      Stripe.publishableKey = publishableKey;
-
-      // 2. Initialize Payment Sheet
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          customFlow: false,
-          merchantDisplayName: 'Farmy',
-          customerId: customerId,
-          customerEphemeralKeySecret: ephemeralKey,
-          setupIntentClientSecret: clientSecret,
-          style: ThemeMode.system,
-        ),
+      await StripeRuntimeService.configure(
+        publishableKey: publishableKey.toString(),
       );
 
-      // 3. Present Payment Sheet
-      await Stripe.instance.presentPaymentSheet();
+      // 2. Initialize and present Payment Sheet (serialized globally).
+      await StripeRuntimeService.runSerializedPaymentSheet(() async {
+        await Stripe.instance.initPaymentSheet(
+          paymentSheetParameters: SetupPaymentSheetParameters(
+            customFlow: false,
+            merchantDisplayName: 'Farmy',
+            customerId: customerId.toString(),
+            customerEphemeralKeySecret: ephemeralKey.toString(),
+            setupIntentClientSecret: clientSecret.toString(),
+            style: ThemeMode.system,
+            returnURL: _stripeReturnUrl,
+          ),
+        );
+
+        await Stripe.instance.presentPaymentSheet();
+      });
 
       // 4. Confirm setup with backend to save payment method
       final setupIntentId = clientSecret.split('_secret_')[0];
@@ -125,13 +131,12 @@ class WalletProvider with ChangeNotifier {
       );
 
       if (confirmResponse.statusCode == 200) {
-        await fetchWalletStatus(); 
+        await fetchWalletStatus();
         return true;
       } else {
         print('Failed to confirm setup: ${confirmResponse.body}');
         return false;
       }
-
     } catch (e) {
       if (e is StripeException) {
         print('Stripe Error: ${e.error.localizedMessage}');
@@ -161,31 +166,36 @@ class WalletProvider with ChangeNotifier {
       final customerId = data['customer'];
       final publishableKey = data['publishableKey'];
 
-      Stripe.publishableKey = publishableKey;
-
-      // 2. Initialize Payment Sheet
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          customFlow: false,
-          merchantDisplayName: 'Farmy',
-          customerId: customerId,
-          customerEphemeralKeySecret: ephemeralKey,
-          paymentIntentClientSecret: clientSecret,
-          style: ThemeMode.system,
-        ),
+      await StripeRuntimeService.configure(
+        publishableKey: publishableKey.toString(),
       );
 
-      // 3. Present Payment Sheet
-      await Stripe.instance.presentPaymentSheet();
+      // 2. Initialize and present Payment Sheet (serialized globally).
+      await StripeRuntimeService.runSerializedPaymentSheet(() async {
+        await Stripe.instance.initPaymentSheet(
+          paymentSheetParameters: SetupPaymentSheetParameters(
+            customFlow: false,
+            merchantDisplayName: 'Farmy',
+            customerId: customerId.toString(),
+            customerEphemeralKeySecret: ephemeralKey.toString(),
+            paymentIntentClientSecret: clientSecret.toString(),
+            style: ThemeMode.system,
+            returnURL: _stripeReturnUrl,
+            allowsDelayedPaymentMethods: false,
+          ),
+        );
+
+        await Stripe.instance.presentPaymentSheet();
+      });
 
       // 4. Create "Charge" on backend to update local credits (since we are not using webhooks for this simplified flow)
       // Ideally, backend verifies PaymentIntent status before crediting.
       // For now, we trust the client flow or assume backend verification happens in 'charge' endpoint if we were to send intent ID.
-      // BUT current backend 'charge' is just a mock that takes amount. 
+      // BUT current backend 'charge' is just a mock that takes amount.
       // To properly link, we should call a confirm endpoint.
-      // Let's call the existing "charge" endpoint as a "confirmation" that payment succeeded. 
+      // Let's call the existing "charge" endpoint as a "confirmation" that payment succeeded.
       // NOTE: This is insecure for production (client can fake it), but fits the "mock" transition plan request.
-      
+
       final chargeResponse = await AuthService.authenticatedRequest(
         'POST',
         Uri.parse('${AuthService.baseUrl}/api/v1/wallet/charge'),
@@ -197,10 +207,9 @@ class WalletProvider with ChangeNotifier {
         return true;
       }
       return false;
-
     } catch (e) {
       if (e is StripeException) {
-         print('Stripe Payment Error: ${e.error.localizedMessage}');
+        print('Stripe Payment Error: ${e.error.localizedMessage}');
       } else {
         print('Error charging credits: $e');
       }

@@ -1,7 +1,10 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
+import 'services/stripe_runtime_service.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -43,9 +46,21 @@ final RouteObserver<ModalRoute<void>> routeObserver =
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint('Unhandled Flutter error: ${details.exceptionAsString()}');
+  };
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('Unhandled async error: $error');
+    return true;
+  };
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await PushNotificationService.initialize();
   await dotenv.load(fileName: ".env");
+  await StripeRuntimeService.bootstrap();
 
   // Load saved theme
   final prefs = await SharedPreferences.getInstance();
@@ -143,14 +158,21 @@ class AuthWrapper extends StatefulWidget {
   State<AuthWrapper> createState() => _AuthWrapperState();
 }
 
-class _AuthWrapperState extends State<AuthWrapper> {
+class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   bool _socketConnected = false;
+  bool _isReconcilingPendingStripePayment = false;
 
   // Guards — prevent repeat initialisation across rebuilds
   bool _initDone = false;
   bool _subscriptionCheckStarted = false;
 
   WorkerLifecycleProvider? _lifecycle;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
 
   @override
   void didChangeDependencies() {
@@ -160,8 +182,19 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _lifecycle?.disposeSocket();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed || !mounted) return;
+
+    final authProvider = context.read<AuthProvider>();
+    if (!authProvider.isAuthenticated) return;
+
+    _reconcilePendingStripePayment();
   }
 
   void _connectSocket() {
@@ -170,6 +203,32 @@ class _AuthWrapperState extends State<AuthWrapper> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) context.read<WorkerLifecycleProvider>().initSocket();
     });
+  }
+
+  Future<void> _reconcilePendingStripePayment() async {
+    if (_isReconcilingPendingStripePayment || !mounted) return;
+    _isReconcilingPendingStripePayment = true;
+
+    try {
+      final status = await context
+          .read<SubscriptionProvider>()
+          .reconcilePendingStripePayment();
+
+      if (!mounted) return;
+
+      if (status == 'succeeded') {
+        context.read<SubscriptionProvider>().markSubscribed();
+        await context.read<AuthProvider>().refreshUser();
+      }
+    } finally {
+      _isReconcilingPendingStripePayment = false;
+    }
+  }
+
+  Future<void> _runSubscriptionCheck() async {
+    await _reconcilePendingStripePayment();
+    if (!mounted) return;
+    await context.read<SubscriptionProvider>().checkSubscriptionExistence();
   }
 
   void _disconnectSocket() {
@@ -191,9 +250,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
     _subscriptionCheckStarted = true;
     // Defer to avoid triggering side effects during build
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.read<SubscriptionProvider>().checkSubscriptionExistence();
-      }
+      if (!mounted) return;
+      _runSubscriptionCheck();
     });
   }
 
@@ -202,6 +260,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     if (_subscriptionCheckStarted || _initDone) {
       _subscriptionCheckStarted = false;
       _initDone = false;
+      _isReconcilingPendingStripePayment = false;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           context.read<SubscriptionProvider>().resetSubscriptionCheck();
