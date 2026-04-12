@@ -28,7 +28,7 @@ import 'worker/tasks_screen.dart';
 
 // Agent
 import 'investment_agent_screen.dart';
-import 'farmer_agent_screen.dart';
+import '../features/ai_assistant/ai_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -160,10 +160,7 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ];
     } else if (role == 'worker') {
-      screens = [
-        const WorkerTasksScreen(),
-        const SettingsScreen(),
-      ];
+      screens = [const WorkerTasksScreen(), const SettingsScreen()];
       items = const [
         BottomNavigationBarItem(
           icon: Icon(Icons.assignment_outlined),
@@ -225,7 +222,9 @@ class _MainScreenState extends State<MainScreen> {
                 } else {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => FarmerAgentScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const AiAssistantScreen(),
+                    ),
                   );
                 }
               },
@@ -242,18 +241,24 @@ class _MainScreenState extends State<MainScreen> {
                 );
               },
               icon: const Icon(Icons.assignment, color: Colors.black),
-              label: const Text('My Worker Tasks', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+              label: const Text(
+                'My Worker Tasks',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               backgroundColor: Colors.amberAccent,
             );
           }
           return const SizedBox.shrink();
-        }
+        },
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),

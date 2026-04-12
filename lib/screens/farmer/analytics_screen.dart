@@ -4,7 +4,7 @@ import '../../providers/wallet_provider.dart';
 import '../../providers/product_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../models/product_model.dart';
-import '../farmer_agent_screen.dart';
+import '../../features/ai_assistant/ai_screen.dart';
 
 class FarmerAnalyticsScreen extends StatefulWidget {
   const FarmerAnalyticsScreen({super.key});
@@ -114,7 +114,7 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.amber.withOpacity(0.1),
+                      color: Colors.amber.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Row(
@@ -161,7 +161,10 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
               children: [
                 Icon(Icons.auto_awesome, size: 24, color: Colors.green),
                 SizedBox(width: 12),
-                Text('Production Strategy', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                Text(
+                  'Production Strategy',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -176,7 +179,9 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const FarmerAgentScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const AiAssistantScreen(),
+                    ),
                   );
                 },
                 icon: const Icon(Icons.psychology),
@@ -184,7 +189,9 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green.shade700,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
               ),
@@ -203,9 +210,11 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.03) : Colors.grey.shade50,
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.03)
+            : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.amber.withOpacity(0.2)),
+        border: Border.all(color: Colors.amber.withValues(alpha: 0.2)),
       ),
       child: Column(
         children: [
@@ -220,7 +229,7 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
             desc,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+              color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
               fontSize: 14,
             ),
           ),

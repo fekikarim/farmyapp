@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
 import 'services/stripe_runtime_service.dart';
@@ -77,24 +78,26 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => LandProvider()),
-        ChangeNotifierProvider(create: (_) => GameProvider()),
-        ChangeNotifierProvider(create: (_) => WalletProvider()),
-        ChangeNotifierProvider(create: (_) => ProductProvider()),
-        ChangeNotifierProvider(create: (_) => BasketProvider()),
-        ChangeNotifierProvider(create: (_) => WorkerProvider()),
-        ChangeNotifierProvider(create: (_) => WorkerLifecycleProvider()),
-        ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
-        ChangeNotifierProvider(create: (_) => DeliveryProvider()),
-        ChangeNotifierProvider(create: (_) => VendorDeliveryProvider()),
-        ChangeNotifierProvider(
-          create: (_) => ThemeProvider(initialThemeMode: initialTheme),
-        ),
-      ],
-      child: const MyApp(),
+    ProviderScope(
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AuthProvider()),
+          ChangeNotifierProvider(create: (_) => LandProvider()),
+          ChangeNotifierProvider(create: (_) => GameProvider()),
+          ChangeNotifierProvider(create: (_) => WalletProvider()),
+          ChangeNotifierProvider(create: (_) => ProductProvider()),
+          ChangeNotifierProvider(create: (_) => BasketProvider()),
+          ChangeNotifierProvider(create: (_) => WorkerProvider()),
+          ChangeNotifierProvider(create: (_) => WorkerLifecycleProvider()),
+          ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
+          ChangeNotifierProvider(create: (_) => DeliveryProvider()),
+          ChangeNotifierProvider(create: (_) => VendorDeliveryProvider()),
+          ChangeNotifierProvider(
+            create: (_) => ThemeProvider(initialThemeMode: initialTheme),
+          ),
+        ],
+        child: const MyApp(),
+      ),
     ),
   );
 }
