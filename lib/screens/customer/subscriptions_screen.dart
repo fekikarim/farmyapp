@@ -124,164 +124,177 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
         subProvider.availablePlans.isEmpty;
 
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: _onRefresh,
-        color: theme.colorScheme.primary,
-        backgroundColor: theme.colorScheme.surface,
-        displacement: 60,
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(
-            parent: BouncingScrollPhysics(),
-          ),
-          slivers: [
-            SliverAppBar(
-              expandedHeight: 200,
-              pinned: true,
-              stretch: true,
-              flexibleSpace: FlexibleSpaceBar(
-                title: const Text(
-                  'Farmy Premium',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                background: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        theme.colorScheme.primary,
-                        theme.colorScheme.secondary,
-                      ],
+      body: Stack(
+        children: [
+          RefreshIndicator(
+            onRefresh: _onRefresh,
+            color: theme.colorScheme.primary,
+            backgroundColor: theme.colorScheme.surface,
+            displacement: 60,
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: 200,
+                  pinned: true,
+                  stretch: true,
+                  flexibleSpace: FlexibleSpaceBar(
+                    title: const Text(
+                      'Farmy Premium',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  child: Stack(
-                    children: [
-                      const Positioned.fill(
-                        child: Opacity(
-                          opacity: 0.08,
-                          child: Icon(
-                            Icons.stars,
-                            size: 200,
-                            color: Colors.white,
-                          ),
+                    background: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            theme.colorScheme.primary,
+                            theme.colorScheme.secondary,
+                          ],
                         ),
                       ),
-                      // Current plan indicator in header
-                      if (subProvider.currentSubscription != null)
-                        Positioned(
-                          bottom: 56,
-                          left: 0,
-                          right: 0,
-                          child: Center(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                'Current: ${subProvider.currentSubscription!.plan.name}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                      child: Stack(
+                        children: [
+                          const Positioned.fill(
+                            child: Opacity(
+                              opacity: 0.08,
+                              child: Icon(
+                                Icons.stars,
+                                size: 200,
+                                color: Colors.white,
                               ),
                             ),
                           ),
-                        ),
-                    ],
+                          // Current plan indicator in header
+                          if (subProvider.currentSubscription != null)
+                            Positioned(
+                              bottom: 56,
+                              left: 0,
+                              right: 0,
+                              child: Center(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    'Current: ${subProvider.currentSubscription!.plan.name}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth > 600 ? 40 : 20,
-                  vertical: 20,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Billing cycle toggle
-                    _buildCycleToggle(),
-                    const SizedBox(height: 24),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth > 600 ? 40 : 20,
+                      vertical: 20,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Billing cycle toggle
+                        _buildCycleToggle(),
+                        const SizedBox(height: 24),
 
-                    // Content area with state handling
-                    if (isInitialLoading || isWorkerLoading)
-                      _buildShimmerLoading(isDark)
-                    else if (subProvider.error != null &&
-                        subProvider.availablePlans.isEmpty)
-                      _buildErrorState(
-                        title: 'Failed to load subscriptions',
-                        message: _friendlyErrorMessage(subProvider.error!),
-                        onRetry: _loadData,
-                        isNetwork:
-                            subProvider.error!.contains('internet') ||
-                            subProvider.error!.contains('timed out'),
-                      )
-                    else if (userRole == 'customer' &&
-                        workerProvider.profileError != null &&
-                        subProvider.availablePlans.isEmpty)
-                      _buildErrorState(
-                        title: 'Failed to load worker profile',
-                        message: _friendlyErrorMessage(
-                          workerProvider.profileError!,
-                        ),
-                        onRetry: () => workerProvider.loadMyProfile(),
-                      )
-                    else if (filteredPlans.isEmpty)
-                      _buildEmptyState()
-                    else ...[
-                      // Stale data banner
-                      if (subProvider.plansError != null ||
-                          subProvider.subscriptionError != null)
-                        _buildStaleBanner(theme),
+                        // Content area with state handling
+                        if (isInitialLoading || isWorkerLoading)
+                          _buildShimmerLoading(isDark)
+                        else if (subProvider.error != null &&
+                            subProvider.availablePlans.isEmpty)
+                          _buildErrorState(
+                            title: 'Failed to load subscriptions',
+                            message: _friendlyErrorMessage(subProvider.error!),
+                            onRetry: _loadData,
+                            isNetwork:
+                                subProvider.error!.contains('internet') ||
+                                subProvider.error!.contains('timed out'),
+                          )
+                        else if (userRole == 'customer' &&
+                            workerProvider.profileError != null &&
+                            subProvider.availablePlans.isEmpty)
+                          _buildErrorState(
+                            title: 'Failed to load worker profile',
+                            message: _friendlyErrorMessage(
+                              workerProvider.profileError!,
+                            ),
+                            onRetry: () => workerProvider.loadMyProfile(),
+                          )
+                        else if (filteredPlans.isEmpty)
+                          _buildEmptyState()
+                        else ...[
+                          // Stale data banner
+                          if (subProvider.plansError != null ||
+                              subProvider.subscriptionError != null)
+                            _buildStaleBanner(theme),
 
-                      // Plan cards with staggered animation
-                      ...List.generate(filteredPlans.length, (index) {
-                        final interval = Interval(
-                          (index * 0.15).clamp(0.0, 0.7),
-                          ((index * 0.15) + 0.4).clamp(0.3, 1.0),
-                          curve: Curves.easeOutCubic,
-                        );
-                        return AnimatedBuilder(
-                          animation: _animationController,
-                          builder: (context, child) {
-                            final value = interval.transform(
-                              _animationController.value,
+                          // Plan cards with staggered animation
+                          ...List.generate(filteredPlans.length, (index) {
+                            final interval = Interval(
+                              (index * 0.15).clamp(0.0, 0.7),
+                              ((index * 0.15) + 0.4).clamp(0.3, 1.0),
+                              curve: Curves.easeOutCubic,
                             );
-                            return Transform.translate(
-                              offset: Offset(0, 30 * (1 - value)),
-                              child: Opacity(
-                                opacity: value.clamp(0.0, 1.0),
-                                child: child,
+                            return AnimatedBuilder(
+                              animation: _animationController,
+                              builder: (context, child) {
+                                final value = interval.transform(
+                                  _animationController.value,
+                                );
+                                return Transform.translate(
+                                  offset: Offset(0, 30 * (1 - value)),
+                                  child: Opacity(
+                                    opacity: value.clamp(0.0, 1.0),
+                                    child: child,
+                                  ),
+                                );
+                              },
+                              child: _buildPlanCard(
+                                filteredPlans[index],
+                                subProvider,
                               ),
                             );
-                          },
-                          child: _buildPlanCard(
-                            filteredPlans[index],
-                            subProvider,
-                          ),
-                        );
-                      }),
-                    ],
+                          }),
+                        ],
 
-                    const SizedBox(height: 32),
-                    _buildFAQSection(),
-                    SizedBox(
-                      height: MediaQuery.of(context).padding.bottom + 20,
+                        const SizedBox(height: 32),
+                        _buildFAQSection(),
+                        SizedBox(
+                          height: MediaQuery.of(context).padding.bottom + 20,
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_isProcessing)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.3),
+                child: const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
                 ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -583,6 +596,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
   // ─── Subscribe Flow ────────────────────────────────────────────────
 
   void _handleSubscribe(SubscriptionPlan plan) {
+    if (_isProcessing) return;
     if (plan.isFree) {
       _showDowngradeConfirmation(plan);
     } else {
@@ -989,15 +1003,24 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
       }
 
       Stripe.publishableKey = publishableKey;
+      Stripe.urlScheme = 'farmyapp';
+      await Stripe.instance.applySettings();
 
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           customFlow: false,
           merchantDisplayName: 'Farmy',
+          returnURL: 'farmyapp://stripe-redirect',
+          allowsDelayedPaymentMethods: true,
           customerId: customerId,
           customerEphemeralKeySecret: ephemeralKey,
           paymentIntentClientSecret: clientSecret,
-          style: ThemeMode.system,
+          style: ThemeMode.light,
+          billingDetailsCollectionConfiguration: const BillingDetailsCollectionConfiguration(
+            address: AddressCollectionMode.full,
+          ),
+          applePay: null,
+          googlePay: null,
         ),
       );
 

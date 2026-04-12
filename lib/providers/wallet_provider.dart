@@ -100,16 +100,21 @@ class WalletProvider with ChangeNotifier {
       final publishableKey = data['publishableKey'];
 
       Stripe.publishableKey = publishableKey;
+      Stripe.urlScheme = 'farmyapp';
+      await Stripe.instance.applySettings();
 
-      // 2. Initialize Payment Sheet
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           customFlow: false,
           merchantDisplayName: 'Farmy',
+          returnURL: 'farmyapp://stripe-redirect',
+          allowsDelayedPaymentMethods: true,
           customerId: customerId,
           customerEphemeralKeySecret: ephemeralKey,
           setupIntentClientSecret: clientSecret,
-          style: ThemeMode.system,
+          style: ThemeMode.light,
+          applePay: null,
+          googlePay: null,
         ),
       );
 
@@ -162,16 +167,21 @@ class WalletProvider with ChangeNotifier {
       final publishableKey = data['publishableKey'];
 
       Stripe.publishableKey = publishableKey;
+      Stripe.urlScheme = 'farmyapp';
+      await Stripe.instance.applySettings();
 
-      // 2. Initialize Payment Sheet
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           customFlow: false,
           merchantDisplayName: 'Farmy',
+          returnURL: 'farmyapp://stripe-redirect',
+          allowsDelayedPaymentMethods: true,
           customerId: customerId,
           customerEphemeralKeySecret: ephemeralKey,
           paymentIntentClientSecret: clientSecret,
-          style: ThemeMode.system,
+          style: ThemeMode.light,
+          applePay: null,
+          googlePay: null,
         ),
       );
 

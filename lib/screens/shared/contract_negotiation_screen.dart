@@ -642,16 +642,19 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
 
       // Configure Stripe
       Stripe.publishableKey = publishableKey;
+      Stripe.urlScheme = 'farmyapp';
+      await Stripe.instance.applySettings();
 
-      // Initialize PaymentSheet
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           customFlow: false,
           merchantDisplayName: 'Farmy',
+          returnURL: 'farmyapp://stripe-redirect',
+          allowsDelayedPaymentMethods: true,
           customerId: customerId,
           customerEphemeralKeySecret: ephemeralKey,
           paymentIntentClientSecret: clientSecret,
-          style: ThemeMode.system,
+          style: ThemeMode.light,
         ),
       );
 

@@ -132,6 +132,8 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
   }
 
   Future<void> _handleSelectPlan(SubscriptionPlan plan) async {
+    if (_isProcessing) return;
+    
     if (plan.isFree) {
       await _processFreeOrCreditPlan(plan, isFree: true);
     } else {
@@ -222,15 +224,24 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
       }
 
       Stripe.publishableKey = publishableKey ?? '';
+      Stripe.urlScheme = 'farmyapp';
+      await Stripe.instance.applySettings();
 
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           customFlow: false,
           merchantDisplayName: 'Farmy',
+          returnURL: 'farmyapp://stripe-redirect',
+          allowsDelayedPaymentMethods: true,
           customerId: customerId,
           customerEphemeralKeySecret: ephemeralKey,
           paymentIntentClientSecret: clientSecret,
-          style: ThemeMode.system,
+          style: ThemeMode.light,
+          billingDetailsCollectionConfiguration: const BillingDetailsCollectionConfiguration(
+            address: AddressCollectionMode.full,
+          ),
+          applePay: null,
+          googlePay: null,
         ),
       );
 
@@ -372,10 +383,44 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
 
               // Full-screen processing overlay
               if (_isProcessing)
-                Container(
-                  color: Colors.black.withOpacity(0.5),
-                  child: const Center(
-                    child: CircularProgressIndicator(color: Colors.white),
+                Positioned.fill(
+                  child: ClipRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                      child: Container(
+                        color: Colors.black.withOpacity(0.3),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 3,
+                              ),
+                              const SizedBox(height: 16),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.black45,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: const Text(
+                                  'Processing Payment...',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
             ],
