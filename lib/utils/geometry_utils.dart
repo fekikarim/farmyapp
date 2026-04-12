@@ -1,6 +1,8 @@
 import 'package:latlong2/latlong.dart';
 
 class GeometryUtils {
+  static const double _epsilon = 1e-9;
+
   /// Check if two polygons intersect
   static bool doPolygonsIntersect(List<LatLng> poly1, List<LatLng> poly2) {
     if (poly1.length < 3 || poly2.length < 3) return false;
@@ -29,6 +31,67 @@ class GeometryUtils {
     }
 
     return false;
+  }
+
+  /// Detects self-intersections in a single polygon ring.
+  /// Adjacent edges that share a vertex are ignored.
+  static bool hasSelfIntersections(List<LatLng> polygon) {
+    if (polygon.length < 4) return false;
+
+    for (int i = 0; i < polygon.length; i++) {
+      final int nextI = (i + 1) % polygon.length;
+      final p1 = polygon[i];
+      final p2 = polygon[nextI];
+
+      for (int j = i + 1; j < polygon.length; j++) {
+        final int nextJ = (j + 1) % polygon.length;
+        final bool isAdjacent =
+            i == j || nextI == j || i == nextJ || (i == 0 && nextJ == 0);
+        if (isAdjacent) continue;
+
+        final p3 = polygon[j];
+        final p4 = polygon[nextJ];
+        if (_doLineSegmentsIntersect(p1, p2, p3, p4)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /// Approximates width/height in meters from polygon bounds using great-circle distance.
+  static ({double widthMeters, double heightMeters}) estimateBoundsMeters(
+    List<LatLng> polygon,
+  ) {
+    if (polygon.length < 2) {
+      return (widthMeters: 0, heightMeters: 0);
+    }
+
+    final lats = polygon.map((p) => p.latitude).toList();
+    final lngs = polygon.map((p) => p.longitude).toList();
+
+    final minLat = lats.reduce((a, b) => a < b ? a : b);
+    final maxLat = lats.reduce((a, b) => a > b ? a : b);
+    final minLng = lngs.reduce((a, b) => a < b ? a : b);
+    final maxLng = lngs.reduce((a, b) => a > b ? a : b);
+
+    final midLat = (minLat + maxLat) / 2;
+    final midLng = (minLng + maxLng) / 2;
+
+    const distance = Distance();
+    final widthMeters = distance.as(
+      LengthUnit.Meter,
+      LatLng(midLat, minLng),
+      LatLng(midLat, maxLng),
+    );
+    final heightMeters = distance.as(
+      LengthUnit.Meter,
+      LatLng(minLat, midLng),
+      LatLng(maxLat, midLng),
+    );
+
+    return (widthMeters: widthMeters, heightMeters: heightMeters);
   }
 
   /// Check if a point is inside a polygon (Ray Casting algorithm)
@@ -69,10 +132,10 @@ class GeometryUtils {
       return true;
     }
 
-    if (d1 == 0 && _onSegment(p3, p4, p1)) return true;
-    if (d2 == 0 && _onSegment(p3, p4, p2)) return true;
-    if (d3 == 0 && _onSegment(p1, p2, p3)) return true;
-    if (d4 == 0 && _onSegment(p1, p2, p4)) return true;
+    if (d1.abs() <= _epsilon && _onSegment(p3, p4, p1)) return true;
+    if (d2.abs() <= _epsilon && _onSegment(p3, p4, p2)) return true;
+    if (d3.abs() <= _epsilon && _onSegment(p1, p2, p3)) return true;
+    if (d4.abs() <= _epsilon && _onSegment(p1, p2, p4)) return true;
 
     return false;
   }
@@ -84,12 +147,15 @@ class GeometryUtils {
 
   static bool _onSegment(LatLng pi, LatLng pj, LatLng pk) {
     return (pk.longitude >=
-            (pi.longitude < pj.longitude ? pi.longitude : pj.longitude)) &&
+            (pi.longitude < pj.longitude ? pi.longitude : pj.longitude) -
+                _epsilon) &&
         (pk.longitude <=
-            (pi.longitude > pj.longitude ? pi.longitude : pj.longitude)) &&
+            (pi.longitude > pj.longitude ? pi.longitude : pj.longitude) +
+                _epsilon) &&
         (pk.latitude >=
-            (pi.latitude < pj.latitude ? pi.latitude : pj.latitude)) &&
+            (pi.latitude < pj.latitude ? pi.latitude : pj.latitude) -
+                _epsilon) &&
         (pk.latitude <=
-            (pi.latitude > pj.latitude ? pi.latitude : pj.latitude));
+            (pi.latitude > pj.latitude ? pi.latitude : pj.latitude) + _epsilon);
   }
 }

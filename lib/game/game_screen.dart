@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'package:provider/provider.dart';
 import '../../models/land_model.dart';
 import '../../models/land_rental_model.dart';
@@ -64,35 +65,54 @@ class _GameScreenState extends State<GameScreen>
   }
 
   Future<void> _initializeApp() async {
-    // 1. Fetch Grid Data
-    _updateLoading('Fetching Farm Data...', null);
+    _updateLoading('Fetching farm data...', 0.1);
 
     try {
       final landProvider = context.read<LandProvider>();
       final authProvider = context.read<AuthProvider>();
       final gameProvider = context.read<GameProvider>();
 
-      final futures = await Future.wait([
-        LandGridService.fetchLandGrid(widget.land.id),
-        _precacheAssets(),
-        if (authProvider.user?.role == 'investor')
-          landProvider.fetchMyRentals(true),
-      ]);
+      final baseAssetsFuture = _precacheAssets();
+      final rentalsFuture = authProvider.user?.role == 'investor'
+          ? landProvider.fetchMyRentals(true)
+          : null;
+
+      final gridData = await LandGridService.fetchLandGrid(widget.land.id);
+      _updateLoading('Preparing land geometry...', 0.4);
+
+      await _precacheGridAssets(gridData);
+      _updateLoading('Finalizing world...', 0.8);
+
+      await baseAssetsFuture;
+      if (rentalsFuture != null) {
+        await rentalsFuture;
+      }
 
       if (mounted) {
-        final gridData = futures[0] as Map<String, dynamic>;
+        final int gw = gridData['grid_width'] ?? widget.land.gridWidth;
+        final int gh = gridData['grid_height'] ?? widget.land.gridHeight;
+        final playableMask = _resolvePlayableMask(
+          gridData['playable_mask'],
+          gw,
+          gh,
+        );
+
+        gridData['playable_mask'] = playableMask;
+
         setState(() {
           _gridData = gridData;
+          _loadingProgress = 1.0;
           _isLoading = false;
         });
 
+        unawaited(_warmupRemainingGridAssets(gridData));
+
         // Load workers assigned to this land
-        final int gw = gridData['grid_width'] ?? widget.land.gridWidth;
-        final int gh = gridData['grid_height'] ?? widget.land.gridHeight;
         gameProvider.loadWorkersForLand(
           widget.land.id,
           gridWidth: gw,
           gridHeight: gh,
+          playableMask: playableMask,
         );
       }
     } catch (e) {
@@ -106,8 +126,100 @@ class _GameScreenState extends State<GameScreen>
     }
   }
 
+  Future<void> _precacheGridAssets(Map<String, dynamic> gridData) async {
+    final matrix = gridData['matrix'];
+    if (matrix is! List) return;
+
+    _updateLoading('Warming up nearby assets...', 0.6);
+    final allPaths = _collectGridWarmupPaths(matrix);
+    if (allPaths.isEmpty) return;
+
+    // Prioritize a fast first paint, then continue warming in background.
+    final critical = allPaths.take(64).toList(growable: false);
+    await AssetManager().loadAssets(critical);
+  }
+
+  Future<void> _warmupRemainingGridAssets(Map<String, dynamic> gridData) async {
+    final matrix = gridData['matrix'];
+    if (matrix is! List) return;
+
+    final allPaths = _collectGridWarmupPaths(matrix).toList(growable: false);
+    if (allPaths.length <= 64) return;
+
+    final remaining = allPaths.sublist(
+      64,
+      allPaths.length > 260 ? 260 : allPaths.length,
+    );
+    if (remaining.isEmpty) return;
+    await AssetManager().loadAssets(remaining);
+  }
+
+  Set<String> _collectGridWarmupPaths(List<dynamic> matrix) {
+    final paths = <String>{
+      'assets/game_images/textures/grass_land.jpg',
+      'assets/game_images/textures/soil_background.jpg',
+      'assets/game_images/3d/outside_tree/tree1.png',
+      'assets/game_images/3d/outside_tree/tree2.png',
+      'assets/game_images/3d/outside_tree/tree3.png',
+      'assets/game_images/3d/outside_fance/fance1.png',
+      'assets/game_images/3d/outside_fance/fance2.png',
+    };
+
+    final seenOrigins = <String>{};
+
+    for (final row in matrix) {
+      if (row is! List) continue;
+      for (final cell in row) {
+        if (cell is! Map) continue;
+
+        final originX = cell['origin_x'];
+        final originY = cell['origin_y'];
+        final variantId = cell['variant_id'];
+        final dedupeKey = '$variantId@$originX:$originY';
+        if (!seenOrigins.add(dedupeKey)) {
+          continue;
+        }
+
+        final sprites = cell['sprites'];
+        if (sprites is! Map) continue;
+
+        for (final value in sprites.values) {
+          if (value is! String || value.isEmpty) continue;
+          final normalizedBase = value.startsWith('/')
+              ? value.substring(1)
+              : value;
+          final prefixed = normalizedBase.startsWith('assets/')
+              ? normalizedBase
+              : 'assets/game_images/$normalizedBase';
+          final basePath = prefixed.endsWith('/')
+              ? prefixed.substring(0, prefixed.length - 1)
+              : prefixed;
+
+          paths.add('$basePath/image0.png');
+          paths.add('$basePath/image1.png');
+          paths.add('$basePath/image2.png');
+        }
+      }
+    }
+
+    const workerBases = <String>[
+      'assets/game_images/sprites/player/idle',
+      'assets/game_images/sprites/player/walk/front_left',
+      'assets/game_images/sprites/player/walk/front_right',
+      'assets/game_images/sprites/player/walk/back_left',
+      'assets/game_images/sprites/player/walk/back_right',
+    ];
+    for (final base in workerBases) {
+      paths.add('$base/image0.png');
+      paths.add('$base/image1.png');
+      paths.add('$base/image2.png');
+    }
+
+    return paths;
+  }
+
   Future<bool> _precacheAssets() async {
-    _updateLoading('Loading Assets...', null);
+    _updateLoading('Loading base assets...', 0.25);
     try {
       final assetManager = AssetManager();
       await assetManager.loadAssets([
@@ -133,6 +245,43 @@ class _GameScreenState extends State<GameScreen>
         _loadingProgress = progress;
       });
     }
+  }
+
+  List<List<bool>> _resolvePlayableMask(
+    dynamic rawMask,
+    int width,
+    int height,
+  ) {
+    if (rawMask is List) {
+      final parsed = <List<bool>>[];
+      for (final row in rawMask) {
+        if (row is! List) {
+          parsed.clear();
+          break;
+        }
+        parsed.add(row.map((cell) => cell == true).toList());
+      }
+
+      final hasExpectedShape =
+          parsed.length == height && parsed.every((row) => row.length == width);
+      if (hasExpectedShape) {
+        return parsed;
+      }
+    }
+
+    // Fallback keeps backward compatibility with old grid payloads.
+    return List<List<bool>>.generate(
+      height,
+      (_) => List<bool>.filled(width, true),
+    );
+  }
+
+  bool _isMaskCellPlayable(List<dynamic>? mask, int x, int y) {
+    if (mask == null) return true;
+    if (y < 0 || y >= mask.length) return false;
+    final row = mask[y];
+    if (row is! List || x < 0 || x >= row.length) return false;
+    return row[x] == true;
   }
 
   // Placement State
@@ -192,6 +341,7 @@ class _GameScreenState extends State<GameScreen>
   bool _validatePlacement(int x, int y) {
     if (_placementFootprint == null) return false;
     final grid = _gridData?['matrix'] as List?;
+    final playableMask = _gridData?['playable_mask'] as List?;
     if (grid == null) return false;
 
     final squares = _placementFootprint!['squares'] as List;
@@ -203,6 +353,7 @@ class _GameScreenState extends State<GameScreen>
       int ty = y + (sq['y'] as int);
 
       if (tx < 0 || tx >= width || ty < 0 || ty >= height) return false;
+      if (!_isMaskCellPlayable(playableMask, tx, ty)) return false;
       if (grid[ty][tx] != null) return false;
     }
     return true;
@@ -216,7 +367,7 @@ class _GameScreenState extends State<GameScreen>
       final variantId = itemData['variant_id'] as String? ?? '';
 
       if (category.isEmpty || variantId.isEmpty) return;
-      
+
       final int gridW = _gridData?['grid_width'] ?? widget.land.gridWidth;
       final int gridH = _gridData?['grid_height'] ?? widget.land.gridHeight;
       // Use land_id from item data (now included by backend) or fall back to current land
@@ -247,24 +398,24 @@ class _GameScreenState extends State<GameScreen>
     }
   }
 
-
   void _showItemInfoSheet(dynamic itemData, int x, int y) {
     // Grid cell keys from backend: category, variant_id, variant_code, state,
     // sprites, is_active, origin_x, origin_y, footprint_width, footprint_height
-    final String category    = itemData['category'] as String? ?? 'unknown';
-    final String variantId   = itemData['variant_id'] as String? ?? '';
+    final String category = itemData['category'] as String? ?? 'unknown';
+    final String variantId = itemData['variant_id'] as String? ?? '';
     final String variantCode = itemData['variant_code'] as String? ?? '';
-    final state              = itemData['state'] as Map<String, dynamic>?;
-    final bool isActive      = itemData['is_active'] != false;
-    final int fw             = itemData['footprint_width'] ?? 1;
-    final int fh             = itemData['footprint_height'] ?? 1;
+    final state = itemData['state'] as Map<String, dynamic>?;
+    final bool isActive = itemData['is_active'] != false;
+    final int fw = itemData['footprint_width'] ?? 1;
+    final int fh = itemData['footprint_height'] ?? 1;
 
-    final String status = state?['status'] ?? (isActive ? 'active' : 'inactive');
+    final String status =
+        state?['status'] ?? (isActive ? 'active' : 'inactive');
     final Color statusColor = status == 'active' || status == 'idle'
         ? Colors.green
         : status == 'working'
-            ? Colors.blue
-            : Colors.orange;
+        ? Colors.blue
+        : Colors.orange;
 
     final String categoryLabel = category
         .replaceAll('_', ' ')
@@ -284,16 +435,21 @@ class _GameScreenState extends State<GameScreen>
             // Name: from type.name; fallback to variant_code
             final String name = variant?['type']?['name'] ?? variantCode;
             final String description = variant?['type']?['description'] ?? '';
-            final Map<String, dynamic> attrs =
-                Map<String, dynamic>.from(variant?['attributes'] ?? {});
+            final Map<String, dynamic> attrs = Map<String, dynamic>.from(
+              variant?['attributes'] ?? {},
+            );
 
             return Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
               ),
               padding: EdgeInsets.only(
-                left: 20, right: 20, top: 20,
+                left: 20,
+                right: 20,
+                top: 20,
                 bottom: MediaQuery.of(context).viewInsets.bottom + 24,
               ),
               child: Column(
@@ -303,7 +459,8 @@ class _GameScreenState extends State<GameScreen>
                   // Drag handle
                   Center(
                     child: Container(
-                      width: 40, height: 4,
+                      width: 40,
+                      height: 4,
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade400,
@@ -336,37 +493,61 @@ class _GameScreenState extends State<GameScreen>
                             snap.connectionState == ConnectionState.waiting
                                 ? const SizedBox(
                                     height: 20,
-                                    child: LinearProgressIndicator(minHeight: 3))
-                                : Text(name,
-                                    style: Theme.of(context).textTheme.titleLarge
-                                        ?.copyWith(fontWeight: FontWeight.bold)),
+                                    child: LinearProgressIndicator(
+                                      minHeight: 3,
+                                    ),
+                                  )
+                                : Text(
+                                    name,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                  ),
                             const SizedBox(height: 2),
-                            Text(categoryLabel,
-                                style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+                            Text(
+                              categoryLabel,
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 13,
+                              ),
+                            ),
                           ],
                         ),
                       ),
                       // Status chip
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: statusColor.withOpacity(0.15),
-                          border: Border.all(color: statusColor.withOpacity(0.5)),
+                          border: Border.all(
+                            color: statusColor.withOpacity(0.5),
+                          ),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Container(
-                              width: 7, height: 7,
-                              decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle),
+                              width: 7,
+                              height: 7,
+                              decoration: BoxDecoration(
+                                color: statusColor,
+                                shape: BoxShape.circle,
+                              ),
                             ),
                             const SizedBox(width: 5),
-                            Text(status,
-                                style: TextStyle(
-                                    color: statusColor,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600)),
+                            Text(
+                              status,
+                              style: TextStyle(
+                                color: statusColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -375,26 +556,38 @@ class _GameScreenState extends State<GameScreen>
 
                   if (description.isNotEmpty) ...[
                     const SizedBox(height: 14),
-                    Text(description,
-                        style: TextStyle(color: Colors.grey.shade700, height: 1.4)),
+                    Text(
+                      description,
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        height: 1.4,
+                      ),
+                    ),
                   ],
 
                   const SizedBox(height: 16),
 
                   // Stats
                   Wrap(
-                    spacing: 10, runSpacing: 8,
+                    spacing: 10,
+                    runSpacing: 8,
                     children: [
                       _statChip(Icons.grid_3x3, 'Position', '($x, $y)'),
                       _statChip(Icons.aspect_ratio, 'Size', '${fw}×$fh tiles'),
                       if (variant?['base_price'] != null)
-                        _statChip(Icons.monetization_on_outlined, 'Base price',
-                            '${variant!['base_price']}'),
+                        _statChip(
+                          Icons.monetization_on_outlined,
+                          'Base price',
+                          '${variant!['base_price']}',
+                        ),
                       // Render any extra attributes from the variant
                       for (final entry in attrs.entries)
                         if (entry.value != null)
-                          _statChip(Icons.info_outline, entry.key.replaceAll('_', ' '),
-                              '${entry.value}'),
+                          _statChip(
+                            Icons.info_outline,
+                            entry.key.replaceAll('_', ' '),
+                            '${entry.value}',
+                          ),
                     ],
                   ),
 
@@ -418,10 +611,15 @@ class _GameScreenState extends State<GameScreen>
   }
 
   Future<Map<String, dynamic>?> _fetchVariantDetails(
-      String category, String variantId) async {
+    String category,
+    String variantId,
+  ) async {
     if (variantId.isEmpty) return null;
     try {
-      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final baseUrl = dotenv.get(
+        'API_BASE_URL',
+        fallback: 'http://192.168.0.133:3001',
+      );
       final response = await AuthService.authenticatedRequest(
         'GET',
         Uri.parse('$baseUrl/api/v1/assets/$category/variants/$variantId'),
@@ -436,9 +634,6 @@ class _GameScreenState extends State<GameScreen>
     return null;
   }
 
-
-
-
   Widget _statChip(IconData icon, String label, String value) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -452,10 +647,14 @@ class _GameScreenState extends State<GameScreen>
         children: [
           Icon(icon, size: 14, color: Colors.grey.shade600),
           const SizedBox(width: 5),
-          Text('$label: ',
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-          Text(value,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+          Text(
+            '$label: ',
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          ),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+          ),
         ],
       ),
     );
@@ -463,12 +662,18 @@ class _GameScreenState extends State<GameScreen>
 
   IconData _categoryIcon(String? category) {
     switch (category) {
-      case 'animal':     return Icons.pets;
-      case 'tree':       return Icons.park;
-      case 'vegetation': return Icons.grass;
-      case 'machine':    return Icons.agriculture;
-      case 'structure':  return Icons.home_work;
-      default:           return Icons.category;
+      case 'animal':
+        return Icons.pets;
+      case 'tree':
+        return Icons.park;
+      case 'vegetation':
+        return Icons.grass;
+      case 'machine':
+        return Icons.agriculture;
+      case 'structure':
+        return Icons.home_work;
+      default:
+        return Icons.category;
     }
   }
 
@@ -570,16 +775,7 @@ class _GameScreenState extends State<GameScreen>
       child: Scaffold(
         backgroundColor: const Color(0xFF2D231E), // Fallback Dark Soil
         body: _isLoading
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const CircularProgressIndicator(),
-                    const SizedBox(height: 20),
-                    Text(_loadingMessage),
-                  ],
-                ),
-              )
+            ? _buildLoadingScreen()
             : _gridData == null
             ? _buildErrorScreen()
             : Stack(
@@ -590,6 +786,7 @@ class _GameScreenState extends State<GameScreen>
                     gridHeight:
                         _gridData!['grid_height'] ?? widget.land.gridHeight,
                     matrix: _gridData!['matrix'],
+                    playableMask: _gridData!['playable_mask'],
                     onTileTap: _isPlacing ? _onMapTap : null,
                     onItemAction: _onItemAction,
                     // Pass placement data to map
@@ -805,7 +1002,7 @@ class _GameScreenState extends State<GameScreen>
                 );
               },
             ),
-          
+
           if (context.read<AuthProvider>().user?.role == 'worker')
             _buildMenuItem(
               label: 'My Tasks',
@@ -821,57 +1018,58 @@ class _GameScreenState extends State<GameScreen>
 
           // AI Advisor Button
           if (context.read<AuthProvider>().user?.role != 'worker')
-          _buildMenuItem(
-            label: 'AI Advisor',
-            icon: Icons.auto_awesome,
-            color: Colors.purpleAccent,
-            textColor: Colors.white,
-            delay: 25,
-            onTap: () {
-              _toggleMenu();
-              final auth = context.read<AuthProvider>();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => InvestmentAgentScreen(
-                    initialMessage: "Analyse my current farm and wallet. What should be my next strategic move in this game session?",
-                    initialContext: {
-                      'landId': widget.land.id,
-                      'credits': auth.user?.credits ?? 0,
-                    },
+            _buildMenuItem(
+              label: 'AI Advisor',
+              icon: Icons.auto_awesome,
+              color: Colors.purpleAccent,
+              textColor: Colors.white,
+              delay: 25,
+              onTap: () {
+                _toggleMenu();
+                final auth = context.read<AuthProvider>();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => InvestmentAgentScreen(
+                      initialMessage:
+                          "Analyse my current farm and wallet. What should be my next strategic move in this game session?",
+                      initialContext: {
+                        'landId': widget.land.id,
+                        'credits': auth.user?.credits ?? 0,
+                      },
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
+                );
+              },
+            ),
 
           // Inventory Button
           if (context.read<AuthProvider>().user?.role != 'worker')
-          _buildMenuItem(
-            label: 'Inventory',
-            icon: Icons.inventory_2_rounded,
-            color: Colors.orangeAccent,
-            textColor: Colors.black,
-            delay: 50,
-            onTap: () {
-              _toggleMenu();
-              _showInventory(context);
-            },
-          ),
+            _buildMenuItem(
+              label: 'Inventory',
+              icon: Icons.inventory_2_rounded,
+              color: Colors.orangeAccent,
+              textColor: Colors.black,
+              delay: 50,
+              onTap: () {
+                _toggleMenu();
+                _showInventory(context);
+              },
+            ),
 
           // Shop Button
           if (context.read<AuthProvider>().user?.role != 'worker')
-          _buildMenuItem(
-            label: 'Shop',
-            icon: Icons.storefront_rounded,
-            color: Colors.greenAccent,
-            textColor: Colors.black,
-            delay: 100,
-            onTap: () {
-              _toggleMenu();
-              _showShop(context);
-            },
-          ),
+            _buildMenuItem(
+              label: 'Shop',
+              icon: Icons.storefront_rounded,
+              color: Colors.greenAccent,
+              textColor: Colors.black,
+              delay: 100,
+              onTap: () {
+                _toggleMenu();
+                _showShop(context);
+              },
+            ),
 
           // Exit Button
           _buildMenuItem(

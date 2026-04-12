@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/land_worker_model.dart';
@@ -85,6 +86,7 @@ class GameProvider with ChangeNotifier {
   bool _workersLoading = false;
 
   List<WorkerState> _workers = [];
+  List<List<bool>>? _playableMask;
 
   bool get showEdgePanel => _showEdgePanel;
   bool get isLoading => _isLoading;
@@ -100,11 +102,13 @@ class GameProvider with ChangeNotifier {
     String landId, {
     int gridWidth = 10,
     int gridHeight = 10,
+    List<dynamic>? playableMask,
   }) async {
     _workersLoading = true;
     notifyListeners();
 
     currentLandId = landId; // Remember which land workers are on
+    _playableMask = _normalizePlayableMask(playableMask, gridWidth, gridHeight);
 
     try {
       final List<LandWorker> landWorkers = await WorkerService.getLandWorkers(
@@ -115,17 +119,20 @@ class GameProvider with ChangeNotifier {
       for (var w in _workers) {
         w.stop();
       }
-      
+
       // Listen for socket events to update available dynamically when a task is completed remotely
       final socketService = SocketService();
-      socketService.off('worker_task_completed'); // Clear old listener to prevent duplicates
+      socketService.off(
+        'worker_task_completed',
+      ); // Clear old listener to prevent duplicates
       socketService.on('worker_task_completed', (data) {
         if (data is Map<String, dynamic>) {
-           final completedWorkerId = data['workerId'];
-           final landIdEvent = data['landId'];
-           if (landIdEvent == currentLandId) { // Verify it's for current land
-             setWorkerAvailable(completedWorkerId);
-           }
+          final completedWorkerId = data['workerId'];
+          final landIdEvent = data['landId'];
+          if (landIdEvent == currentLandId) {
+            // Verify it's for current land
+            setWorkerAvailable(completedWorkerId);
+          }
         }
       });
 
@@ -152,6 +159,19 @@ class GameProvider with ChangeNotifier {
           startX = 1.0 + (i % 4).toDouble();
           startY = 1.0 + (i ~/ 4).toDouble();
         }
+
+        final snappedStart = _findNearestPlayableCell(
+          startX,
+          startY,
+          gridWidth,
+          gridHeight,
+        );
+        if (snappedStart == null) {
+          // Invalid or fully blocked masks should not place workers off-land.
+          continue;
+        }
+        startX = snappedStart.$1;
+        startY = snappedStart.$2;
 
         final workerState = WorkerState(
           workerId: lw.workerId,
@@ -191,6 +211,24 @@ class GameProvider with ChangeNotifier {
     if (gridWidth != null) clampedX = clampedX.clamp(0.0, gridWidth - 0.1);
     if (gridHeight != null) clampedY = clampedY.clamp(0.0, gridHeight - 0.1);
 
+    final int effectiveGridWidth =
+        gridWidth ??
+        (_playableMask?.isNotEmpty == true ? _playableMask!.first.length : 0);
+    final int effectiveGridHeight =
+        gridHeight ??
+        (_playableMask?.isNotEmpty == true ? _playableMask!.length : 0);
+    final snappedTarget = _findNearestPlayableCell(
+      clampedX,
+      clampedY,
+      effectiveGridWidth,
+      effectiveGridHeight,
+    );
+    if (snappedTarget == null) {
+      return;
+    }
+    clampedX = snappedTarget.$1;
+    clampedY = snappedTarget.$2;
+
     // Filter by availability if requested (double-click should not move busy workers)
     final eligibleWorkers = onlyAvailable
         ? _workers.where((w) => w.availability == 'available').toList()
@@ -210,7 +248,12 @@ class GameProvider with ChangeNotifier {
 
     closest.moveTo(clampedX, clampedY, notifyListeners, () {
       // Save position to SharedPreferences when worker stops moving
-      _saveWorkerPosition(effectiveLandId, closest.workerId, closest.x, closest.y);
+      _saveWorkerPosition(
+        effectiveLandId,
+        closest.workerId,
+        closest.x,
+        closest.y,
+      );
       notifyListeners();
     });
   }
@@ -232,17 +275,39 @@ class GameProvider with ChangeNotifier {
     if (gridWidth != null) clampedX = clampedX.clamp(0.0, gridWidth - 0.1);
     if (gridHeight != null) clampedY = clampedY.clamp(0.0, gridHeight - 0.1);
 
+    final int effectiveGridWidth =
+        gridWidth ??
+        (_playableMask?.isNotEmpty == true ? _playableMask!.first.length : 0);
+    final int effectiveGridHeight =
+        gridHeight ??
+        (_playableMask?.isNotEmpty == true ? _playableMask!.length : 0);
+    final snappedTarget = _findNearestPlayableCell(
+      clampedX,
+      clampedY,
+      effectiveGridWidth,
+      effectiveGridHeight,
+    );
+    if (snappedTarget == null) {
+      return;
+    }
+    clampedX = snappedTarget.$1;
+    clampedY = snappedTarget.$2;
+
     worker.moveTo(clampedX, clampedY, notifyListeners, () {
       _saveWorkerPosition(currentLandId, worker.workerId, worker.x, worker.y);
       notifyListeners();
     });
   }
 
-
   String currentLandId = '';
 
   /// Saves a worker's position to SharedPreferences.
-  Future<void> _saveWorkerPosition(String landId, String workerId, double x, double y) async {
+  Future<void> _saveWorkerPosition(
+    String landId,
+    String workerId,
+    double x,
+    double y,
+  ) async {
     if (landId.isEmpty) return;
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -254,12 +319,14 @@ class GameProvider with ChangeNotifier {
 
   /// Finds and returns the ID of the closest available worker to a given point.
   String? getClosestAvailableWorkerId(double tx, double ty) {
-    final availableWorkers = _workers.where((w) => w.availability == 'available').toList();
+    final availableWorkers = _workers
+        .where((w) => w.availability == 'available')
+        .toList();
     if (availableWorkers.isEmpty) return null;
 
     WorkerState closest = availableWorkers.first;
     double minDist = double.infinity;
-    
+
     for (var w in availableWorkers) {
       double dist = (w.x - tx).abs() + (w.y - ty).abs(); // Manhattan distance
       if (dist < minDist) {
@@ -267,8 +334,91 @@ class GameProvider with ChangeNotifier {
         closest = w;
       }
     }
-    
+
     return closest.workerId;
+  }
+
+  List<List<bool>>? _normalizePlayableMask(
+    List<dynamic>? rawMask,
+    int gridWidth,
+    int gridHeight,
+  ) {
+    if (rawMask == null || rawMask.isEmpty) return null;
+
+    final normalized = <List<bool>>[];
+    for (final row in rawMask) {
+      if (row is! List) return null;
+      normalized.add(row.map((cell) => cell == true).toList());
+    }
+
+    final hasExpectedShape =
+        normalized.length == gridHeight &&
+        normalized.every((row) => row.length == gridWidth);
+    if (!hasExpectedShape) return null;
+
+    return normalized;
+  }
+
+  bool _isPlayableCell(int x, int y, int gridWidth, int gridHeight) {
+    if (x < 0 || x >= gridWidth || y < 0 || y >= gridHeight) return false;
+    if (_playableMask == null) return true;
+    if (y >= _playableMask!.length) return false;
+    final row = _playableMask![y];
+    if (x >= row.length) return false;
+    return row[x];
+  }
+
+  (double, double)? _findNearestPlayableCell(
+    double x,
+    double y,
+    int gridWidth,
+    int gridHeight,
+  ) {
+    if (gridWidth <= 0 || gridHeight <= 0) return null;
+    if (_playableMask == null) {
+      return (x.clamp(0.0, gridWidth - 0.1), y.clamp(0.0, gridHeight - 0.1));
+    }
+
+    final int targetX = x.floor().clamp(0, gridWidth - 1);
+    final int targetY = y.floor().clamp(0, gridHeight - 1);
+    if (_isPlayableCell(targetX, targetY, gridWidth, gridHeight)) {
+      return (x.clamp(0.0, gridWidth - 0.1), y.clamp(0.0, gridHeight - 0.1));
+    }
+
+    final int maxRadius = math.max(gridWidth, gridHeight);
+    int? bestX;
+    int? bestY;
+    double bestDistance = double.infinity;
+
+    for (int radius = 1; radius <= maxRadius; radius++) {
+      final int minY = math.max(0, targetY - radius);
+      final int maxY = math.min(gridHeight - 1, targetY + radius);
+      final int minX = math.max(0, targetX - radius);
+      final int maxX = math.min(gridWidth - 1, targetX + radius);
+
+      for (int yy = minY; yy <= maxY; yy++) {
+        for (int xx = minX; xx <= maxX; xx++) {
+          final bool onRing =
+              xx == minX || xx == maxX || yy == minY || yy == maxY;
+          if (!onRing) continue;
+          if (!_isPlayableCell(xx, yy, gridWidth, gridHeight)) continue;
+
+          final distance =
+              (xx - targetX).abs().toDouble() + (yy - targetY).abs().toDouble();
+          if (distance < bestDistance) {
+            bestDistance = distance;
+            bestX = xx;
+            bestY = yy;
+          }
+        }
+      }
+
+      if (bestX != null && bestY != null) {
+        return (bestX + 0.5, bestY + 0.5);
+      }
+    }
+
+    return null;
   }
 
   /// Marks a worker as busy locally (after task assignment) so the UI updates immediately.

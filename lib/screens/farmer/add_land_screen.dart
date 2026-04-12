@@ -32,6 +32,9 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
   int? _draggingPointIndex;
   bool _isDraggingPlot = false;
   bool _hasConflict = false;
+  bool _hasInvalidGeometry = false;
+
+  bool get _hasShapeIssue => _hasConflict || _hasInvalidGeometry;
 
   @override
   void initState() {
@@ -44,9 +47,12 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
 
   void _checkConflicts() {
     final allLands = context.read<LandProvider>().allLands;
+    final bool hasInvalidGeometry =
+        _selectedPoints.length >= 3 &&
+        GeometryUtils.hasSelfIntersections(_selectedPoints);
     bool conflict = false;
 
-    if (_selectedPoints.length >= 3) {
+    if (!hasInvalidGeometry && _selectedPoints.length >= 3) {
       for (var existingLand in allLands) {
         if (existingLand.boundaries != null &&
             existingLand.boundaries!.length >= 3) {
@@ -61,9 +67,38 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
       }
     }
 
-    if (_hasConflict != conflict) {
-      setState(() => _hasConflict = conflict);
+    _syncDimensionFieldsFromBoundary();
+
+    _hasInvalidGeometry = hasInvalidGeometry;
+    _hasConflict = conflict;
+  }
+
+  void _syncDimensionFieldsFromBoundary() {
+    if (_selectedPoints.length < 3) return;
+
+    final bounds = GeometryUtils.estimateBoundsMeters(_selectedPoints);
+    final width = bounds.widthMeters.clamp(10.0, 500.0);
+    final height = bounds.heightMeters.clamp(10.0, 500.0);
+
+    final widthText = width.toStringAsFixed(1);
+    final heightText = height.toStringAsFixed(1);
+
+    if (_widthController.text != widthText) {
+      _widthController.text = widthText;
     }
+    if (_heightController.text != heightText) {
+      _heightController.text = heightText;
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _priceController.dispose();
+    _widthController.dispose();
+    _heightController.dispose();
+    super.dispose();
   }
 
   @override
@@ -83,7 +118,9 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
           if (_isMapView)
             IconButton(
               icon: const Icon(Icons.check),
-              onPressed: () => setState(() => _isMapView = false),
+              onPressed: _hasShapeIssue
+                  ? null
+                  : () => setState(() => _isMapView = false),
             ),
         ],
       ),
@@ -93,10 +130,10 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
           : Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
               child: ElevatedButton(
-                onPressed: _isLoading ? null : _submitForm,
+                onPressed: (_isLoading || _hasShapeIssue) ? null : _submitForm,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 18),
-                  backgroundColor: Colors.green,
+                  backgroundColor: _hasShapeIssue ? Colors.grey : Colors.green,
                   foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
@@ -204,12 +241,13 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                 Expanded(
                   child: _buildInputField(
                     controller: _widthController,
-                    label: 'Width',
-                    hint: 'Meters',
+                    label: 'Width (Auto)',
+                    hint: 'Auto from boundary',
                     icon: Icons.straighten_rounded,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
+                    readOnly: true,
                     validator: (v) {
                       final val = double.tryParse(v ?? '');
                       if (val == null) return 'Invalid';
@@ -222,12 +260,13 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                 Expanded(
                   child: _buildInputField(
                     controller: _heightController,
-                    label: 'Height',
-                    hint: 'Meters',
+                    label: 'Height (Auto)',
+                    hint: 'Auto from boundary',
                     icon: Icons.square_foot_rounded,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
+                    readOnly: true,
                     validator: (v) {
                       final val = double.tryParse(v ?? '');
                       if (val == null) return 'Invalid';
@@ -274,12 +313,12 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: _hasConflict
+                  color: _hasShapeIssue
                       ? Colors.red.withOpacity(0.05)
                       : theme.cardColor,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: _hasConflict
+                    color: _hasShapeIssue
                         ? Colors.red
                         : (_selectedPoints.length >= 3
                               ? Colors.green.withOpacity(0.3)
@@ -292,7 +331,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: _hasConflict
+                        color: _hasShapeIssue
                             ? Colors.red.withOpacity(0.1)
                             : (_selectedPoints.length >= 3
                                       ? Colors.green
@@ -301,10 +340,10 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        _hasConflict
+                        _hasShapeIssue
                             ? Icons.warning_rounded
                             : Icons.polyline_rounded,
-                        color: _hasConflict
+                        color: _hasShapeIssue
                             ? Colors.red
                             : (_selectedPoints.length >= 3
                                   ? Colors.green
@@ -317,13 +356,15 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _hasConflict
-                                ? 'Conflict Detected'
-                                : (_selectedPoints.isEmpty
-                                      ? 'Perimeter not set'
-                                      : '${_selectedPoints.length} Points Defined'),
+                            _hasInvalidGeometry
+                                ? 'Invalid Geometry'
+                                : (_hasConflict
+                                      ? 'Conflict Detected'
+                                      : (_selectedPoints.isEmpty
+                                            ? 'Perimeter not set'
+                                            : '${_selectedPoints.length} Points Defined')),
                             style: TextStyle(
-                              color: _hasConflict
+                              color: _hasShapeIssue
                                   ? Colors.red
                                   : (_selectedPoints.length >= 3
                                         ? Colors.green
@@ -334,13 +375,15 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            _hasConflict
-                                ? 'Overlaps with existing land'
-                                : (_selectedPoints.length < 3
-                                      ? 'Tap to draw land boundaries'
-                                      : 'Geometry verified and valid'),
+                            _hasInvalidGeometry
+                                ? 'Polygon edges intersect. Adjust points to fix shape.'
+                                : (_hasConflict
+                                      ? 'Overlaps with existing land'
+                                      : (_selectedPoints.length < 3
+                                            ? 'Tap to draw land boundaries'
+                                            : 'Geometry verified and valid')),
                             style: TextStyle(
-                              color: _hasConflict
+                              color: _hasShapeIssue
                                   ? Colors.red.withOpacity(0.7)
                                   : (isDark ? Colors.white38 : Colors.black38),
                               fontSize: 13,
@@ -370,6 +413,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
     required String hint,
     required IconData icon,
     int maxLines = 1,
+    bool readOnly = false,
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
   }) {
@@ -392,6 +436,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
         TextFormField(
           controller: controller,
           maxLines: maxLines,
+          readOnly: readOnly,
           keyboardType: keyboardType,
           style: TextStyle(
             color: theme.textTheme.bodyLarge?.color,
@@ -716,7 +761,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
         ),
 
         // Validation Warning
-        if (_hasConflict)
+        if (_hasShapeIssue)
           Positioned(
             bottom: 100,
             left: 20,
@@ -734,14 +779,16 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                   ),
                 ],
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.warning_amber_rounded, color: Colors.white),
-                  SizedBox(width: 12),
+                  const Icon(Icons.warning_amber_rounded, color: Colors.white),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Boundary Conflict! Overlaps with an existing property.',
-                      style: TextStyle(
+                      _hasInvalidGeometry
+                          ? 'Invalid geometry! Boundary edges intersect each other.'
+                          : 'Boundary conflict! Overlaps with an existing property.',
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
@@ -787,12 +834,12 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               const SizedBox(height: 8),
               FloatingActionButton.extended(
                 heroTag: 'confirm_map',
-                onPressed: _hasConflict
+                onPressed: _hasShapeIssue
                     ? null
                     : () => setState(() => _isMapView = false),
                 label: const Text('Confirm'),
                 icon: const Icon(Icons.check),
-                backgroundColor: _hasConflict ? Colors.grey : Colors.green,
+                backgroundColor: _hasShapeIssue ? Colors.grey : Colors.green,
                 foregroundColor: Colors.white,
                 elevation: 4,
               ),
@@ -850,6 +897,12 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedPoints.length < 3) {
       _showErrorSnackBar('Please select at least 3 points on the map.');
+      return;
+    }
+    if (_hasInvalidGeometry) {
+      _showErrorSnackBar(
+        'Cannot publish: Invalid geometry. Boundary edges intersect.',
+      );
       return;
     }
     if (_hasConflict) {
