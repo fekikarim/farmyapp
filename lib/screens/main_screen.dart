@@ -211,25 +211,42 @@ class _MainScreenState extends State<MainScreen> {
       floatingActionButton: Builder(
         builder: (context) {
           if (role == 'investor' || role == 'farmer') {
-            return FloatingActionButton.small(
-              heroTag: 'agent_fab',
-              onPressed: () {
-                if (role == 'investor') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => InvestmentAgentScreen()),
-                  );
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const AiAssistantScreen(),
-                    ),
-                  );
-                }
-              },
-              backgroundColor: Theme.of(context).primaryColor,
-              child: const Icon(Icons.smart_toy, color: Colors.white, size: 20),
+            return SizedBox(
+              width: 58,
+              height: 58,
+              child: FloatingActionButton(
+                heroTag: 'agent_fab',
+                tooltip: role == 'investor'
+                    ? 'Open investment assistant'
+                    : 'Open AI assistant',
+                onPressed: () {
+                  if (role == 'investor') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => InvestmentAgentScreen(),
+                      ),
+                    );
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AiAssistantScreen(),
+                      ),
+                    );
+                  }
+                },
+                backgroundColor: Theme.of(context).primaryColor,
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: const Icon(
+                  Icons.smart_toy_rounded,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
             );
           } else if (role == 'customer' && user.hasWorkerProfile) {
             return FloatingActionButton.extended(
