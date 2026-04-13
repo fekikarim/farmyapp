@@ -460,9 +460,7 @@ class IsometricMapPainter extends CustomPainter {
 
         bool isTreeRow = false;
         String? treeAsset;
-        String? fenceAsset;
-        double fenceDx = 0;
-        double fenceDy = 0;
+        List<_FenceData> tileFences = [];
 
         if (!isForeground) {
           bool isTopSide = (x >= -2 && x < 0) || (y >= -2 && y < 0);
@@ -475,25 +473,21 @@ class IsometricMapPainter extends CustomPainter {
             }
           }
 
-          bool isInXRange = (x >= 0 && x < gridWidth);
-          bool isInYRange = (y >= 0 && y < gridHeight);
+          bool hasPlayableNeighbor(int nx, int ny) {
+            return nx >= 0 && nx < gridWidth && ny >= 0 && ny < gridHeight && _isPlayableCell(nx, ny);
+          }
 
-          if (y == -1 && isInXRange) {
-            fenceAsset = 'assets/game_images/3d/outside_fance/fance1.png';
-            fenceDx = -tileWidth / 4;
-            fenceDy = -tileHeight / 4 - 12;
-          } else if (y == gridHeight && isInXRange) {
-            fenceAsset = 'assets/game_images/3d/outside_fance/fance1.png';
-            fenceDx = tileWidth / 4;
-            fenceDy = tileHeight / 4 - 12;
-          } else if (x == -1 && isInYRange) {
-            fenceAsset = 'assets/game_images/3d/outside_fance/fance2.png';
-            fenceDx = tileWidth / 4;
-            fenceDy = -tileHeight / 4 - 12;
-          } else if (x == gridWidth && isInYRange) {
-            fenceAsset = 'assets/game_images/3d/outside_fance/fance2.png';
-            fenceDx = -tileWidth / 4;
-            fenceDy = tileHeight / 4 - 12;
+          if (hasPlayableNeighbor(x, y + 1)) {
+            tileFences.add(_FenceData('assets/game_images/3d/outside_fance/fance1.png', -tileWidth / 4, -tileHeight / 4 - 12, x, y + 1));
+          }
+          if (hasPlayableNeighbor(x, y - 1)) {
+            tileFences.add(_FenceData('assets/game_images/3d/outside_fance/fance1.png', tileWidth / 4, tileHeight / 4 - 12, x, y - 1));
+          }
+          if (hasPlayableNeighbor(x + 1, y)) {
+            tileFences.add(_FenceData('assets/game_images/3d/outside_fance/fance2.png', tileWidth / 4, -tileHeight / 4 - 12, x + 1, y));
+          }
+          if (hasPlayableNeighbor(x - 1, y)) {
+            tileFences.add(_FenceData('assets/game_images/3d/outside_fance/fance2.png', -tileWidth / 4, tileHeight / 4 - 12, x - 1, y));
           }
         }
 
@@ -514,7 +508,7 @@ class IsometricMapPainter extends CustomPainter {
         }
 
         final bool hasObjectLayerEntry =
-            isTreeRow || fenceAsset != null || cellData != null;
+            isTreeRow || tileFences.isNotEmpty || cellData != null;
         final Rect objectRect = Rect.fromLTWH(
           isoX - tileWidth,
           isoY - tileHeight * 3.8,
@@ -550,9 +544,7 @@ class IsometricMapPainter extends CustomPainter {
               isForeground: isForeground,
               hasTree: isTreeRow,
               treeAsset: treeAsset,
-              fenceAsset: fenceAsset,
-              fenceDx: fenceDx,
-              fenceDy: fenceDy,
+              fences: tileFences,
               cellData: cellData,
             ),
           );
@@ -815,30 +807,27 @@ class IsometricMapPainter extends CustomPainter {
     }
 
     // 3. Draw Fences
-    if (task.fenceAsset != null) {
+    for (var fence in task.fences) {
       bool hideFence = false;
       if (selectedX != null && selectedY != null) {
-        if (task.y == -1 && (selectedX! - task.x).abs() <= 1 && selectedY == 0)
+        if (fence.asset.contains('fance1') &&
+            selectedY == fence.adjacentY &&
+            (selectedX! - task.x).abs() <= 1) {
           hideFence = true;
-        if (task.y == gridHeight &&
-            (selectedX! - task.x).abs() <= 1 &&
-            selectedY == gridHeight - 1)
+        } else if (fence.asset.contains('fance2') &&
+            selectedX == fence.adjacentX &&
+            (selectedY! - task.y).abs() <= 1) {
           hideFence = true;
-        if (task.x == -1 && (selectedY! - task.y).abs() <= 1 && selectedX == 0)
-          hideFence = true;
-        if (task.x == gridWidth &&
-            (selectedY! - task.y).abs() <= 1 &&
-            selectedX == gridWidth - 1)
-          hideFence = true;
+        }
       }
 
       if (!hideFence) {
-        final ui.Image? fenceImg = assetManager.getImage(task.fenceAsset!);
+        final ui.Image? fenceImg = assetManager.getImage(fence.asset);
         if (fenceImg != null) {
           double h = tileHeight * 2;
           double w = tileWidth;
-          double bottomDist = (tileHeight / 2) + task.fenceDy;
-          double dx = task.isoX + task.fenceDx;
+          double bottomDist = (tileHeight / 2) + fence.dy;
+          double dx = task.isoX + fence.dx;
           double dy = task.isoY + tileHeight - bottomDist - h;
 
           paintImage(
@@ -1135,6 +1124,16 @@ class IsometricMapPainter extends CustomPainter {
   }
 }
 
+class _FenceData {
+  final String asset;
+  final double dx;
+  final double dy;
+  final int adjacentX;
+  final int adjacentY;
+
+  _FenceData(this.asset, this.dx, this.dy, this.adjacentX, this.adjacentY);
+}
+
 class _PaintTask {
   final int x;
   final int y;
@@ -1143,9 +1142,7 @@ class _PaintTask {
   final bool isForeground;
   final bool hasTree;
   final String? treeAsset;
-  final String? fenceAsset;
-  final double fenceDx;
-  final double fenceDy;
+  final List<_FenceData> fences;
   final dynamic cellData;
   final bool isPlayer;
   final String? playerDirection;
@@ -1162,9 +1159,7 @@ class _PaintTask {
     required this.isForeground,
     required this.hasTree,
     this.treeAsset,
-    this.fenceAsset,
-    this.fenceDx = 0,
-    this.fenceDy = 0,
+    this.fences = const [],
     this.cellData,
     this.isPlayer = false,
     this.playerDirection,
