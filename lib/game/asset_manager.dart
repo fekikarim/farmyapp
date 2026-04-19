@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
@@ -11,15 +12,28 @@ class AssetManager extends ChangeNotifier {
   AssetManager._internal();
 
   final Map<String, ui.Image> _images = {};
-  final Set<String> _failed = {};
+  final Set<String> _permanentFailures = {};
   final Set<String> _loading = {};
-  final Set<String> _spritePrefetchRequested = {};
+  final Map<String, int> _spritePrefetchLevel = {};
+  final Map<String, DateTime> _spritePrefetchCooldownUntil = {};
   final Map<String, int> _frameCountCache = {};
+  final Map<String, int> _transientFailures = {};
+  final Map<String, DateTime> _retryAfter = {};
+  final Queue<Completer<void>> _decodeWaiters = Queue<Completer<void>>();
   // Per base-path pattern: 'standard' (image0.png), 'padded' (image000.png),
   // or 'spaced' (sprite (0).png — used by the new worker sheets).
   final Map<String, String?> _patternCache = {};
   AssetManifest? _manifest;
   bool _manifestLoading = false;
+  bool _notifyQueued = false;
+  int _activeDecodes = 0;
+
+  static const int _kMaxTransientRetries = 3;
+  static const int _kMaxConcurrentDecodes = 4;
+  static const Duration _kDecodeTimeout = Duration(seconds: 4);
+  static const Duration _kPrefetchCooldown = Duration(milliseconds: 1500);
+  static const Duration _kMinRetryDelay = Duration(milliseconds: 250);
+  static const Duration _kMaxRetryDelay = Duration(seconds: 3);
 
   String _normalizeBasePath(String baseAssetPath) {
     String path = baseAssetPath;
@@ -30,9 +44,79 @@ class AssetManager extends ChangeNotifier {
   }
 
   void _safeNotify() {
+    if (_notifyQueued) return;
+    _notifyQueued = true;
     scheduleMicrotask(() {
+      _notifyQueued = false;
       if (hasListeners) notifyListeners();
     });
+  }
+
+  Future<void> _acquireDecodeSlot() {
+    if (_activeDecodes < _kMaxConcurrentDecodes) {
+      _activeDecodes++;
+      return Future.value();
+    }
+    final completer = Completer<void>();
+    _decodeWaiters.addLast(completer);
+    return completer.future;
+  }
+
+  void _releaseDecodeSlot() {
+    if (_decodeWaiters.isNotEmpty) {
+      final completer = _decodeWaiters.removeFirst();
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
+      return;
+    }
+    if (_activeDecodes > 0) {
+      _activeDecodes--;
+    }
+  }
+
+  bool _isPathCoolingDown(String path) {
+    final DateTime? retryAt = _retryAfter[path];
+    if (retryAt == null) return false;
+    final bool coolingDown = DateTime.now().isBefore(retryAt);
+    if (!coolingDown) {
+      _retryAfter.remove(path);
+    }
+    return coolingDown;
+  }
+
+  Duration _retryDelayFor(int attempt) {
+    final int exponent = math.min(math.max(attempt - 1, 0), 8);
+    final int factor = 1 << exponent;
+    final int delayMs = _kMinRetryDelay.inMilliseconds * factor;
+    return Duration(
+      milliseconds: math.min(delayMs, _kMaxRetryDelay.inMilliseconds),
+    );
+  }
+
+  bool _isPermanentAssetError(Object error) {
+    final String message = error.toString().toLowerCase();
+    return message.contains('unable to load asset') ||
+        message.contains('asset does not exist') ||
+        message.contains('could not load asset');
+  }
+
+  void _markTransientFailure(String path, Object error) {
+    final int attempt = (_transientFailures[path] ?? 0) + 1;
+    if (attempt > _kMaxTransientRetries) {
+      _transientFailures.remove(path);
+      _retryAfter.remove(path);
+      _permanentFailures.add(path);
+      debugPrint('Asset permanently failed after retries: $path ($error)');
+      return;
+    }
+
+    _transientFailures[path] = attempt;
+    final Duration delay = _retryDelayFor(attempt);
+    _retryAfter[path] = DateTime.now().add(delay);
+    debugPrint(
+      'Transient asset load failure for $path (attempt $attempt/$_kMaxTransientRetries). Retrying in ${delay.inMilliseconds}ms.',
+    );
   }
 
   Future<void> _loadManifest() async {
@@ -124,18 +208,28 @@ class AssetManager extends ChangeNotifier {
     if (prefetchCount <= 0) return;
 
     final String normalizedPath = _normalizeBasePath(baseAssetPath);
-    final String cacheKey =
-        '$normalizedPath|$prefetchCount|${frameCountHint ?? 0}';
-    if (_spritePrefetchRequested.contains(cacheKey)) return;
-    _spritePrefetchRequested.add(cacheKey);
+    final DateTime now = DateTime.now();
+    final DateTime? cooldownUntil =
+        _spritePrefetchCooldownUntil[normalizedPath];
 
     final int resolvedCount = frameCountHint ?? getFrameCount(normalizedPath);
-    final int loadCount = resolvedCount > 0
+    final int requestedLevel = resolvedCount > 0
         ? math.min(prefetchCount, resolvedCount)
         : prefetchCount;
+    final int currentLevel = _spritePrefetchLevel[normalizedPath] ?? 0;
+
+    if (requestedLevel <= currentLevel) {
+      return;
+    }
+    if (cooldownUntil != null && now.isBefore(cooldownUntil)) {
+      return;
+    }
+
+    _spritePrefetchLevel[normalizedPath] = requestedLevel;
+    _spritePrefetchCooldownUntil[normalizedPath] = now.add(_kPrefetchCooldown);
 
     final List<String> paths = List.generate(
-      loadCount,
+      requestedLevel,
       (i) => getFramePath(normalizedPath, i),
     );
     unawaited(loadAssets(paths));
@@ -193,30 +287,58 @@ class AssetManager extends ChangeNotifier {
   }
 
   Future<void> loadAssets(List<String> paths) async {
-    await Future.wait(paths.map(_loadImage));
+    if (paths.isEmpty) return;
+    final List<String> uniquePaths = paths.toSet().toList(growable: false);
+    await Future.wait(uniquePaths.map(_loadImage));
   }
 
   Future<void> _loadImage(String path) async {
     if (_images.containsKey(path) ||
         _loading.contains(path) ||
-        _failed.contains(path))
+        _permanentFailures.contains(path) ||
+        _isPathCoolingDown(path))
       return;
 
     _loading.add(path);
+    bool decodeSlotAcquired = false;
 
     try {
-      final ByteData data = await rootBundle.load(path);
-      final Completer<ui.Image> completer = Completer();
+      final ByteData data = await rootBundle
+          .load(path)
+          .timeout(_kDecodeTimeout);
+      await _acquireDecodeSlot();
+      decodeSlotAcquired = true;
+
+      final Completer<ui.Image> completer = Completer<ui.Image>();
       ui.decodeImageFromList(Uint8List.view(data.buffer), (ui.Image img) {
-        completer.complete(img);
+        if (!completer.isCompleted) {
+          completer.complete(img);
+        }
       });
-      final image = await completer.future;
+
+      final ui.Image image = await completer.future.timeout(_kDecodeTimeout);
+      if (image.width <= 0 || image.height <= 0) {
+        throw StateError('Decoded image has invalid dimensions for $path');
+      }
+
       _images[path] = image;
+      _transientFailures.remove(path);
+      _retryAfter.remove(path);
+      _permanentFailures.remove(path);
       _safeNotify();
     } catch (e) {
-      print('Failed to load asset: $path');
-      _failed.add(path);
+      if (_isPermanentAssetError(e)) {
+        _transientFailures.remove(path);
+        _retryAfter.remove(path);
+        _permanentFailures.add(path);
+        debugPrint('Permanent asset failure: $path');
+      } else {
+        _markTransientFailure(path, e);
+      }
     } finally {
+      if (decodeSlotAcquired) {
+        _releaseDecodeSlot();
+      }
       _loading.remove(path);
     }
   }
@@ -226,6 +348,6 @@ class AssetManager extends ChangeNotifier {
   }
 
   bool hasFailed(String path) {
-    return _failed.contains(path);
+    return _permanentFailures.contains(path);
   }
 }

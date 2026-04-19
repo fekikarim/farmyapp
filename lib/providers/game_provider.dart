@@ -112,10 +112,24 @@ class GameProvider with ChangeNotifier {
   List<WorkerState> _workers = [];
   List<List<bool>>? _playableMask;
 
+  // Manual (joystick) control: at most one worker is driven manually at a
+  // time. Nullable id avoids having to scan the worker list every frame to
+  // answer "is anyone being controlled right now?".
+  String? _manualControlWorkerId;
+
   bool get showEdgePanel => _showEdgePanel;
   bool get isLoading => _isLoading;
   bool get workersLoading => _workersLoading;
   List<WorkerState> get workers => _workers;
+  String? get manualControlWorkerId => _manualControlWorkerId;
+  bool get manualControlActive => _manualControlWorkerId != null;
+
+  /// Returns the currently manually-controlled worker, or null.
+  WorkerState? get manualControlWorker {
+    final id = _manualControlWorkerId;
+    if (id == null) return null;
+    return _workers.where((w) => w.workerId == id).firstOrNull;
+  }
 
   GameProvider() {
     _loadSettings();
@@ -321,6 +335,126 @@ class GameProvider with ChangeNotifier {
       _saveWorkerPosition(currentLandId, worker.workerId, worker.x, worker.y);
       notifyListeners();
     });
+  }
+
+  /// Enters manual joystick-control mode for the given worker. Any in-flight
+  /// auto-move tween is cancelled so the user takes over cleanly. Busy
+  /// workers are rejected — tasks must not be interrupted mid-animation.
+  void startManualControl(String workerId) {
+    final worker = _workers.where((w) => w.workerId == workerId).firstOrNull;
+    if (worker == null) return;
+    if (worker.availability == 'busy') return;
+    worker.stop();
+    _manualControlWorkerId = workerId;
+    notifyListeners();
+  }
+
+  /// Exits manual-control mode. Persists the final cell so a reload doesn't
+  /// lose the player's positioning. Safe to call if no worker is active.
+  void stopManualControl() {
+    final worker = manualControlWorker;
+    _manualControlWorkerId = null;
+    if (worker != null) {
+      worker.status = 'idle';
+      worker.action = 'idle';
+      _saveWorkerPosition(currentLandId, worker.workerId, worker.x, worker.y);
+    }
+    notifyListeners();
+  }
+
+  /// Applies one frame of joystick input to the manually-controlled worker.
+  ///
+  /// [sx], [sy] are the stick deflection in screen space, each in [-1, 1]
+  /// (right / down positive). [dt] is the elapsed seconds since the previous
+  /// call — passing actual frame delta keeps movement frame-rate independent.
+  ///
+  /// Zero vector ⇒ worker eases back to `idle` while preserving its last
+  /// facing direction, so the sprite doesn't snap to a default pose.
+  void applyJoystickInput(double sx, double sy, double dt) {
+    final worker = manualControlWorker;
+    if (worker == null || dt <= 0) return;
+
+    final double intensity = math.sqrt(sx * sx + sy * sy).clamp(0.0, 1.0);
+    if (intensity < 0.08) {
+      // Dead-zone: release the "walk" pose but keep direction as the last
+      // facing so the idle sprite picks up the correct slug.
+      bool changed = false;
+      if (worker.action != 'idle') {
+        worker.action = 'idle';
+        changed = true;
+      }
+      if (worker.status != 'idle') {
+        worker.status = 'idle';
+        changed = true;
+      }
+      if (changed) notifyListeners();
+      return;
+    }
+
+    // Screen→grid basis inversion for the iso projection
+    //   isoX = (x - y) * tw/2, isoY = (x + y) * th/2
+    // Solved for (x, y) given (isoX, isoY):
+    //   x =  isoX/tw + isoY/th
+    //   y = -isoX/tw + isoY/th
+    // With tw = 2*th the vertical stick weighs twice the horizontal in grid
+    // units, which matches the taller iso "depth" axis.
+    final double gdx = sx + 2 * sy;
+    final double gdy = -sx + 2 * sy;
+    final double gnorm = math.sqrt(gdx * gdx + gdy * gdy);
+    if (gnorm < 1e-4) return;
+    final double ugx = gdx / gnorm;
+    final double ugy = gdy / gnorm;
+
+    const double kMaxCellsPerSecond = 3.5;
+    final double stepX = ugx * intensity * kMaxCellsPerSecond * dt;
+    final double stepY = ugy * intensity * kMaxCellsPerSecond * dt;
+
+    final int gridW = _playableMask?.isNotEmpty == true
+        ? _playableMask!.first.length
+        : 0;
+    final int gridH = _playableMask?.length ?? 0;
+    if (gridW == 0 || gridH == 0) return;
+
+    // Axis-separated collision: try full step, then X-only, then Y-only. This
+    // allows sliding along a wall of non-playable cells instead of locking up
+    // when the desired vector points into it diagonally.
+    double nextX = worker.x + stepX;
+    double nextY = worker.y + stepY;
+    bool ok = _acceptManualTarget(nextX, nextY, gridW, gridH);
+    if (!ok) {
+      nextX = worker.x + stepX;
+      nextY = worker.y;
+      ok = _acceptManualTarget(nextX, nextY, gridW, gridH);
+    }
+    if (!ok) {
+      nextX = worker.x;
+      nextY = worker.y + stepY;
+      ok = _acceptManualTarget(nextX, nextY, gridW, gridH);
+    }
+    if (!ok) {
+      // Fully blocked this frame — still flip to walk pose so the sprite
+      // animates in place rather than looking frozen.
+      worker.direction = classifyDirection8(gdx, gdy);
+      worker.action = 'walk';
+      worker.status = 'walking';
+      notifyListeners();
+      return;
+    }
+
+    worker.x = nextX;
+    worker.y = nextY;
+    worker.direction = classifyDirection8(gdx, gdy);
+    worker.action = 'walk';
+    worker.status = 'walking';
+    notifyListeners();
+  }
+
+  /// Returns true iff (x, y) is inside the grid *and* the cell containing it
+  /// is playable. Used by [applyJoystickInput] for per-axis slide collision.
+  bool _acceptManualTarget(double x, double y, int gridW, int gridH) {
+    if (x < 0 || y < 0) return false;
+    if (x >= gridW - 0.01 || y >= gridH - 0.01) return false;
+    return _isPlayableCell(x.floor(), y.floor(), gridW, gridH);
   }
 
   String currentLandId = '';
