@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:provider/provider.dart';
 import 'package:farmyapp/providers/game_provider.dart';
@@ -463,31 +464,74 @@ class IsometricMapPainter extends CustomPainter {
         List<_FenceData> tileFences = [];
 
         if (!isForeground) {
-          bool isTopSide = (x >= -2 && x < 0) || (y >= -2 && y < 0);
-          if (isTopSide) {
-            int hash = (x * 7 + y * 13).abs();
-            if ((hash % 5) < 2) {
+          // Scatter the two new outside-tree sprites deterministically across
+          // the entire off-land border. A hash-based seed keeps positions
+          // stable between frames (no popping), and the 2-tile buffer around
+          // the fence keeps the walking area clear.
+          final bool nearFence =
+              (x >= -1 && x <= gridWidth) && (y >= -1 && y <= gridHeight);
+          if (!nearFence) {
+            final int hash = (x * 73856093 ^ y * 19349663).abs();
+            // ~10% density \u2014 sparse scatter for a lighter, natural look.
+            if ((hash % 100) < 10) {
               isTreeRow = true;
-              int variant = (hash % 3) + 1;
-              treeAsset = 'assets/game_images/3d/outside_tree/tree$variant.png';
+              final int variant = (hash % 2) + 1;
+              treeAsset =
+                  'assets/game_images/3d/outside_tree/tree_outside_0$variant.png';
             }
           }
 
           bool hasPlayableNeighbor(int nx, int ny) {
-            return nx >= 0 && nx < gridWidth && ny >= 0 && ny < gridHeight && _isPlayableCell(nx, ny);
+            return nx >= 0 &&
+                nx < gridWidth &&
+                ny >= 0 &&
+                ny < gridHeight &&
+                _isPlayableCell(nx, ny);
           }
 
           if (hasPlayableNeighbor(x, y + 1)) {
-            tileFences.add(_FenceData('assets/game_images/3d/outside_fance/fance1.png', -tileWidth / 4, -tileHeight / 4 - 12, x, y + 1));
+            tileFences.add(
+              _FenceData(
+                'assets/game_images/3d/outside_fance/fance1.png',
+                -tileWidth / 4,
+                -tileHeight / 4 - 12,
+                x,
+                y + 1,
+              ),
+            );
           }
           if (hasPlayableNeighbor(x, y - 1)) {
-            tileFences.add(_FenceData('assets/game_images/3d/outside_fance/fance1.png', tileWidth / 4, tileHeight / 4 - 12, x, y - 1));
+            tileFences.add(
+              _FenceData(
+                'assets/game_images/3d/outside_fance/fance1.png',
+                tileWidth / 4,
+                tileHeight / 4 - 12,
+                x,
+                y - 1,
+              ),
+            );
           }
           if (hasPlayableNeighbor(x + 1, y)) {
-            tileFences.add(_FenceData('assets/game_images/3d/outside_fance/fance2.png', tileWidth / 4, -tileHeight / 4 - 12, x + 1, y));
+            tileFences.add(
+              _FenceData(
+                'assets/game_images/3d/outside_fance/fance2.png',
+                tileWidth / 4,
+                -tileHeight / 4 - 12,
+                x + 1,
+                y,
+              ),
+            );
           }
           if (hasPlayableNeighbor(x - 1, y)) {
-            tileFences.add(_FenceData('assets/game_images/3d/outside_fance/fance2.png', -tileWidth / 4, tileHeight / 4 - 12, x - 1, y));
+            tileFences.add(
+              _FenceData(
+                'assets/game_images/3d/outside_fance/fance2.png',
+                -tileWidth / 4,
+                tileHeight / 4 - 12,
+                x - 1,
+                y,
+              ),
+            );
           }
         }
 
@@ -576,6 +620,7 @@ class IsometricMapPainter extends CustomPainter {
           isPlayer: true,
           playerDirection: worker.direction,
           playerStatus: worker.status,
+          playerAction: worker.action,
           workerName: worker.workerName,
           workerDepth: worker.x + worker.y,
           workerIsBusy: worker.availability == 'busy',
@@ -740,46 +785,104 @@ class IsometricMapPainter extends CustomPainter {
     return row[x] == true;
   }
 
-  void _paintGround(Canvas canvas, Paint paint, _PaintTask task) {
-    final String assetPath = task.isForeground
-        ? 'assets/game_images/textures/grass_land.jpg'
-        : 'assets/game_images/textures/soil_background.jpg';
+  // Resolve a soil tile for a given ground cell.
+  //   soil_0.png   -> off-land / outside playable area
+  //   soil_1.png   -> default playable land
+  //   soil_2.png   -> tilled (backend: cellData.state == 'tilled')
+  //   plow_soil.png-> currently being plowed (backend: cellData.state == 'plowing')
+  String _resolveSoilAsset(_PaintTask task) {
+    if (!task.isForeground) {
+      return 'assets/game_images/components/soil/soil_0.png';
+    }
+    final cell = task.cellData;
+    String? state;
+    if (cell is Map) {
+      final s = cell['state'] ?? cell['soil_state'];
+      if (s is String) state = s;
+    }
+    switch (state) {
+      case 'plowing':
+        return 'assets/game_images/components/soil/plow_soil.png';
+      case 'tilled':
+      case 'soil':
+        return 'assets/game_images/components/soil/soil_2.png';
+      default:
+        return 'assets/game_images/components/soil/soil_1.png';
+    }
+  }
 
-    final ui.Image? baseImg = assetManager.getImage(assetPath);
+  void _paintGround(Canvas canvas, Paint paint, _PaintTask task) {
+    final String assetPath = _resolveSoilAsset(task);
+    ui.Image? baseImg = assetManager.getImage(assetPath);
+
+    // On-demand load with a legacy grass fallback so the tile never shows a
+    // raw transparent diamond while the new soil sheet is still streaming in.
+    if (baseImg == null) {
+      if (!assetManager.hasFailed(assetPath)) {
+        unawaited(assetManager.loadAssets([assetPath]));
+      }
+      final String legacy = task.isForeground
+          ? 'assets/game_images/textures/grass_land.jpg'
+          : 'assets/game_images/textures/soil_background.jpg';
+      baseImg = assetManager.getImage(legacy);
+    }
+
+    canvas.save();
+    canvas.translate(task.isoX, task.isoY);
+
+    final Path path = Path();
+    path.moveTo(tileWidth / 2, 0);
+    path.lineTo(tileWidth, tileHeight / 2);
+    path.lineTo(tileWidth / 2, tileHeight);
+    path.lineTo(0, tileHeight / 2);
+    path.close();
+
+    canvas.clipPath(path);
 
     if (baseImg != null) {
-      canvas.save();
-      canvas.translate(task.isoX, task.isoY);
-
-      final Path path = Path();
-      path.moveTo(tileWidth / 2, 0);
-      path.lineTo(tileWidth, tileHeight / 2);
-      path.lineTo(tileWidth / 2, tileHeight);
-      path.lineTo(0, tileHeight / 2);
-      path.close();
-
-      canvas.clipPath(path);
-
+      // Subtle pulse on the plowing tile so the active work is visible even
+      // before backend state changes stream in.
+      final bool isPlowing = assetPath.endsWith('plow_soil.png');
+      if (isPlowing) {
+        final double pulse =
+            0.85 + 0.15 * math.sin(animationValue * math.pi * 2);
+        canvas.saveLayer(
+          const Rect.fromLTWH(0, 0, tileWidth, tileHeight),
+          Paint()
+            ..colorFilter = ColorFilter.mode(
+              Color.fromRGBO(255, 255, 255, pulse.clamp(0.0, 1.0)),
+              BlendMode.modulate,
+            ),
+        );
+      }
       paintImage(
         canvas: canvas,
         rect: const Rect.fromLTWH(0, 0, tileWidth, tileHeight),
         image: baseImg,
         fit: BoxFit.cover,
       );
-
-      canvas.restore();
-
-      // Border
-      canvas.save();
-      canvas.translate(task.isoX, task.isoY);
-      paint.style = PaintingStyle.stroke;
-      paint.strokeWidth = 1;
+      if (isPlowing) canvas.restore();
+    } else {
+      // Final fallback: flat color so the grid always renders.
+      paint.style = PaintingStyle.fill;
       paint.color = task.isForeground
-          ? Colors.white.withOpacity(0.2)
-          : Colors.white.withOpacity(0.05);
-      canvas.drawPath(path, paint);
-      canvas.restore();
+          ? const Color(0xFF6B8E23)
+          : const Color(0xFF3C3C3C);
+      canvas.drawRect(const Rect.fromLTWH(0, 0, tileWidth, tileHeight), paint);
     }
+
+    canvas.restore();
+
+    // Border
+    canvas.save();
+    canvas.translate(task.isoX, task.isoY);
+    paint.style = PaintingStyle.stroke;
+    paint.strokeWidth = 1;
+    paint.color = task.isForeground
+        ? Colors.white.withOpacity(0.2)
+        : Colors.white.withOpacity(0.05);
+    canvas.drawPath(path, paint);
+    canvas.restore();
   }
 
   void _paintObject(Canvas canvas, Paint paint, _PaintTask task) {
@@ -948,24 +1051,56 @@ class IsometricMapPainter extends CustomPainter {
     }
   }
 
+  // Valid directions that actually exist under sprites/worker/<action>/.
+  static const Set<String> _kWorkerDirections = {
+    'bottom-side',
+    'forward-side',
+    'left-side',
+    'right-side',
+    'left-bottom-side',
+    'left-forward-side',
+    'right-bottom-side',
+    'right-forward-side',
+  };
+
+  // Valid actions that exist as folders under sprites/worker/.
+  static const Set<String> _kWorkerActions = {
+    'idle',
+    'walk',
+    'hoe',
+    'plant',
+    'wCan',
+  };
+
+  String _resolveWorkerSpriteBase(_PaintTask task) {
+    final String action = _kWorkerActions.contains(task.playerAction)
+        ? task.playerAction!
+        : (task.playerStatus == 'walking' ? 'walk' : 'idle');
+    final String direction = _kWorkerDirections.contains(task.playerDirection)
+        ? task.playerDirection!
+        : 'forward-side';
+    return 'sprites/worker/$action/$direction';
+  }
+
   void _paintPlayer(Canvas canvas, _PaintTask task) {
-    String subPath = task.playerStatus == 'walking'
-        ? 'walk/${task.playerDirection}'
-        : 'idle';
-    String spriteBase = 'sprites/player/$subPath';
+    final String spriteBase = _resolveWorkerSpriteBase(task);
 
     int maxFrames = assetManager.getFrameCount(spriteBase);
-    if (maxFrames == 0 && task.playerStatus == 'idle') maxFrames = 9;
     if (maxFrames == 0) maxFrames = 1;
 
-    final bool isWalking = task.playerStatus == 'walking';
+    final bool isAnimated =
+        task.playerStatus == 'walking' ||
+        task.playerAction == 'walk' ||
+        task.playerAction == 'hoe' ||
+        task.playerAction == 'plant' ||
+        task.playerAction == 'wCan';
     assetManager.prefetchSpriteFrames(
       spriteBase,
       frameCountHint: maxFrames,
-      prefetchCount: isWalking ? 6 : 2,
+      prefetchCount: isAnimated ? 8 : 2,
     );
 
-    final int frameIndex = isWalking
+    final int frameIndex = (maxFrames > 1 && isAnimated)
         ? ((animationValue * maxFrames) % maxFrames).floor()
         : 0;
     final String currentFramePath = assetManager.getFramePath(
@@ -977,6 +1112,18 @@ class IsometricMapPainter extends CustomPainter {
     ui.Image? img =
         assetManager.getImage(currentFramePath) ??
         assetManager.getImage(idleFramePath);
+
+    // Graceful fallback: if the action sheet has no frames yet, try the idle
+    // sheet for the same direction so the worker never disappears mid-action.
+    if (img == null && !spriteBase.contains('/idle/')) {
+      final String fallbackBase =
+          'sprites/worker/idle/${_kWorkerDirections.contains(task.playerDirection) ? task.playerDirection : 'forward-side'}';
+      final String fallbackPath = assetManager.getFramePath(fallbackBase, 0);
+      img = assetManager.getImage(fallbackPath);
+      if (img == null && !assetManager.hasFailed(fallbackPath)) {
+        unawaited(assetManager.loadAssets([fallbackPath]));
+      }
+    }
 
     if (img == null) {
       final missing = <String>[];
@@ -1147,6 +1294,7 @@ class _PaintTask {
   final bool isPlayer;
   final String? playerDirection;
   final String? playerStatus;
+  final String? playerAction; // 'idle' | 'walk' | 'hoe' | 'plant' | 'wCan'
   final String? workerName; // for name label
   final double? workerDepth; // fractional depth for sorting
   final bool workerIsBusy; // whether worker has an active task
@@ -1164,6 +1312,7 @@ class _PaintTask {
     this.isPlayer = false,
     this.playerDirection,
     this.playerStatus,
+    this.playerAction,
     this.workerName,
     this.workerDepth,
     this.workerIsBusy = false,

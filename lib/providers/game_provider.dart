@@ -6,6 +6,30 @@ import '../models/land_worker_model.dart';
 import '../services/worker_service.dart';
 import '../services/socket_service.dart';
 
+/// Quantises a grid velocity vector into one of eight isometric direction
+/// slugs that map 1:1 to the folders under `assets/game_images/sprites/worker`.
+/// Ties (|dx| == |dy|) bias toward the more-horizontal slug to avoid flicker
+/// during quasi-diagonal tweens.
+String classifyDirection8(double dx, double dy) {
+  if (dx == 0 && dy == 0) return 'forward-side';
+  final double ax = dx.abs();
+  final double ay = dy.abs();
+  final bool horizontalDominant = ax >= ay * 1.75;
+  final bool verticalDominant = ay >= ax * 1.75;
+
+  if (horizontalDominant) {
+    return dx > 0 ? 'right-side' : 'left-side';
+  }
+  if (verticalDominant) {
+    return dy > 0 ? 'forward-side' : 'bottom-side';
+  }
+  // Diagonals
+  if (dx > 0 && dy > 0) return 'right-forward-side';
+  if (dx < 0 && dy > 0) return 'left-forward-side';
+  if (dx > 0 && dy < 0) return 'right-bottom-side';
+  return 'left-bottom-side';
+}
+
 /// Holds runtime state for a single worker on the map.
 class WorkerState {
   final String workerId;
@@ -16,8 +40,9 @@ class WorkerState {
   double y;
   double? targetX;
   double? targetY;
-  String direction;
+  String direction; // 8-way iso slug — see classifyDirection8
   String status; // 'idle' | 'walking'
+  String action; // 'idle' | 'walk' | 'hoe' | 'plant' | 'wCan'
   Timer? movementTimer;
 
   WorkerState({
@@ -27,8 +52,9 @@ class WorkerState {
     this.availability = 'available',
     this.x = 1,
     this.y = 1,
-    this.direction = 'front_left',
+    this.direction = 'forward-side',
     this.status = 'idle',
+    this.action = 'idle',
   });
 
   void moveTo(
@@ -40,6 +66,7 @@ class WorkerState {
     targetX = tx;
     targetY = ty;
     status = 'walking';
+    action = 'walk';
     movementTimer?.cancel();
 
     const double speed = 0.05;
@@ -55,15 +82,11 @@ class WorkerState {
         targetX = null;
         targetY = null;
         status = 'idle';
+        action = 'idle';
         movementTimer?.cancel();
         onStop();
       } else {
-        // Update direction
-        if (dx.abs() > dy.abs()) {
-          direction = dx > 0 ? 'front_right' : 'back_left';
-        } else {
-          direction = dy > 0 ? 'front_left' : 'back_right';
-        }
+        direction = classifyDirection8(dx, dy);
         double ratio = speed / distance;
         x += dx * ratio;
         y += dy * ratio;
@@ -77,6 +100,7 @@ class WorkerState {
     targetX = null;
     targetY = null;
     status = 'idle';
+    action = 'idle';
   }
 }
 

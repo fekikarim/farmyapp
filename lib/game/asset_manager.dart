@@ -15,7 +15,9 @@ class AssetManager extends ChangeNotifier {
   final Set<String> _loading = {};
   final Set<String> _spritePrefetchRequested = {};
   final Map<String, int> _frameCountCache = {};
-  final Map<String, String?> _patternCache = {}; // Store 'standard' or 'padded'
+  // Per base-path pattern: 'standard' (image0.png), 'padded' (image000.png),
+  // or 'spaced' (sprite (0).png — used by the new worker sheets).
+  final Map<String, String?> _patternCache = {};
   AssetManifest? _manifest;
   bool _manifestLoading = false;
 
@@ -63,41 +65,55 @@ class AssetManager extends ChangeNotifier {
 
     final allAssets = _manifest!.listAssets();
     int count = 0;
+    String? foundPattern;
 
-    // Try different naming conventions
-    String pattern = 'image';
-    if (allAssets.contains('${path}${pattern}0.png')) {
-      // Simple pattern (image0.png)
-      while (allAssets.contains('${path}${pattern}$count.png')) count++;
-    } else if (allAssets.contains('${path}${pattern}000.png')) {
-      // Padded pattern (image000.png)
-      while (allAssets.contains(
-        '${path}${pattern}${count.toString().padLeft(3, '0')}.png',
-      ))
-        count++;
+    // Detect naming convention — order matters (most specific first).
+    if (allAssets.contains('${path}sprite (0).png')) {
+      foundPattern = 'spaced';
+    } else if (allAssets.contains('${path}image0.png')) {
+      foundPattern = 'standard';
+    } else if (allAssets.contains('${path}image000.png')) {
+      foundPattern = 'padded';
+    }
+
+    if (foundPattern != null) {
+      // Tolerate up to 2 consecutive gaps before declaring the cycle over
+      // (a few worker sheets ship with missing intermediate frames).
+      int probe = 0;
+      int gaps = 0;
+      while (probe < 128) {
+        final String candidate = _buildFramePath(path, probe, foundPattern);
+        if (allAssets.contains(candidate)) {
+          count = probe + 1;
+          gaps = 0;
+        } else {
+          gaps++;
+          if (gaps > 2) break;
+        }
+        probe++;
+      }
     }
 
     _frameCountCache[path] = count;
-
-    // Determine pattern for this path if not cached
-    if (!_patternCache.containsKey(path)) {
-      if (allAssets.contains('${path}${pattern}000.png'))
-        _patternCache[path] = 'padded';
-      else if (allAssets.contains('${path}${pattern}0.png'))
-        _patternCache[path] = 'standard';
-    }
-
+    _patternCache[path] = foundPattern;
     return count;
+  }
+
+  String _buildFramePath(String normalizedPath, int index, String? pattern) {
+    switch (pattern) {
+      case 'padded':
+        return '${normalizedPath}image${index.toString().padLeft(3, '0')}.png';
+      case 'spaced':
+        return '${normalizedPath}sprite ($index).png';
+      case 'standard':
+      default:
+        return '${normalizedPath}image$index.png';
+    }
   }
 
   String getFramePath(String baseAssetPath, int index) {
     final String path = _normalizeBasePath(baseAssetPath);
-
-    String? pattern = _patternCache[path];
-    if (pattern == 'padded') {
-      return '${path}image${index.toString().padLeft(3, '0')}.png';
-    }
-    return '${path}image$index.png';
+    return _buildFramePath(path, index, _patternCache[path]);
   }
 
   void prefetchSpriteFrames(
@@ -133,25 +149,30 @@ class AssetManager extends ChangeNotifier {
     _loading.add(path + '_discovery');
 
     int count = 0;
-    bool exists = true;
     String? foundPattern;
 
-    // Try finding the pattern first
-    if (await _checkExists('${path}image0.png'))
+    // Probe patterns in order of specificity.
+    if (await _checkExists('${path}sprite (0).png')) {
+      foundPattern = 'spaced';
+    } else if (await _checkExists('${path}image0.png')) {
       foundPattern = 'standard';
-    else if (await _checkExists('${path}image000.png'))
+    } else if (await _checkExists('${path}image000.png')) {
       foundPattern = 'padded';
+    }
 
     if (foundPattern != null) {
-      while (exists && count < 100) {
-        final String framePath = foundPattern == 'padded'
-            ? '${path}image${count.toString().padLeft(3, '0')}.png'
-            : '${path}image$count.png';
+      int probe = 0;
+      int gaps = 0;
+      while (probe < 128) {
+        final String framePath = _buildFramePath(path, probe, foundPattern);
         if (await _checkExists(framePath)) {
-          count++;
+          count = probe + 1;
+          gaps = 0;
         } else {
-          exists = false;
+          gaps++;
+          if (gaps > 2) break;
         }
+        probe++;
       }
     }
 

@@ -158,9 +158,8 @@ class _GameScreenState extends State<GameScreen>
     final paths = <String>{
       'assets/game_images/textures/grass_land.jpg',
       'assets/game_images/textures/soil_background.jpg',
-      'assets/game_images/3d/outside_tree/tree1.png',
-      'assets/game_images/3d/outside_tree/tree2.png',
-      'assets/game_images/3d/outside_tree/tree3.png',
+      'assets/game_images/3d/outside_tree/tree_outside_01.png',
+      'assets/game_images/3d/outside_tree/tree_outside_02.png',
       'assets/game_images/3d/outside_fance/fance1.png',
       'assets/game_images/3d/outside_fance/fance2.png',
     };
@@ -202,17 +201,32 @@ class _GameScreenState extends State<GameScreen>
       }
     }
 
-    const workerBases = <String>[
-      'assets/game_images/sprites/player/idle',
-      'assets/game_images/sprites/player/walk/front_left',
-      'assets/game_images/sprites/player/walk/front_right',
-      'assets/game_images/sprites/player/walk/back_left',
-      'assets/game_images/sprites/player/walk/back_right',
+    // T0 sprite priming: all 8 idle directions (one frame each) and the
+    // cardinal `walk` sheets (first 2 frames) so every worker reads from
+    // cache on first paint. Remaining frames stream in lazily via the
+    // AssetManager prefetch loop.
+    const directions = <String>[
+      'bottom-side',
+      'forward-side',
+      'left-side',
+      'right-side',
+      'left-bottom-side',
+      'left-forward-side',
+      'right-bottom-side',
+      'right-forward-side',
     ];
-    for (final base in workerBases) {
-      paths.add('$base/image0.png');
-      paths.add('$base/image1.png');
-      paths.add('$base/image2.png');
+    for (final dir in directions) {
+      paths.add('assets/game_images/sprites/worker/idle/$dir/sprite (0).png');
+    }
+    const priorityWalk = <String>[
+      'forward-side',
+      'bottom-side',
+      'left-side',
+      'right-side',
+    ];
+    for (final dir in priorityWalk) {
+      paths.add('assets/game_images/sprites/worker/walk/$dir/sprite (0).png');
+      paths.add('assets/game_images/sprites/worker/walk/$dir/sprite (1).png');
     }
 
     return paths;
@@ -223,11 +237,16 @@ class _GameScreenState extends State<GameScreen>
     try {
       final assetManager = AssetManager();
       await assetManager.loadAssets([
+        // Soil tile set (new ground renderer) \u2014 required for first paint.
+        'assets/game_images/components/soil/soil_0.png',
+        'assets/game_images/components/soil/soil_1.png',
+        'assets/game_images/components/soil/soil_2.png',
+        'assets/game_images/components/soil/plow_soil.png',
+        // Legacy fallbacks kept for graceful degradation.
         'assets/game_images/textures/grass_land.jpg',
         'assets/game_images/textures/soil_background.jpg',
-        'assets/game_images/3d/outside_tree/tree1.png',
-        'assets/game_images/3d/outside_tree/tree2.png',
-        'assets/game_images/3d/outside_tree/tree3.png',
+        'assets/game_images/3d/outside_tree/tree_outside_01.png',
+        'assets/game_images/3d/outside_tree/tree_outside_02.png',
         'assets/game_images/3d/outside_fance/fance1.png',
         'assets/game_images/3d/outside_fance/fance2.png',
       ]);
