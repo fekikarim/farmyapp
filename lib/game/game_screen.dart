@@ -54,6 +54,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   late final Ticker _gameLoopTicker;
   Offset _stickVec = Offset.zero;
   Duration _lastTick = Duration.zero;
+  final Set<String> _warnedMissingWorkerSpriteSets = <String>{};
 
   @override
   void initState() {
@@ -150,6 +151,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         });
 
         unawaited(_warmupRemainingGridAssets(gridData));
+        unawaited(_warmupWorkerSpriteSheets());
 
         // Load workers assigned to this land
         gameProvider.loadWorkersForLand(
@@ -196,6 +198,48 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     );
     if (remaining.isEmpty) return;
     await AssetManager().loadAssets(remaining);
+  }
+
+  Future<void> _warmupWorkerSpriteSheets() async {
+    const List<String> directions = <String>[
+      'bottom-side',
+      'forward-side',
+      'left-side',
+      'right-side',
+      'left-bottom-side',
+      'left-forward-side',
+      'right-bottom-side',
+      'right-forward-side',
+    ];
+    const List<String> actions = <String>['idle', 'walk'];
+
+    final AssetManager assetManager = AssetManager();
+    final List<String> bases = <String>[
+      for (final action in actions)
+        for (final direction in directions) 'sprites/worker/$action/$direction',
+    ];
+
+    final Map<String, int> counts = await assetManager.validateSpriteSets(
+      bases,
+    );
+    final Set<String> spritePaths = <String>{};
+
+    for (final base in bases) {
+      final int frameCount = counts[base] ?? 0;
+      if (frameCount <= 0) {
+        if (_warnedMissingWorkerSpriteSets.add(base)) {
+          debugPrint('Missing worker sprite set: $base');
+        }
+        continue;
+      }
+
+      for (int i = 0; i < frameCount; i++) {
+        spritePaths.add(assetManager.getFramePath(base, i));
+      }
+    }
+
+    if (spritePaths.isEmpty) return;
+    await assetManager.loadAssets(spritePaths.toList(growable: false));
   }
 
   Set<String> _collectGridWarmupPaths(List<dynamic> matrix) {

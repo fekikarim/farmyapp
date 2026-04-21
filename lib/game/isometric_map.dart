@@ -62,7 +62,12 @@ class _IsometricMapState extends State<IsometricMap> {
   double? _menuPixelY;
   dynamic _menuItemData;
 
-  // Animation is stepped on a timer to avoid 60fps full-canvas repaints.
+  // Ambient animation clock for crops, machines, and idle workers. Walking
+  // workers ignore this and drive their own phase from velocity (see
+  // WorkerState.animPhase) so stride speed tracks the joystick. The 60 ms
+  // cadence (≈16 fps) is a compromise: fast enough that ambient sprites don't
+  // look choppy next to velocity-coupled worker sprites, slow enough to avoid
+  // full-canvas repaints on every frame when the map is otherwise idle.
   Timer? _animationTimer;
   double _animationValue = 0;
   final AssetManager _assetManager = AssetManager();
@@ -70,10 +75,10 @@ class _IsometricMapState extends State<IsometricMap> {
   @override
   void initState() {
     super.initState();
-    _animationTimer = Timer.periodic(const Duration(milliseconds: 120), (_) {
+    _animationTimer = Timer.periodic(const Duration(milliseconds: 60), (_) {
       if (!mounted) return;
       setState(() {
-        _animationValue = (_animationValue + 0.04) % 1;
+        _animationValue = (_animationValue + 0.02) % 1;
       });
     });
   }
@@ -475,6 +480,10 @@ class _IsometricMapState extends State<IsometricMap> {
       hash = 0x1fffffff & (hash * 31 + worker.status.hashCode);
       hash = 0x1fffffff & (hash * 31 + worker.action.hashCode);
       hash = 0x1fffffff & (hash * 31 + worker.availability.hashCode);
+      // Walk-cycle phase quantised to 64 buckets — fine enough that every
+      // sprite-frame change produces a distinct hash, coarse enough that
+      // sub-frame jitter doesn't trigger gratuitous repaints.
+      hash = 0x1fffffff & (hash * 31 + (worker.animPhase * 64).round());
     }
     return hash;
   }
@@ -769,6 +778,7 @@ class IsometricMapPainter extends CustomPainter {
           workerName: worker.workerName,
           workerDepth: worker.x + worker.y,
           workerIsBusy: worker.availability == 'busy',
+          playerAnimPhase: worker.animPhase,
         ),
       );
     }
@@ -1399,6 +1409,22 @@ class IsometricMapPainter extends CustomPainter {
     'wCan',
   };
 
+  static final Set<String> _warnedMissingWorkerSpriteBases = <String>{};
+
+  void _warnMissingWorkerSpriteBase(String requested, String fallback) {
+    final String key = '$requested->$fallback';
+    if (_warnedMissingWorkerSpriteBases.add(key)) {
+      debugPrint(
+        'Worker sprite set "$requested" missing; falling back to "$fallback".',
+      );
+    }
+  }
+
+  bool _hasUsableWorkerSpriteSet(String basePath) {
+    assetManager.ensureSpriteSetDiscovery(basePath);
+    return assetManager.spriteSetExists(basePath);
+  }
+
   String _resolveWorkerSpriteBase(_PaintTask task) {
     final String action = _kWorkerActions.contains(task.playerAction)
         ? task.playerAction!
@@ -1406,7 +1432,27 @@ class IsometricMapPainter extends CustomPainter {
     final String direction = _kWorkerDirections.contains(task.playerDirection)
         ? task.playerDirection!
         : 'forward-side';
-    return 'sprites/worker/$action/$direction';
+
+    final String requested = 'sprites/worker/$action/$direction';
+    final List<String> candidates = <String>[
+      requested,
+      if (direction != 'forward-side') 'sprites/worker/$action/forward-side',
+      'sprites/worker/idle/$direction',
+      'sprites/worker/idle/forward-side',
+    ];
+
+    for (final base in candidates) {
+      if (_hasUsableWorkerSpriteSet(base)) {
+        if (base != requested) {
+          _warnMissingWorkerSpriteBase(requested, base);
+        }
+        return base;
+      }
+    }
+
+    const String hardFallback = 'sprites/worker/idle/forward-side';
+    _warnMissingWorkerSpriteBase(requested, hardFallback);
+    return hardFallback;
   }
 
   void _paintPlayer(Canvas canvas, _PaintTask task) {
@@ -1427,8 +1473,13 @@ class IsometricMapPainter extends CustomPainter {
       prefetchCount: isAnimated ? 8 : 2,
     );
 
+    // Pick the walk-cycle phase: velocity-coupled if the provider supplied
+    // one (manual control + auto-move workers both populate this now), else
+    // fall back to the ambient timer so action-animations on stationary
+    // workers (hoe, plant, wCan) still advance at the global cadence.
+    final double phase = task.playerAnimPhase ?? animationValue;
     final int frameIndex = (maxFrames > 1 && isAnimated)
-        ? ((animationValue * maxFrames) % maxFrames).floor()
+        ? ((phase * maxFrames) % maxFrames).floor().clamp(0, maxFrames - 1)
         : 0;
     final String currentFramePath = assetManager.getFramePath(
       spriteBase,
@@ -1685,6 +1736,10 @@ class _PaintTask {
   final String? workerName; // for name label
   final double? workerDepth; // fractional depth for sorting
   final bool workerIsBusy; // whether worker has an active task
+  // Velocity-coupled walk-cycle phase in [0, 1). When non-null the painter
+  // uses this instead of the ambient [animationValue] so stride cadence
+  // tracks actual movement speed (critical for joystick control).
+  final double? playerAnimPhase;
 
   _PaintTask({
     required this.x,
@@ -1703,5 +1758,6 @@ class _PaintTask {
     this.workerName,
     this.workerDepth,
     this.workerIsBusy = false,
+    this.playerAnimPhase,
   });
 }

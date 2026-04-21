@@ -183,6 +183,43 @@ class AssetManager extends ChangeNotifier {
     return count;
   }
 
+  void ensureSpriteSetDiscovery(String baseAssetPath) {
+    // getFrameCount triggers manifest/discovery side effects when unknown.
+    getFrameCount(baseAssetPath);
+  }
+
+  Future<int> ensureFrameCount(String baseAssetPath) async {
+    await _loadManifest();
+    return getFrameCount(baseAssetPath);
+  }
+
+  bool spriteSetExists(String baseAssetPath) {
+    return getFrameCount(baseAssetPath) > 0;
+  }
+
+  Future<Map<String, int>> validateSpriteSets(
+    Iterable<String> baseAssetPaths,
+  ) async {
+    await _loadManifest();
+    final Map<String, int> results = <String, int>{};
+    for (final base in baseAssetPaths.toSet()) {
+      results[base] = getFrameCount(base);
+    }
+    return results;
+  }
+
+  Future<int> preloadFullSpriteSet(String baseAssetPath) async {
+    final int frameCount = await ensureFrameCount(baseAssetPath);
+    if (frameCount <= 0) return 0;
+    final List<String> paths = List<String>.generate(
+      frameCount,
+      (i) => getFramePath(baseAssetPath, i),
+      growable: false,
+    );
+    await loadAssets(paths);
+    return frameCount;
+  }
+
   String _buildFramePath(String normalizedPath, int index, String? pattern) {
     switch (pattern) {
       case 'padded':
