@@ -6,6 +6,107 @@ import '../models/land_worker_model.dart';
 import '../services/worker_service.dart';
 import '../services/socket_service.dart';
 
+/// Quantises a **screen-space** direction vector into one of eight isometric
+/// direction slugs that map 1:1 to the folders under
+/// `assets/game_images/sprites/worker`.
+///
+/// [sx] is right-positive, [sy] is down-positive (standard screen coords).
+/// Uses `atan2`-based 8-sector classification with 45° sectors centered on
+/// each cardinal/diagonal direction.
+String classifyDirection8(double sx, double sy) {
+  if (sx == 0 && sy == 0) return 'bottom-side';
+  double angle = math.atan2(sy, sx); // [-π, π], 0 = right, π/2 = down
+  if (angle < 0) angle += 2 * math.pi; // [0, 2π)
+  // 8 sectors of 45° each. Adding π/8 (22.5°) shifts the sector boundaries
+  // so that e.g. the 'right-side' sector spans from −22.5° to +22.5°.
+  const List<String> sectors = <String>[
+    'right-side', // sector 0: centred at 0° (screen right)
+    'right-bottom-side', // sector 1: centred at 45°
+    'bottom-side', // sector 2: centred at 90° (screen down)
+    'left-bottom-side', // sector 3: centred at 135°
+    'left-side', // sector 4: centred at 180° (screen left)
+    'left-forward-side', // sector 5: centred at 225°
+    'forward-side', // sector 6: centred at 270° (screen up)
+    'right-forward-side', // sector 7: centred at 315°
+  ];
+  final int idx = ((angle + math.pi / 8) / (math.pi / 4)).floor() % 8;
+  return sectors[idx];
+}
+
+/// Converts a **grid-space** delta to a screen-space direction and classifies
+/// it. Used by auto-move ([WorkerState.moveTo]) where the movement delta is
+/// naturally in grid coordinates.
+String classifyDirection8FromGrid(double gdx, double gdy) {
+  // Isometric projection: screenX ∝ (gridX − gridY), screenY ∝ (gridX + gridY)
+  // The 0.5 factor on Y compensates for the 2:1 tile aspect ratio so the
+  // angle sectors align with visual screen directions.
+  final double sx = gdx - gdy;
+  final double sy = (gdx + gdy) * 0.5;
+  return classifyDirection8(sx, sy);
+}
+
+/// How many grid cells a worker travels per full walk-cycle loop.
+/// At 0.8 cells/stride, a worker moving 3.5 cells/sec (manual-control cap)
+/// cycles its sprite sheet ≈ 4.4 times/sec — brisk but natural. A worker on
+/// an auto-move tween (1.67 cells/sec) cycles ≈ 2.1 times/sec.
+const double _kCellsPerStride = 0.8;
+const double _kManualDeadZone = 0.08;
+const double _kManualMaxCellsPerSecond = 3.5;
+const double _kManualAcceleration = 18.0;
+const double _kManualDeceleration = 24.0;
+const double _kManualStopEpsilon = 0.02;
+
+class _ResolvedJoystickVector {
+  final double intensity;
+  final double gridX;
+  final double gridY;
+
+  const _ResolvedJoystickVector({
+    required this.intensity,
+    required this.gridX,
+    required this.gridY,
+  });
+
+  bool get hasDirection => gridX != 0 || gridY != 0;
+}
+
+_ResolvedJoystickVector _resolveJoystickToIsometric(double sx, double sy) {
+  final double intensity = math.sqrt(sx * sx + sy * sy).clamp(0.0, 1.0);
+  if (intensity <= 0) {
+    return const _ResolvedJoystickVector(intensity: 0, gridX: 0, gridY: 0);
+  }
+
+  // Screen→grid basis inversion for the iso projection.
+  final double gdx = sx + 2 * sy;
+  final double gdy = -sx + 2 * sy;
+  final double gnorm = math.sqrt(gdx * gdx + gdy * gdy);
+  if (gnorm < 1e-6) {
+    return _ResolvedJoystickVector(intensity: intensity, gridX: 0, gridY: 0);
+  }
+
+  // Unit vector in grid-space guarantees no diagonal speed boost.
+  return _ResolvedJoystickVector(
+    intensity: intensity,
+    gridX: gdx / gnorm,
+    gridY: gdy / gnorm,
+  );
+}
+
+double _approachDouble(double current, double target, double maxDelta) {
+  if ((target - current).abs() <= maxDelta) return target;
+  return current + (target > current ? maxDelta : -maxDelta);
+}
+
+double _stepVelocityAxis(double current, double target, double dt) {
+  final bool sameDirection =
+      current == 0 || target == 0 || current.sign == target.sign;
+  final bool accelerating = target.abs() > current.abs() && sameDirection;
+  final double rate = accelerating
+      ? _kManualAcceleration
+      : _kManualDeceleration;
+  return _approachDouble(current, target, rate * dt);
+}
+
 /// Holds runtime state for a single worker on the map.
 class WorkerState {
   final String workerId;
@@ -16,9 +117,21 @@ class WorkerState {
   double y;
   double? targetX;
   double? targetY;
-  String direction;
+  String direction; // 8-way iso slug — see classifyDirection8
   String status; // 'idle' | 'walking'
+  String action; // 'idle' | 'walk' | 'hoe' | 'plant' | 'wCan'
   Timer? movementTimer;
+
+  /// Walk-cycle phase in [0, 1). Advances proportionally to actual distance
+  /// travelled (both auto-moves and manual-control steps) so the painter can
+  /// pick a frame that matches the worker's real velocity rather than a
+  /// fixed wall-clock cadence. Preserved across stop/start so the sprite
+  /// doesn't snap back to frame 0 on brief pauses.
+  double animPhase = 0.0;
+
+  // Continuous analog movement velocity in grid cells/second.
+  double manualVelocityX = 0.0;
+  double manualVelocityY = 0.0;
 
   WorkerState({
     required this.workerId,
@@ -27,9 +140,30 @@ class WorkerState {
     this.availability = 'available',
     this.x = 1,
     this.y = 1,
-    this.direction = 'front_left',
+    this.direction = 'forward-side',
     this.status = 'idle',
+    this.action = 'idle',
   });
+
+  /// Advances [animPhase] by the Euclidean distance of a single movement
+  /// step, normalised by the stride length. Callers should pass the *actual*
+  /// delta applied this tick — not the intended step — so collision slides
+  /// produce correspondingly-slower animation.
+  void advanceAnimPhase(double stepCells) {
+    if (stepCells <= 0) return;
+    animPhase = (animPhase + stepCells / _kCellsPerStride) % 1.0;
+  }
+
+  double get manualSpeed {
+    return math.sqrt(
+      manualVelocityX * manualVelocityX + manualVelocityY * manualVelocityY,
+    );
+  }
+
+  void resetManualVelocity() {
+    manualVelocityX = 0.0;
+    manualVelocityY = 0.0;
+  }
 
   void moveTo(
     double tx,
@@ -40,6 +174,8 @@ class WorkerState {
     targetX = tx;
     targetY = ty;
     status = 'walking';
+    action = 'walk';
+    resetManualVelocity();
     movementTimer?.cancel();
 
     const double speed = 0.05;
@@ -50,23 +186,25 @@ class WorkerState {
       double distance = dx.abs() + dy.abs();
 
       if (distance < speed) {
+        final double finalStep = math.sqrt(dx * dx + dy * dy);
         x = targetX!;
         y = targetY!;
+        advanceAnimPhase(finalStep);
         targetX = null;
         targetY = null;
         status = 'idle';
+        action = 'idle';
+        resetManualVelocity();
         movementTimer?.cancel();
         onStop();
       } else {
-        // Update direction
-        if (dx.abs() > dy.abs()) {
-          direction = dx > 0 ? 'front_right' : 'back_left';
-        } else {
-          direction = dy > 0 ? 'front_left' : 'back_right';
-        }
+        direction = classifyDirection8FromGrid(dx, dy);
         double ratio = speed / distance;
-        x += dx * ratio;
-        y += dy * ratio;
+        final double sx = dx * ratio;
+        final double sy = dy * ratio;
+        x += sx;
+        y += sy;
+        advanceAnimPhase(math.sqrt(sx * sx + sy * sy));
         onUpdate();
       }
     });
@@ -77,6 +215,8 @@ class WorkerState {
     targetX = null;
     targetY = null;
     status = 'idle';
+    action = 'idle';
+    resetManualVelocity();
   }
 }
 
@@ -88,10 +228,24 @@ class GameProvider with ChangeNotifier {
   List<WorkerState> _workers = [];
   List<List<bool>>? _playableMask;
 
+  // Manual (joystick) control: at most one worker is driven manually at a
+  // time. Nullable id avoids having to scan the worker list every frame to
+  // answer "is anyone being controlled right now?".
+  String? _manualControlWorkerId;
+
   bool get showEdgePanel => _showEdgePanel;
   bool get isLoading => _isLoading;
   bool get workersLoading => _workersLoading;
   List<WorkerState> get workers => _workers;
+  String? get manualControlWorkerId => _manualControlWorkerId;
+  bool get manualControlActive => _manualControlWorkerId != null;
+
+  /// Returns the currently manually-controlled worker, or null.
+  WorkerState? get manualControlWorker {
+    final id = _manualControlWorkerId;
+    if (id == null) return null;
+    return _workers.where((w) => w.workerId == id).firstOrNull;
+  }
 
   GameProvider() {
     _loadSettings();
@@ -297,6 +451,269 @@ class GameProvider with ChangeNotifier {
       _saveWorkerPosition(currentLandId, worker.workerId, worker.x, worker.y);
       notifyListeners();
     });
+  }
+
+  /// Enters manual joystick-control mode for the given worker. Any in-flight
+  /// auto-move tween is cancelled so the user takes over cleanly. Busy
+  /// workers are rejected — tasks must not be interrupted mid-animation.
+  void startManualControl(String workerId) {
+    final worker = _workers.where((w) => w.workerId == workerId).firstOrNull;
+    if (worker == null) return;
+    if (worker.availability == 'busy') return;
+    worker.stop();
+    worker.resetManualVelocity();
+    _manualControlWorkerId = workerId;
+    notifyListeners();
+  }
+
+  /// Exits manual-control mode. Persists the final cell so a reload doesn't
+  /// lose the player's positioning. Safe to call if no worker is active.
+  void stopManualControl() {
+    final worker = manualControlWorker;
+    _manualControlWorkerId = null;
+    if (worker != null) {
+      worker.status = 'idle';
+      worker.action = 'idle';
+      worker.resetManualVelocity();
+      _saveWorkerPosition(currentLandId, worker.workerId, worker.x, worker.y);
+    }
+    notifyListeners();
+  }
+
+  /// Applies one frame of joystick input to the manually-controlled worker.
+  ///
+  /// [sx], [sy] are the stick deflection in screen space, each in [-1, 1]
+  /// (right / down positive). [dt] is the elapsed seconds since the previous
+  /// call — passing actual frame delta keeps movement frame-rate independent.
+  ///
+  /// Zero vector ⇒ worker eases back to `idle` while preserving its last
+  /// facing direction, so the sprite doesn't snap to a default pose.
+  void applyJoystickInput(double sx, double sy, double dt) {
+    final worker = manualControlWorker;
+    if (worker == null || dt <= 0) return;
+
+    final double oldX = worker.x;
+    final double oldY = worker.y;
+    final String oldDirection = worker.direction;
+    final String oldStatus = worker.status;
+    final String oldAction = worker.action;
+    final double oldAnimPhase = worker.animPhase;
+    final double oldVelX = worker.manualVelocityX;
+    final double oldVelY = worker.manualVelocityY;
+
+    final _ResolvedJoystickVector input = _resolveJoystickToIsometric(sx, sy);
+    final bool hasIntent =
+        input.intensity >= _kManualDeadZone && input.hasDirection;
+
+    final double targetSpeed = hasIntent
+        ? input.intensity * _kManualMaxCellsPerSecond
+        : 0.0;
+    final double targetVelX = hasIntent ? input.gridX * targetSpeed : 0.0;
+    final double targetVelY = hasIntent ? input.gridY * targetSpeed : 0.0;
+
+    worker.manualVelocityX = _stepVelocityAxis(
+      worker.manualVelocityX,
+      targetVelX,
+      dt,
+    );
+    worker.manualVelocityY = _stepVelocityAxis(
+      worker.manualVelocityY,
+      targetVelY,
+      dt,
+    );
+
+    // Stabilize tiny tails so idle transition is deterministic.
+    if (worker.manualVelocityX.abs() < _kManualStopEpsilon) {
+      worker.manualVelocityX = 0.0;
+    }
+    if (worker.manualVelocityY.abs() < _kManualStopEpsilon) {
+      worker.manualVelocityY = 0.0;
+    }
+
+    // Direction classification uses SCREEN-space vectors so sprite folder
+    // names (which correspond to visual screen directions) are selected
+    // correctly. Movement physics still use grid-space velocity.
+    double headingX = 0.0;
+    double headingY = 0.0;
+    if (hasIntent) {
+      // Raw joystick deflection IS screen-space.
+      headingX = sx;
+      headingY = sy;
+    } else if (worker.manualSpeed > _kManualStopEpsilon) {
+      // Grid velocity → screen-space for direction while coasting.
+      headingX = worker.manualVelocityX - worker.manualVelocityY;
+      headingY = (worker.manualVelocityX + worker.manualVelocityY) * 0.5;
+    }
+
+    final bool hasHeading = headingX.abs() > 1e-6 || headingY.abs() > 1e-6;
+    final String nextDir = hasHeading
+        ? _stableClassifyDirection(worker.direction, headingX, headingY)
+        : worker.direction;
+
+    final int gridW = _playableMask?.isNotEmpty == true
+        ? _playableMask!.first.length
+        : 0;
+    final int gridH = _playableMask?.length ?? 0;
+    if (gridW == 0 || gridH == 0) {
+      if (worker.manualSpeed <= _kManualStopEpsilon) {
+        worker.status = 'idle';
+        worker.action = 'idle';
+      }
+      if (_workerChanged(
+        worker,
+        oldX,
+        oldY,
+        oldDirection,
+        oldStatus,
+        oldAction,
+        oldAnimPhase,
+        oldVelX,
+        oldVelY,
+      )) {
+        notifyListeners();
+      }
+      return;
+    }
+
+    final double stepX = worker.manualVelocityX * dt;
+    final double stepY = worker.manualVelocityY * dt;
+
+    double nextX = worker.x + stepX;
+    double nextY = worker.y + stepY;
+    bool ok = _acceptManualTarget(nextX, nextY, gridW, gridH);
+    if (!ok) {
+      nextX = worker.x + stepX;
+      nextY = worker.y;
+      ok = _acceptManualTarget(nextX, nextY, gridW, gridH);
+    }
+    if (!ok) {
+      nextX = worker.x;
+      nextY = worker.y + stepY;
+      ok = _acceptManualTarget(nextX, nextY, gridW, gridH);
+    }
+
+    final double actualStep = ok
+        ? math.sqrt(
+            (nextX - worker.x) * (nextX - worker.x) +
+                (nextY - worker.y) * (nextY - worker.y),
+          )
+        : 0.0;
+
+    if (actualStep > 1e-6) {
+      worker.x = nextX;
+      worker.y = nextY;
+      worker.direction = nextDir;
+      worker.status = 'walking';
+      worker.action = 'walk';
+      worker.advanceAnimPhase(actualStep);
+    } else {
+      worker.direction = nextDir;
+      worker.status = 'idle';
+      worker.action = 'idle';
+      if (hasIntent) {
+        // Prevent in-place jitter against hard boundaries.
+        worker.resetManualVelocity();
+      }
+    }
+
+    if (_workerChanged(
+      worker,
+      oldX,
+      oldY,
+      oldDirection,
+      oldStatus,
+      oldAction,
+      oldAnimPhase,
+      oldVelX,
+      oldVelY,
+    )) {
+      notifyListeners();
+    }
+  }
+
+  bool _workerChanged(
+    WorkerState worker,
+    double oldX,
+    double oldY,
+    String oldDirection,
+    String oldStatus,
+    String oldAction,
+    double oldAnimPhase,
+    double oldVelX,
+    double oldVelY,
+  ) {
+    return (worker.x - oldX).abs() > 1e-6 ||
+        (worker.y - oldY).abs() > 1e-6 ||
+        worker.direction != oldDirection ||
+        worker.status != oldStatus ||
+        worker.action != oldAction ||
+        (worker.animPhase - oldAnimPhase).abs() > 1e-6 ||
+        (worker.manualVelocityX - oldVelX).abs() > 1e-6 ||
+        (worker.manualVelocityY - oldVelY).abs() > 1e-6;
+  }
+
+  /// Returns true iff (x, y) is inside the grid *and* the cell containing it
+  /// is playable. Used by [applyJoystickInput] for per-axis slide collision.
+  bool _acceptManualTarget(double x, double y, int gridW, int gridH) {
+    if (x < 0 || y < 0) return false;
+    if (x >= gridW - 0.01 || y >= gridH - 0.01) return false;
+    return _isPlayableCell(x.floor(), y.floor(), gridW, gridH);
+  }
+
+  /// Hysteresis wrapper around [classifyDirection8]. Widens the angular band
+  /// around the currently-faced direction so small stick wobbles near a
+  /// sector boundary don't cause single-frame slug flips (which would make
+  /// the walk sprite visibly stutter).
+  ///
+  /// Input is **screen-space** (sx right+, sy down+) — matching the new
+  /// screen-space convention of [classifyDirection8].
+  ///
+  /// Rules (ax, ay = |sx|, |sy|):
+  ///   - If previous was horizontal (right/left-side), stay horizontal until
+  ///     ax/ay drops below 1.4 (vs the raw ~1.73 sector boundary).
+  ///   - If previous was vertical (forward/bottom-side), stay vertical until
+  ///     ay/ax drops below 1.4.
+  ///   - If previous was diagonal, require ax/ay (or ay/ax) to clearly exceed
+  ///     2.2 before committing to a cardinal slug.
+  /// When the candidate slug matches the previous one, returns immediately —
+  /// no work done on the hot path.
+  String _stableClassifyDirection(String previous, double sx, double sy) {
+    final String candidate = classifyDirection8(sx, sy);
+    if (candidate == previous) return candidate;
+    final double ax = sx.abs();
+    final double ay = sy.abs();
+    if (ax < 1e-6 && ay < 1e-6) return previous;
+
+    final bool prevHorizontal =
+        previous == 'right-side' || previous == 'left-side';
+    final bool prevVertical =
+        previous == 'forward-side' || previous == 'bottom-side';
+    final bool prevDiagonal = !prevHorizontal && !prevVertical;
+
+    // Ratio of dominant to subordinate axis, with divide-by-zero guard.
+    final double hRatio = ay == 0 ? double.infinity : ax / ay;
+    final double vRatio = ax == 0 ? double.infinity : ay / ax;
+
+    if (prevHorizontal) {
+      // Hold the horizontal slug until the stick clearly tilts diagonal.
+      if (hRatio > 1.4) {
+        return sx > 0 ? 'right-side' : 'left-side';
+      }
+    } else if (prevVertical) {
+      if (vRatio > 1.4) {
+        // Screen-space: sy > 0 = down = bottom-side, sy < 0 = up = forward-side
+        return sy > 0 ? 'bottom-side' : 'forward-side';
+      }
+    } else if (prevDiagonal) {
+      // From a diagonal, require a strong cardinal dominance to leave.
+      if (hRatio > 2.2 || vRatio > 2.2) return candidate;
+      // Otherwise keep the diagonal family: only commit if the candidate is
+      // also diagonal AND crosses a quadrant (sign flip).
+      final bool candidateDiagonal =
+          candidate.contains('-bottom-') || candidate.contains('-forward-');
+      if (!candidateDiagonal) return previous;
+    }
+    return candidate;
   }
 
   String currentLandId = '';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:provider/provider.dart';
 import 'package:farmyapp/providers/game_provider.dart';
@@ -20,6 +21,10 @@ class IsometricMap extends StatefulWidget {
   final Map<String, dynamic>? placementItem;
   final int? externalSelectionX;
   final int? externalSelectionY;
+  // When non-null, the item at (placingAtX, placingAtY) is being committed
+  // to the backend. Tree ghosts swap to add_tree_loading.png until the
+  // matrix reload resolves the real sprite.
+  final bool placingInFlight;
 
   const IsometricMap({
     super.key,
@@ -32,6 +37,7 @@ class IsometricMap extends StatefulWidget {
     this.placementMode = false,
     this.placementFootprint,
     this.placementItem,
+    this.placingInFlight = false,
     this.externalSelectionX,
     this.externalSelectionY,
   });
@@ -56,17 +62,23 @@ class _IsometricMapState extends State<IsometricMap> {
   double? _menuPixelY;
   dynamic _menuItemData;
 
-  // Animation is stepped on a timer to avoid 60fps full-canvas repaints.
+  // Ambient animation clock for crops, machines, and idle workers. Walking
+  // workers ignore this and drive their own phase from velocity (see
+  // WorkerState.animPhase) so stride speed tracks the joystick. The 60 ms
+  // cadence (≈16 fps) is a compromise: fast enough that ambient sprites don't
+  // look choppy next to velocity-coupled worker sprites, slow enough to avoid
+  // full-canvas repaints on every frame when the map is otherwise idle.
   Timer? _animationTimer;
   double _animationValue = 0;
+  final AssetManager _assetManager = AssetManager();
 
   @override
   void initState() {
     super.initState();
-    _animationTimer = Timer.periodic(const Duration(milliseconds: 120), (_) {
+    _animationTimer = Timer.periodic(const Duration(milliseconds: 60), (_) {
       if (!mounted) return;
       setState(() {
-        _animationValue = (_animationValue + 0.04) % 1;
+        _animationValue = (_animationValue + 0.02) % 1;
       });
     });
   }
@@ -129,12 +141,16 @@ class _IsometricMapState extends State<IsometricMap> {
                     ? widget.externalSelectionY
                     : _selectedY,
                 backgroundPadding: backgroundPadding,
-                assetManager: AssetManager(),
+                assetManager: _assetManager,
                 placementMode: widget.placementMode,
                 placementFootprint: widget.placementFootprint,
                 placementItem: widget.placementItem,
+                placingInFlight: widget.placingInFlight,
                 animationValue: _animationValue,
                 workers: gameProvider.workers,
+                workerVisualHash: _computeWorkersVisualHash(
+                  gameProvider.workers,
+                ),
               ),
             ),
             if (_menuGridX != null &&
@@ -186,6 +202,23 @@ class _IsometricMapState extends State<IsometricMap> {
         ? details.localPosition
         : (details as TapDownDetails).localPosition;
 
+    // 1a. Worker hit-testing — runs before item/tile dispatch so a single tap
+    // on a worker sprite surfaces the worker radial menu instead of the tile
+    // underneath. Skipped in placement mode (placement UI owns the tap) and
+    // on double-tap (existing double-tap semantics: "send closest worker here").
+    if (!widget.placementMode && !isDoubleClick) {
+      final WorkerState? hitWorker = _workerAtLocal(
+        localPos,
+        gameProvider.workers,
+        offsetX,
+        offsetY,
+      );
+      if (hitWorker != null) {
+        _openWorkerMenu(hitWorker, offsetX, offsetY);
+        return;
+      }
+    }
+
     // 1. Check for item clicks using screen-space bounding boxes
     if (!widget.placementMode && !isDoubleClick) {
       dynamic clickedItem;
@@ -213,18 +246,26 @@ class _IsometricMapState extends State<IsometricMap> {
             double h = w * 1.5; // fallback aspect ratio
 
             // Get actual image dimensions if loaded
-            final sprites = item['sprites'];
-            final state = item['state'];
-            String status = state?['status'] ?? 'idle';
-            String? spriteBase = sprites?[status] ?? sprites?['idle'];
-            if (spriteBase != null) {
-              if (spriteBase.startsWith('/'))
-                spriteBase = spriteBase.substring(1);
-              String framePath = 'assets/game_images/$spriteBase/image0.png';
-              ui.Image? img = AssetManager().getImage(framePath);
-              if (img != null) {
-                h = w * (img.height / img.width);
+            ui.Image? img;
+            if (item['category'] == 'tree') {
+              img = _assetManager.getImage(
+                IsometricMapPainter._treeAssetForVariant(item['variant_code']),
+              );
+            } else {
+              final sprites = item['sprites'];
+              final state = item['state'];
+              String status = state?['status'] ?? 'idle';
+              String? spriteBase = sprites?[status] ?? sprites?['idle'];
+              if (spriteBase != null) {
+                if (spriteBase.startsWith('/'))
+                  spriteBase = spriteBase.substring(1);
+                final String framePath =
+                    'assets/game_images/$spriteBase/image0.png';
+                img = _assetManager.getImage(framePath);
               }
+            }
+            if (img != null) {
+              h = w * (img.height / img.width);
             }
 
             double itemDx = 0;
@@ -369,8 +410,111 @@ class _IsometricMapState extends State<IsometricMap> {
     });
   }
 
+  /// Screen-space hit-test for workers. Must mirror the bounding rect used by
+  /// [IsometricMapPainter._paintPlayer] (fixedH = tileHeight * 2.2, anchored
+  /// with feet at isoY + tileHeight*0.9). Front-to-back iteration (higher
+  /// y/x first) picks the worker visually on top when multiple overlap.
+  WorkerState? _workerAtLocal(
+    Offset localPos,
+    List<WorkerState> workers,
+    double offsetX,
+    double offsetY,
+  ) {
+    if (workers.isEmpty) return null;
+    // Sort a shallow copy by draw-order depth so overlapping sprites pick the
+    // front-most one first. Cheap — worker counts are typically < 10.
+    final List<WorkerState> ordered = List<WorkerState>.from(workers)
+      ..sort((a, b) => (b.x + b.y).compareTo(a.x + a.y));
+
+    const double fixedH = tileHeight * 2.2;
+    // Approximate sprite width (real value depends on loaded image aspect).
+    // Using 0.75 * tileWidth keeps the hit area generous but still worker-
+    // shaped so ground taps aren't hijacked near but outside the sprite.
+    const double hitW = tileWidth * 0.75;
+
+    for (final w in ordered) {
+      final double isoX = (w.x - w.y) * (tileWidth / 2) + offsetX;
+      final double isoY = (w.x + w.y) * (tileHeight / 2) + offsetY;
+      final double dx = isoX + (tileWidth - hitW) / 2;
+      final double dy = isoY + (tileHeight * 0.9) - fixedH;
+      final Rect hit = Rect.fromLTWH(dx, dy, hitW, fixedH);
+      if (hit.contains(localPos)) return w;
+    }
+    return null;
+  }
+
+  /// Opens the radial menu anchored above a worker's current sprite head.
+  /// Uses the worker's fractional (x, y) so the menu tracks smoothly if the
+  /// player re-taps mid-move. Item data is tagged with `__worker: true` so
+  /// [_getActionsFor] and the onActionSelected callback can distinguish it
+  /// from placed grid items.
+  void _openWorkerMenu(WorkerState w, double offsetX, double offsetY) {
+    final double isoX = (w.x - w.y) * (tileWidth / 2) + offsetX;
+    final double isoY = (w.x + w.y) * (tileHeight / 2) + offsetY;
+    // Anchor roughly at the sprite's head — fixedH above ground line.
+    const double fixedH = tileHeight * 2.2;
+    final double targetX = isoX + tileWidth / 2;
+    final double targetY = isoY + tileHeight * 0.9 - fixedH + 8;
+
+    setState(() {
+      _menuGridX = w.x.floor();
+      _menuGridY = w.y.floor();
+      _menuItemData = <String, dynamic>{
+        '__worker': true,
+        'worker_id': w.workerId,
+        'worker_name': w.workerName,
+        'is_busy': w.availability == 'busy',
+      };
+      _menuPixelX = targetX;
+      _menuPixelY = targetY;
+    });
+  }
+
+  int _computeWorkersVisualHash(List<WorkerState> workers) {
+    int hash = workers.length;
+    for (final worker in workers) {
+      hash = 0x1fffffff & (hash * 31 + worker.workerId.hashCode);
+      hash = 0x1fffffff & (hash * 31 + (worker.x * 1000).round());
+      hash = 0x1fffffff & (hash * 31 + (worker.y * 1000).round());
+      hash = 0x1fffffff & (hash * 31 + worker.direction.hashCode);
+      hash = 0x1fffffff & (hash * 31 + worker.status.hashCode);
+      hash = 0x1fffffff & (hash * 31 + worker.action.hashCode);
+      hash = 0x1fffffff & (hash * 31 + worker.availability.hashCode);
+      // Walk-cycle phase quantised to 64 buckets — fine enough that every
+      // sprite-frame change produces a distinct hash, coarse enough that
+      // sub-frame jitter doesn't trigger gratuitous repaints.
+      hash = 0x1fffffff & (hash * 31 + (worker.animPhase * 64).round());
+    }
+    return hash;
+  }
+
   List<RadialMenuAction> _getActionsFor(dynamic itemData) {
     List<RadialMenuAction> actions = [];
+
+    // Worker-tagged menu: emit an Info + Move pair. Move toggles manual
+    // joystick control via the GameProvider and is suppressed on busy workers
+    // so in-flight tasks aren't hijacked mid-animation.
+    if (itemData is Map && itemData['__worker'] == true) {
+      actions.add(
+        RadialMenuAction(
+          id: 'info',
+          icon: Icons.person_outline,
+          backgroundColor: Colors.blueAccent,
+          tooltip: 'Info',
+        ),
+      );
+      if (itemData['is_busy'] != true) {
+        actions.add(
+          RadialMenuAction(
+            id: 'move',
+            icon: Icons.control_camera,
+            backgroundColor: Colors.green,
+            tooltip: 'Move',
+          ),
+        );
+      }
+      return actions;
+    }
 
     actions.add(
       RadialMenuAction(
@@ -413,16 +557,44 @@ class IsometricMapPainter extends CustomPainter {
   final bool placementMode;
   final Map<String, dynamic>? placementFootprint;
   final Map<String, dynamic>? placementItem;
+  final bool placingInFlight;
 
   // Animation
   final double animationValue;
 
   // Workers
   final List<WorkerState> workers;
+  final int workerVisualHash;
 
   // Constants
   static const double tileWidth = 64.0;
   static const double tileHeight = 32.0;
+
+  // Fence rendering tunables.
+  //
+  // The horizontal screen span of one isometric tile edge is exactly
+  // tileWidth / 2 (= 32 px). _kFenceWidthFactor sizes the sprite's render
+  // width relative to tileWidth: at 0.55 the sprite is 35.2 px wide, giving
+  // a ~3 px per-corner overlap that lets neighbouring fence sprites blend
+  // into a continuous line without stacking visibly at intersections.
+  //
+  // _kFenceGroundLiftRatio buries the sprite's bottom edge into the off-land
+  // tile by that fraction of the rendered fence height. Expressed as a ratio
+  // (not a fixed pixel offset) so planting depth stays visually consistent
+  // if _kFenceWidthFactor — and therefore sprite height — is retuned, and so
+  // any transparent bottom padding baked into the PNGs is hidden below the
+  // boundary regardless of sprite scale.
+  static const double _kFenceWidthFactor = 0.55;
+  static const double _kFenceTargetWidth = tileWidth * _kFenceWidthFactor;
+  static const double _kFenceGroundLiftRatio = 0.24;
+  static const double _kFenceBoundaryNudgePx = 0.8;
+
+  // Per-asset aspect ratio cache (height / width). The intrinsic ratio of the
+  // PNG is constant across frames, so we decode it once and reuse — avoiding
+  // per-frame division and keeping the paint path at 60 fps. Only finite,
+  // positive ratios are cached, so a transiently bad decode can't poison the
+  // entry for the rest of the session.
+  static final Map<String, double> _fenceAspectCache = <String, double>{};
 
   IsometricMapPainter({
     required this.gridWidth,
@@ -436,8 +608,10 @@ class IsometricMapPainter extends CustomPainter {
     this.placementMode = false,
     this.placementFootprint,
     this.placementItem,
+    this.placingInFlight = false,
     required this.animationValue,
     required this.workers,
+    required this.workerVisualHash,
   }) : super(repaint: assetManager);
 
   @override
@@ -463,31 +637,55 @@ class IsometricMapPainter extends CustomPainter {
         List<_FenceData> tileFences = [];
 
         if (!isForeground) {
-          bool isTopSide = (x >= -2 && x < 0) || (y >= -2 && y < 0);
-          if (isTopSide) {
-            int hash = (x * 7 + y * 13).abs();
-            if ((hash % 5) < 2) {
+          // Scatter the two new outside-tree sprites deterministically across
+          // the entire off-land border. A hash-based seed keeps positions
+          // stable between frames (no popping), and the 2-tile buffer around
+          // the fence keeps the walking area clear.
+          final bool nearFence =
+              (x >= -1 && x <= gridWidth) && (y >= -1 && y <= gridHeight);
+          if (!nearFence) {
+            final int hash = (x * 73856093 ^ y * 19349663).abs();
+            // ~10% density \u2014 sparse scatter for a lighter, natural look.
+            if ((hash % 100) < 10) {
               isTreeRow = true;
-              int variant = (hash % 3) + 1;
-              treeAsset = 'assets/game_images/3d/outside_tree/tree$variant.png';
+              final int variant = (hash % 2) + 1;
+              treeAsset =
+                  'assets/game_images/3d/outside_tree/tree_outside_0$variant.png';
             }
           }
 
           bool hasPlayableNeighbor(int nx, int ny) {
-            return nx >= 0 && nx < gridWidth && ny >= 0 && ny < gridHeight && _isPlayableCell(nx, ny);
+            return nx >= 0 &&
+                nx < gridWidth &&
+                ny >= 0 &&
+                ny < gridHeight &&
+                _isPlayableCell(nx, ny);
           }
 
-          if (hasPlayableNeighbor(x, y + 1)) {
-            tileFences.add(_FenceData('assets/game_images/3d/outside_fance/fance1.png', -tileWidth / 4, -tileHeight / 4 - 12, x, y + 1));
-          }
-          if (hasPlayableNeighbor(x, y - 1)) {
-            tileFences.add(_FenceData('assets/game_images/3d/outside_fance/fance1.png', tileWidth / 4, tileHeight / 4 - 12, x, y - 1));
-          }
-          if (hasPlayableNeighbor(x + 1, y)) {
-            tileFences.add(_FenceData('assets/game_images/3d/outside_fance/fance2.png', tileWidth / 4, -tileHeight / 4 - 12, x + 1, y));
-          }
-          if (hasPlayableNeighbor(x - 1, y)) {
-            tileFences.add(_FenceData('assets/game_images/3d/outside_fance/fance2.png', -tileWidth / 4, tileHeight / 4 - 12, x - 1, y));
+          // Fence perimeter tracing: for every off-land tile that sits on the
+          // boundary, emit one fence sprite per shared edge with a playable
+          // neighbor. This walks the land outline dynamically, so arbitrary
+          // shapes and any grid size produce a correct continuous perimeter.
+          //
+          // (dx, dy) -> fence sprite:
+          //   fance_001 = edges on the NE/SW axis (y±1 neighbors)
+          //   fance_002 = edges on the NW/SE axis (x±1 neighbors)
+          const String fance001 =
+              'assets/game_images/3d/outside_fance/fance_001.png';
+          const String fance002 =
+              'assets/game_images/3d/outside_fance/fance_002.png';
+          const List<List<int>> kNeighborOffsets = [
+            [0, 1], // bottom-left edge  -> fance_001
+            [0, -1], // top-right edge    -> fance_001
+            [1, 0], // bottom-right edge -> fance_002
+            [-1, 0], // top-left edge     -> fance_002
+          ];
+          for (final offset in kNeighborOffsets) {
+            final int dx = offset[0];
+            final int dy = offset[1];
+            if (!hasPlayableNeighbor(x + dx, y + dy)) continue;
+            final String asset = (dy != 0) ? fance001 : fance002;
+            tileFences.add(_FenceData(asset, x + dx, y + dy));
           }
         }
 
@@ -576,9 +774,11 @@ class IsometricMapPainter extends CustomPainter {
           isPlayer: true,
           playerDirection: worker.direction,
           playerStatus: worker.status,
+          playerAction: worker.action,
           workerName: worker.workerName,
           workerDepth: worker.x + worker.y,
           workerIsBusy: worker.availability == 'busy',
+          playerAnimPhase: worker.animPhase,
         ),
       );
     }
@@ -669,6 +869,30 @@ class IsometricMapPainter extends CustomPainter {
     double isoY = (selectedX! + selectedY!) * (tileHeight / 2) + offsetY;
 
     final Map<String, dynamic>? details = placementItem!['details'];
+    final String? category =
+        (placementItem!['category'] ?? placementItem!['asset_category'])
+            as String?;
+
+    // Trees: render the static apple/orange PNG (or the loading sprite while
+    // the placement request is in flight) as the ghost.
+    if (category == 'tree') {
+      final String treePath = placingInFlight
+          ? _kTreeLoadingAsset
+          : _treeAssetForVariant(
+              placementItem!['variant_code'] ?? details?['variant_name'],
+            );
+      final _PaintTask ghostTask = _PaintTask(
+        x: selectedX!,
+        y: selectedY!,
+        isoX: isoX,
+        isoY: isoY,
+        isForeground: true,
+        hasTree: false,
+      );
+      _paintStaticTreeImage(canvas, ghostTask, treePath, opacity: 0.7);
+      return;
+    }
+
     final Map<String, dynamic>? sprites =
         placementItem!['sprites'] ?? details?['sprites'];
     String status = 'idle';
@@ -740,46 +964,104 @@ class IsometricMapPainter extends CustomPainter {
     return row[x] == true;
   }
 
-  void _paintGround(Canvas canvas, Paint paint, _PaintTask task) {
-    final String assetPath = task.isForeground
-        ? 'assets/game_images/textures/grass_land.jpg'
-        : 'assets/game_images/textures/soil_background.jpg';
+  // Resolve a soil tile for a given ground cell.
+  //   soil_0.png   -> off-land / outside playable area
+  //   soil_1.png   -> default playable land
+  //   soil_2.png   -> tilled (backend: cellData.state == 'tilled')
+  //   plow_soil.png-> currently being plowed (backend: cellData.state == 'plowing')
+  String _resolveSoilAsset(_PaintTask task) {
+    if (!task.isForeground) {
+      return 'assets/game_images/components/soil/soil_0.png';
+    }
+    final cell = task.cellData;
+    String? state;
+    if (cell is Map) {
+      final s = cell['state'] ?? cell['soil_state'];
+      if (s is String) state = s;
+    }
+    switch (state) {
+      case 'plowing':
+        return 'assets/game_images/components/soil/plow_soil.png';
+      case 'tilled':
+      case 'soil':
+        return 'assets/game_images/components/soil/soil_2.png';
+      default:
+        return 'assets/game_images/components/soil/soil_1.png';
+    }
+  }
 
-    final ui.Image? baseImg = assetManager.getImage(assetPath);
+  void _paintGround(Canvas canvas, Paint paint, _PaintTask task) {
+    final String assetPath = _resolveSoilAsset(task);
+    ui.Image? baseImg = assetManager.getImage(assetPath);
+
+    // On-demand load with a legacy grass fallback so the tile never shows a
+    // raw transparent diamond while the new soil sheet is still streaming in.
+    if (baseImg == null) {
+      if (!assetManager.hasFailed(assetPath)) {
+        unawaited(assetManager.loadAssets([assetPath]));
+      }
+      final String legacy = task.isForeground
+          ? 'assets/game_images/textures/grass_land.jpg'
+          : 'assets/game_images/textures/soil_background.jpg';
+      baseImg = assetManager.getImage(legacy);
+    }
+
+    canvas.save();
+    canvas.translate(task.isoX, task.isoY);
+
+    final Path path = Path();
+    path.moveTo(tileWidth / 2, 0);
+    path.lineTo(tileWidth, tileHeight / 2);
+    path.lineTo(tileWidth / 2, tileHeight);
+    path.lineTo(0, tileHeight / 2);
+    path.close();
+
+    canvas.clipPath(path);
 
     if (baseImg != null) {
-      canvas.save();
-      canvas.translate(task.isoX, task.isoY);
-
-      final Path path = Path();
-      path.moveTo(tileWidth / 2, 0);
-      path.lineTo(tileWidth, tileHeight / 2);
-      path.lineTo(tileWidth / 2, tileHeight);
-      path.lineTo(0, tileHeight / 2);
-      path.close();
-
-      canvas.clipPath(path);
-
+      // Subtle pulse on the plowing tile so the active work is visible even
+      // before backend state changes stream in.
+      final bool isPlowing = assetPath.endsWith('plow_soil.png');
+      if (isPlowing) {
+        final double pulse =
+            0.85 + 0.15 * math.sin(animationValue * math.pi * 2);
+        canvas.saveLayer(
+          const Rect.fromLTWH(0, 0, tileWidth, tileHeight),
+          Paint()
+            ..colorFilter = ColorFilter.mode(
+              Color.fromRGBO(255, 255, 255, pulse.clamp(0.0, 1.0)),
+              BlendMode.modulate,
+            ),
+        );
+      }
       paintImage(
         canvas: canvas,
         rect: const Rect.fromLTWH(0, 0, tileWidth, tileHeight),
         image: baseImg,
         fit: BoxFit.cover,
       );
-
-      canvas.restore();
-
-      // Border
-      canvas.save();
-      canvas.translate(task.isoX, task.isoY);
-      paint.style = PaintingStyle.stroke;
-      paint.strokeWidth = 1;
+      if (isPlowing) canvas.restore();
+    } else {
+      // Final fallback: flat color so the grid always renders.
+      paint.style = PaintingStyle.fill;
       paint.color = task.isForeground
-          ? Colors.white.withOpacity(0.2)
-          : Colors.white.withOpacity(0.05);
-      canvas.drawPath(path, paint);
-      canvas.restore();
+          ? const Color(0xFF6B8E23)
+          : const Color(0xFF3C3C3C);
+      canvas.drawRect(const Rect.fromLTWH(0, 0, tileWidth, tileHeight), paint);
     }
+
+    canvas.restore();
+
+    // Border
+    canvas.save();
+    canvas.translate(task.isoX, task.isoY);
+    paint.style = PaintingStyle.stroke;
+    paint.strokeWidth = 1;
+    paint.color = task.isForeground
+        ? Colors.white.withOpacity(0.2)
+        : Colors.white.withOpacity(0.05);
+    canvas.drawPath(path, paint);
+    canvas.restore();
   }
 
   void _paintObject(Canvas canvas, Paint paint, _PaintTask task) {
@@ -810,11 +1092,11 @@ class IsometricMapPainter extends CustomPainter {
     for (var fence in task.fences) {
       bool hideFence = false;
       if (selectedX != null && selectedY != null) {
-        if (fence.asset.contains('fance1') &&
+        if (fence.asset.contains('fance_001') &&
             selectedY == fence.adjacentY &&
             (selectedX! - task.x).abs() <= 1) {
           hideFence = true;
-        } else if (fence.asset.contains('fance2') &&
+        } else if (fence.asset.contains('fance_002') &&
             selectedX == fence.adjacentX &&
             (selectedY! - task.y).abs() <= 1) {
           hideFence = true;
@@ -823,22 +1105,77 @@ class IsometricMapPainter extends CustomPainter {
 
       if (!hideFence) {
         final ui.Image? fenceImg = assetManager.getImage(fence.asset);
-        if (fenceImg != null) {
-          double h = tileHeight * 2;
-          double w = tileWidth;
-          double bottomDist = (tileHeight / 2) + fence.dy;
-          double dx = task.isoX + fence.dx;
-          double dy = task.isoY + tileHeight - bottomDist - h;
-
-          paintImage(
-            canvas: canvas,
-            rect: Rect.fromLTWH(dx, dy, w, h),
-            image: fenceImg,
-            fit: BoxFit.contain,
-          );
+        if (fenceImg == null) {
+          // Kick off async load; next frame will paint it.
+          if (!assetManager.hasFailed(fence.asset)) {
+            unawaited(assetManager.loadAssets([fence.asset]));
+          }
+          continue;
         }
+        _paintFenceSprite(canvas, task, fence, fenceImg);
       }
     }
+  }
+
+  // Draws a single fence sprite aligned to the shared edge between the
+  // off-land tile (task.x, task.y) and its playable neighbor
+  // (fence.adjacentX, fence.adjacentY).
+  //
+  // Size is derived from the PNG's intrinsic aspect so whichever art pack is
+  // shipped looks correct without stretching. The bottom-center of the sprite
+  // is anchored on the tile-edge midpoint so the fence line visually sits on
+  // the land boundary rather than floating inside/outside the tile.
+  void _paintFenceSprite(
+    Canvas canvas,
+    _PaintTask task,
+    _FenceData fence,
+    ui.Image img,
+  ) {
+    // Defensive: a corrupted or partially-decoded texture can surface with
+    // zero or non-finite dimensions. Skip painting rather than crashing or
+    // poisoning the aspect cache — the missing frame will fill in on the
+    // next paint pass once the AssetManager replaces the bad entry.
+    final int imgW = img.width;
+    final int imgH = img.height;
+    if (imgW <= 0 || imgH <= 0) return;
+
+    final _FenceEdge edge = _FenceEdge.fromDelta(
+      fence.adjacentX - task.x,
+      fence.adjacentY - task.y,
+    );
+    final Offset midLocal = edge.midpoint(tileWidth, tileHeight);
+    final Offset seamNudge = edge.playableSideNudge(_kFenceBoundaryNudgePx);
+
+    final double aspect = _fenceAspectCache.putIfAbsent(
+      fence.asset,
+      () => imgH / imgW,
+    );
+    if (!aspect.isFinite || aspect <= 0) {
+      // Evict the bad entry so a subsequent, valid decode can repopulate it.
+      _fenceAspectCache.remove(fence.asset);
+      return;
+    }
+
+    final double w = _kFenceTargetWidth;
+    final double h = w * aspect;
+    final double lift = h * _kFenceGroundLiftRatio;
+
+    // Anchor: bottom-center of the sprite lands on the edge midpoint, then
+    // shifted down by `lift` (a fraction of sprite height) so the posts are
+    // planted into the off-land side of the boundary instead of hovering
+    // above the land texture. Using a height-proportional offset keeps the
+    // rooted look consistent across both fence assets and any future tweaks
+    // to _kFenceWidthFactor.
+    final double paintDx = task.isoX + midLocal.dx - w / 2 + seamNudge.dx;
+    final double paintDy = task.isoY + midLocal.dy - h + lift + seamNudge.dy;
+
+    paintImage(
+      canvas: canvas,
+      rect: Rect.fromLTWH(paintDx, paintDy, w, h),
+      image: img,
+      fit: BoxFit.fill,
+      filterQuality: FilterQuality.low,
+    );
   }
 
   void _paintItem(Canvas canvas, _PaintTask task) {
@@ -850,6 +1187,14 @@ class IsometricMapPainter extends CustomPainter {
     // To ensure correct isometric depth sorting, multi-tile items must be drawn
     // when painting their bottom-most tile (highest depth).
     if (task.x != ox + fw - 1 || task.y != oy + fh - 1) return;
+
+    // Trees are rendered from a curated set of single-PNG sprites rather than
+    // animated frame folders. Route them through the static painter.
+    if (task.cellData['category'] == 'tree') {
+      final String path = _resolveTreeAsset(task.cellData);
+      _paintStaticTreeImage(canvas, task, path, fw: fw, fh: fh);
+      return;
+    }
 
     final Map<String, dynamic>? sprites = task.cellData['sprites'];
     final Map<String, dynamic>? state = task.cellData['state'];
@@ -948,25 +1293,193 @@ class IsometricMapPainter extends CustomPainter {
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // Tree sprite resolution
+  //
+  // Tree variants come from the backend as single PNGs rather than animated
+  // folders. The mapping is driven by variant_code:
+  //   apple_*  -> tree_001.png
+  //   orange_* -> tree_101.png
+  // Any pending/planting state (or an in-flight placement request for this
+  // cell) resolves to the loading sprite.
+  // ---------------------------------------------------------------------------
+  static const String _kTreeAppleAsset =
+      'assets/game_images/3d/outside_tree/tree_001.png';
+  static const String _kTreeOrangeAsset =
+      'assets/game_images/3d/outside_tree/tree_101.png';
+  static const String _kTreeLoadingAsset =
+      'assets/game_images/3d/outside_tree/add_tree_loading.png';
+  static const Set<String> _kTreeLoadingStatuses = {
+    'pending',
+    'planting',
+    'loading',
+  };
+
+  String _resolveTreeAsset(Map<String, dynamic> cellData) {
+    final dynamic stateField = cellData['state'];
+    String? status;
+    if (stateField is Map) {
+      final dynamic s = stateField['status'] ?? stateField['state'];
+      if (s is String) status = s;
+    }
+    final bool inFlight =
+        placingInFlight &&
+        placementItem != null &&
+        placementItem!['id'] == cellData['id'];
+    if (inFlight ||
+        (status != null && _kTreeLoadingStatuses.contains(status))) {
+      return _kTreeLoadingAsset;
+    }
+    return _treeAssetForVariant(cellData['variant_code']);
+  }
+
+  static String _treeAssetForVariant(dynamic variantCode) {
+    if (variantCode is String) {
+      final String code = variantCode.toLowerCase();
+      if (code.startsWith('orange')) return _kTreeOrangeAsset;
+      if (code.startsWith('apple')) return _kTreeAppleAsset;
+    }
+    return _kTreeAppleAsset;
+  }
+
+  void _paintStaticTreeImage(
+    Canvas canvas,
+    _PaintTask task,
+    String assetPath, {
+    int fw = 1,
+    int fh = 1,
+    double opacity = 1.0,
+  }) {
+    final ui.Image? img = assetManager.getImage(assetPath);
+    if (img == null) {
+      if (!assetManager.hasFailed(assetPath)) {
+        unawaited(assetManager.loadAssets([assetPath]));
+      }
+      return;
+    }
+
+    final double scaleFactor = (fw == 1 && fh == 1) ? 1.0 : (fw + fh) / 2.0;
+    final double w = tileWidth * 1.3 * scaleFactor;
+    final double h = w * (img.height / img.width);
+
+    double dx, dy;
+    if (fw == 1 && fh == 1) {
+      dx = task.isoX + (tileWidth - w) / 2;
+      dy = task.isoY + (tileHeight * 0.75) - h;
+    } else {
+      final double cx = (fw - fh) * tileWidth / 4;
+      final double cy = (fw + fh) * tileHeight / 4;
+      dx = task.isoX + cx + (tileWidth - w) / 2;
+      dy = task.isoY + cy - h;
+    }
+
+    if (opacity < 1.0) {
+      canvas.saveLayer(
+        null,
+        Paint()..color = Colors.white.withValues(alpha: opacity),
+      );
+    }
+    paintImage(
+      canvas: canvas,
+      rect: Rect.fromLTWH(dx, dy, w, h),
+      image: img,
+      fit: BoxFit.contain,
+    );
+    if (opacity < 1.0) canvas.restore();
+  }
+
+  // Valid directions that actually exist under sprites/worker/<action>/.
+  static const Set<String> _kWorkerDirections = {
+    'bottom-side',
+    'forward-side',
+    'left-side',
+    'right-side',
+    'left-bottom-side',
+    'left-forward-side',
+    'right-bottom-side',
+    'right-forward-side',
+  };
+
+  // Valid actions that exist as folders under sprites/worker/.
+  static const Set<String> _kWorkerActions = {
+    'idle',
+    'walk',
+    'hoe',
+    'plant',
+    'wCan',
+  };
+
+  static final Set<String> _warnedMissingWorkerSpriteBases = <String>{};
+
+  void _warnMissingWorkerSpriteBase(String requested, String fallback) {
+    final String key = '$requested->$fallback';
+    if (_warnedMissingWorkerSpriteBases.add(key)) {
+      debugPrint(
+        'Worker sprite set "$requested" missing; falling back to "$fallback".',
+      );
+    }
+  }
+
+  bool _hasUsableWorkerSpriteSet(String basePath) {
+    assetManager.ensureSpriteSetDiscovery(basePath);
+    return assetManager.spriteSetExists(basePath);
+  }
+
+  String _resolveWorkerSpriteBase(_PaintTask task) {
+    final String action = _kWorkerActions.contains(task.playerAction)
+        ? task.playerAction!
+        : (task.playerStatus == 'walking' ? 'walk' : 'idle');
+    final String direction = _kWorkerDirections.contains(task.playerDirection)
+        ? task.playerDirection!
+        : 'forward-side';
+
+    final String requested = 'sprites/worker/$action/$direction';
+    final List<String> candidates = <String>[
+      requested,
+      if (direction != 'forward-side') 'sprites/worker/$action/forward-side',
+      'sprites/worker/idle/$direction',
+      'sprites/worker/idle/forward-side',
+    ];
+
+    for (final base in candidates) {
+      if (_hasUsableWorkerSpriteSet(base)) {
+        if (base != requested) {
+          _warnMissingWorkerSpriteBase(requested, base);
+        }
+        return base;
+      }
+    }
+
+    const String hardFallback = 'sprites/worker/idle/forward-side';
+    _warnMissingWorkerSpriteBase(requested, hardFallback);
+    return hardFallback;
+  }
+
   void _paintPlayer(Canvas canvas, _PaintTask task) {
-    String subPath = task.playerStatus == 'walking'
-        ? 'walk/${task.playerDirection}'
-        : 'idle';
-    String spriteBase = 'sprites/player/$subPath';
+    final String spriteBase = _resolveWorkerSpriteBase(task);
 
     int maxFrames = assetManager.getFrameCount(spriteBase);
-    if (maxFrames == 0 && task.playerStatus == 'idle') maxFrames = 9;
     if (maxFrames == 0) maxFrames = 1;
 
-    final bool isWalking = task.playerStatus == 'walking';
+    final bool isAnimated =
+        task.playerStatus == 'walking' ||
+        task.playerAction == 'walk' ||
+        task.playerAction == 'hoe' ||
+        task.playerAction == 'plant' ||
+        task.playerAction == 'wCan';
     assetManager.prefetchSpriteFrames(
       spriteBase,
       frameCountHint: maxFrames,
-      prefetchCount: isWalking ? 6 : 2,
+      prefetchCount: isAnimated ? 8 : 2,
     );
 
-    final int frameIndex = isWalking
-        ? ((animationValue * maxFrames) % maxFrames).floor()
+    // Pick the walk-cycle phase: velocity-coupled if the provider supplied
+    // one (manual control + auto-move workers both populate this now), else
+    // fall back to the ambient timer so action-animations on stationary
+    // workers (hoe, plant, wCan) still advance at the global cadence.
+    final double phase = task.playerAnimPhase ?? animationValue;
+    final int frameIndex = (maxFrames > 1 && isAnimated)
+        ? ((phase * maxFrames) % maxFrames).floor().clamp(0, maxFrames - 1)
         : 0;
     final String currentFramePath = assetManager.getFramePath(
       spriteBase,
@@ -977,6 +1490,18 @@ class IsometricMapPainter extends CustomPainter {
     ui.Image? img =
         assetManager.getImage(currentFramePath) ??
         assetManager.getImage(idleFramePath);
+
+    // Graceful fallback: if the action sheet has no frames yet, try the idle
+    // sheet for the same direction so the worker never disappears mid-action.
+    if (img == null && !spriteBase.contains('/idle/')) {
+      final String fallbackBase =
+          'sprites/worker/idle/${_kWorkerDirections.contains(task.playerDirection) ? task.playerDirection : 'forward-side'}';
+      final String fallbackPath = assetManager.getFramePath(fallbackBase, 0);
+      img = assetManager.getImage(fallbackPath);
+      if (img == null && !assetManager.hasFailed(fallbackPath)) {
+        unawaited(assetManager.loadAssets([fallbackPath]));
+      }
+    }
 
     if (img == null) {
       final missing = <String>[];
@@ -1119,19 +1644,79 @@ class IsometricMapPainter extends CustomPainter {
         oldDelegate.matrix != matrix ||
         oldDelegate.playableMask != playableMask ||
         oldDelegate.placementMode != placementMode ||
+        oldDelegate.placingInFlight != placingInFlight ||
         oldDelegate.animationValue != animationValue ||
-        oldDelegate.workers != workers;
+        oldDelegate.workers != workers ||
+        oldDelegate.workerVisualHash != workerVisualHash;
   }
 }
 
 class _FenceData {
   final String asset;
-  final double dx;
-  final double dy;
   final int adjacentX;
   final int adjacentY;
 
-  _FenceData(this.asset, this.dx, this.dy, this.adjacentX, this.adjacentY);
+  _FenceData(this.asset, this.adjacentX, this.adjacentY);
+}
+
+// Identifies which of the four isometric edges of an off-land tile is shared
+// with its playable neighbor. The name reflects where the edge visually sits
+// on the screen-space diamond of the owning tile.
+//
+// Tile-local corner coordinates (origin at the top-left of the diamond's
+// bounding box) for reference:
+//   top    = (tW/2, 0)
+//   right  = (tW,   tH/2)
+//   bottom = (tW/2, tH)
+//   left   = (0,    tH/2)
+enum _FenceEdge {
+  bottomLeft, // shared with neighbor at (x,   y+1) — runs top→left corner
+  topRight, // shared with neighbor at (x,   y-1) — runs top→right corner
+  bottomRight, // shared with neighbor at (x+1, y)   — runs right→bottom
+  topLeft; // shared with neighbor at (x-1, y)   — runs top→left corner
+
+  // Maps a neighbor-delta (dx, dy) in grid coordinates to the corresponding
+  // tile edge. Exactly one of the deltas is ±1 for the four neighbors we
+  // generate fences for; the priority ordering below mirrors the generation
+  // loop so any future diagonal deltas degrade gracefully.
+  static _FenceEdge fromDelta(int dx, int dy) {
+    if (dy > 0) return _FenceEdge.bottomLeft;
+    if (dy < 0) return _FenceEdge.topRight;
+    if (dx > 0) return _FenceEdge.bottomRight;
+    return _FenceEdge.topLeft;
+  }
+
+  // Midpoint of the shared edge in tile-local pixel space.
+  Offset midpoint(double tW, double tH) {
+    switch (this) {
+      case _FenceEdge.bottomLeft:
+        return Offset(tW / 4, 3 * tH / 4);
+      case _FenceEdge.topRight:
+        return Offset(3 * tW / 4, tH / 4);
+      case _FenceEdge.bottomRight:
+        return Offset(3 * tW / 4, 3 * tH / 4);
+      case _FenceEdge.topLeft:
+        return Offset(tW / 4, tH / 4);
+    }
+  }
+
+  // Small nudge toward the playable side of the boundary to hide any
+  // anti-aliased seam that can appear between soil_1 and fence posts.
+  Offset playableSideNudge(double pixels) {
+    if (pixels <= 0) return Offset.zero;
+    const double major = 0.8944271909999159; // 2 / sqrt(5)
+    const double minor = 0.4472135954999579; // 1 / sqrt(5)
+    switch (this) {
+      case _FenceEdge.bottomLeft:
+        return Offset(-major * pixels, minor * pixels);
+      case _FenceEdge.topRight:
+        return Offset(major * pixels, -minor * pixels);
+      case _FenceEdge.bottomRight:
+        return Offset(major * pixels, minor * pixels);
+      case _FenceEdge.topLeft:
+        return Offset(-major * pixels, -minor * pixels);
+    }
+  }
 }
 
 class _PaintTask {
@@ -1147,9 +1732,14 @@ class _PaintTask {
   final bool isPlayer;
   final String? playerDirection;
   final String? playerStatus;
+  final String? playerAction; // 'idle' | 'walk' | 'hoe' | 'plant' | 'wCan'
   final String? workerName; // for name label
   final double? workerDepth; // fractional depth for sorting
   final bool workerIsBusy; // whether worker has an active task
+  // Velocity-coupled walk-cycle phase in [0, 1). When non-null the painter
+  // uses this instead of the ambient [animationValue] so stride cadence
+  // tracks actual movement speed (critical for joystick control).
+  final double? playerAnimPhase;
 
   _PaintTask({
     required this.x,
@@ -1164,8 +1754,10 @@ class _PaintTask {
     this.isPlayer = false,
     this.playerDirection,
     this.playerStatus,
+    this.playerAction,
     this.workerName,
     this.workerDepth,
     this.workerIsBusy = false,
+    this.playerAnimPhase,
   });
 }

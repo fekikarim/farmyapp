@@ -181,6 +181,61 @@ flutter:
     - assets/game_images/sprites/player/walk/front_left/
     - assets/game_images/sprites/player/walk/front_right/
     - assets/game_images/sprites/player/idle/
+    # 8-direction worker sprite tree (5 actions x 8 directions).
+    - assets/game_images/sprites/worker/
+    - assets/game_images/sprites/worker/idle/
+    - assets/game_images/sprites/worker/idle/bottom-side/
+    - assets/game_images/sprites/worker/idle/forward-side/
+    - assets/game_images/sprites/worker/idle/left-side/
+    - assets/game_images/sprites/worker/idle/right-side/
+    - assets/game_images/sprites/worker/idle/left-bottom-side/
+    - assets/game_images/sprites/worker/idle/left-forward-side/
+    - assets/game_images/sprites/worker/idle/right-bottom-side/
+    - assets/game_images/sprites/worker/idle/right-forward-side/
+    - assets/game_images/sprites/worker/walk/
+    - assets/game_images/sprites/worker/walk/bottom-side/
+    - assets/game_images/sprites/worker/walk/forward-side/
+    - assets/game_images/sprites/worker/walk/left-side/
+    - assets/game_images/sprites/worker/walk/right-side/
+    - assets/game_images/sprites/worker/walk/left-bottom-side/
+    - assets/game_images/sprites/worker/walk/left-forward-side/
+    - assets/game_images/sprites/worker/walk/right-bottom-side/
+    - assets/game_images/sprites/worker/walk/right-forward-side/
+    - assets/game_images/sprites/worker/hoe/
+    - assets/game_images/sprites/worker/hoe/bottom-side/
+    - assets/game_images/sprites/worker/hoe/forward-side/
+    - assets/game_images/sprites/worker/hoe/left-side/
+    - assets/game_images/sprites/worker/hoe/right-side/
+    - assets/game_images/sprites/worker/hoe/left-bottom-side/
+    - assets/game_images/sprites/worker/hoe/left-forward-side/
+    - assets/game_images/sprites/worker/hoe/right-bottom-side/
+    - assets/game_images/sprites/worker/hoe/right-forward-side/
+    - assets/game_images/sprites/worker/plant/
+    - assets/game_images/sprites/worker/plant/bottom-side/
+    - assets/game_images/sprites/worker/plant/forward-side/
+    - assets/game_images/sprites/worker/plant/left-side/
+    - assets/game_images/sprites/worker/plant/right-side/
+    - assets/game_images/sprites/worker/plant/left-bottom-side/
+    - assets/game_images/sprites/worker/plant/left-forward-side/
+    - assets/game_images/sprites/worker/plant/right-bottom-side/
+    - assets/game_images/sprites/worker/plant/right-forward-side/
+    - assets/game_images/sprites/worker/wCan/
+    - assets/game_images/sprites/worker/wCan/bottom-side/
+    - assets/game_images/sprites/worker/wCan/forward-side/
+    - assets/game_images/sprites/worker/wCan/left-side/
+    - assets/game_images/sprites/worker/wCan/right-side/
+    - assets/game_images/sprites/worker/wCan/left-bottom-side/
+    - assets/game_images/sprites/worker/wCan/left-forward-side/
+    - assets/game_images/sprites/worker/wCan/right-bottom-side/
+    - assets/game_images/sprites/worker/wCan/right-forward-side/
+    # Component overlays (soil states, plant bags, barn parts, etc.).
+    - assets/game_images/components/
+    - assets/game_images/components/soil/
+    - assets/game_images/components/soil1/
+    - assets/game_images/components/soil2/
+    - assets/game_images/components/barn/
+    - assets/game_images/components/plant-bag/
+    - assets/game_images/components/plants/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

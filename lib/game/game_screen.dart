@@ -20,6 +20,8 @@ import '../services/shop_service.dart';
 import '../../services/auth_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'asset_manager.dart';
+import 'package:flutter/scheduler.dart';
+import '../widgets/virtual_joystick.dart';
 
 class GameScreen extends StatefulWidget {
   final Land land;
@@ -30,8 +32,7 @@ class GameScreen extends StatefulWidget {
   State<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen>
-    with SingleTickerProviderStateMixin {
+class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   Map<String, dynamic>? _gridData;
   bool _isLoading = true;
   String _loadingMessage = 'Initializing...';
@@ -41,6 +42,19 @@ class _GameScreenState extends State<GameScreen>
   late AnimationController _menuController;
   late Animation<double> _menuAnimation;
   bool _isMenuOpen = false;
+
+  // Manual worker control (virtual joystick).
+  //
+  // The joystick widget writes the current stick deflection into [_stickVec]
+  // on every pan update; a dedicated [_gameLoopTicker] consumes that value
+  // once per frame and forwards it — along with the actual frame delta — to
+  // GameProvider.applyJoystickInput. Driving movement from the ticker (rather
+  // than directly from pan events) guarantees frame-rate-independent motion
+  // even when the user holds the thumb stationary.
+  late final Ticker _gameLoopTicker;
+  Offset _stickVec = Offset.zero;
+  Duration _lastTick = Duration.zero;
+  final Set<String> _warnedMissingWorkerSpriteSets = <String>{};
 
   @override
   void initState() {
@@ -54,6 +68,8 @@ class _GameScreenState extends State<GameScreen>
       curve: Curves.easeOutBack,
     );
 
+    _gameLoopTicker = createTicker(_onGameTick);
+
     // Force portrait for vertical shop as requested
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -62,6 +78,35 @@ class _GameScreenState extends State<GameScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeApp();
     });
+  }
+
+  /// Per-frame callback while manual control is active. Computes the real
+  /// elapsed seconds (clamped to 50 ms to survive pauses/backgrounding) and
+  /// forwards the current stick deflection to the provider.
+  void _onGameTick(Duration elapsed) {
+    final double dt = _lastTick == Duration.zero
+        ? 1 / 60
+        : ((elapsed - _lastTick).inMicroseconds / 1e6).clamp(0.0, 0.05);
+    _lastTick = elapsed;
+    if (!mounted) return;
+    final gp = context.read<GameProvider>();
+    if (!gp.manualControlActive) return;
+    gp.applyJoystickInput(_stickVec.dx, _stickVec.dy, dt);
+  }
+
+  void _startManualControlTicker() {
+    if (!_gameLoopTicker.isActive) {
+      _lastTick = Duration.zero;
+      _gameLoopTicker.start();
+    }
+  }
+
+  void _stopManualControlTicker() {
+    if (_gameLoopTicker.isActive) {
+      _gameLoopTicker.stop();
+    }
+    _stickVec = Offset.zero;
+    _lastTick = Duration.zero;
   }
 
   Future<void> _initializeApp() async {
@@ -106,6 +151,7 @@ class _GameScreenState extends State<GameScreen>
         });
 
         unawaited(_warmupRemainingGridAssets(gridData));
+        unawaited(_warmupWorkerSpriteSheets());
 
         // Load workers assigned to this land
         gameProvider.loadWorkersForLand(
@@ -154,15 +200,59 @@ class _GameScreenState extends State<GameScreen>
     await AssetManager().loadAssets(remaining);
   }
 
+  Future<void> _warmupWorkerSpriteSheets() async {
+    const List<String> directions = <String>[
+      'bottom-side',
+      'forward-side',
+      'left-side',
+      'right-side',
+      'left-bottom-side',
+      'left-forward-side',
+      'right-bottom-side',
+      'right-forward-side',
+    ];
+    const List<String> actions = <String>['idle', 'walk'];
+
+    final AssetManager assetManager = AssetManager();
+    final List<String> bases = <String>[
+      for (final action in actions)
+        for (final direction in directions) 'sprites/worker/$action/$direction',
+    ];
+
+    final Map<String, int> counts = await assetManager.validateSpriteSets(
+      bases,
+    );
+    final Set<String> spritePaths = <String>{};
+
+    for (final base in bases) {
+      final int frameCount = counts[base] ?? 0;
+      if (frameCount <= 0) {
+        if (_warnedMissingWorkerSpriteSets.add(base)) {
+          debugPrint('Missing worker sprite set: $base');
+        }
+        continue;
+      }
+
+      for (int i = 0; i < frameCount; i++) {
+        spritePaths.add(assetManager.getFramePath(base, i));
+      }
+    }
+
+    if (spritePaths.isEmpty) return;
+    await assetManager.loadAssets(spritePaths.toList(growable: false));
+  }
+
   Set<String> _collectGridWarmupPaths(List<dynamic> matrix) {
     final paths = <String>{
       'assets/game_images/textures/grass_land.jpg',
       'assets/game_images/textures/soil_background.jpg',
-      'assets/game_images/3d/outside_tree/tree1.png',
-      'assets/game_images/3d/outside_tree/tree2.png',
-      'assets/game_images/3d/outside_tree/tree3.png',
-      'assets/game_images/3d/outside_fance/fance1.png',
-      'assets/game_images/3d/outside_fance/fance2.png',
+      'assets/game_images/3d/outside_tree/tree_outside_01.png',
+      'assets/game_images/3d/outside_tree/tree_outside_02.png',
+      'assets/game_images/3d/outside_tree/tree_001.png',
+      'assets/game_images/3d/outside_tree/tree_101.png',
+      'assets/game_images/3d/outside_tree/add_tree_loading.png',
+      'assets/game_images/3d/outside_fance/fance_001.png',
+      'assets/game_images/3d/outside_fance/fance_002.png',
     };
 
     final seenOrigins = <String>{};
@@ -202,17 +292,29 @@ class _GameScreenState extends State<GameScreen>
       }
     }
 
-    const workerBases = <String>[
-      'assets/game_images/sprites/player/idle',
-      'assets/game_images/sprites/player/walk/front_left',
-      'assets/game_images/sprites/player/walk/front_right',
-      'assets/game_images/sprites/player/walk/back_left',
-      'assets/game_images/sprites/player/walk/back_right',
+    // T0 sprite priming: all 8 idle directions (one frame each) and the
+    // cardinal `walk` sheets (first 2 frames) so every worker reads from
+    // cache on first paint. Remaining frames stream in lazily via the
+    // AssetManager prefetch loop.
+    const directions = <String>[
+      'bottom-side',
+      'forward-side',
+      'left-side',
+      'right-side',
+      'left-bottom-side',
+      'left-forward-side',
+      'right-bottom-side',
+      'right-forward-side',
     ];
-    for (final base in workerBases) {
-      paths.add('$base/image0.png');
-      paths.add('$base/image1.png');
-      paths.add('$base/image2.png');
+    for (final dir in directions) {
+      paths.add('assets/game_images/sprites/worker/idle/$dir/sprite (0).png');
+    }
+    // All 8 walk sheets' first two frames: manual joystick control can turn
+    // onto any diagonal at any moment, so every walk direction must be warm
+    // before first paint to avoid stutter on direction changes.
+    for (final dir in directions) {
+      paths.add('assets/game_images/sprites/worker/walk/$dir/sprite (0).png');
+      paths.add('assets/game_images/sprites/worker/walk/$dir/sprite (1).png');
     }
 
     return paths;
@@ -223,13 +325,21 @@ class _GameScreenState extends State<GameScreen>
     try {
       final assetManager = AssetManager();
       await assetManager.loadAssets([
+        // Soil tile set (new ground renderer) \u2014 required for first paint.
+        'assets/game_images/components/soil/soil_0.png',
+        'assets/game_images/components/soil/soil_1.png',
+        'assets/game_images/components/soil/soil_2.png',
+        'assets/game_images/components/soil/plow_soil.png',
+        // Legacy fallbacks kept for graceful degradation.
         'assets/game_images/textures/grass_land.jpg',
         'assets/game_images/textures/soil_background.jpg',
-        'assets/game_images/3d/outside_tree/tree1.png',
-        'assets/game_images/3d/outside_tree/tree2.png',
-        'assets/game_images/3d/outside_tree/tree3.png',
-        'assets/game_images/3d/outside_fance/fance1.png',
-        'assets/game_images/3d/outside_fance/fance2.png',
+        'assets/game_images/3d/outside_tree/tree_outside_01.png',
+        'assets/game_images/3d/outside_tree/tree_outside_02.png',
+        'assets/game_images/3d/outside_tree/tree_001.png',
+        'assets/game_images/3d/outside_tree/tree_101.png',
+        'assets/game_images/3d/outside_tree/add_tree_loading.png',
+        'assets/game_images/3d/outside_fance/fance_001.png',
+        'assets/game_images/3d/outside_fance/fance_002.png',
       ]);
       return true;
     } catch (e) {
@@ -291,6 +401,9 @@ class _GameScreenState extends State<GameScreen>
   int? _pendingX;
   int? _pendingY;
   bool _isPendingValid = false;
+  // True while the placement request is awaiting the backend response. The
+  // map painter uses this to swap tree ghosts to add_tree_loading.png.
+  bool _placingInFlight = false;
 
   void _startPlacement(dynamic item) async {
     // 1. Enter placement mode immediately
@@ -360,6 +473,25 @@ class _GameScreenState extends State<GameScreen>
   }
 
   void _onItemAction(String actionId, int x, int y, dynamic itemData) {
+    // Worker-tagged radial menu (see IsometricMap._openWorkerMenu).
+    final bool isWorkerItem = itemData is Map && itemData['__worker'] == true;
+    if (isWorkerItem) {
+      if (actionId == 'move') {
+        final String? workerId = itemData['worker_id'] as String?;
+        if (workerId == null) return;
+        final gp = context.read<GameProvider>();
+        gp.startManualControl(workerId);
+        _startManualControlTicker();
+      } else if (actionId == 'info') {
+        // Lightweight worker-info toast; full worker sheet can be wired later.
+        final name = itemData['worker_name'] as String? ?? 'Worker';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(name), duration: const Duration(seconds: 1)),
+        );
+      }
+      return;
+    }
+
     if (actionId == 'info') {
       _showItemInfoSheet(itemData, x, y);
     } else if (actionId == 'tasks') {
@@ -681,14 +813,20 @@ class _GameScreenState extends State<GameScreen>
     if (_placementItem == null ||
         _pendingX == null ||
         _pendingY == null ||
-        !_isPendingValid)
+        !_isPendingValid ||
+        _placingInFlight)
       return;
 
     final requestId = _placementItem!['id'];
     final x = _pendingX!;
     final y = _pendingY!;
 
-    // Show loading indicator
+    // Flip the painter into loading-ghost mode for trees while the backend
+    // is processing the placement.
+    setState(() {
+      _placingInFlight = true;
+    });
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Placing item...'),
@@ -696,11 +834,14 @@ class _GameScreenState extends State<GameScreen>
       ),
     );
 
-    final success = await ShopService.placeItem(
-      requestId: requestId,
-      x: x,
-      y: y,
-    );
+    bool success = false;
+    String? errorMessage;
+    try {
+      success = await ShopService.placeItem(requestId: requestId, x: x, y: y);
+    } catch (e) {
+      errorMessage = e.toString();
+      success = false;
+    }
 
     if (!mounted) return;
 
@@ -709,11 +850,11 @@ class _GameScreenState extends State<GameScreen>
         _isPlacing = false;
         _placementItem = null;
         _placementFootprint = null;
-        // Refresh grid
+        _placingInFlight = false;
         _updateLoading('Updating...', null);
-        _isLoading = true; // Trigger reload
+        _isLoading = true;
       });
-      _initializeApp(); // Reload grid
+      _initializeApp();
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -722,9 +863,16 @@ class _GameScreenState extends State<GameScreen>
         ),
       );
     } else {
+      setState(() {
+        _placingInFlight = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to place item. Try elsewhere.'),
+        SnackBar(
+          content: Text(
+            errorMessage != null
+                ? 'Placement failed: $errorMessage'
+                : 'Failed to place item. Try elsewhere.',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -793,9 +941,11 @@ class _GameScreenState extends State<GameScreen>
                     placementMode: _isPlacing,
                     placementFootprint: _placementFootprint,
                     placementItem: _placementItem,
+                    placingInFlight: _placingInFlight,
                     externalSelectionX: _pendingX,
                     externalSelectionY: _pendingY,
                   ),
+                  _buildManualControlOverlay(),
                 ],
               ),
         floatingActionButton: !_isLoading && !_isPlacing
@@ -1142,6 +1292,60 @@ class _GameScreenState extends State<GameScreen>
     );
   }
 
+  /// Overlay that shows a virtual joystick at bottom-left while a worker is
+  /// being driven manually. The widget listens to GameProvider rather than
+  /// `watch`ing the whole screen so unrelated state changes don't rebuild the
+  /// heavy map Stack — the Selector narrows rebuilds to the single bool.
+  Widget _buildManualControlOverlay() {
+    return Selector<GameProvider, bool>(
+      selector: (_, gp) => gp.manualControlActive,
+      builder: (context, active, _) {
+        // Ensure the ticker is running iff control is active. This keeps the
+        // two states in sync even if control is toggled via other code paths
+        // (e.g. a future cancel-on-task-assignment hook).
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          if (active) {
+            _startManualControlTicker();
+          } else {
+            _stopManualControlTicker();
+          }
+        });
+        if (!active) return const SizedBox.shrink();
+        return Positioned.fill(
+          child: Stack(
+            children: [
+              // Exit button — top-right so it sits clear of the joystick.
+              Positioned(
+                top: 40,
+                right: 16,
+                child: SafeArea(
+                  child: FloatingActionButton.small(
+                    heroTag: 'manual_ctrl_exit',
+                    backgroundColor: Colors.redAccent,
+                    foregroundColor: Colors.white,
+                    onPressed: () {
+                      context.read<GameProvider>().stopManualControl();
+                    },
+                    child: const Icon(Icons.close),
+                  ),
+                ),
+              ),
+              // Joystick bottom-left.
+              Positioned(
+                left: 24,
+                bottom: 24,
+                child: SafeArea(
+                  child: VirtualJoystick(onChanged: (vec) => _stickVec = vec),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _toggleMenu() {
     setState(() {
       _isMenuOpen = !_isMenuOpen;
@@ -1155,6 +1359,8 @@ class _GameScreenState extends State<GameScreen>
 
   @override
   void dispose() {
+    if (_gameLoopTicker.isActive) _gameLoopTicker.stop();
+    _gameLoopTicker.dispose();
     _menuController.dispose();
     // Keep portrait when leaving (app default)
     SystemChrome.setPreferredOrientations([
