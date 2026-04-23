@@ -340,10 +340,30 @@ class GameProvider with ChangeNotifier {
   bool get manualControlActive => _manualControlWorkerId != null;
   bool get collisionDebugEnabled => _collisionDebugEnabled;
 
+  // Camera follow state
+  bool _isCameraFollowing = false;
+  bool get isCameraFollowing => _isCameraFollowing;
+
   void setCollisionDebugEnabled(bool enabled) {
     if (_collisionDebugEnabled == enabled) return;
     _collisionDebugEnabled = enabled;
     notifyListeners();
+  }
+
+  /// Toggle camera follow mode. Called by UI button.
+  void toggleCameraFollow() {
+    _isCameraFollowing = !_isCameraFollowing;
+    debugPrint('Camera follow: $_isCameraFollowing');
+    notifyListeners();
+  }
+
+  /// Disable camera follow when user manually interacts with camera.
+  void disableCameraFollow() {
+    if (_isCameraFollowing) {
+      _isCameraFollowing = false;
+      debugPrint('Camera follow disabled (user interaction)');
+      notifyListeners();
+    }
   }
 
   /// Returns the currently manually-controlled worker, or null.

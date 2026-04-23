@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:provider/provider.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:farmyapp/providers/game_provider.dart';
 import 'package:farmyapp/widgets/radial_action_menu.dart';
 import 'asset_manager.dart';
@@ -72,6 +73,14 @@ class _IsometricMapState extends State<IsometricMap> {
   double _animationValue = 0;
   final AssetManager _assetManager = AssetManager();
 
+  // Camera controller for smooth follow system
+  final TransformationController _cameraController = TransformationController();
+  bool _userInteracting = false;
+
+  // Smooth camera interpolation constants
+  static const double _kCameraLerpFactor = 0.08; // Balanced smoothness
+  static const double _kCameraLerpFast = 0.15;   // For initial catch-up
+
   @override
   void initState() {
     super.initState();
@@ -80,13 +89,74 @@ class _IsometricMapState extends State<IsometricMap> {
       setState(() {
         _animationValue = (_animationValue + 0.02) % 1;
       });
+      // Camera follow update (outside setState to avoid rebuilds)
+      _updateCameraFollow();
     });
+  }
+
+  /// Updates camera position when follow mode is active
+  void _updateCameraFollow() {
+    final gameProvider = Provider.of<GameProvider>(context, listen: false);
+
+    if (!gameProvider.isCameraFollowing) return;
+    if (!gameProvider.manualControlActive) return;
+    if (_userInteracting) return; // Don't fight user interaction
+
+    final worker = gameProvider.manualControlWorker;
+    if (worker == null) return;
+
+    final targetPos = _gridToScreenPosition(worker.x, worker.y);
+    _centerCameraOn(targetPos);
   }
 
   @override
   void dispose() {
     _animationTimer?.cancel();
+    _cameraController.dispose();
     super.dispose();
+  }
+
+  /// Convert grid coordinates to screen position (isometric projection)
+  Offset _gridToScreenPosition(double gridX, double gridY) {
+    final double offsetX = (widget.gridHeight * tileWidth / 2);
+    const double offsetY = 100;
+
+    final double isoX = (gridX - gridY) * (tileWidth / 2) + offsetX;
+    final double isoY = (gridX + gridY) * (tileHeight / 2) + offsetY;
+
+    return Offset(isoX, isoY);
+  }
+
+  /// Smoothly center camera on target position with lerp interpolation
+  void _centerCameraOn(Offset targetPos, {double? lerpFactor}) {
+    final Matrix4 current = _cameraController.value;
+    final Vector3 translation = current.getTranslation();
+    final double currentX = translation.x;
+    final double currentY = translation.y;
+    final double scale = current.getMaxScaleOnAxis();
+
+    // Get viewport size
+    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    final Size viewport = renderBox.size;
+
+    // Calculate target translation to center the point
+    final double targetX = (viewport.width / 2) - (targetPos.dx * scale);
+    final double targetY = (viewport.height / 2) - (targetPos.dy * scale);
+
+    // Use provided lerp or default
+    final double lerp = lerpFactor ?? _kCameraLerpFactor;
+
+    // Lerp current to target for smooth motion
+    final double newX = currentX + (targetX - currentX) * lerp;
+    final double newY = currentY + (targetY - currentY) * lerp;
+
+    // Apply with scale preserved
+    final Matrix4 newMatrix = Matrix4.identity()
+      ..translate(newX, newY)
+      ..scale(scale);
+
+    _cameraController.value = newMatrix;
   }
 
   @override
@@ -106,54 +176,68 @@ class _IsometricMapState extends State<IsometricMap> {
 
     final gameProvider = Provider.of<GameProvider>(context);
 
-    return InteractiveViewer(
-      constrained: false,
-      boundaryMargin: const EdgeInsets.all(500),
-      minScale: 0.1,
-      maxScale: 4.0,
-      child: GestureDetector(
-        onTapUp: (details) => _handleTap(
-          details,
-          backgroundPadding,
-          gameProvider,
-          isDoubleClick: false,
-        ),
-        onDoubleTapDown: (details) => _handleTap(
-          details,
-          backgroundPadding,
-          gameProvider,
-          isDoubleClick: true,
-        ),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            CustomPaint(
-              size: Size(totalWidth, totalHeight),
-              painter: IsometricMapPainter(
-                gridWidth: widget.gridWidth,
-                gridHeight: widget.gridHeight,
-                matrix: widget.matrix,
-                playableMask: widget.playableMask,
-                selectedX: widget.placementMode
-                    ? widget.externalSelectionX
-                    : _selectedX,
-                selectedY: widget.placementMode
-                    ? widget.externalSelectionY
-                    : _selectedY,
-                backgroundPadding: backgroundPadding,
-                assetManager: _assetManager,
-                placementMode: widget.placementMode,
-                placementFootprint: widget.placementFootprint,
-                placementItem: widget.placementItem,
-                placingInFlight: widget.placingInFlight,
-                animationValue: _animationValue,
-                workers: gameProvider.workers,
-                workerVisualHash: _computeWorkersVisualHash(
-                  gameProvider.workers,
-                ),
-                showCollisionDebug: gameProvider.collisionDebugEnabled,
+    return Stack(
+      children: [
+        // Main map with InteractiveViewer (at bottom of stack)
+        GestureDetector(
+          // Detect user camera interaction to disable follow mode
+          onPanStart: (_) {
+            if (gameProvider.isCameraFollowing) {
+              _userInteracting = true;
+              gameProvider.disableCameraFollow();
+            }
+          },
+          onPanEnd: (_) => _userInteracting = false,
+          onPanCancel: () => _userInteracting = false,
+          child: InteractiveViewer(
+            transformationController: _cameraController,
+            constrained: false,
+            boundaryMargin: const EdgeInsets.all(500),
+            minScale: 0.1,
+            maxScale: 4.0,
+            child: GestureDetector(
+              onTapUp: (details) => _handleTap(
+                details,
+                backgroundPadding,
+                gameProvider,
+                isDoubleClick: false,
               ),
-            ),
+              onDoubleTapDown: (details) => _handleTap(
+                details,
+                backgroundPadding,
+                gameProvider,
+                isDoubleClick: true,
+              ),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  CustomPaint(
+                    size: Size(totalWidth, totalHeight),
+                    painter: IsometricMapPainter(
+                      gridWidth: widget.gridWidth,
+                      gridHeight: widget.gridHeight,
+                      matrix: widget.matrix,
+                      playableMask: widget.playableMask,
+                      selectedX: widget.placementMode
+                          ? widget.externalSelectionX
+                          : _selectedX,
+                      selectedY: widget.placementMode
+                          ? widget.externalSelectionY
+                          : _selectedY,
+                      backgroundPadding: backgroundPadding,
+                      assetManager: _assetManager,
+                      placementMode: widget.placementMode,
+                      placementFootprint: widget.placementFootprint,
+                      placementItem: widget.placementItem,
+                      placingInFlight: widget.placingInFlight,
+                      animationValue: _animationValue,
+                      workers: gameProvider.workers,
+                      workerVisualHash: _computeWorkersVisualHash(
+                        gameProvider.workers,
+                      ),
+                      showCollisionDebug: gameProvider.collisionDebugEnabled,
+                    ),
+                  ),
             if (_menuGridX != null &&
                 _menuGridY != null &&
                 _menuPixelX != null &&
@@ -179,9 +263,55 @@ class _IsometricMapState extends State<IsometricMap> {
                   onDismiss: _closeMenu,
                 ),
               ),
-          ],
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
+
+        // Camera follow button (top-left, shows when manual control active)
+        // Placed at end of Stack to render on top of everything
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          top: gameProvider.manualControlActive ? 60 : -80,
+          left: 16,
+          child: AnimatedOpacity(
+            opacity: gameProvider.manualControlActive ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 200),
+            child: Material(
+              elevation: gameProvider.isCameraFollowing ? 8 : 4,
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => gameProvider.toggleCameraFollow(),
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: gameProvider.isCameraFollowing
+                        ? const Color(0xFF4CAF50) // Green when active
+                        : const Color(0xFF424242), // Grey when inactive
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Icon(
+                    gameProvider.isCameraFollowing
+                        ? Icons.center_focus_strong
+                        : Icons.center_focus_weak,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
