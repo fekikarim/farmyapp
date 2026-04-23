@@ -151,6 +151,7 @@ class _IsometricMapState extends State<IsometricMap> {
                 workerVisualHash: _computeWorkersVisualHash(
                   gameProvider.workers,
                 ),
+                showCollisionDebug: gameProvider.collisionDebugEnabled,
               ),
             ),
             if (_menuGridX != null &&
@@ -566,6 +567,9 @@ class IsometricMapPainter extends CustomPainter {
   final List<WorkerState> workers;
   final int workerVisualHash;
 
+  // Debug
+  final bool showCollisionDebug;
+
   // Constants
   static const double tileWidth = 64.0;
   static const double tileHeight = 32.0;
@@ -612,6 +616,7 @@ class IsometricMapPainter extends CustomPainter {
     required this.animationValue,
     required this.workers,
     required this.workerVisualHash,
+    this.showCollisionDebug = false,
   }) : super(repaint: assetManager);
 
   @override
@@ -815,6 +820,11 @@ class IsometricMapPainter extends CustomPainter {
         placementItem != null) {
       _paintPlacementOverlay(canvas, offsetX, offsetY);
     }
+
+    // 6. Draw Collision Debug (On Top)
+    if (showCollisionDebug) {
+      _paintCollisionDebug(canvas, offsetX, offsetY);
+    }
   }
 
   void _paintPlacementOverlay(Canvas canvas, double offsetX, double offsetY) {
@@ -951,6 +961,104 @@ class IsometricMapPainter extends CustomPainter {
       10,
       Paint()..color = Colors.blue.withOpacity(0.5),
     );
+  }
+
+  void _paintCollisionDebug(Canvas canvas, double offsetX, double offsetY) {
+    // Import collision constants from game_provider.dart
+    // These are duplicated here for debug visualization
+    const double collisionRadius = 0.25; // _kWorkerCollisionRadius
+    const double padding = 0.45; // _kOffLandCollisionPadding
+    const double boundaryOffset = collisionRadius + padding; // _kBoundaryMinOffset
+
+    final Paint boundaryPaint = Paint()
+      ..color = Colors.red.withOpacity(0.6)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+
+    final Paint radiusPaint = Paint()
+      ..color = Colors.orange.withOpacity(0.4)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+
+    final Paint fullBoundPaint = Paint()
+      ..color = Colors.purple.withOpacity(0.3)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+
+    // Draw boundary lines along the edge of playable area
+    for (int y = -1; y <= gridHeight; y++) {
+      for (int x = -1; x <= gridWidth; x++) {
+        final bool isPlayable = _isPlayableCell(x, y);
+        if (!isPlayable) {
+          // Check if any neighbor is playable (this is a boundary edge)
+          bool hasPlayableNeighbor = false;
+          const List<List<int>> neighbors = [
+            [0, 1],
+            [0, -1],
+            [1, 0],
+            [-1, 0],
+          ];
+          for (final n in neighbors) {
+            if (_isPlayableCell(x + n[0], y + n[1])) {
+              hasPlayableNeighbor = true;
+              break;
+            }
+          }
+          if (hasPlayableNeighbor) {
+            // Draw boundary line
+            double isoX = (x - y) * (tileWidth / 2) + offsetX;
+            double isoY = (x + y) * (tileHeight / 2) + offsetY;
+            final Path path = Path();
+            path.moveTo(isoX + tileWidth / 2, isoY);
+            path.lineTo(isoX + tileWidth, isoY + tileHeight / 2);
+            path.lineTo(isoX + tileWidth / 2, isoY + tileHeight);
+            path.lineTo(isoX, isoY + tileHeight / 2);
+            path.close();
+            canvas.drawPath(path, boundaryPaint);
+          }
+        }
+      }
+    }
+
+    // Draw worker collision circles
+    for (final worker in workers) {
+      double isoX = (worker.x - worker.y) * (tileWidth / 2) + offsetX;
+      double isoY = (worker.x + worker.y) * (tileHeight / 2) + offsetY;
+
+      // Convert grid collision radius to screen pixels
+      // In isometric: X moves (tileWidth/2) per grid unit, Y moves (tileHeight/2) per grid unit
+      final double screenRadiusX = collisionRadius * (tileWidth / 2);
+      final double screenRadiusY = collisionRadius * (tileHeight / 2);
+
+      // Draw collision radius (orange)
+      canvas.drawOval(
+        Rect.fromCenter(
+          center: Offset(isoX + tileWidth / 2, isoY + tileHeight / 2),
+          width: screenRadiusX * 2,
+          height: screenRadiusY * 2,
+        ),
+        radiusPaint,
+      );
+
+      // Draw full boundary offset (purple - including padding)
+      final double screenBoundX = boundaryOffset * (tileWidth / 2);
+      final double screenBoundY = boundaryOffset * (tileHeight / 2);
+      canvas.drawOval(
+        Rect.fromCenter(
+          center: Offset(isoX + tileWidth / 2, isoY + tileHeight / 2),
+          width: screenBoundX * 2,
+          height: screenBoundY * 2,
+        ),
+        fullBoundPaint,
+      );
+
+      // Draw center point
+      canvas.drawCircle(
+        Offset(isoX + tileWidth / 2, isoY + tileHeight / 2),
+        3,
+        Paint()..color = Colors.yellow,
+      );
+    }
   }
 
   bool _isPlayableCell(int x, int y) {
@@ -1647,7 +1755,8 @@ class IsometricMapPainter extends CustomPainter {
         oldDelegate.placingInFlight != placingInFlight ||
         oldDelegate.animationValue != animationValue ||
         oldDelegate.workers != workers ||
-        oldDelegate.workerVisualHash != workerVisualHash;
+        oldDelegate.workerVisualHash != workerVisualHash ||
+        oldDelegate.showCollisionDebug != showCollisionDebug;
   }
 }
 

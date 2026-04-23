@@ -55,8 +55,13 @@ const double _kManualMaxCellsPerSecond = 3.5;
 const double _kManualAcceleration = 18.0;
 const double _kManualDeceleration = 24.0;
 const double _kManualStopEpsilon = 0.02;
-const double _kWorkerCollisionRadius = 0.22;
-const double _kCollisionSweepStep = 0.18;
+const double _kWorkerCollisionRadius = 0.25;
+// Extra keep-out distance for non-playable cells (fence boundary).
+// Larger buffer (0.45) ensures worker stays well away from fence visually.
+const double _kOffLandCollisionPadding = 0.45;
+const double _kCollisionSweepStep = 0.15;
+// Combined offset for hard boundary clamping (radius + padding).
+const double _kBoundaryMinOffset = _kWorkerCollisionRadius + _kOffLandCollisionPadding;
 const double _kCollisionEpsilon = 1e-6;
 const double _kCollisionSettleEpsilon = 1e-4;
 
@@ -419,39 +424,41 @@ class GameProvider with ChangeNotifier {
           startY = 1.0 + (i ~/ 4).toDouble();
         }
 
-        final snappedStart = _findNearestNavigableCell(
+        // Find valid spawn position with fallback chain
+        (double, double)? finalPos = _findValidWorkerSpawnPosition(
           startX,
           startY,
           gridWidth,
           gridHeight,
+          workerId: lw.workerId,
         );
-        if (snappedStart == null) {
-          // Invalid or fully blocked masks should not place workers off-land.
-          continue;
+
+        if (finalPos == null) {
+          debugPrint(
+            'Failed to find valid spawn for worker ${lw.workerId} on land $landId. '
+            'Grid: ${gridWidth}x$gridHeight, Mask: ${_playableMask != null ? "custom" : "null"}',
+          );
+          // Fallback: place at center of land with minimum safe offset
+          finalPos = _calculateEmergencySpawnPosition(gridWidth, gridHeight);
+          if (finalPos == null) {
+            debugPrint('Emergency spawn also failed for worker ${lw.workerId}. Skipping.');
+            continue;
+          }
         }
-        startX = snappedStart.$1;
-        startY = snappedStart.$2;
 
         final workerState = WorkerState(
           workerId: lw.workerId,
           workerName: lw.workerName ?? 'Worker',
           workerPicture: lw.workerProfilePicture,
           availability: lw.workerAvailability ?? 'available',
-          x: startX
-              .clamp(
-                _kWorkerCollisionRadius,
-                gridWidth - _kWorkerCollisionRadius,
-              )
-              .toDouble(),
-          y: startY
-              .clamp(
-                _kWorkerCollisionRadius,
-                gridHeight - _kWorkerCollisionRadius,
-              )
-              .toDouble(),
+          x: finalPos.$1,
+          y: finalPos.$2,
         );
 
         _workers.add(workerState);
+        debugPrint(
+          'Worker ${lw.workerId} loaded at (${workerState.x.toStringAsFixed(2)}, ${workerState.y.toStringAsFixed(2)})'
+        );
       }
     } catch (e) {
       debugPrint('Error loading workers: $e');
@@ -868,10 +875,14 @@ class GameProvider with ChangeNotifier {
       gridW: gridW,
       gridH: gridH,
     )) {
-      return _CollisionMoveResult(
-        nextX: bothX,
-        nextY: bothY,
-        movedDistance: math.sqrt(stepDx * stepDx + stepDy * stepDy),
+      return _applyHardBoundaryClamping(
+        bothX,
+        bothY,
+        math.sqrt(stepDx * stepDx + stepDy * stepDy),
+        false,
+        false,
+        gridW,
+        gridH,
       );
     }
 
@@ -895,44 +906,99 @@ class GameProvider with ChangeNotifier {
         );
 
     if (canMoveX && !canMoveY) {
-      return _CollisionMoveResult(
-        nextX: fromX + stepDx,
-        nextY: fromY,
-        movedDistance: stepDx.abs(),
-        blockedY: stepDy.abs() > _kCollisionEpsilon,
+      return _applyHardBoundaryClamping(
+        fromX + stepDx,
+        fromY,
+        stepDx.abs(),
+        false,
+        stepDy.abs() > _kCollisionEpsilon,
+        gridW,
+        gridH,
       );
     }
     if (!canMoveX && canMoveY) {
-      return _CollisionMoveResult(
-        nextX: fromX,
-        nextY: fromY + stepDy,
-        movedDistance: stepDy.abs(),
-        blockedX: stepDx.abs() > _kCollisionEpsilon,
+      return _applyHardBoundaryClamping(
+        fromX,
+        fromY + stepDy,
+        stepDy.abs(),
+        stepDx.abs() > _kCollisionEpsilon,
+        false,
+        gridW,
+        gridH,
       );
     }
     if (canMoveX && canMoveY) {
       if (stepDx.abs() >= stepDy.abs()) {
-        return _CollisionMoveResult(
-          nextX: fromX + stepDx,
-          nextY: fromY,
-          movedDistance: stepDx.abs(),
-          blockedY: true,
+        return _applyHardBoundaryClamping(
+          fromX + stepDx,
+          fromY,
+          stepDx.abs(),
+          false,
+          true,
+          gridW,
+          gridH,
         );
       }
-      return _CollisionMoveResult(
-        nextX: fromX,
-        nextY: fromY + stepDy,
-        movedDistance: stepDy.abs(),
-        blockedX: true,
+      return _applyHardBoundaryClamping(
+        fromX,
+        fromY + stepDy,
+        stepDy.abs(),
+        true,
+        false,
+        gridW,
+        gridH,
+      );
+    }
+
+    return _applyHardBoundaryClamping(
+      fromX,
+      fromY,
+      0.0,
+      stepDx.abs() > _kCollisionEpsilon,
+      stepDy.abs() > _kCollisionEpsilon,
+      gridW,
+      gridH,
+    );
+  }
+
+  _CollisionMoveResult _applyHardBoundaryClamping(
+    double nextX,
+    double nextY,
+    double movedDistance,
+    bool blockedX,
+    bool blockedY,
+    int gridW,
+    int gridH,
+  ) {
+    // Adaptive offset for small lands (25% of smaller dimension, min 0.3)
+    final double adaptiveOffset = math.max(
+      0.3,
+      math.min(_kBoundaryMinOffset, math.min(gridW, gridH) * 0.25),
+    );
+    final double minBound = adaptiveOffset;
+    final double maxXBound = gridW - adaptiveOffset;
+    final double maxYBound = gridH - adaptiveOffset;
+
+    double clampedX = nextX.clamp(minBound, maxXBound);
+    double clampedY = nextY.clamp(minBound, maxYBound);
+
+    final bool clampedXAxis = (nextX - clampedX).abs() > _kCollisionEpsilon;
+    final bool clampedYAxis = (nextY - clampedY).abs() > _kCollisionEpsilon;
+
+    if (clampedXAxis || clampedYAxis) {
+      _logCollisionDebug(
+        'Hard clamp applied: (${nextX.toStringAsFixed(3)}, ${nextY.toStringAsFixed(3)}) -> (${clampedX.toStringAsFixed(3)}, ${clampedY.toStringAsFixed(3)})',
       );
     }
 
     return _CollisionMoveResult(
-      nextX: fromX,
-      nextY: fromY,
-      movedDistance: 0.0,
-      blockedX: stepDx.abs() > _kCollisionEpsilon,
-      blockedY: stepDy.abs() > _kCollisionEpsilon,
+      nextX: clampedX,
+      nextY: clampedY,
+      movedDistance: clampedXAxis || clampedYAxis
+          ? math.sqrt((clampedX - nextX) * (clampedX - nextX) + (clampedY - nextY) * (clampedY - nextY))
+          : movedDistance,
+      blockedX: blockedX || clampedXAxis,
+      blockedY: blockedY || clampedYAxis,
     );
   }
 
@@ -944,15 +1010,45 @@ class GameProvider with ChangeNotifier {
     required int gridH,
   }) {
     if (!x.isFinite || !y.isFinite) return true;
-    final int minX = (x - _kWorkerCollisionRadius).floor();
-    final int maxX = (x + _kWorkerCollisionRadius).floor();
-    final int minY = (y - _kWorkerCollisionRadius).floor();
-    final int maxY = (y + _kWorkerCollisionRadius).floor();
+
+    // HARD BOUNDARY CHECK: Prevent worker's collision circle from ever
+    // crossing grid bounds. This is a fail-safe before the cell-probe loop.
+    // Adaptive offset for small lands (25% of smaller dimension, min 0.3)
+    final double adaptiveOffset = math.max(
+      0.3,
+      math.min(_kBoundaryMinOffset, math.min(gridW, gridH) * 0.25),
+    );
+    final double minBound = adaptiveOffset;
+    final double maxXBound = gridW - adaptiveOffset;
+    final double maxYBound = gridH - adaptiveOffset;
+    if (x < minBound ||
+        y < minBound ||
+        x > maxXBound ||
+        y > maxYBound) {
+      _logCollisionDebug(
+        'Hard boundary blocked: worker at (${x.toStringAsFixed(2)}, ${y.toStringAsFixed(2)}) outside bounds [${minBound.toStringAsFixed(2)}, ${maxXBound.toStringAsFixed(2)}] x [${minBound.toStringAsFixed(2)}, ${maxYBound.toStringAsFixed(2)}]',
+      );
+      return true;
+    }
+
+    final double maxProbeRadius =
+        _kWorkerCollisionRadius + _kOffLandCollisionPadding;
+    final int minX = (x - maxProbeRadius).floor();
+    final int maxX = (x + maxProbeRadius).ceil();
+    final int minY = (y - maxProbeRadius).floor();
+    final int maxY = (y + maxProbeRadius).ceil();
 
     for (int yy = minY; yy <= maxY; yy++) {
       for (int xx = minX; xx <= maxX; xx++) {
-        if (!_isCellNavigable(xx, yy, gridW, gridH) &&
-            _circleIntersectsCell(x, y, _kWorkerCollisionRadius, xx, yy)) {
+        final bool isPlayable = _isPlayableCell(xx, yy, gridW, gridH);
+        final bool isBlocked =
+            !isPlayable || !_isCellNavigable(xx, yy, gridW, gridH);
+        if (!isBlocked) continue;
+
+        final double collisionRadius = isPlayable
+            ? _kWorkerCollisionRadius
+            : maxProbeRadius;
+        if (_circleIntersectsCell(x, y, collisionRadius, xx, yy)) {
           return true;
         }
       }
@@ -1205,11 +1301,18 @@ class GameProvider with ChangeNotifier {
     final int targetX = x.floor().clamp(0, gridWidth - 1);
     final int targetY = y.floor().clamp(0, gridHeight - 1);
     if (_isCellNavigable(targetX, targetY, gridWidth, gridHeight)) {
-      final double minX = targetX + _kWorkerCollisionRadius;
-      final double maxX = targetX + 1.0 - _kWorkerCollisionRadius;
-      final double minY = targetY + _kWorkerCollisionRadius;
-      final double maxY = targetY + 1.0 - _kWorkerCollisionRadius;
-      return (x.clamp(minX, maxX).toDouble(), y.clamp(minY, maxY).toDouble());
+      // Use smaller margin for cell-internal positioning (just collision radius)
+      // The full _kBoundaryMinOffset is for grid edges, not cell-internal clamping
+      final double cellMargin = _kWorkerCollisionRadius; // 0.25, not 0.70
+      final double minX = targetX + cellMargin;
+      final double maxX = targetX + 1.0 - cellMargin;
+      final double minY = targetY + cellMargin;
+      final double maxY = targetY + 1.0 - cellMargin;
+      // Only clamp if we have valid range; otherwise return center
+      if (minX < maxX && minY < maxY) {
+        return (x.clamp(minX, maxX).toDouble(), y.clamp(minY, maxY).toDouble());
+      }
+      return (targetX + 0.5, targetY + 0.5);
     }
 
     final int maxRadius = math.max(gridWidth, gridHeight);
@@ -1264,6 +1367,128 @@ class GameProvider with ChangeNotifier {
       worker.availability = 'available';
       notifyListeners();
     }
+  }
+
+  /// Returns diagnostics about worker loading for debugging.
+  Map<String, dynamic> getWorkerDiagnostics() {
+    return {
+      'workerCount': _workers.length,
+      'gridSize': '$_gridWidth x $_gridHeight',
+      'playableMask': _playableMask != null ? 'custom (${_playableMask!.length}x${_playableMask!.firstOrNull?.length ?? 0})' : 'null (full rectangular)',
+      'collisionRadius': _kWorkerCollisionRadius,
+      'boundaryOffset': _kBoundaryMinOffset,
+      'manualControlActive': manualControlActive,
+      'workers': _workers.map((w) => {
+        'id': w.workerId,
+        'pos': '(${w.x.toStringAsFixed(2)}, ${w.y.toStringAsFixed(2)})',
+        'available': w.availability,
+      }).toList(),
+    };
+  }
+
+  /// Emergency reload workers - useful if workers failed to load initially.
+  Future<void> reloadWorkersForCurrentLand() async {
+    if (currentLandId.isEmpty) {
+      debugPrint('Cannot reload workers: no current land ID');
+      return;
+    }
+    debugPrint('Emergency worker reload for land $currentLandId...');
+    await loadWorkersForLand(
+      currentLandId,
+      gridWidth: _gridWidth,
+      gridHeight: _gridHeight,
+      playableMask: _playableMask,
+    );
+  }
+
+  /// Finds a valid worker spawn position with multiple fallback strategies.
+  /// Returns null only if absolutely no valid position exists.
+  (double, double)? _findValidWorkerSpawnPosition(
+    double preferredX,
+    double preferredY,
+    int gridWidth,
+    int gridHeight, {
+    required String workerId,
+  }) {
+    if (gridWidth <= 0 || gridHeight <= 0) return null;
+
+    // Strategy 1: Try the preferred position with standard navigation check
+    final preferred = _findNearestNavigableCell(
+      preferredX,
+      preferredY,
+      gridWidth,
+      gridHeight,
+    );
+    if (preferred != null) {
+      // Validate it's within safe bounds
+      if (_isPositionWithinSafeBounds(preferred.$1, preferred.$2, gridWidth, gridHeight)) {
+        return preferred;
+      }
+    }
+
+    // Strategy 2: Try center of land
+    final centerX = gridWidth / 2.0;
+    final centerY = gridHeight / 2.0;
+    final center = _findNearestNavigableCell(centerX, centerY, gridWidth, gridHeight);
+    if (center != null &&
+        _isPositionWithinSafeBounds(center.$1, center.$2, gridWidth, gridHeight)) {
+      return center;
+    }
+
+    // Strategy 3: Scan all cells for any valid position
+    for (int y = 0; y < gridHeight; y++) {
+      for (int x = 0; x < gridWidth; x++) {
+        if (_isCellNavigable(x, y, gridWidth, gridHeight)) {
+          final posX = x + 0.5;
+          final posY = y + 0.5;
+          if (_isPositionWithinSafeBounds(posX, posY, gridWidth, gridHeight)) {
+            return (posX, posY);
+          }
+        }
+      }
+    }
+
+    // Strategy 4: Return center with relaxed bounds (will be clamped later)
+    if (center != null) return center;
+    if (preferred != null) return preferred;
+
+    return null;
+  }
+
+  /// Checks if a position is within the safe boundary bounds.
+  /// Adapts for small lands by using a smaller offset.
+  bool _isPositionWithinSafeBounds(double x, double y, int gridW, int gridH) {
+    // For small lands, use adaptive offset (25% of smaller dimension, min 0.3)
+    final double adaptiveOffset = math.max(
+      0.3,
+      math.min(_kBoundaryMinOffset, math.min(gridW, gridH) * 0.25),
+    );
+    final double minBound = adaptiveOffset;
+    final double maxXBound = gridW - adaptiveOffset;
+    final double maxYBound = gridH - adaptiveOffset;
+    return x >= minBound && x <= maxXBound && y >= minBound && y <= maxYBound;
+  }
+
+  /// Emergency spawn position when normal navigation fails.
+  /// Uses minimum safe distance or center of land.
+  (double, double)? _calculateEmergencySpawnPosition(int gridWidth, int gridHeight) {
+    if (gridWidth <= 0 || gridHeight <= 0) return null;
+
+    // Calculate safe bounds - use minimum of 0.3 if 0.70 is too large for small lands
+    final double minOffset = math.min(_kBoundaryMinOffset, math.min(gridWidth, gridHeight) * 0.25);
+    final double safeMin = math.max(0.3, minOffset);
+    final double safeMaxX = gridWidth - safeMin;
+    final double safeMaxY = gridHeight - safeMin;
+
+    // If land is too small, just place at center
+    if (safeMin >= safeMaxX || safeMin >= safeMaxY) {
+      return (gridWidth / 2.0, gridHeight / 2.0);
+    }
+
+    return (
+      (gridWidth / 2.0).clamp(safeMin, safeMaxX),
+      (gridHeight / 2.0).clamp(safeMin, safeMaxY),
+    );
   }
 
   Future<void> _loadSettings() async {
