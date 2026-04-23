@@ -966,9 +966,9 @@ class IsometricMapPainter extends CustomPainter {
   void _paintCollisionDebug(Canvas canvas, double offsetX, double offsetY) {
     // Import collision constants from game_provider.dart
     // These are duplicated here for debug visualization
-    const double collisionRadius = 0.25; // _kWorkerCollisionRadius
-    const double padding = 0.45; // _kOffLandCollisionPadding
-    const double boundaryOffset = collisionRadius + padding; // _kBoundaryMinOffset
+    const double collisionRadius = 0.35; // _kWorkerCollisionRadius
+    const double padding = 0.60; // _kOffLandCollisionPadding
+    const double boundaryOffset = collisionRadius + padding; // _kBoundaryMinOffset = 0.95
 
     final Paint boundaryPaint = Paint()
       ..color = Colors.red.withOpacity(0.6)

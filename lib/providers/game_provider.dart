@@ -55,11 +55,11 @@ const double _kManualMaxCellsPerSecond = 3.5;
 const double _kManualAcceleration = 18.0;
 const double _kManualDeceleration = 24.0;
 const double _kManualStopEpsilon = 0.02;
-const double _kWorkerCollisionRadius = 0.25;
+const double _kWorkerCollisionRadius = 0.35;
 // Extra keep-out distance for non-playable cells (fence boundary).
-// Larger buffer (0.45) ensures worker stays well away from fence visually.
-const double _kOffLandCollisionPadding = 0.45;
-const double _kCollisionSweepStep = 0.15;
+// Stronger buffer (0.60) ensures worker stays well away from fence visually.
+const double _kOffLandCollisionPadding = 0.60;
+const double _kCollisionSweepStep = 0.12;
 // Combined offset for hard boundary clamping (radius + padding).
 const double _kBoundaryMinOffset = _kWorkerCollisionRadius + _kOffLandCollisionPadding;
 const double _kCollisionEpsilon = 1e-6;
