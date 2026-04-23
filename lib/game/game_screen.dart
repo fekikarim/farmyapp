@@ -159,6 +159,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
           gridWidth: gw,
           gridHeight: gh,
           playableMask: playableMask,
+          matrix: gridData['matrix'] is List
+              ? gridData['matrix'] as List
+              : null,
         );
       }
     } catch (e) {

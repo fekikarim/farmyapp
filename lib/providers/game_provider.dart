@@ -55,6 +55,33 @@ const double _kManualMaxCellsPerSecond = 3.5;
 const double _kManualAcceleration = 18.0;
 const double _kManualDeceleration = 24.0;
 const double _kManualStopEpsilon = 0.02;
+const double _kWorkerCollisionRadius = 0.22;
+const double _kCollisionSweepStep = 0.18;
+const double _kCollisionEpsilon = 1e-6;
+const double _kCollisionSettleEpsilon = 1e-4;
+
+class _CollisionMoveResult {
+  final double nextX;
+  final double nextY;
+  final double movedDistance;
+  final bool blockedX;
+  final bool blockedY;
+
+  const _CollisionMoveResult({
+    required this.nextX,
+    required this.nextY,
+    required this.movedDistance,
+    this.blockedX = false,
+    this.blockedY = false,
+  });
+}
+
+typedef WorkerCollisionResolver =
+    _CollisionMoveResult Function(
+      WorkerState worker,
+      double desiredDx,
+      double desiredDy,
+    );
 
 class _ResolvedJoystickVector {
   final double intensity;
@@ -169,8 +196,9 @@ class WorkerState {
     double tx,
     double ty,
     VoidCallback onUpdate,
-    VoidCallback onStop,
-  ) {
+    VoidCallback onStop, {
+    WorkerCollisionResolver? collisionResolver,
+  }) {
     targetX = tx;
     targetY = ty;
     status = 'walking';
@@ -181,15 +209,50 @@ class WorkerState {
     const double speed = 0.05;
 
     movementTimer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
+      if (targetX == null || targetY == null) {
+        movementTimer?.cancel();
+        status = 'idle';
+        action = 'idle';
+        resetManualVelocity();
+        onStop();
+        return;
+      }
+      final double goalX = targetX ?? x;
+      final double goalY = targetY ?? y;
       double dx = targetX! - x;
       double dy = targetY! - y;
       double distance = dx.abs() + dy.abs();
 
+      _CollisionMoveResult resolve(double desiredDx, double desiredDy) {
+        if (collisionResolver != null) {
+          return collisionResolver(this, desiredDx, desiredDy);
+        }
+        final double nextX = x + desiredDx;
+        final double nextY = y + desiredDy;
+        final double step = math.sqrt(
+          desiredDx * desiredDx + desiredDy * desiredDy,
+        );
+        return _CollisionMoveResult(
+          nextX: nextX,
+          nextY: nextY,
+          movedDistance: step,
+        );
+      }
+
       if (distance < speed) {
-        final double finalStep = math.sqrt(dx * dx + dy * dy);
-        x = targetX!;
-        y = targetY!;
-        advanceAnimPhase(finalStep);
+        final _CollisionMoveResult resolved = resolve(dx, dy);
+        final double appliedDx = resolved.nextX - x;
+        final double appliedDy = resolved.nextY - y;
+        final double finalStep = math.sqrt(
+          appliedDx * appliedDx + appliedDy * appliedDy,
+        );
+        if (finalStep > _kCollisionEpsilon) {
+          direction = classifyDirection8FromGrid(appliedDx, appliedDy);
+          x = resolved.nextX;
+          y = resolved.nextY;
+          advanceAnimPhase(finalStep);
+          onUpdate();
+        }
         targetX = null;
         targetY = null;
         status = 'idle';
@@ -198,13 +261,40 @@ class WorkerState {
         movementTimer?.cancel();
         onStop();
       } else {
-        direction = classifyDirection8FromGrid(dx, dy);
         double ratio = speed / distance;
-        final double sx = dx * ratio;
-        final double sy = dy * ratio;
-        x += sx;
-        y += sy;
-        advanceAnimPhase(math.sqrt(sx * sx + sy * sy));
+        final _CollisionMoveResult resolved = resolve(dx * ratio, dy * ratio);
+        final double appliedDx = resolved.nextX - x;
+        final double appliedDy = resolved.nextY - y;
+        final double appliedStep = math.sqrt(
+          appliedDx * appliedDx + appliedDy * appliedDy,
+        );
+        if (appliedStep <= _kCollisionSettleEpsilon) {
+          targetX = null;
+          targetY = null;
+          status = 'idle';
+          action = 'idle';
+          resetManualVelocity();
+          movementTimer?.cancel();
+          onStop();
+          return;
+        }
+        direction = classifyDirection8FromGrid(appliedDx, appliedDy);
+        x = resolved.nextX;
+        y = resolved.nextY;
+        advanceAnimPhase(appliedStep);
+
+        final bool reachedGoal =
+            (goalX - x).abs() + (goalY - y).abs() <= _kCollisionSettleEpsilon;
+        if (reachedGoal) {
+          targetX = null;
+          targetY = null;
+          status = 'idle';
+          action = 'idle';
+          resetManualVelocity();
+          movementTimer?.cancel();
+          onStop();
+          return;
+        }
         onUpdate();
       }
     });
@@ -227,6 +317,10 @@ class GameProvider with ChangeNotifier {
 
   List<WorkerState> _workers = [];
   List<List<bool>>? _playableMask;
+  List<List<bool>>? _obstacleMask;
+  int _gridWidth = 0;
+  int _gridHeight = 0;
+  bool _collisionDebugEnabled = false;
 
   // Manual (joystick) control: at most one worker is driven manually at a
   // time. Nullable id avoids having to scan the worker list every frame to
@@ -239,6 +333,13 @@ class GameProvider with ChangeNotifier {
   List<WorkerState> get workers => _workers;
   String? get manualControlWorkerId => _manualControlWorkerId;
   bool get manualControlActive => _manualControlWorkerId != null;
+  bool get collisionDebugEnabled => _collisionDebugEnabled;
+
+  void setCollisionDebugEnabled(bool enabled) {
+    if (_collisionDebugEnabled == enabled) return;
+    _collisionDebugEnabled = enabled;
+    notifyListeners();
+  }
 
   /// Returns the currently manually-controlled worker, or null.
   WorkerState? get manualControlWorker {
@@ -257,12 +358,16 @@ class GameProvider with ChangeNotifier {
     int gridWidth = 10,
     int gridHeight = 10,
     List<dynamic>? playableMask,
+    List<dynamic>? matrix,
   }) async {
     _workersLoading = true;
     notifyListeners();
 
     currentLandId = landId; // Remember which land workers are on
+    _gridWidth = gridWidth;
+    _gridHeight = gridHeight;
     _playableMask = _normalizePlayableMask(playableMask, gridWidth, gridHeight);
+    _obstacleMask = _normalizeObstacleMask(matrix, gridWidth, gridHeight);
 
     try {
       final List<LandWorker> landWorkers = await WorkerService.getLandWorkers(
@@ -314,7 +419,7 @@ class GameProvider with ChangeNotifier {
           startY = 1.0 + (i ~/ 4).toDouble();
         }
 
-        final snappedStart = _findNearestPlayableCell(
+        final snappedStart = _findNearestNavigableCell(
           startX,
           startY,
           gridWidth,
@@ -332,8 +437,18 @@ class GameProvider with ChangeNotifier {
           workerName: lw.workerName ?? 'Worker',
           workerPicture: lw.workerProfilePicture,
           availability: lw.workerAvailability ?? 'available',
-          x: startX.clamp(0, gridWidth - 1.0),
-          y: startY.clamp(0, gridHeight - 1.0),
+          x: startX
+              .clamp(
+                _kWorkerCollisionRadius,
+                gridWidth - _kWorkerCollisionRadius,
+              )
+              .toDouble(),
+          y: startY
+              .clamp(
+                _kWorkerCollisionRadius,
+                gridHeight - _kWorkerCollisionRadius,
+              )
+              .toDouble(),
         );
 
         _workers.add(workerState);
@@ -365,13 +480,10 @@ class GameProvider with ChangeNotifier {
     if (gridWidth != null) clampedX = clampedX.clamp(0.0, gridWidth - 0.1);
     if (gridHeight != null) clampedY = clampedY.clamp(0.0, gridHeight - 0.1);
 
-    final int effectiveGridWidth =
-        gridWidth ??
-        (_playableMask?.isNotEmpty == true ? _playableMask!.first.length : 0);
-    final int effectiveGridHeight =
-        gridHeight ??
-        (_playableMask?.isNotEmpty == true ? _playableMask!.length : 0);
-    final snappedTarget = _findNearestPlayableCell(
+    final int effectiveGridWidth = gridWidth ?? _gridWidth;
+    final int effectiveGridHeight = gridHeight ?? _gridHeight;
+    if (effectiveGridWidth <= 0 || effectiveGridHeight <= 0) return;
+    final snappedTarget = _findNearestNavigableCell(
       clampedX,
       clampedY,
       effectiveGridWidth,
@@ -400,6 +512,10 @@ class GameProvider with ChangeNotifier {
       }
     }
 
+    final WorkerCollisionResolver resolver = _buildWorkerCollisionResolver(
+      effectiveGridWidth,
+      effectiveGridHeight,
+    );
     closest.moveTo(clampedX, clampedY, notifyListeners, () {
       // Save position to SharedPreferences when worker stops moving
       _saveWorkerPosition(
@@ -409,7 +525,7 @@ class GameProvider with ChangeNotifier {
         closest.y,
       );
       notifyListeners();
-    });
+    }, collisionResolver: resolver);
   }
 
   /// Moves a specific worker by ID to the given target coordinates.
@@ -429,13 +545,10 @@ class GameProvider with ChangeNotifier {
     if (gridWidth != null) clampedX = clampedX.clamp(0.0, gridWidth - 0.1);
     if (gridHeight != null) clampedY = clampedY.clamp(0.0, gridHeight - 0.1);
 
-    final int effectiveGridWidth =
-        gridWidth ??
-        (_playableMask?.isNotEmpty == true ? _playableMask!.first.length : 0);
-    final int effectiveGridHeight =
-        gridHeight ??
-        (_playableMask?.isNotEmpty == true ? _playableMask!.length : 0);
-    final snappedTarget = _findNearestPlayableCell(
+    final int effectiveGridWidth = gridWidth ?? _gridWidth;
+    final int effectiveGridHeight = gridHeight ?? _gridHeight;
+    if (effectiveGridWidth <= 0 || effectiveGridHeight <= 0) return;
+    final snappedTarget = _findNearestNavigableCell(
       clampedX,
       clampedY,
       effectiveGridWidth,
@@ -447,10 +560,14 @@ class GameProvider with ChangeNotifier {
     clampedX = snappedTarget.$1;
     clampedY = snappedTarget.$2;
 
+    final WorkerCollisionResolver resolver = _buildWorkerCollisionResolver(
+      effectiveGridWidth,
+      effectiveGridHeight,
+    );
     worker.moveTo(clampedX, clampedY, notifyListeners, () {
       _saveWorkerPosition(currentLandId, worker.workerId, worker.x, worker.y);
       notifyListeners();
-    });
+    }, collisionResolver: resolver);
   }
 
   /// Enters manual joystick-control mode for the given worker. Any in-flight
@@ -550,10 +667,8 @@ class GameProvider with ChangeNotifier {
         ? _stableClassifyDirection(worker.direction, headingX, headingY)
         : worker.direction;
 
-    final int gridW = _playableMask?.isNotEmpty == true
-        ? _playableMask!.first.length
-        : 0;
-    final int gridH = _playableMask?.length ?? 0;
+    final int gridW = _gridWidth;
+    final int gridH = _gridHeight;
     if (gridW == 0 || gridH == 0) {
       if (worker.manualSpeed <= _kManualStopEpsilon) {
         worker.status = 'idle';
@@ -578,30 +693,27 @@ class GameProvider with ChangeNotifier {
     final double stepX = worker.manualVelocityX * dt;
     final double stepY = worker.manualVelocityY * dt;
 
-    double nextX = worker.x + stepX;
-    double nextY = worker.y + stepY;
-    bool ok = _acceptManualTarget(nextX, nextY, gridW, gridH);
-    if (!ok) {
-      nextX = worker.x + stepX;
-      nextY = worker.y;
-      ok = _acceptManualTarget(nextX, nextY, gridW, gridH);
+    final _CollisionMoveResult resolved = _resolveCollisionSweep(
+      fromX: worker.x,
+      fromY: worker.y,
+      desiredDx: stepX,
+      desiredDy: stepY,
+      movingWorkerId: worker.workerId,
+      gridW: gridW,
+      gridH: gridH,
+    );
+    final double actualStep = resolved.movedDistance;
+
+    if (resolved.blockedX) {
+      worker.manualVelocityX = 0.0;
     }
-    if (!ok) {
-      nextX = worker.x;
-      nextY = worker.y + stepY;
-      ok = _acceptManualTarget(nextX, nextY, gridW, gridH);
+    if (resolved.blockedY) {
+      worker.manualVelocityY = 0.0;
     }
 
-    final double actualStep = ok
-        ? math.sqrt(
-            (nextX - worker.x) * (nextX - worker.x) +
-                (nextY - worker.y) * (nextY - worker.y),
-          )
-        : 0.0;
-
-    if (actualStep > 1e-6) {
-      worker.x = nextX;
-      worker.y = nextY;
+    if (actualStep > _kCollisionEpsilon) {
+      worker.x = resolved.nextX;
+      worker.y = resolved.nextY;
       worker.direction = nextDir;
       worker.status = 'walking';
       worker.action = 'walk';
@@ -611,7 +723,9 @@ class GameProvider with ChangeNotifier {
       worker.status = 'idle';
       worker.action = 'idle';
       if (hasIntent) {
-        // Prevent in-place jitter against hard boundaries.
+        _logCollisionDebug(
+          'Blocked worker ${worker.workerId} at (${worker.x.toStringAsFixed(2)}, ${worker.y.toStringAsFixed(2)}).',
+        );
         worker.resetManualVelocity();
       }
     }
@@ -652,12 +766,227 @@ class GameProvider with ChangeNotifier {
         (worker.manualVelocityY - oldVelY).abs() > 1e-6;
   }
 
-  /// Returns true iff (x, y) is inside the grid *and* the cell containing it
-  /// is playable. Used by [applyJoystickInput] for per-axis slide collision.
-  bool _acceptManualTarget(double x, double y, int gridW, int gridH) {
-    if (x < 0 || y < 0) return false;
-    if (x >= gridW - 0.01 || y >= gridH - 0.01) return false;
-    return _isPlayableCell(x.floor(), y.floor(), gridW, gridH);
+  WorkerCollisionResolver _buildWorkerCollisionResolver(int gridW, int gridH) {
+    return (worker, desiredDx, desiredDy) {
+      return _resolveCollisionSweep(
+        fromX: worker.x,
+        fromY: worker.y,
+        desiredDx: desiredDx,
+        desiredDy: desiredDy,
+        movingWorkerId: worker.workerId,
+        gridW: gridW,
+        gridH: gridH,
+      );
+    };
+  }
+
+  _CollisionMoveResult _resolveCollisionSweep({
+    required double fromX,
+    required double fromY,
+    required double desiredDx,
+    required double desiredDy,
+    required String movingWorkerId,
+    required int gridW,
+    required int gridH,
+  }) {
+    if (gridW <= 0 || gridH <= 0) {
+      return _CollisionMoveResult(
+        nextX: fromX,
+        nextY: fromY,
+        movedDistance: 0.0,
+        blockedX: desiredDx.abs() > _kCollisionEpsilon,
+        blockedY: desiredDy.abs() > _kCollisionEpsilon,
+      );
+    }
+
+    final double totalDistance = math.sqrt(
+      desiredDx * desiredDx + desiredDy * desiredDy,
+    );
+    if (totalDistance <= _kCollisionEpsilon) {
+      return _CollisionMoveResult(
+        nextX: fromX,
+        nextY: fromY,
+        movedDistance: 0.0,
+      );
+    }
+
+    final int sweepSteps = math.max(
+      1,
+      (totalDistance / _kCollisionSweepStep).ceil(),
+    );
+    final double stepDx = desiredDx / sweepSteps;
+    final double stepDy = desiredDy / sweepSteps;
+
+    double x = fromX;
+    double y = fromY;
+    bool blockedX = false;
+    bool blockedY = false;
+
+    for (int i = 0; i < sweepSteps; i++) {
+      final _CollisionMoveResult step = _resolveSingleCollisionStep(
+        fromX: x,
+        fromY: y,
+        stepDx: stepDx,
+        stepDy: stepDy,
+        movingWorkerId: movingWorkerId,
+        gridW: gridW,
+        gridH: gridH,
+      );
+      x = step.nextX;
+      y = step.nextY;
+      blockedX = blockedX || step.blockedX;
+      blockedY = blockedY || step.blockedY;
+    }
+
+    final double movedDistance = math.sqrt(
+      (x - fromX) * (x - fromX) + (y - fromY) * (y - fromY),
+    );
+    return _CollisionMoveResult(
+      nextX: x,
+      nextY: y,
+      movedDistance: movedDistance,
+      blockedX: blockedX,
+      blockedY: blockedY,
+    );
+  }
+
+  _CollisionMoveResult _resolveSingleCollisionStep({
+    required double fromX,
+    required double fromY,
+    required double stepDx,
+    required double stepDy,
+    required String movingWorkerId,
+    required int gridW,
+    required int gridH,
+  }) {
+    final double bothX = fromX + stepDx;
+    final double bothY = fromY + stepDy;
+    if (!_isWorkerPositionBlocked(
+      movingWorkerId: movingWorkerId,
+      x: bothX,
+      y: bothY,
+      gridW: gridW,
+      gridH: gridH,
+    )) {
+      return _CollisionMoveResult(
+        nextX: bothX,
+        nextY: bothY,
+        movedDistance: math.sqrt(stepDx * stepDx + stepDy * stepDy),
+      );
+    }
+
+    final bool canMoveX =
+        stepDx.abs() > _kCollisionEpsilon &&
+        !_isWorkerPositionBlocked(
+          movingWorkerId: movingWorkerId,
+          x: fromX + stepDx,
+          y: fromY,
+          gridW: gridW,
+          gridH: gridH,
+        );
+    final bool canMoveY =
+        stepDy.abs() > _kCollisionEpsilon &&
+        !_isWorkerPositionBlocked(
+          movingWorkerId: movingWorkerId,
+          x: fromX,
+          y: fromY + stepDy,
+          gridW: gridW,
+          gridH: gridH,
+        );
+
+    if (canMoveX && !canMoveY) {
+      return _CollisionMoveResult(
+        nextX: fromX + stepDx,
+        nextY: fromY,
+        movedDistance: stepDx.abs(),
+        blockedY: stepDy.abs() > _kCollisionEpsilon,
+      );
+    }
+    if (!canMoveX && canMoveY) {
+      return _CollisionMoveResult(
+        nextX: fromX,
+        nextY: fromY + stepDy,
+        movedDistance: stepDy.abs(),
+        blockedX: stepDx.abs() > _kCollisionEpsilon,
+      );
+    }
+    if (canMoveX && canMoveY) {
+      if (stepDx.abs() >= stepDy.abs()) {
+        return _CollisionMoveResult(
+          nextX: fromX + stepDx,
+          nextY: fromY,
+          movedDistance: stepDx.abs(),
+          blockedY: true,
+        );
+      }
+      return _CollisionMoveResult(
+        nextX: fromX,
+        nextY: fromY + stepDy,
+        movedDistance: stepDy.abs(),
+        blockedX: true,
+      );
+    }
+
+    return _CollisionMoveResult(
+      nextX: fromX,
+      nextY: fromY,
+      movedDistance: 0.0,
+      blockedX: stepDx.abs() > _kCollisionEpsilon,
+      blockedY: stepDy.abs() > _kCollisionEpsilon,
+    );
+  }
+
+  bool _isWorkerPositionBlocked({
+    required String movingWorkerId,
+    required double x,
+    required double y,
+    required int gridW,
+    required int gridH,
+  }) {
+    if (!x.isFinite || !y.isFinite) return true;
+    final int minX = (x - _kWorkerCollisionRadius).floor();
+    final int maxX = (x + _kWorkerCollisionRadius).floor();
+    final int minY = (y - _kWorkerCollisionRadius).floor();
+    final int maxY = (y + _kWorkerCollisionRadius).floor();
+
+    for (int yy = minY; yy <= maxY; yy++) {
+      for (int xx = minX; xx <= maxX; xx++) {
+        if (!_isCellNavigable(xx, yy, gridW, gridH) &&
+            _circleIntersectsCell(x, y, _kWorkerCollisionRadius, xx, yy)) {
+          return true;
+        }
+      }
+    }
+
+    final double minDist = _kWorkerCollisionRadius * 2;
+    final double minDistSq = minDist * minDist;
+    for (final other in _workers) {
+      if (other.workerId == movingWorkerId) continue;
+      final double dx = other.x - x;
+      final double dy = other.y - y;
+      if (dx * dx + dy * dy < minDistSq) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool _circleIntersectsCell(
+    double cx,
+    double cy,
+    double radius,
+    int cellX,
+    int cellY,
+  ) {
+    final double left = cellX.toDouble();
+    final double top = cellY.toDouble();
+    final double right = left + 1.0;
+    final double bottom = top + 1.0;
+    final double nearestX = cx.clamp(left, right).toDouble();
+    final double nearestY = cy.clamp(top, bottom).toDouble();
+    final double dx = cx - nearestX;
+    final double dy = cy - nearestY;
+    return dx * dx + dy * dy < radius * radius;
   }
 
   /// Hysteresis wrapper around [classifyDirection8]. Widens the angular band
@@ -718,6 +1047,11 @@ class GameProvider with ChangeNotifier {
 
   String currentLandId = '';
 
+  void _logCollisionDebug(String message) {
+    if (!_collisionDebugEnabled) return;
+    debugPrint('[Collision] $message');
+  }
+
   /// Saves a worker's position to SharedPreferences.
   Future<void> _saveWorkerPosition(
     String landId,
@@ -760,20 +1094,86 @@ class GameProvider with ChangeNotifier {
     int gridWidth,
     int gridHeight,
   ) {
-    if (rawMask == null || rawMask.isEmpty) return null;
+    if (rawMask == null || rawMask.isEmpty) {
+      _logCollisionDebug('Playable mask missing; using rectangular bounds.');
+      return null;
+    }
 
     final normalized = <List<bool>>[];
     for (final row in rawMask) {
-      if (row is! List) return null;
+      if (row is! List) {
+        debugPrint('Invalid playable mask row; expected List.');
+        return null;
+      }
       normalized.add(row.map((cell) => cell == true).toList());
     }
 
     final hasExpectedShape =
         normalized.length == gridHeight &&
         normalized.every((row) => row.length == gridWidth);
-    if (!hasExpectedShape) return null;
+    if (!hasExpectedShape) {
+      debugPrint(
+        'Playable mask dimensions do not match grid '
+        '(${normalized.isNotEmpty ? normalized.first.length : 0}x${normalized.length} vs ${gridWidth}x$gridHeight).',
+      );
+      return null;
+    }
 
     return normalized;
+  }
+
+  List<List<bool>> _normalizeObstacleMask(
+    List<dynamic>? matrix,
+    int gridWidth,
+    int gridHeight,
+  ) {
+    final List<List<bool>> normalized = List<List<bool>>.generate(
+      gridHeight,
+      (_) => List<bool>.filled(gridWidth, false),
+    );
+    if (matrix == null) return normalized;
+
+    if (matrix.length != gridHeight) {
+      debugPrint(
+        'Grid matrix height mismatch (${matrix.length} vs $gridHeight). '
+        'Obstacle collisions may be incomplete.',
+      );
+    }
+
+    final int maxY = math.min(gridHeight, matrix.length);
+    for (int y = 0; y < maxY; y++) {
+      final row = matrix[y];
+      if (row is! List) {
+        debugPrint('Invalid matrix row at y=$y; expected List.');
+        continue;
+      }
+      final int maxX = math.min(gridWidth, row.length);
+      for (int x = 0; x < maxX; x++) {
+        normalized[y][x] = _isBlockingMatrixCell(row[x]);
+      }
+    }
+    return normalized;
+  }
+
+  bool _isBlockingMatrixCell(dynamic cell) {
+    if (cell == null) return false;
+    if (cell is! Map) return true;
+
+    final dynamic categoryField = cell['category'] ?? cell['asset_category'];
+    final String? category = categoryField is String
+        ? categoryField.toLowerCase()
+        : null;
+    if (category != null && category.isNotEmpty) {
+      return true;
+    }
+
+    final bool hasFootprint =
+        (cell['footprint_width'] is num && cell['footprint_width'] > 0) ||
+        (cell['footprint_height'] is num && cell['footprint_height'] > 0);
+    if (hasFootprint) return true;
+
+    if (cell['sprites'] is Map || cell['variant_id'] != null) return true;
+    return false;
   }
 
   bool _isPlayableCell(int x, int y, int gridWidth, int gridHeight) {
@@ -785,21 +1185,31 @@ class GameProvider with ChangeNotifier {
     return row[x];
   }
 
-  (double, double)? _findNearestPlayableCell(
+  bool _isCellNavigable(int x, int y, int gridWidth, int gridHeight) {
+    if (!_isPlayableCell(x, y, gridWidth, gridHeight)) return false;
+    if (_obstacleMask == null) return true;
+    if (y < 0 || y >= _obstacleMask!.length) return false;
+    final row = _obstacleMask![y];
+    if (x < 0 || x >= row.length) return false;
+    return !row[x];
+  }
+
+  (double, double)? _findNearestNavigableCell(
     double x,
     double y,
     int gridWidth,
     int gridHeight,
   ) {
     if (gridWidth <= 0 || gridHeight <= 0) return null;
-    if (_playableMask == null) {
-      return (x.clamp(0.0, gridWidth - 0.1), y.clamp(0.0, gridHeight - 0.1));
-    }
 
     final int targetX = x.floor().clamp(0, gridWidth - 1);
     final int targetY = y.floor().clamp(0, gridHeight - 1);
-    if (_isPlayableCell(targetX, targetY, gridWidth, gridHeight)) {
-      return (x.clamp(0.0, gridWidth - 0.1), y.clamp(0.0, gridHeight - 0.1));
+    if (_isCellNavigable(targetX, targetY, gridWidth, gridHeight)) {
+      final double minX = targetX + _kWorkerCollisionRadius;
+      final double maxX = targetX + 1.0 - _kWorkerCollisionRadius;
+      final double minY = targetY + _kWorkerCollisionRadius;
+      final double maxY = targetY + 1.0 - _kWorkerCollisionRadius;
+      return (x.clamp(minX, maxX).toDouble(), y.clamp(minY, maxY).toDouble());
     }
 
     final int maxRadius = math.max(gridWidth, gridHeight);
@@ -818,7 +1228,7 @@ class GameProvider with ChangeNotifier {
           final bool onRing =
               xx == minX || xx == maxX || yy == minY || yy == maxY;
           if (!onRing) continue;
-          if (!_isPlayableCell(xx, yy, gridWidth, gridHeight)) continue;
+          if (!_isCellNavigable(xx, yy, gridWidth, gridHeight)) continue;
 
           final distance =
               (xx - targetX).abs().toDouble() + (yy - targetY).abs().toDouble();
