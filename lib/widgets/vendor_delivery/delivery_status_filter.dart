@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/delivery_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Horizontal filter chip bar for delivery status filtering.
 class DeliveryStatusFilter extends StatelessWidget {
@@ -12,15 +13,18 @@ class DeliveryStatusFilter extends StatelessWidget {
     required this.onChanged,
   });
 
-  static const _filters = [
-    (null, 'All', Icons.list_alt_rounded),
-    (DeliveryStatus.orderCreated, 'New', Icons.fiber_new_rounded),
-    (DeliveryStatus.confirmed, 'Confirmed', Icons.check_circle_outline_rounded),
-    (DeliveryStatus.preparing, 'Preparing', Icons.inventory_2_rounded),
-    (DeliveryStatus.outForDelivery, 'In Transit', Icons.local_shipping_rounded),
-    (DeliveryStatus.delivered, 'Delivered', Icons.verified_rounded),
-    (DeliveryStatus.cancelled, 'Cancelled', Icons.cancel_rounded),
-  ];
+  List<(DeliveryStatus?, String, IconData)> _getFilters(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      (null, l10n.filterAll, Icons.list_alt_rounded),
+      (DeliveryStatus.orderCreated, l10n.filterNew, Icons.fiber_new_rounded),
+      (DeliveryStatus.confirmed, l10n.filterConfirmed, Icons.check_circle_outline_rounded),
+      (DeliveryStatus.preparing, l10n.filterPreparing, Icons.inventory_2_rounded),
+      (DeliveryStatus.outForDelivery, l10n.filterInTransit, Icons.local_shipping_rounded),
+      (DeliveryStatus.delivered, l10n.filterDelivered, Icons.verified_rounded),
+      (DeliveryStatus.cancelled, l10n.filterCancelled, Icons.cancel_rounded),
+    ];
+  }
 
   Color _chipColor(DeliveryStatus? status, ThemeData theme) {
     if (status == null) return theme.colorScheme.primary;
@@ -50,10 +54,10 @@ class DeliveryStatusFilter extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        itemCount: _filters.length,
+        itemCount: _getFilters(context).length,
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
-          final (status, label, icon) = _filters[index];
+          final (status, label, icon) = _getFilters(context)[index];
           final isSelected = selected == status;
           final color = _chipColor(status, theme);
 

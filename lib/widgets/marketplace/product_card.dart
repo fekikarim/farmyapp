@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/product_model.dart';
 import '../../providers/basket_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -80,9 +81,9 @@ class ProductCard extends StatelessWidget {
                           top: Radius.circular(20),
                         ),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Text(
-                          'OUT OF STOCK',
+                          AppLocalizations.of(context)!.outOfStock,
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w800,
@@ -200,8 +201,8 @@ class ProductCard extends StatelessWidget {
                                 ),
                                 padding: EdgeInsets.zero,
                               ),
-                              child: const Text('Unavailable',
-                                  style: TextStyle(fontSize: 12)),
+                              child: Text(AppLocalizations.of(context)!.unavailable,
+                                  style: const TextStyle(fontSize: 12)),
                             )
                           : ElevatedButton.icon(
                               onPressed: () =>
@@ -228,7 +229,7 @@ class ProductCard extends StatelessWidget {
                                 size: 16,
                               ),
                               label: Text(
-                                inBasket ? 'Add More' : 'Add to Basket',
+                                inBasket ? AppLocalizations.of(context)!.addMore : AppLocalizations.of(context)!.addToBasket,
                                 style: const TextStyle(
                                     fontSize: 11, fontWeight: FontWeight.w600),
                               ),
@@ -270,8 +271,11 @@ class ProductCard extends StatelessWidget {
                 child: Text(
                   basket.isInBasket(product.id) &&
                           basket.getQuantityInBasket(product.id) > 1
-                      ? '${product.title} — qty updated to ${basket.getQuantityInBasket(product.id)}'
-                      : '${product.title} added to basket',
+                      ? AppLocalizations.of(context)!.qtyUpdatedTo(
+                          product.title,
+                          basket.getQuantityInBasket(product.id).toString(),
+                        )
+                      : AppLocalizations.of(context)!.addedToBasket(product.title),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -293,7 +297,7 @@ class ProductCard extends StatelessWidget {
               Icon(Icons.warning_amber_rounded,
                   color: Colors.white, size: 18),
               SizedBox(width: 8),
-              Text('Maximum stock reached'),
+              Text(AppLocalizations.of(context)!.maximumStockReached),
             ],
           ),
           backgroundColor: Colors.orange.shade700,

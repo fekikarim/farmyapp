@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RadialMenuAction {
   final String id;
@@ -112,7 +113,7 @@ class _RadialActionMenuState extends State<RadialActionMenu>
                       child: _CircleButton(
                         icon: isDismiss ? Icons.close : action!.icon,
                         color: isDismiss ? Colors.redAccent : action!.backgroundColor,
-                        tooltip: isDismiss ? 'Close' : action!.tooltip,
+                        tooltip: isDismiss ? AppLocalizations.of(context)!.closeTip : action!.tooltip,
                         onTap: isDismiss ? _dismiss : () => _select(action!.id),
                       ),
                     ),

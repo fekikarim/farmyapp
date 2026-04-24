@@ -4,6 +4,7 @@ import '../providers/land_provider.dart';
 import '../models/land_model.dart';
 import '../models/land_rental_model.dart';
 import '../game/game_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyLandsBottomSheet extends StatefulWidget {
   const MyLandsBottomSheet({super.key});
@@ -55,7 +56,7 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
                 const Icon(Icons.landscape, color: Colors.green),
                 const SizedBox(width: 8),
                 Text(
-                  'My Lands',
+                  AppLocalizations.of(context)!.myLandsTitle,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -91,7 +92,7 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
           Icon(Icons.landscape_outlined, size: 60, color: Theme.of(context).disabledColor),
           const SizedBox(height: 16),
           Text(
-            'No lands found',
+            AppLocalizations.of(context)!.noLandsFound,
             style: TextStyle(
               fontSize: 16,
               color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -100,7 +101,7 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
           ),
           const SizedBox(height: 8),
           Text(
-            'You haven\'t rented any lands yet.',
+            AppLocalizations.of(context)!.noLandsRented,
             style: TextStyle(color: Theme.of(context).disabledColor),
           ),
         ],
@@ -233,7 +234,9 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      land.isActive ? 'Active' : 'Inactive',
+                      land.isActive
+                          ? AppLocalizations.of(context)!.landActive
+                          : AppLocalizations.of(context)!.landInactive,
                       style: TextStyle(
                         fontSize: 12,
                         color: Theme.of(context).textTheme.bodySmall?.color,

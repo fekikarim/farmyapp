@@ -1271,5 +1271,118 @@
   "priceLabel": "Price",
   "rateLabel": "Rate",
   "ratingLabel": "Rating",
-  "closeButton": "Close"
+  "closeButton": "Close",
+  "estimatedDelivery": "Estimated Delivery",
+  "deliveryAddress": "Delivery Address",
+  "sellerLabel": "Seller",
+  "cancellationReasonLabel": "Cancellation Reason",
+  "orderSummary": "Order Summary",
+  "arrivingSoon": "Arriving soon",
+  "etaMinutes": "~{mins} min",
+  "@etaMinutes": {
+    "placeholders": { "mins": { "type": "String" } }
+  },
+  "etaHours": "~{hours}h {mins}min",
+  "@etaHours": {
+    "placeholders": {
+      "hours": { "type": "String" },
+      "mins": { "type": "String" }
+    }
+  },
+  "driverNearby": "Driver Nearby!",
+  "onTheWay": "On the way",
+  "youLabel": "You",
+  "justNow": "Just now",
+  "minutesAgo": "{mins} min ago",
+  "@minutesAgo": {
+    "placeholders": { "mins": { "type": "String" } }
+  },
+  "hoursAgo": "{hours}h ago",
+  "@hoursAgo": {
+    "placeholders": { "hours": { "type": "String" } }
+  },
+  "filterAll": "All",
+  "filterNew": "New",
+  "filterConfirmed": "Confirmed",
+  "filterPreparing": "Preparing",
+  "filterInTransit": "In Transit",
+  "filterDelivered": "Delivered",
+  "filterCancelled": "Cancelled",
+  "unknownCustomer": "Unknown Customer",
+  "orderLabel": "Order",
+  "manageButton": "Manage",
+  "outOfStock": "OUT OF STOCK",
+  "unavailable": "Unavailable",
+  "addMore": "Add More",
+  "addToBasket": "Add to Basket",
+  "qtyUpdatedTo": "{title} — qty updated to {qty}",
+  "@qtyUpdatedTo": {
+    "placeholders": {
+      "title": { "type": "String" },
+      "qty": { "type": "String" }
+    }
+  },
+  "addedToBasket": "{title} added to basket",
+  "@addedToBasket": {
+    "placeholders": { "title": { "type": "String" } }
+  },
+  "maximumStockReached": "Maximum stock reached",
+  "pricePerUnit": "{price} TND / {unit}",
+  "@pricePerUnit": {
+    "placeholders": {
+      "price": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
+  "premiumFeatureTitle": "Premium Feature",
+  "premiumFeatureDesc": "Upgrade your subscription to unlock this feature.",
+  "upgradeNow": "Upgrade Now",
+  "upgradeRequired": "Upgrade Required",
+  "upgradeRequiredDesc": "This feature ({featureKey}) is available on a premium plan. Upgrade your subscription to unlock it.",
+  "@upgradeRequiredDesc": {
+    "placeholders": { "featureKey": { "type": "String" } }
+  },
+  "laterButton": "Later",
+  "viewPlans": "View Plans",
+  "myLandsTitle": "My Lands",
+  "noLandsFound": "No lands found",
+  "noLandsRented": "You haven't rented any lands yet.",
+  "landActive": "Active",
+  "landInactive": "Inactive",
+  "landsRented": "Lands Rented",
+  "completenessLabel": "Completeness",
+  "roleLabel": "Role",
+  "aboutLabel": "About",
+  "directLinksLabel": "Direct Links",
+  "linkedinProfile": "LinkedIn Profile",
+  "websiteLabel": "Website",
+  "farmyMemberSince": "Farmy Community Member since {date}",
+  "@farmyMemberSince": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "privacyRestricted": "Privacy Restricted",
+  "profileNotFound": "Profile not found or private",
+  "profileLoadError": "Failed to load profile. Please check your connection.",
+  "retryButton": "Retry",
+  "upgradeForUnlimited": "Upgrade{plan} for unlimited access",
+  "@upgradeForUnlimited": {
+    "placeholders": { "plan": { "type": "String" } }
+  },
+  "tapToViewPlans": "Tap to view plans \u2192",
+  "assignTaskTitle": "Assign Task",
+  "workersAvailable": "{count} Available",
+  "@workersAvailable": {
+    "placeholders": { "count": { "type": "String" } }
+  },
+  "noTasksDefined": "No tasks defined for this item.",
+  "noAvailableWorkers": "No available workers!",
+  "taskAssigned": "Task assigned!",
+  "assignButton": "Assign",
+  "myTasksOnLand": "My Tasks on this Land",
+  "noPendingTasksHere": "No pending tasks here!",
+  "availableForAssignment": "You are available for assignments.",
+  "taskCompleted": "Task completed! You are now available.",
+  "markCompleteButton": "Mark as Complete",
+  "errorFetchingYourTasks": "Error fetching your tasks",
+  "closeTip": "Close"
 }

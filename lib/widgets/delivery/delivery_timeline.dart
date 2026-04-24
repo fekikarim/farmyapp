@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/delivery_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// A premium vertical stepper that shows delivery progress.
 class DeliveryTimeline extends StatelessWidget {
@@ -162,7 +163,7 @@ class _TimelineStep extends StatelessWidget {
                   if (step.timestamp != null) ...[
                     const SizedBox(height: 2),
                     Text(
-                      _formatTime(step.timestamp!),
+                      _formatTime(context, step.timestamp!),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurface.withOpacity(0.45),
                         fontSize: 12,
@@ -200,13 +201,14 @@ class _TimelineStep extends StatelessWidget {
     );
   }
 
-  String _formatTime(DateTime dt) {
+  String _formatTime(BuildContext context, DateTime dt) {
+    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final diff = now.difference(dt);
 
-    if (diff.inMinutes < 1) return 'Just now';
-    if (diff.inMinutes < 60) return '${diff.inMinutes} min ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inMinutes < 1) return l10n.justNow;
+    if (diff.inMinutes < 60) return l10n.minutesAgo(diff.inMinutes.toString());
+    if (diff.inHours < 24) return l10n.hoursAgo(diff.inHours.toString());
 
     final day = dt.day.toString().padLeft(2, '0');
     final month = dt.month.toString().padLeft(2, '0');

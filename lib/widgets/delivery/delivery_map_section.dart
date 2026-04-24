@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/delivery_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// A map placeholder that shows driver & customer location in a
 /// stylised card. Uses a visual representation since we don't have
@@ -94,8 +95,8 @@ class DeliveryMapSection extends StatelessWidget {
                         ),
                         child: Text(
                           tracking.deliveryStatus == DeliveryStatus.nearby
-                              ? 'Driver Nearby!'
-                              : 'On the way',
+                              ? AppLocalizations.of(context)!.driverNearby
+                              : AppLocalizations.of(context)!.onTheWay,
                           style: TextStyle(
                             color: Colors.blue.shade700,
                             fontWeight: FontWeight.w700,
@@ -120,7 +121,7 @@ class DeliveryMapSection extends StatelessWidget {
                           size: 22,
                         ),
                         Text(
-                          'You',
+                          AppLocalizations.of(context)!.youLabel,
                           style: TextStyle(
                             color: Colors.green.shade700,
                             fontWeight: FontWeight.w600,

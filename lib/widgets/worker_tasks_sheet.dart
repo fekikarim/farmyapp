@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../services/auth_service.dart';
 import '../providers/auth_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void showWorkerTasksSheet(BuildContext context, {required String landId}) {
   showModalBottomSheet(
@@ -83,7 +84,7 @@ class _WorkerTasksSheetContentState extends State<_WorkerTasksSheetContent> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Error fetching your tasks';
+          _error = AppLocalizations.of(context)!.errorFetchingYourTasks;
           _isLoading = false;
         });
       }
@@ -111,7 +112,7 @@ class _WorkerTasksSheetContentState extends State<_WorkerTasksSheetContent> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Task completed! You are now available.'), backgroundColor: Colors.green),
+          SnackBar(content: Text(AppLocalizations.of(context)!.taskCompleted), backgroundColor: Colors.green),
         );
         _fetchMyTasks(); // Refresh list
       } else {
@@ -149,9 +150,9 @@ class _WorkerTasksSheetContentState extends State<_WorkerTasksSheetContent> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'My Tasks on this Land',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.myTasksOnLand,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -177,8 +178,14 @@ class _WorkerTasksSheetContentState extends State<_WorkerTasksSheetContent> {
                             children: [
                               Icon(Icons.check_circle_outline, size: 80, color: Colors.green.shade200),
                               const SizedBox(height: 16),
-                              const Text('No pending tasks here!', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                              const Text('You are available for assignments.', style: TextStyle(color: Colors.white54)),
+                              Text(
+                                AppLocalizations.of(context)!.noPendingTasksHere,
+                                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                AppLocalizations.of(context)!.availableForAssignment,
+                                style: const TextStyle(color: Colors.white54),
+                              ),
                             ],
                           ),
                         )
@@ -258,7 +265,10 @@ class _WorkerTasksSheetContentState extends State<_WorkerTasksSheetContent> {
                                           onPressed: () => _completeTask(task['id']),
                                           icon: const Icon(Icons.done_all, color: Colors.black),
                                           style: ElevatedButton.styleFrom(backgroundColor: Colors.greenAccent),
-                                          label: const Text('Mark as Complete', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                                          label: Text(
+                                          AppLocalizations.of(context)!.markCompleteButton,
+                                          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                                        ),
                                         ),
                                       ),
                                     ]

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../services/auth_service.dart';
 import '../providers/game_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // Static helper to show the sheet properly
 void showTaskAssignmentSheet(
@@ -135,7 +136,7 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
     if (workerId == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No available workers!'), backgroundColor: Colors.red),
+          SnackBar(content: Text(AppLocalizations.of(context)!.noAvailableWorkers), backgroundColor: Colors.red),
         );
       }
       return;
@@ -185,7 +186,7 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Task assigned!'), backgroundColor: Colors.green),
+            SnackBar(content: Text(AppLocalizations.of(context)!.taskAssigned), backgroundColor: Colors.green),
           );
           Navigator.pop(context);
         }
@@ -242,7 +243,7 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: const Text('Assign', style: TextStyle(fontSize: 13)),
+              child: Text(AppLocalizations.of(context)!.assignButton, style: const TextStyle(fontSize: 13)),
             ),
           ),
         ],
@@ -284,9 +285,9 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Assign Task',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    Text(
+                      AppLocalizations.of(context)!.assignTaskTitle,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -297,7 +298,7 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        '$availableCount Available',
+                        AppLocalizations.of(context)!.workersAvailable(availableCount.toString()),
                         style: TextStyle(
                           color: availableCount > 0 ? Colors.green.shade700 : Colors.red.shade700,
                           fontWeight: FontWeight.bold,
@@ -323,9 +324,9 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
                     ),
                   )
                 else if (_tasks.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 24),
-                    child: Center(child: Text('No tasks defined for this item.')),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    child: Center(child: Text(AppLocalizations.of(context)!.noTasksDefined)),
                   )
                 else
                   // Use a simple Column for the tasks list, no ListView scrolling issues

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/subscription_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// A widget that conditionally renders its [child] based on the user's
 /// entitlements. If the feature is locked, it shows [lockedChild] or
@@ -62,34 +63,33 @@ class FeatureGate extends StatelessWidget {
   static void _showUpgradeDialog(BuildContext context, String featureKey) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
-          children: [
-            Icon(Icons.lock_outline, color: Colors.amber, size: 28),
-            SizedBox(width: 8),
-            Text('Upgrade Required'),
+      builder: (ctx) {
+        final l10n = AppLocalizations.of(context)!;
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Row(
+            children: [
+              const Icon(Icons.lock_outline, color: Colors.amber, size: 28),
+              const SizedBox(width: 8),
+              Text(l10n.upgradeRequired),
+            ],
+          ),
+          content: Text(l10n.upgradeRequiredDesc(featureKey)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(l10n.laterButton),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                Navigator.of(context).pushNamed('/subscriptions');
+              },
+              child: Text(l10n.viewPlans),
+            ),
           ],
-        ),
-        content: Text(
-          'This feature ($featureKey) is available on a premium plan. '
-          'Upgrade your subscription to unlock it.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Later'),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              // Navigate to subscription screen
-              Navigator.of(context).pushNamed('/subscriptions');
-            },
-            child: const Text('View Plans'),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

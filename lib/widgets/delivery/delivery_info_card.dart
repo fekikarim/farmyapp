@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/delivery_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Card showing delivery info: ETA, address, status, order summary.
 class DeliveryInfoCard extends StatefulWidget {
@@ -94,8 +95,8 @@ class _DeliveryInfoCardState extends State<DeliveryInfoCard> {
                 if (t.estimatedDeliveryTime != null && !t.isTerminal)
                   _InfoRow(
                     icon: Icons.schedule_rounded,
-                    label: 'Estimated Delivery',
-                    value: _formatETA(t.estimatedDeliveryTime!),
+                    label: AppLocalizations.of(context)!.estimatedDelivery,
+                    value: _formatETA(context, t.estimatedDeliveryTime!),
                     theme: theme,
                   ),
 
@@ -103,7 +104,7 @@ class _DeliveryInfoCardState extends State<DeliveryInfoCard> {
                 if (t.deliveryAddress != null && t.deliveryAddress!.isNotEmpty)
                   _InfoRow(
                     icon: Icons.location_on_outlined,
-                    label: 'Delivery Address',
+                    label: AppLocalizations.of(context)!.deliveryAddress,
                     value: t.deliveryAddress!,
                     theme: theme,
                   ),
@@ -112,7 +113,7 @@ class _DeliveryInfoCardState extends State<DeliveryInfoCard> {
                 if (t.seller != null)
                   _InfoRow(
                     icon: Icons.storefront_rounded,
-                    label: 'Seller',
+                    label: AppLocalizations.of(context)!.sellerLabel,
                     value: t.seller!.name,
                     theme: theme,
                   ),
@@ -122,7 +123,7 @@ class _DeliveryInfoCardState extends State<DeliveryInfoCard> {
                     t.cancellationReason!.isNotEmpty)
                   _InfoRow(
                     icon: Icons.info_outline_rounded,
-                    label: 'Cancellation Reason',
+                    label: AppLocalizations.of(context)!.cancellationReasonLabel,
                     value: t.cancellationReason!,
                     theme: theme,
                     valueColor: Colors.red.shade400,
@@ -157,7 +158,7 @@ class _DeliveryInfoCardState extends State<DeliveryInfoCard> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Order Summary',
+                        AppLocalizations.of(context)!.orderSummary,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
@@ -189,8 +190,8 @@ class _DeliveryInfoCardState extends State<DeliveryInfoCard> {
                     ),
                     const SizedBox(height: 8),
                     _SummaryRow(
-                      label: 'Total',
-                      value: '${t.order!.totalPrice.toStringAsFixed(2)} TND',
+                      label: AppLocalizations.of(context)!.totalLabel,
+                      value: AppLocalizations.of(context)!.priceTnd(t.order!.totalPrice.toStringAsFixed(2)),
                       theme: theme,
                       isBold: true,
                     ),
@@ -241,14 +242,15 @@ class _DeliveryInfoCardState extends State<DeliveryInfoCard> {
     }
   }
 
-  String _formatETA(DateTime eta) {
+  String _formatETA(BuildContext context, DateTime eta) {
+    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final diff = eta.difference(now);
 
-    if (diff.isNegative) return 'Arriving soon';
-    if (diff.inMinutes < 60) return '~${diff.inMinutes} min';
+    if (diff.isNegative) return l10n.arrivingSoon;
+    if (diff.inMinutes < 60) return l10n.etaMinutes(diff.inMinutes.toString());
     if (diff.inHours < 24) {
-      return '~${diff.inHours}h ${diff.inMinutes.remainder(60)}min';
+      return l10n.etaHours(diff.inHours.toString(), diff.inMinutes.remainder(60).toString());
     }
 
     final day = eta.day.toString().padLeft(2, '0');

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../models/user_model.dart';
 import '../../services/auth_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfilePreviewSheet extends StatefulWidget {
   final String userId;
@@ -60,16 +61,15 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
         setState(() {
           _user = user;
           _isLoading = false;
-          if (user == null) _error = 'Profile not found or private';
+          if (user == null) _error = AppLocalizations.of(context)!.profileNotFound;
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          // Only show error if we don't even have initial data
           if (_user == null) {
-            _error = 'Failed to load profile. Please check your connection.';
+            _error = AppLocalizations.of(context)!.profileLoadError;
           }
         });
       }
@@ -202,18 +202,18 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
                   children: [
                     if (_user?.role.toLowerCase() == 'investor')
                       _buildStat(
-                        'Lands Rented',
+                        AppLocalizations.of(context)!.landsRented,
                         '${_user?.rentedLandsCount ?? 0}',
                         Icons.landscape,
                       )
                     else
                       _buildStat(
-                        'Completeness',
+                        AppLocalizations.of(context)!.completenessLabel,
                         '${profile?.completenessScore ?? 0}%',
                         Icons.analytics,
                       ),
                     _buildStat(
-                      'Role',
+                      AppLocalizations.of(context)!.roleLabel,
                       _user?.role.toUpperCase() ?? 'USER',
                       Icons.badge,
                     ),
@@ -223,7 +223,7 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
 
                 if (bio != null && bio.isNotEmpty) ...[
                   Text(
-                    'About',
+                    AppLocalizations.of(context)!.aboutLabel,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -244,7 +244,7 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
                 // Portfolio Links
                 if (profile?.linkedin != null || profile?.website != null) ...[
                   Text(
-                    'Direct Links',
+                    AppLocalizations.of(context)!.directLinksLabel,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -253,14 +253,14 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
                   if (profile?.linkedin != null)
                     _buildLinkTile(
                       Icons.link,
-                      'LinkedIn Profile',
+                      AppLocalizations.of(context)!.linkedinProfile,
                       profile!.linkedin!,
                       theme,
                     ),
                   if (profile?.website != null)
                     _buildLinkTile(
                       Icons.language,
-                      'Website',
+                      AppLocalizations.of(context)!.websiteLabel,
                       profile!.website!,
                       theme,
                     ),
@@ -270,7 +270,9 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
                 // Professional Footer
                 Center(
                   child: Text(
-                    'Farmy Community Member since ${DateFormat('MMMM yyyy').format(_user?.createdAt ?? DateTime.now())}',
+                    AppLocalizations.of(context)!.farmyMemberSince(
+                      DateFormat('MMMM yyyy').format(_user?.createdAt ?? DateTime.now()),
+                    ),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: Colors.grey,
                     ),
@@ -391,7 +393,7 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Privacy Restricted',
+              AppLocalizations.of(context)!.privacyRestricted,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -406,7 +408,7 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
             ElevatedButton.icon(
               onPressed: _fetchProfile,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context)!.retryButton),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,

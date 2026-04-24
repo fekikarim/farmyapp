@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/subscription_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// A beautiful, modern progress bar widget that shows the user's
 /// current usage against their plan limit (e.g., "2/2 Rentals Used").
@@ -175,7 +176,9 @@ class SubscriptionLimitBar extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Upgrade${upgradePlanName != null ? ' to $upgradePlanName' : ''} for unlimited access',
+                            AppLocalizations.of(context)!.upgradeForUnlimited(
+                              upgradePlanName != null ? ' to $upgradePlanName' : '',
+                            ),
                             style: TextStyle(
                               color: color,
                               fontSize: 12,
@@ -265,7 +268,7 @@ class UpgradeBanner extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Tap to view plans →',
+                    AppLocalizations.of(context)!.tapToViewPlans,
                     style: TextStyle(
                       color: accentColor,
                       fontSize: 12,

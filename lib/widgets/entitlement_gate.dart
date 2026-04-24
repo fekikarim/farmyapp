@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/subscription_provider.dart';
 import '../screens/customer/subscriptions_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EntitlementGate extends StatelessWidget {
   final String entitlementKey;
@@ -49,14 +50,14 @@ class EntitlementGate extends StatelessWidget {
               const Icon(Icons.lock_outline, color: Colors.amber, size: 32),
               const SizedBox(height: 8),
               Text(
-                'Premium Feature',
+                AppLocalizations.of(context)!.premiumFeatureTitle,
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
               Text(
-                'Upgrade your subscription to unlock this feature.',
+                AppLocalizations.of(context)!.premiumFeatureDesc,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
@@ -73,7 +74,7 @@ class EntitlementGate extends StatelessWidget {
                   foregroundColor: Colors.black,
                   elevation: 0,
                 ),
-                child: const Text('Upgrade Now'),
+                child: Text(AppLocalizations.of(context)!.upgradeNow),
               ),
             ],
           ),

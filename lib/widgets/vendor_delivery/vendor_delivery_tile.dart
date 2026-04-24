@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/vendor_delivery_model.dart';
 import '../../models/delivery_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// A single delivery card in the vendor list.
 class VendorDeliveryTile extends StatelessWidget {
@@ -54,8 +55,8 @@ class VendorDeliveryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final color = _statusColor(delivery.deliveryStatus);
-    final customerName = delivery.customer?.name ?? 'Unknown Customer';
-    final productName = delivery.order?.productName ?? 'Order';
+    final customerName = delivery.customer?.name ?? AppLocalizations.of(context)!.unknownCustomer;
+    final productName = delivery.order?.productName ?? AppLocalizations.of(context)!.orderLabel;
     final amount = delivery.order?.totalPrice ?? 0;
 
     return Container(
@@ -132,7 +133,7 @@ class VendorDeliveryTile extends StatelessWidget {
 
                     // Amount
                     Text(
-                      '${amount.toStringAsFixed(2)} TND',
+                      AppLocalizations.of(context)!.priceTnd(amount.toStringAsFixed(2)),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
@@ -233,7 +234,7 @@ class _ManageButton extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                'Manage',
+                AppLocalizations.of(context)!.manageButton,
                 style: TextStyle(
                   color: theme.colorScheme.primary,
                   fontSize: 12,

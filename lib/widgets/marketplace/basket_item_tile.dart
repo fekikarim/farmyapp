@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/basket_item_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BasketItemTile extends StatelessWidget {
   final BasketItem item;
@@ -83,7 +84,10 @@ class BasketItemTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${product.price.toStringAsFixed(2)} TND / ${product.unit}',
+                    AppLocalizations.of(context)!.pricePerUnit(
+                      product.price.toStringAsFixed(2),
+                      product.unit,
+                    ),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface.withOpacity(0.5),
                       fontSize: 12,
@@ -118,7 +122,7 @@ class BasketItemTile extends StatelessWidget {
                       ),
                       const Spacer(),
                       Text(
-                        '${item.subtotal.toStringAsFixed(2)} TND',
+                        AppLocalizations.of(context)!.priceTnd(item.subtotal.toStringAsFixed(2)),
                         style: TextStyle(
                           color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w800,
