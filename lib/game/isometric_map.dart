@@ -271,40 +271,43 @@ class _IsometricMapState extends State<IsometricMap> {
 
         // Camera follow button (top-left, shows when manual control active)
         // Placed at end of Stack to render on top of everything
+        // Aligned with exit joystick button (top: 40) with SafeArea padding
         AnimatedPositioned(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
-          top: gameProvider.manualControlActive ? 60 : -80,
+          top: gameProvider.manualControlActive ? 40 : -80,
           left: 16,
           child: AnimatedOpacity(
             opacity: gameProvider.manualControlActive ? 1.0 : 0.0,
             duration: const Duration(milliseconds: 200),
-            child: Material(
-              elevation: gameProvider.isCameraFollowing ? 8 : 4,
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () => gameProvider.toggleCameraFollow(),
+            child: SafeArea(
+              child: Material(
+                elevation: gameProvider.isCameraFollowing ? 8 : 4,
                 borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: gameProvider.isCameraFollowing
-                        ? const Color(0xFF4CAF50) // Green when active
-                        : const Color(0xFF424242), // Grey when inactive
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.3),
-                      width: 1,
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => gameProvider.toggleCameraFollow(),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: gameProvider.isCameraFollowing
+                          ? const Color(0xFF4CAF50) // Green when active
+                          : const Color(0xFF424242), // Grey when inactive
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1,
+                      ),
                     ),
-                  ),
-                  child: Icon(
-                    gameProvider.isCameraFollowing
-                        ? Icons.center_focus_strong
-                        : Icons.center_focus_weak,
-                    color: Colors.white,
-                    size: 24,
+                    child: Icon(
+                      gameProvider.isCameraFollowing
+                          ? Icons.center_focus_strong
+                          : Icons.center_focus_weak,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                   ),
                 ),
               ),
