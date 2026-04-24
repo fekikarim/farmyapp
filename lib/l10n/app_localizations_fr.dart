@@ -3017,4 +3017,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String amountPerMonth(String amount) {
     return '$amount\$/mois';
   }
+
+  @override
+  String get hourly => 'Horaire';
 }

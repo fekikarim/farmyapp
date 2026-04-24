@@ -5491,6 +5491,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'\${amount}/mo'**
   String amountPerMonth(String amount);
+
+  /// No description provided for @hourly.
+  ///
+  /// In en, this message translates to:
+  /// **'Hourly'**
+  String get hourly;
 }
 
 class _AppLocalizationsDelegate

@@ -2963,4 +2963,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String amountPerMonth(String amount) {
     return '\$$amount/mo';
   }
+
+  @override
+  String get hourly => 'Hourly';
 }
