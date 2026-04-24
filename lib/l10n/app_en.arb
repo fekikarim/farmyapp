@@ -1609,5 +1609,615 @@
       }
     }
   },
-  "hourly": "Hourly"
+  "hourly": "Hourly",
+  "listingPublished": "Listing Published",
+  "listingPublishedHint": "Your listing is now visible to the public.",
+  "continueLabelUpper": "CONTINUE",
+  "failedToLoadProofs": "Failed to load proofs",
+  "aiVerifyingProof": "AI is verifying your proof...",
+  "proofVerifiedSuccessfully": "Proof verified successfully!",
+  "noProofRequestsFound": "No proof requests found",
+  "fromLabel": "From: {name}",
+  "@fromLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "investor": "Investor",
+  "toLabel": "To: {name}",
+  "@toLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mustSubmitBefore": "Must submit before {date}",
+  "@mustSubmitBefore": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "aiNotes": "AI Notes: {notes}",
+  "@aiNotes": {
+    "placeholders": {
+      "notes": {
+        "type": "String"
+      }
+    }
+  },
+  "submitPhotoProof": "Submit Photo Proof",
+  "createNewTask": "Create New Task",
+  "taskTitle": "Task Title",
+  "taskTitleHint": "e.g., Water the tomatoes",
+  "descriptionOptional": "Description (Optional)",
+  "taskType": "Task Type",
+  "rewardLabel": "Reward",
+  "rewardAmountTnd": "{amount} TND",
+  "@rewardAmountTnd": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "timeLabel": "Time",
+  "minutesCount": "{count} mins",
+  "@minutesCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "createTask": "Create Task",
+  "pleaseEnterTaskTitle": "Please enter a task title",
+  "taskCreated": "Task created successfully!",
+  "tasksForLand": "Tasks for {landName}",
+  "@tasksForLand": {
+    "placeholders": {
+      "landName": {
+        "type": "String"
+      }
+    }
+  },
+  "open": "Open",
+  "done": "Done",
+  "noTasksHere": "No tasks here",
+  "activeTasksCount": "{count} Active Tasks",
+  "@activeTasksCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "farmerPro": "Farmer Pro",
+  "assignedTo": "Assigned to {name}",
+  "@assignedTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "taskLimitReached": "Task Limit Reached",
+  "taskLimitReachedMessage": "You can only have {count} active tasks on the free plan.",
+  "@taskLimitReachedMessage": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "water": "Water",
+  "harvest": "Harvest",
+  "feed": "Feed",
+  "install": "Install",
+  "maintenance": "Maintenance",
+  "inProgress": "In Progress",
+  "completed": "Completed",
+  "paymentFailedGeneric": "Payment could not be completed.",
+  "paymentFailedWithError": "Payment failed: {error}",
+  "proofRequestedHint": "A proof request has been sent to the worker.",
+  "requestAIProof": "Request AI Proof",
+  "noProofsRequestedUpper": "NO PROOFS REQUESTED",
+  "requestProofHint": "Ask the worker to submit photo evidence of their work.",
+  "removeWorker": "Remove Worker",
+  "remove": "Remove",
+  "workerRemovedSuccessfully": "Worker removed successfully",
+  "failedToRemoveWorker": "Failed to remove worker",
+  "systemErrorUpper": "SYSTEM ERROR",
+  "retryConnectionUpper": "RETRY CONNECTION",
+  "myInvestments": "My Investments",
+  "rentalConfirmed": "Rental Confirmed",
+  "rentalConfirmedDescription": "Your rental has been confirmed and the equipment will be delivered soon.",
+  "goToDashboardUpper": "GO TO DASHBOARD",
+  "manageCards": "Manage Cards",
+  "cardAddedSuccessfully": "Card added successfully",
+  "cancelledOrFailedToAddCard": "Cancelled or failed to add card.",
+  "allocatingSpatialResources": "Allocating spatial resources...",
+  "paymentFailedTryAgain": "Payment failed. Please try again.",
+  "paymentIssueHint": "There was an issue processing your payment.",
+  "payNowUpper": "PAY NOW",
+  "pleaseSelectPaymentMethod": "Please select a payment method",
+  "securingRental": "Securing rental...",
+  "agreeToTermsAndPrivacy": "I agree to the Terms and Privacy Policy",
+  "totalAmount": "Total Amount",
+  "amountTND": "{amount} TND",
+  "@amountTND": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "duration": "Duration",
+  "nMonths": "{count} months",
+  "@nMonths": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "totalProject": "Total Project",
+  "walletCredits": "Wallet Credits",
+  "availableInstantPayment": "Available for instant payment",
+  "monthlyRent": "Monthly Rent",
+  "defaultMethod": "Default",
+  "savedCard": "Saved Card",
+  "changeAction": "Change",
+  "insufficientCredits": "Insufficient Credits: {amount} available",
+  "@insufficientCredits": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "addPaymentMethod": "Add Payment Method",
+  "balanceAmount": "Balance: {amount} TND",
+  "@balanceAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "startingFrom": "Starting from",
+  "monthAbbreviation": "mo",
+  "monthsAbbreviation": "{count} mos",
+  "@monthsAbbreviation": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentSecurity": "Secure payment processed by Stripe.",
+  "availableUpper": "AVAILABLE",
+  "organicPlotGrid": "Organic plot ({w}x{h} grid)",
+  "@organicPlotGrid": {
+    "placeholders": {
+      "w": {
+        "type": "String"
+      },
+      "h": {
+        "type": "String"
+      }
+    }
+  },
+  "checkout": "Checkout",
+  "leaseStartDate": "Lease Start Date",
+  "rentalDuration": "Rental Duration",
+  "failedToLoadRecords": "Failed to load records.",
+  "noBlockchainRecordsYet": "No Blockchain Records Yet",
+  "makePurchaseImmutableRecordsHint": "Make a purchase to see immutable records here.",
+  "pendingUpper": "PENDING",
+  "rejectedUpper": "REJECTED",
+  "fetchingBlockchainRecords": "Fetching blockchain records...",
+  "transactionIdCopied": "Transaction ID copied to clipboard",
+  "paidUpper": "PAID",
+  "approvedUpper": "APPROVED",
+  "rentalsLabel": "Rentals",
+  "purchasesLabel": "Purchases",
+  "hederaConsensusServiceUpper": "HEDERA CONSENSUS SERVICE",
+  "proofSubmittedVerified": "Proof submitted and verified successfully.",
+  "hederaRegistryUpper": "HEDERA REGISTRY",
+  "immutableOnChainRecords": "Immutable On-Chain Records",
+  "captureSubmit": "Capture & Submit",
+  "uploadingImage": "Uploading image...",
+  "pleaseWaitAFewMoments": "Please wait a few moments...",
+  "orSelectAnItem": "[orSelectAnItem]",
+  "itemIdUpper": "[itemIdUpper]",
+  "@itemIdUpper": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "gridPlots": "[gridPlots]",
+  "@gridPlots": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "hireUpper": "[hireUpper]",
+  "size": "[size]",
+  "ownerLabel": "[ownerLabel]",
+  "draw": "[draw]",
+  "unknownItem": "[unknownItem]",
+  "moveAll": "[moveAll]",
+  "plotNumber": "[plotNumber]",
+  "@plotNumber": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "optimalSolarExposure": "[optimalSolarExposure]",
+  "cancelUpper": "[cancelUpper]",
+  "failedToRejectRequest": "[failedToRejectRequest]",
+  "hireWorkersUpper": "[hireWorkersUpper]",
+  "invalidGeometryAlert": "[invalidGeometryAlert]",
+  "activeTasks": "[activeTasks]",
+  "perTaskUpper": "[perTaskUpper]",
+  "analyzePortfolio": "[analyzePortfolio]",
+  "noPendingRequests": "[noPendingRequests]",
+  "heightAuto": "[heightAuto]",
+  "rentAmountMonthly": "[rentAmountMonthly]",
+  "@rentAmountMonthly": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "totalCapitalInvested": "[totalCapitalInvested]",
+  "currentLand": "[currentLand]",
+  "descriptionTooShort": "[descriptionTooShort]",
+  "landName": "[landName]",
+  "alreadyRentedUpper": "[alreadyRentedUpper]",
+  "requestRejectedRefunded": "[requestRejectedRefunded]",
+  "rejectionReasonPrompt": "[rejectionReasonPrompt]",
+  "negotiationsUpper": "[negotiationsUpper]",
+  "noWorkersFoundUpper": "[noWorkersFoundUpper]",
+  "unknownInvestor": "[unknownInvestor]",
+  "hoursLeft": "[hoursLeft]",
+  "@hoursLeft": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "rentalSlotsUsage": "[rentalSlotsUsage]",
+  "selectAtLeast3Points": "[selectAtLeast3Points]",
+  "activeLabelUpper": "[activeLabelUpper]",
+  "salaryAmountType": "[salaryAmountType]",
+  "@salaryAmountType": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "expiringSoon": "[expiringSoon]",
+  "checkBackLaterOpportunities": "[checkBackLaterOpportunities]",
+  "inactive": "[inactive]",
+  "endDateUpper": "[endDateUpper]",
+  "farmerWithColon": "[farmerWithColon]",
+  "@farmerWithColon": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "farmingActivity": "[farmingActivity]",
+  "noActiveFarmingActivities": "[noActiveFarmingActivities]",
+  "boundaries": "[boundaries]",
+  "noInvestmentsYet": "[noInvestmentsYet]",
+  "activeStatusUpper": "[activeStatusUpper]",
+  "plotsCount": "[plotsCount]",
+  "@plotsCount": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "noPendingRequestsHint": "[noPendingRequestsHint]",
+  "requestedDateUpper": "[requestedDateUpper]",
+  "@requestedDateUpper": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "priceCannotBeEmpty": "[priceCannotBeEmpty]",
+  "rentedUpper": "[rentedUpper]",
+  "rentalLimitReached": "[rentalLimitReached]",
+  "invitationUpdates": "[invitationUpdates]",
+  "priceStartingFrom": "[priceStartingFrom]",
+  "locationHighlights": "[locationHighlights]",
+  "amount": "[amount]",
+  "publishingFailed": "[publishingFailed]",
+  "securedWaterAccess": "[securedWaterAccess]",
+  "monthlyRentPriceTND": "[monthlyRentPriceTND]",
+  "geometryVerified": "[geometryVerified]",
+  "landWithColon": "[landWithColon]",
+  "@landWithColon": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotPublishInvalidGeometry": "[cannotPublishInvalidGeometry]",
+  "retryUpper": "[retryUpper]",
+  "imageProofRequiredToApprove": "[imageProofRequiredToApprove]",
+  "sendProposalUpper": "[sendProposalUpper]",
+  "min": "[min]",
+  "pricePerMonth": "[pricePerMonth]",
+  "noActiveWorkersUpper": "[noActiveWorkersUpper]",
+  "reasonTooShort": "[reasonTooShort]",
+  "viewDetails": "[viewDetails]",
+  "proofsUpper": "[proofsUpper]",
+  "noActiveNegotiationsUpper": "[noActiveNegotiationsUpper]",
+  "plantCrops": "[plantCrops]",
+  "readyForActivityHint": "[readyForActivityHint]",
+  "irrigated": "[irrigated]",
+  "tryAdjustingFilters": "[tryAdjustingFilters]",
+  "occupiedUpper": "[occupiedUpper]",
+  "generalFarmingActivity": "[generalFarmingActivity]",
+  "endsDate": "[endsDate]",
+  "@endsDate": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "daysLeft": "[daysLeft]",
+  "@daysLeft": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "hireActivateWorkersHint": "[hireActivateWorkersHint]",
+  "manageWorkers": "[manageWorkers]",
+  "onTime": "[onTime]",
+  "removeWorkerConfirmation": "[removeWorkerConfirmation]",
+  "@removeWorkerConfirmation": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "assignedLands": "[assignedLands]",
+  "limitReachedUpper": "[limitReachedUpper]",
+  "proofHistory": "[proofHistory]",
+  "farmerInvitations": "[farmerInvitations]",
+  "workforceUpper": "[workforceUpper]",
+  "descriptionRequired": "[descriptionRequired]",
+  "priceGreaterThanZero": "[priceGreaterThanZero]",
+  "saveChanges": "[saveChanges]",
+  "proofRequestQuestion": "[proofRequestQuestion]",
+  "rentalSlotsUsed": "[rentalSlotsUsed]",
+  "activeLands": "[activeLands]",
+  "widthAuto": "[widthAuto]",
+  "spatialDimensions": "[spatialDimensions]",
+  "idLabel": "[idLabel]",
+  "@idLabel": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "rentalExpires": "[rentalExpires]",
+  "@rentalExpires": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "proofSubmissionHint": "[proofSubmissionHint]",
+  "@proofSubmissionHint": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "landPlotNumber": "[landPlotNumber]",
+  "@landPlotNumber": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "messageOptionalUpper": "[messageOptionalUpper]",
+  "roiEst": "[roiEst]",
+  "paymentRequiredToActivate": "[paymentRequiredToActivate]",
+  "invalidNumericAmount": "[invalidNumericAmount]",
+  "pointsDefined": "[pointsDefined]",
+  "@pointsDefined": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "itemVerification": "[itemVerification]",
+  "invalidGeometryHint": "[invalidGeometryHint]",
+  "declinedUpper": "[declinedUpper]",
+  "connectionError": "[connectionError]",
+  "startByListingPlot": "[startByListingPlot]",
+  "propertyDetails": "[propertyDetails]",
+  "invalidGeometry": "[invalidGeometry]",
+  "failedToLoadRequests": "[failedToLoadRequests]",
+  "untilDate": "[untilDate]",
+  "@untilDate": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "drawInstructions": "[drawInstructions]",
+  "na": "[na]",
+  "noTasksAssignedHint": "[noTasksAssignedHint]",
+  "cannotPublishBoundaryConflicts": "[cannotPublishBoundaryConflicts]",
+  "farmingActivities": "[farmingActivities]",
+  "listNewLand": "[listNewLand]",
+  "noApprovedWorkersUpper": "[noApprovedWorkersUpper]",
+  "expiredUpper": "[expiredUpper]",
+  "conflictDetected": "[conflictDetected]",
+  "rejectRequest": "[rejectRequest]",
+  "boundaryConflictAlert": "[boundaryConflictAlert]",
+  "requestProof": "[requestProof]",
+  "perHourUpper": "[perHourUpper]",
+  "exploreLands": "[exploreLands]",
+  "premiumFarmlandUpper": "[premiumFarmlandUpper]",
+  "newProposal": "[newProposal]",
+  "suspendedUpper": "[suspendedUpper]",
+  "aiPortfolioAnalysisHint": "[aiPortfolioAnalysisHint]",
+  "defineOnMap": "[defineOnMap]",
+  "itemUpper": "[itemUpper]",
+  "amountPerType": "[amountPerType]",
+  "@amountPerType": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "landDescriptionHint": "[landDescriptionHint]",
+  "autoFromBoundary": "[autoFromBoundary]",
+  "tryAgainUpper": "[tryAgainUpper]",
+  "landNameRequired": "[landNameRequired]",
+  "activeUpper": "[activeUpper]",
+  "hiringProposals": "[hiringProposals]",
+  "confirmReject": "[confirmReject]",
+  "movePoint": "[movePoint]",
+  "priceExceedsLimit": "[priceExceedsLimit]",
+  "egSalaryHint": "[egSalaryHint]",
+  "hireWorkerUpper": "[hireWorkerUpper]",
+  "@hireWorkerUpper": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "hiringProposalSent": "[hiringProposalSent]",
+  "entireLand": "[entireLand]",
+  "acceptedUpper": "[acceptedUpper]",
+  "fundsReleasedAfterVerification": "[fundsReleasedAfterVerification]",
+  "enterRejectionReason": "[enterRejectionReason]",
+  "proofRequests": "[proofRequests]",
+  "enableVoiceInput": "[enableVoiceInput]",
+  "salaryAmountTNDUpper": "[salaryAmountTNDUpper]",
+  "unableToRetrieveLandDetails": "[unableToRetrieveLandDetails]",
+  "hourlyUpper": "[hourlyUpper]",
+  "aiLandInvestmentHint": "[aiLandInvestmentHint]",
+  "@aiLandInvestmentHint": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "askAiAnalyst": "[askAiAnalyst]",
+  "monthlyUpper": "[monthlyUpper]",
+  "activeContracts": "[activeContracts]",
+  "workerRespondedReviewCounterOffer": "[workerRespondedReviewCounterOffer]",
+  "unlockUnlimitedSlotsInvestorPlus": "[unlockUnlimitedSlotsInvestorPlus]",
+  "escrowBalance": "[escrowBalance]",
+  "pleaseEnterAName": "[pleaseEnterAName]",
+  "raiseLivestock": "[raiseLivestock]",
+  "noLandAssignments": "[noLandAssignments]",
+  "aiVerifyUpper": "[aiVerifyUpper]",
+  "requestExpired": "[requestExpired]",
+  "rejectUpper": "[rejectUpper]",
+  "landUpdatedSuccess": "[landUpdatedSuccess]",
+  "realTimeTaskNotificationsSoon": "[realTimeTaskNotificationsSoon]",
+  "approveUpper": "[approveUpper]",
+  "untilDateUpper": "[untilDateUpper]",
+  "@untilDateUpper": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "overlapsExistingLand": "[overlapsExistingLand]",
+  "itemRequests": "[itemRequests]",
+  "startDateUpper": "[startDateUpper]",
+  "generalLandProof": "[generalLandProof]",
+  "landNameTooShort": "[landNameTooShort]",
+  "verifiedUpper": "[verifiedUpper]",
+  "minutesLeft": "[minutesLeft]",
+  "@minutesLeft": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToDrawBoundaries": "[tapToDrawBoundaries]",
+  "directRoadAccess": "[directRoadAccess]",
+  "invitationFrom": "[invitationFrom]",
+  "@invitationFrom": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadContracts": "[failedToLoadContracts]",
+  "verificationFailed": "[verificationFailed]",
+  "perimeterNotSet": "[perimeterNotSet]",
+  "requestApprovedItemPlaced": "[requestApprovedItemPlaced]",
+  "inviteWorkersMarketplaceHint": "[inviteWorkersMarketplaceHint]",
+  "landNameHint": "[landNameHint]",
+  "publishListing": "[publishListing]",
+  "hireApprovedWorkerNegotiationHint": "[hireApprovedWorkerNegotiationHint]",
+  "request": "[request]",
+  "counterOfferUpper": "[counterOfferUpper]",
+  "proposedUpper": "[proposedUpper]",
+  "verificationSuccessful": "[verificationSuccessful]",
+  "rentLandToStartUpper": "[rentLandToStartUpper]",
+  "expiredLabel": "[expiredLabel]",
+  "salaryTypeUpper": "[salaryTypeUpper]",
+  "pleaseEnterRejectionReason": "[pleaseEnterRejectionReason]",
+  "negotiatingUpper": "[negotiatingUpper]",
+  "rentNowUpper": "[rentNowUpper]",
+  "nTasksUpper": "[nTasksUpper]",
+  "@nTasksUpper": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "noSpecialSkillsUpper": "[noSpecialSkillsUpper]",
+  "noLandAssignmentsHint": "[noLandAssignmentsHint]"
 }

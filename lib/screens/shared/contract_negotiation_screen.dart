@@ -1043,7 +1043,7 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
 
   /// System messages (accept / decline records) are rendered as centered pills
   bool _isSystemMessage(ContractNegotiation n) {
-    systemPhrases = [
+    final systemPhrases = [
       'Offer accepted. Proceeding to payment.',
       'Offer declined. This negotiation has been cancelled.',
       AppLocalizations.of(context)!.systemOfferAccepted,
@@ -1472,8 +1472,8 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     final now = DateTime.now();
     final diff = now.difference(dt);
     if (diff.inMinutes < 1) return AppLocalizations.of(context)!.justNow;
-    if (diff.inMinutes < 60) return AppLocalizations.of(context)!.minutesAgo(diff.inMinutes);
-    if (diff.inHours < 24) return AppLocalizations.of(context)!.hoursAgo(diff.inHours);
+    if (diff.inMinutes < 60) return AppLocalizations.of(context)!.minutesAgo(diff.inMinutes.toString());
+    if (diff.inHours < 24) return AppLocalizations.of(context)!.hoursAgo(diff.inHours.toString());
     return DateFormat.Md(Localizations.localeOf(context).toString()).add_Hm().format(dt);
   }
 

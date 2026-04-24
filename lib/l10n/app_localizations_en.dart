@@ -2966,4 +2966,360 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hourly => 'Hourly';
+
+  @override
+  String get listingPublished => 'Listing Published';
+
+  @override
+  String get listingPublishedHint =>
+      'Your listing is now visible to the public.';
+
+  @override
+  String get continueLabelUpper => 'CONTINUE';
+
+  @override
+  String get failedToLoadProofs => 'Failed to load proofs';
+
+  @override
+  String get aiVerifyingProof => 'AI is verifying your proof...';
+
+  @override
+  String get proofVerifiedSuccessfully => 'Proof verified successfully!';
+
+  @override
+  String get noProofRequestsFound => 'No proof requests found';
+
+  @override
+  String fromLabel(String name) {
+    return 'From: $name';
+  }
+
+  @override
+  String get investor => 'Investor';
+
+  @override
+  String toLabel(String name) {
+    return 'To: $name';
+  }
+
+  @override
+  String mustSubmitBefore(String date) {
+    return 'Must submit before $date';
+  }
+
+  @override
+  String aiNotes(String notes) {
+    return 'AI Notes: $notes';
+  }
+
+  @override
+  String get submitPhotoProof => 'Submit Photo Proof';
+
+  @override
+  String get createNewTask => 'Create New Task';
+
+  @override
+  String get taskTitle => 'Task Title';
+
+  @override
+  String get taskTitleHint => 'e.g., Water the tomatoes';
+
+  @override
+  String get descriptionOptional => 'Description (Optional)';
+
+  @override
+  String get taskType => 'Task Type';
+
+  @override
+  String get rewardLabel => 'Reward';
+
+  @override
+  String rewardAmountTnd(String amount) {
+    return '$amount TND';
+  }
+
+  @override
+  String get timeLabel => 'Time';
+
+  @override
+  String minutesCount(String count) {
+    return '$count mins';
+  }
+
+  @override
+  String get createTask => 'Create Task';
+
+  @override
+  String get pleaseEnterTaskTitle => 'Please enter a task title';
+
+  @override
+  String get taskCreated => 'Task created successfully!';
+
+  @override
+  String tasksForLand(String landName) {
+    return 'Tasks for $landName';
+  }
+
+  @override
+  String get open => 'Open';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get noTasksHere => 'No tasks here';
+
+  @override
+  String activeTasksCount(String count) {
+    return '$count Active Tasks';
+  }
+
+  @override
+  String get farmerPro => 'Farmer Pro';
+
+  @override
+  String assignedTo(String name) {
+    return 'Assigned to $name';
+  }
+
+  @override
+  String get taskLimitReached => 'Task Limit Reached';
+
+  @override
+  String taskLimitReachedMessage(String count) {
+    return 'You can only have $count active tasks on the free plan.';
+  }
+
+  @override
+  String get water => 'Water';
+
+  @override
+  String get harvest => 'Harvest';
+
+  @override
+  String get feed => 'Feed';
+
+  @override
+  String get install => 'Install';
+
+  @override
+  String get maintenance => 'Maintenance';
+
+  @override
+  String get inProgress => 'In Progress';
+
+  @override
+  String get completed => 'Completed';
+
+  @override
+  String get paymentFailedGeneric => 'Payment could not be completed.';
+
+  @override
+  String paymentFailedWithError(String error) {
+    return 'Payment failed: $error';
+  }
+
+  @override
+  String get proofRequestedHint =>
+      'A proof request has been sent to the worker.';
+
+  @override
+  String get requestAIProof => 'Request AI Proof';
+
+  @override
+  String get noProofsRequestedUpper => 'NO PROOFS REQUESTED';
+
+  @override
+  String get requestProofHint =>
+      'Ask the worker to submit photo evidence of their work.';
+
+  @override
+  String get removeWorker => 'Remove Worker';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get workerRemovedSuccessfully => 'Worker removed successfully';
+
+  @override
+  String get failedToRemoveWorker => 'Failed to remove worker';
+
+  @override
+  String get systemErrorUpper => 'SYSTEM ERROR';
+
+  @override
+  String get retryConnectionUpper => 'RETRY CONNECTION';
+
+  @override
+  String get myInvestments => 'My Investments';
+
+  @override
+  String get rentalConfirmed => 'Rental Confirmed';
+
+  @override
+  String get rentalConfirmedDescription =>
+      'Your rental has been confirmed and the equipment will be delivered soon.';
+
+  @override
+  String get goToDashboardUpper => 'GO TO DASHBOARD';
+
+  @override
+  String get manageCards => 'Manage Cards';
+
+  @override
+  String get cardAddedSuccessfully => 'Card added successfully';
+
+  @override
+  String get cancelledOrFailedToAddCard => 'Cancelled or failed to add card.';
+
+  @override
+  String get allocatingSpatialResources => 'Allocating spatial resources...';
+
+  @override
+  String get paymentFailedTryAgain => 'Payment failed. Please try again.';
+
+  @override
+  String get paymentIssueHint => 'There was an issue processing your payment.';
+
+  @override
+  String get payNowUpper => 'PAY NOW';
+
+  @override
+  String get pleaseSelectPaymentMethod => 'Please select a payment method';
+
+  @override
+  String get securingRental => 'Securing rental...';
+
+  @override
+  String get agreeToTermsAndPrivacy =>
+      'I agree to the Terms and Privacy Policy';
+
+  @override
+  String get totalAmount => 'Total Amount';
+
+  @override
+  String amountTND(String amount) {
+    return '$amount TND';
+  }
+
+  @override
+  String get duration => 'Duration';
+
+  @override
+  String nMonths(String count) {
+    return '$count months';
+  }
+
+  @override
+  String get totalProject => 'Total Project';
+
+  @override
+  String get walletCredits => 'Wallet Credits';
+
+  @override
+  String get availableInstantPayment => 'Available for instant payment';
+
+  @override
+  String get monthlyRent => 'Monthly Rent';
+
+  @override
+  String get defaultMethod => 'Default';
+
+  @override
+  String get savedCard => 'Saved Card';
+
+  @override
+  String get changeAction => 'Change';
+
+  @override
+  String insufficientCredits(String amount) {
+    return 'Insufficient Credits: $amount available';
+  }
+
+  @override
+  String get addPaymentMethod => 'Add Payment Method';
+
+  @override
+  String balanceAmount(String amount) {
+    return 'Balance: $amount TND';
+  }
+
+  @override
+  String get startingFrom => 'Starting from';
+
+  @override
+  String get monthAbbreviation => 'mo';
+
+  @override
+  String monthsAbbreviation(String count) {
+    return '$count mos';
+  }
+
+  @override
+  String get paymentSecurity => 'Secure payment processed by Stripe.';
+
+  @override
+  String get availableUpper => 'AVAILABLE';
+
+  @override
+  String organicPlotGrid(String w, String h) {
+    return 'Organic plot (${w}x$h grid)';
+  }
+
+  @override
+  String get checkout => 'Checkout';
+
+  @override
+  String get leaseStartDate => 'Lease Start Date';
+
+  @override
+  String get rentalDuration => 'Rental Duration';
+
+  @override
+  String get failedToLoadRecords => 'Failed to load records.';
+
+  @override
+  String get noBlockchainRecordsYet => 'No Blockchain Records Yet';
+
+  @override
+  String get makePurchaseImmutableRecordsHint =>
+      'Make a purchase to see immutable records here.';
+
+  @override
+  String get pendingUpper => 'PENDING';
+
+  @override
+  String get rejectedUpper => 'REJECTED';
+
+  @override
+  String get fetchingBlockchainRecords => 'Fetching blockchain records...';
+
+  @override
+  String get transactionIdCopied => 'Transaction ID copied to clipboard';
+
+  @override
+  String get paidUpper => 'PAID';
+
+  @override
+  String get approvedUpper => 'APPROVED';
+
+  @override
+  String get rentalsLabel => 'Rentals';
+
+  @override
+  String get purchasesLabel => 'Purchases';
+
+  @override
+  String get hederaConsensusServiceUpper => 'HEDERA CONSENSUS SERVICE';
+
+  @override
+  String get proofSubmittedVerified =>
+      'Proof submitted and verified successfully.';
+
+  @override
+  String get hederaRegistryUpper => 'HEDERA REGISTRY';
+
+  @override
+  String get immutableOnChainRecords => 'Immutable On-Chain Records';
 }

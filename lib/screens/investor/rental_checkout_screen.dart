@@ -262,7 +262,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                     ),
                   ),
                   Text(
-                    AppLocalizations.of(context)!.organicPlotGrid(widget.land.gridWidth, widget.land.gridHeight),
+                    AppLocalizations.of(context)!.organicPlotGrid(widget.land.gridWidth.toString(), widget.land.gridHeight.toString()),
                     style: TextStyle(
                       color: isDark ? Colors.white70 : Colors.black54,
                       fontSize: 14,
@@ -396,7 +396,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(
-                  m == 1 ? AppLocalizations.of(context)!.monthAbbreviation : AppLocalizations.of(context)!.monthsAbbreviation(m),
+                  m == 1 ? AppLocalizations.of(context)!.monthAbbreviation : AppLocalizations.of(context)!.monthsAbbreviation(m.toString()),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: isSelected
@@ -780,7 +780,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
             AppLocalizations.of(context)!.amountTND(NumberFormat('#,###').format(_monthlyRent)),
           ),
           const SizedBox(height: 16),
-          _buildRow(AppLocalizations.of(context)!.duration, AppLocalizations.of(context)!.nMonths(_months)),
+          _buildRow(AppLocalizations.of(context)!.duration, AppLocalizations.of(context)!.nMonths(_months.toString())),
           const SizedBox(height: 16),
           Divider(
             color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),

@@ -5497,6 +5497,636 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hourly'**
   String get hourly;
+
+  /// No description provided for @listingPublished.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing Published'**
+  String get listingPublished;
+
+  /// No description provided for @listingPublishedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your listing is now visible to the public.'**
+  String get listingPublishedHint;
+
+  /// No description provided for @continueLabelUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'CONTINUE'**
+  String get continueLabelUpper;
+
+  /// No description provided for @failedToLoadProofs.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load proofs'**
+  String get failedToLoadProofs;
+
+  /// No description provided for @aiVerifyingProof.
+  ///
+  /// In en, this message translates to:
+  /// **'AI is verifying your proof...'**
+  String get aiVerifyingProof;
+
+  /// No description provided for @proofVerifiedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Proof verified successfully!'**
+  String get proofVerifiedSuccessfully;
+
+  /// No description provided for @noProofRequestsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No proof requests found'**
+  String get noProofRequestsFound;
+
+  /// No description provided for @fromLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'From: {name}'**
+  String fromLabel(String name);
+
+  /// No description provided for @investor.
+  ///
+  /// In en, this message translates to:
+  /// **'Investor'**
+  String get investor;
+
+  /// No description provided for @toLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'To: {name}'**
+  String toLabel(String name);
+
+  /// No description provided for @mustSubmitBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'Must submit before {date}'**
+  String mustSubmitBefore(String date);
+
+  /// No description provided for @aiNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Notes: {notes}'**
+  String aiNotes(String notes);
+
+  /// No description provided for @submitPhotoProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Photo Proof'**
+  String get submitPhotoProof;
+
+  /// No description provided for @createNewTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Create New Task'**
+  String get createNewTask;
+
+  /// No description provided for @taskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Task Title'**
+  String get taskTitle;
+
+  /// No description provided for @taskTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Water the tomatoes'**
+  String get taskTitleHint;
+
+  /// No description provided for @descriptionOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (Optional)'**
+  String get descriptionOptional;
+
+  /// No description provided for @taskType.
+  ///
+  /// In en, this message translates to:
+  /// **'Task Type'**
+  String get taskType;
+
+  /// No description provided for @rewardLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward'**
+  String get rewardLabel;
+
+  /// No description provided for @rewardAmountTnd.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} TND'**
+  String rewardAmountTnd(String amount);
+
+  /// No description provided for @timeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get timeLabel;
+
+  /// No description provided for @minutesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} mins'**
+  String minutesCount(String count);
+
+  /// No description provided for @createTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Task'**
+  String get createTask;
+
+  /// No description provided for @pleaseEnterTaskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a task title'**
+  String get pleaseEnterTaskTitle;
+
+  /// No description provided for @taskCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Task created successfully!'**
+  String get taskCreated;
+
+  /// No description provided for @tasksForLand.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks for {landName}'**
+  String tasksForLand(String landName);
+
+  /// No description provided for @open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get open;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @noTasksHere.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks here'**
+  String get noTasksHere;
+
+  /// No description provided for @activeTasksCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Active Tasks'**
+  String activeTasksCount(String count);
+
+  /// No description provided for @farmerPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Farmer Pro'**
+  String get farmerPro;
+
+  /// No description provided for @assignedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned to {name}'**
+  String assignedTo(String name);
+
+  /// No description provided for @taskLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Task Limit Reached'**
+  String get taskLimitReached;
+
+  /// No description provided for @taskLimitReachedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You can only have {count} active tasks on the free plan.'**
+  String taskLimitReachedMessage(String count);
+
+  /// No description provided for @water.
+  ///
+  /// In en, this message translates to:
+  /// **'Water'**
+  String get water;
+
+  /// No description provided for @harvest.
+  ///
+  /// In en, this message translates to:
+  /// **'Harvest'**
+  String get harvest;
+
+  /// No description provided for @feed.
+  ///
+  /// In en, this message translates to:
+  /// **'Feed'**
+  String get feed;
+
+  /// No description provided for @install.
+  ///
+  /// In en, this message translates to:
+  /// **'Install'**
+  String get install;
+
+  /// No description provided for @maintenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance'**
+  String get maintenance;
+
+  /// No description provided for @inProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get inProgress;
+
+  /// No description provided for @completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completed;
+
+  /// No description provided for @paymentFailedGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment could not be completed.'**
+  String get paymentFailedGeneric;
+
+  /// No description provided for @paymentFailedWithError.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment failed: {error}'**
+  String paymentFailedWithError(String error);
+
+  /// No description provided for @proofRequestedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A proof request has been sent to the worker.'**
+  String get proofRequestedHint;
+
+  /// No description provided for @requestAIProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Request AI Proof'**
+  String get requestAIProof;
+
+  /// No description provided for @noProofsRequestedUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'NO PROOFS REQUESTED'**
+  String get noProofsRequestedUpper;
+
+  /// No description provided for @requestProofHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the worker to submit photo evidence of their work.'**
+  String get requestProofHint;
+
+  /// No description provided for @removeWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Worker'**
+  String get removeWorker;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @workerRemovedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker removed successfully'**
+  String get workerRemovedSuccessfully;
+
+  /// No description provided for @failedToRemoveWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to remove worker'**
+  String get failedToRemoveWorker;
+
+  /// No description provided for @systemErrorUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'SYSTEM ERROR'**
+  String get systemErrorUpper;
+
+  /// No description provided for @retryConnectionUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'RETRY CONNECTION'**
+  String get retryConnectionUpper;
+
+  /// No description provided for @myInvestments.
+  ///
+  /// In en, this message translates to:
+  /// **'My Investments'**
+  String get myInvestments;
+
+  /// No description provided for @rentalConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Rental Confirmed'**
+  String get rentalConfirmed;
+
+  /// No description provided for @rentalConfirmedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your rental has been confirmed and the equipment will be delivered soon.'**
+  String get rentalConfirmedDescription;
+
+  /// No description provided for @goToDashboardUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'GO TO DASHBOARD'**
+  String get goToDashboardUpper;
+
+  /// No description provided for @manageCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Cards'**
+  String get manageCards;
+
+  /// No description provided for @cardAddedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Card added successfully'**
+  String get cardAddedSuccessfully;
+
+  /// No description provided for @cancelledOrFailedToAddCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled or failed to add card.'**
+  String get cancelledOrFailedToAddCard;
+
+  /// No description provided for @allocatingSpatialResources.
+  ///
+  /// In en, this message translates to:
+  /// **'Allocating spatial resources...'**
+  String get allocatingSpatialResources;
+
+  /// No description provided for @paymentFailedTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment failed. Please try again.'**
+  String get paymentFailedTryAgain;
+
+  /// No description provided for @paymentIssueHint.
+  ///
+  /// In en, this message translates to:
+  /// **'There was an issue processing your payment.'**
+  String get paymentIssueHint;
+
+  /// No description provided for @payNowUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'PAY NOW'**
+  String get payNowUpper;
+
+  /// No description provided for @pleaseSelectPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a payment method'**
+  String get pleaseSelectPaymentMethod;
+
+  /// No description provided for @securingRental.
+  ///
+  /// In en, this message translates to:
+  /// **'Securing rental...'**
+  String get securingRental;
+
+  /// No description provided for @agreeToTermsAndPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the Terms and Privacy Policy'**
+  String get agreeToTermsAndPrivacy;
+
+  /// No description provided for @totalAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Amount'**
+  String get totalAmount;
+
+  /// No description provided for @amountTND.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} TND'**
+  String amountTND(String amount);
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @nMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} months'**
+  String nMonths(String count);
+
+  /// No description provided for @totalProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Project'**
+  String get totalProject;
+
+  /// No description provided for @walletCredits.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet Credits'**
+  String get walletCredits;
+
+  /// No description provided for @availableInstantPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Available for instant payment'**
+  String get availableInstantPayment;
+
+  /// No description provided for @monthlyRent.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Rent'**
+  String get monthlyRent;
+
+  /// No description provided for @defaultMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get defaultMethod;
+
+  /// No description provided for @savedCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Card'**
+  String get savedCard;
+
+  /// No description provided for @changeAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get changeAction;
+
+  /// No description provided for @insufficientCredits.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient Credits: {amount} available'**
+  String insufficientCredits(String amount);
+
+  /// No description provided for @addPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Payment Method'**
+  String get addPaymentMethod;
+
+  /// No description provided for @balanceAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance: {amount} TND'**
+  String balanceAmount(String amount);
+
+  /// No description provided for @startingFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting from'**
+  String get startingFrom;
+
+  /// No description provided for @monthAbbreviation.
+  ///
+  /// In en, this message translates to:
+  /// **'mo'**
+  String get monthAbbreviation;
+
+  /// No description provided for @monthsAbbreviation.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} mos'**
+  String monthsAbbreviation(String count);
+
+  /// No description provided for @paymentSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure payment processed by Stripe.'**
+  String get paymentSecurity;
+
+  /// No description provided for @availableUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'AVAILABLE'**
+  String get availableUpper;
+
+  /// No description provided for @organicPlotGrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Organic plot ({w}x{h} grid)'**
+  String organicPlotGrid(String w, String h);
+
+  /// No description provided for @checkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout'**
+  String get checkout;
+
+  /// No description provided for @leaseStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Lease Start Date'**
+  String get leaseStartDate;
+
+  /// No description provided for @rentalDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Rental Duration'**
+  String get rentalDuration;
+
+  /// No description provided for @failedToLoadRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load records.'**
+  String get failedToLoadRecords;
+
+  /// No description provided for @noBlockchainRecordsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No Blockchain Records Yet'**
+  String get noBlockchainRecordsYet;
+
+  /// No description provided for @makePurchaseImmutableRecordsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a purchase to see immutable records here.'**
+  String get makePurchaseImmutableRecordsHint;
+
+  /// No description provided for @pendingUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'PENDING'**
+  String get pendingUpper;
+
+  /// No description provided for @rejectedUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'REJECTED'**
+  String get rejectedUpper;
+
+  /// No description provided for @fetchingBlockchainRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetching blockchain records...'**
+  String get fetchingBlockchainRecords;
+
+  /// No description provided for @transactionIdCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction ID copied to clipboard'**
+  String get transactionIdCopied;
+
+  /// No description provided for @paidUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'PAID'**
+  String get paidUpper;
+
+  /// No description provided for @approvedUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'APPROVED'**
+  String get approvedUpper;
+
+  /// No description provided for @rentalsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rentals'**
+  String get rentalsLabel;
+
+  /// No description provided for @purchasesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases'**
+  String get purchasesLabel;
+
+  /// No description provided for @hederaConsensusServiceUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'HEDERA CONSENSUS SERVICE'**
+  String get hederaConsensusServiceUpper;
+
+  /// No description provided for @proofSubmittedVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Proof submitted and verified successfully.'**
+  String get proofSubmittedVerified;
+
+  /// No description provided for @hederaRegistryUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'HEDERA REGISTRY'**
+  String get hederaRegistryUpper;
+
+  /// No description provided for @immutableOnChainRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Immutable On-Chain Records'**
+  String get immutableOnChainRecords;
 }
 
 class _AppLocalizationsDelegate

@@ -3020,4 +3020,369 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get hourly => 'Horaire';
+
+  @override
+  String get listingPublished => 'Annonce publiée';
+
+  @override
+  String get listingPublishedHint =>
+      'Votre annonce est maintenant visible publiquement.';
+
+  @override
+  String get continueLabelUpper => 'CONTINUER';
+
+  @override
+  String get failedToLoadProofs => 'Échec du chargement des preuves';
+
+  @override
+  String get aiVerifyingProof => 'L\'IA vérifie votre preuve...';
+
+  @override
+  String get proofVerifiedSuccessfully => 'Preuve vérifiée avec succès !';
+
+  @override
+  String get noProofRequestsFound => 'Aucune demande de preuve trouvée';
+
+  @override
+  String fromLabel(String name) {
+    return 'De : $name';
+  }
+
+  @override
+  String get investor => 'Investisseur';
+
+  @override
+  String toLabel(String name) {
+    return 'À : $name';
+  }
+
+  @override
+  String mustSubmitBefore(String date) {
+    return 'Soumettre avant le $date';
+  }
+
+  @override
+  String aiNotes(String notes) {
+    return 'Notes IA : $notes';
+  }
+
+  @override
+  String get submitPhotoProof => 'Soumettre une preuve photo';
+
+  @override
+  String get createNewTask => 'Créer une nouvelle tâche';
+
+  @override
+  String get taskTitle => 'Titre de la tâche';
+
+  @override
+  String get taskTitleHint => 'ex. Arroser les tomates';
+
+  @override
+  String get descriptionOptional => 'Description (Optionnel)';
+
+  @override
+  String get taskType => 'Type de tâche';
+
+  @override
+  String get rewardLabel => 'Récompense';
+
+  @override
+  String rewardAmountTnd(String amount) {
+    return '$amount TND';
+  }
+
+  @override
+  String get timeLabel => 'Temps';
+
+  @override
+  String minutesCount(String count) {
+    return '$count min';
+  }
+
+  @override
+  String get createTask => 'Créer la tâche';
+
+  @override
+  String get pleaseEnterTaskTitle => 'Veuillez entrer un titre';
+
+  @override
+  String get taskCreated => 'Tâche créée avec succès !';
+
+  @override
+  String tasksForLand(String landName) {
+    return 'Tâches pour $landName';
+  }
+
+  @override
+  String get open => 'Ouvert';
+
+  @override
+  String get done => 'Terminé';
+
+  @override
+  String get noTasksHere => 'Aucune tâche ici';
+
+  @override
+  String activeTasksCount(String count) {
+    return '$count Tâches Actives';
+  }
+
+  @override
+  String get farmerPro => 'Farmer Pro';
+
+  @override
+  String assignedTo(String name) {
+    return 'Assigné à $name';
+  }
+
+  @override
+  String get taskLimitReached => 'Limite de tâches atteinte';
+
+  @override
+  String taskLimitReachedMessage(String count) {
+    return 'Vous ne pouvez avoir que $count tâches actives avec le plan gratuit.';
+  }
+
+  @override
+  String get water => 'Arroser';
+
+  @override
+  String get harvest => 'Récolter';
+
+  @override
+  String get feed => 'Nourrir';
+
+  @override
+  String get install => 'Installer';
+
+  @override
+  String get maintenance => 'Maintenance';
+
+  @override
+  String get inProgress => 'En cours';
+
+  @override
+  String get completed => 'Terminé';
+
+  @override
+  String get paymentFailedGeneric => 'Le paiement n\'a pas pu être effectué.';
+
+  @override
+  String paymentFailedWithError(String error) {
+    return 'Paiement échoué : $error';
+  }
+
+  @override
+  String get proofRequestedHint =>
+      'Une demande de preuve a été envoyée au travailleur.';
+
+  @override
+  String get requestAIProof => 'Demander une preuve IA';
+
+  @override
+  String get noProofsRequestedUpper => 'AUCUNE PREUVE DEMANDÉE';
+
+  @override
+  String get requestProofHint =>
+      'Demandez au travailleur de soumettre une preuve photographique de son travail.';
+
+  @override
+  String get removeWorker => 'Supprimer le travailleur';
+
+  @override
+  String get remove => 'Supprimer';
+
+  @override
+  String get workerRemovedSuccessfully => 'Travailleur supprimé avec succès';
+
+  @override
+  String get failedToRemoveWorker => 'Échec de la suppression du travailleur';
+
+  @override
+  String get systemErrorUpper => 'ERREUR SYSTÈME';
+
+  @override
+  String get retryConnectionUpper => 'RÉESSAYER LA CONNEXION';
+
+  @override
+  String get myInvestments => 'Mes investissements';
+
+  @override
+  String get rentalConfirmed => 'Location confirmée';
+
+  @override
+  String get rentalConfirmedDescription =>
+      'Votre location a été confirmée et le matériel sera bientôt livré.';
+
+  @override
+  String get goToDashboardUpper => 'ALLER AU TABLEAU DE BORD';
+
+  @override
+  String get manageCards => 'Gérer les cartes';
+
+  @override
+  String get cardAddedSuccessfully => 'Carte ajoutée avec succès';
+
+  @override
+  String get cancelledOrFailedToAddCard =>
+      'Annulé ou échec de l\'ajout de la carte.';
+
+  @override
+  String get allocatingSpatialResources =>
+      'Allocation des ressources spatiales...';
+
+  @override
+  String get paymentFailedTryAgain => 'Paiement échoué. Veuillez réessayer.';
+
+  @override
+  String get paymentIssueHint =>
+      'Un problème est survenu lors du traitement de votre paiement.';
+
+  @override
+  String get payNowUpper => 'PAYER MAINTENANT';
+
+  @override
+  String get pleaseSelectPaymentMethod =>
+      'Veuillez sélectionner un mode de paiement';
+
+  @override
+  String get securingRental => 'Sécurisation de la location...';
+
+  @override
+  String get agreeToTermsAndPrivacy =>
+      'J\'accepte les conditions et la politique de confidentialité';
+
+  @override
+  String get totalAmount => 'Montant total';
+
+  @override
+  String amountTND(String amount) {
+    return '$amount TND';
+  }
+
+  @override
+  String get duration => 'Durée';
+
+  @override
+  String nMonths(String count) {
+    return '$count mois';
+  }
+
+  @override
+  String get totalProject => 'Projet Total';
+
+  @override
+  String get walletCredits => 'Crédits du portefeuille';
+
+  @override
+  String get availableInstantPayment =>
+      'Disponible pour un paiement instantané';
+
+  @override
+  String get monthlyRent => 'Loyer Mensuel';
+
+  @override
+  String get defaultMethod => 'Par défaut';
+
+  @override
+  String get savedCard => 'Carte enregistrée';
+
+  @override
+  String get changeAction => 'Modifier';
+
+  @override
+  String insufficientCredits(String amount) {
+    return 'Crédits insuffisants: $amount disponible';
+  }
+
+  @override
+  String get addPaymentMethod => 'Ajouter un mode de paiement';
+
+  @override
+  String balanceAmount(String amount) {
+    return 'Solde: $amount TND';
+  }
+
+  @override
+  String get startingFrom => 'À partir de';
+
+  @override
+  String get monthAbbreviation => 'mois';
+
+  @override
+  String monthsAbbreviation(String count) {
+    return '$count mois';
+  }
+
+  @override
+  String get paymentSecurity => 'Paiement sécurisé traité par Stripe.';
+
+  @override
+  String get availableUpper => 'DISPONIBLE';
+
+  @override
+  String organicPlotGrid(String w, String h) {
+    return 'Parcelle biologique (grille ${w}x$h)';
+  }
+
+  @override
+  String get checkout => 'Paiement';
+
+  @override
+  String get leaseStartDate => 'Date de début du bail';
+
+  @override
+  String get rentalDuration => 'Durée de location';
+
+  @override
+  String get failedToLoadRecords => 'Échec du chargement des enregistrements.';
+
+  @override
+  String get noBlockchainRecordsYet =>
+      'Aucun enregistrement Blockchain pour le moment';
+
+  @override
+  String get makePurchaseImmutableRecordsHint =>
+      'Effectuez un achat pour voir les enregistrements immuables ici.';
+
+  @override
+  String get pendingUpper => 'EN ATTENTE';
+
+  @override
+  String get rejectedUpper => 'REJETÉ';
+
+  @override
+  String get fetchingBlockchainRecords =>
+      'Récupération des enregistrements blockchain...';
+
+  @override
+  String get transactionIdCopied =>
+      'ID de transaction copié dans le presse-papiers';
+
+  @override
+  String get paidUpper => 'PAYÉ';
+
+  @override
+  String get approvedUpper => 'APPROUVÉ';
+
+  @override
+  String get rentalsLabel => 'Locations';
+
+  @override
+  String get purchasesLabel => 'Achats';
+
+  @override
+  String get hederaConsensusServiceUpper => 'SERVICE DE CONSENSUS HEDERA';
+
+  @override
+  String get proofSubmittedVerified =>
+      'Preuve soumise et vérifiée avec succès.';
+
+  @override
+  String get hederaRegistryUpper => 'REGISTRE HEDERA';
+
+  @override
+  String get immutableOnChainRecords =>
+      'Enregistrements immuables sur la chaîne';
 }
