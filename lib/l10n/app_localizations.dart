@@ -3320,11 +3320,11 @@ abstract class AppLocalizations {
   /// **'Contract'**
   String get contract;
 
-  /// No description provided for @paymentFailed.
+  /// No description provided for @paymentFailedCancelled.
   ///
   /// In en, this message translates to:
   /// **'Payment failed or cancelled.'**
-  String paymentFailed(String error);
+  String get paymentFailedCancelled;
 
   /// No description provided for @farmerInfoSyncedFromAssignment.
   ///
@@ -5287,6 +5287,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to place item. Try elsewhere.'**
   String get placementFailedGeneric;
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d ago'**
+  String daysAgo(String count);
+
+  /// No description provided for @couldNotOpenHashScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open HashScan'**
+  String get couldNotOpenHashScan;
+
+  /// No description provided for @setMonthlySalary.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Monthly Salary'**
+  String get setMonthlySalary;
+
+  /// No description provided for @assign.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign'**
+  String get assign;
+
+  /// No description provided for @tasksLabelShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks'**
+  String get tasksLabelShort;
+
+  /// No description provided for @assignToLand.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign to Land'**
+  String get assignToLand;
+
+  /// No description provided for @invitationSentTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation sent to {worker}'**
+  String invitationSentTo(String worker);
+
+  /// No description provided for @failedToSendInvitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send invitation'**
+  String get failedToSendInvitation;
+
+  /// No description provided for @inviteWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Worker'**
+  String get inviteWorker;
+
+  /// No description provided for @inviteWorkerMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite {worker} to {landName}'**
+  String inviteWorkerMessage(String worker, String landName);
+
+  /// No description provided for @optionalMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional message...'**
+  String get optionalMessageHint;
+
+  /// No description provided for @sendInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Invite'**
+  String get sendInvite;
+
+  /// No description provided for @workerAssignedToLand.
+  ///
+  /// In en, this message translates to:
+  /// **'{worker} assigned to {landName}'**
+  String workerAssignedToLand(String worker, String landName);
+
+  /// No description provided for @failedToAssignWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to assign worker'**
+  String get failedToAssignWorker;
+
+  /// No description provided for @directMessagingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct messaging description'**
+  String get directMessagingDescription;
+
+  /// No description provided for @readReviewsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Read reviews description'**
+  String get readReviewsDescription;
+
+  /// No description provided for @messageWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Message Worker'**
+  String get messageWorker;
+
+  /// No description provided for @viewReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'View Reviews'**
+  String get viewReviews;
+
+  /// No description provided for @inviteToLand.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite to Land'**
+  String get inviteToLand;
+
+  /// No description provided for @amountPerHour.
+  ///
+  /// In en, this message translates to:
+  /// **'\${amount}/h'**
+  String amountPerHour(String amount);
+
+  /// No description provided for @onTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'On-Time'**
+  String get onTimeLabel;
+
+  /// No description provided for @disputesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Disputes'**
+  String get disputesLabel;
+
+  /// No description provided for @skills.
+  ///
+  /// In en, this message translates to:
+  /// **'Skills'**
+  String get skills;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @performance.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance'**
+  String get performance;
+
+  /// No description provided for @performanceGraphComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance Graph Coming Soon'**
+  String get performanceGraphComingSoon;
+
+  /// No description provided for @manager.
+  ///
+  /// In en, this message translates to:
+  /// **'Manager'**
+  String get manager;
+
+  /// No description provided for @pendingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingLabel;
+
+  /// No description provided for @inactiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get inactiveLabel;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @salary.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary'**
+  String get salary;
+
+  /// No description provided for @supervisor.
+  ///
+  /// In en, this message translates to:
+  /// **'Supervisor'**
+  String get supervisor;
+
+  /// No description provided for @landDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Land Details'**
+  String get landDetails;
+
+  /// No description provided for @amountPerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'\${amount}/mo'**
+  String amountPerMonth(String amount);
 }
 
 class _AppLocalizationsDelegate

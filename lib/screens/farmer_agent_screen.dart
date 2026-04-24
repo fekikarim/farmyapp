@@ -332,7 +332,7 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(color: Colors.green.shade800),
-            child: const Center(
+            child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

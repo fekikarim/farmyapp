@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/shop_service.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class InvestorInventoryScreen extends StatefulWidget {
   const InvestorInventoryScreen({super.key});

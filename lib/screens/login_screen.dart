@@ -445,7 +445,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                                                   20,
                                                                 ),
                                                           ),
-                                                          title: const Text(
+                                                          title: Text(
                                                             AppLocalizations.of(context)!.loginFailed,
                                                             style: TextStyle(
                                                               fontSize: 18,
@@ -464,7 +464,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                                                   Navigator.pop(
                                                                     context,
                                                                   ),
-                                                              child: const Text(
+                                                              child: Text(
                                                                 AppLocalizations.of(context)!.ok,
                                                               ),
                                                             ),

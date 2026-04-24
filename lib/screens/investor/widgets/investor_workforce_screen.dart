@@ -15,6 +15,7 @@ import '../../../models/proof_request_model.dart';
 import '../../../models/placed_item_model.dart';
 import '../../../services/land_service.dart';
 import '../../shared/contract_negotiation_screen.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class InvestorWorkforceScreen extends StatefulWidget {
   final String landId;
@@ -343,7 +344,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Salary Amount
-                const Text(
+                Text(
                   AppLocalizations.of(context)!.salaryAmountTNDUpper,
                   style: TextStyle(
                     fontSize: 10,
@@ -362,7 +363,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                 const SizedBox(height: 16),
 
                 // Salary Type
-                const Text(
+                Text(
                   AppLocalizations.of(context)!.salaryTypeUpper,
                   style: TextStyle(
                     fontSize: 10,
@@ -421,7 +422,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             AppLocalizations.of(context)!.startDateUpper,
                             style: TextStyle(
                               fontSize: 10,
@@ -488,7 +489,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             AppLocalizations.of(context)!.endDateUpper,
                             style: TextStyle(
                               fontSize: 10,
@@ -555,7 +556,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                 const SizedBox(height: 16),
 
                 // Message
-                const Text(
+                Text(
                   AppLocalizations.of(context)!.messageOptionalUpper,
                   style: TextStyle(
                     fontSize: 10,
@@ -577,7 +578,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text(
+              child: Text(
                 AppLocalizations.of(context)!.cancelUpper,
                 style: TextStyle(
                   color: Colors.white54,
@@ -591,7 +592,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                 final salary = double.tryParse(salaryController.text);
                 if (salary == null || salary <= 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       content: Text(AppLocalizations.of(context)!.pleaseEnterValidSalary),
                       backgroundColor: Colors.redAccent,
                     ),
@@ -639,7 +640,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 AppLocalizations.of(context)!.sendProposalUpper,
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
@@ -722,7 +723,7 @@ class _ApprovedWorkersTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               AppLocalizations.of(context)!.noApprovedWorkersUpper,
               style: TextStyle(
                 fontSize: 16,
@@ -732,7 +733,7 @@ class _ApprovedWorkersTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               AppLocalizations.of(context)!.inviteWorkersMarketplaceHint,
               style: TextStyle(fontSize: 14, color: Colors.white54),
             ),
@@ -850,7 +851,7 @@ class _ApprovedWorkersTab extends StatelessWidget {
                               ),
                             )
                           else
-                            const Text(
+                            Text(
                               AppLocalizations.of(context)!.noSpecialSkillsUpper,
                               style: TextStyle(
                                 fontSize: 9,
@@ -875,7 +876,7 @@ class _ApprovedWorkersTab extends StatelessWidget {
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
+                      child: Text(
                         AppLocalizations.of(context)!.hireUpper,
                         style: TextStyle(
                           fontSize: 11,
@@ -939,7 +940,7 @@ class _NegotiationsTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               AppLocalizations.of(context)!.noActiveNegotiationsUpper,
               style: TextStyle(
                 fontSize: 16,
@@ -949,7 +950,7 @@ class _NegotiationsTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               AppLocalizations.of(context)!.hireApprovedWorkerNegotiationHint,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.white54),
@@ -1247,7 +1248,7 @@ class _ActiveWorkersTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               AppLocalizations.of(context)!.noActiveWorkersUpper,
               style: TextStyle(
                 fontSize: 16,
@@ -1257,7 +1258,7 @@ class _ActiveWorkersTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               AppLocalizations.of(context)!.hireActivateWorkersHint,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.white54),
@@ -1531,11 +1532,11 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: RadioListTile<String>(
-                  title: const Text(
+                  title: Text(
                     AppLocalizations.of(context)!.entireLand,
                     style: TextStyle(fontSize: 14),
                   ),
-                  subtitle: const Text(
+                  subtitle: Text(
                     AppLocalizations.of(context)!.generalFarmingActivity,
                     style: TextStyle(fontSize: 11),
                   ),
@@ -1619,7 +1620,7 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 AppLocalizations.of(context)!.request,
                 style: TextStyle(color: Colors.white),
               ),
@@ -1644,7 +1645,7 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
       if (errorMsg == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
+            content: Text(
               AppLocalizations.of(context)!.proofRequestedHint,
             ),
             backgroundColor: Colors.green.shade600,
@@ -1726,7 +1727,7 @@ class _ProofsTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               AppLocalizations.of(context)!.noProofsRequestedUpper,
               style: TextStyle(
                 fontSize: 16,
@@ -1736,7 +1737,7 @@ class _ProofsTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               AppLocalizations.of(context)!.requestProofHint,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.white54),
@@ -2224,7 +2225,7 @@ Widget _errorView({
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             AppLocalizations.of(context)!.systemErrorUpper,
             style: TextStyle(
               fontSize: 16,
@@ -2248,7 +2249,7 @@ Widget _errorView({
           ElevatedButton.icon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh, size: 18, color: Colors.black),
-            label: const Text(
+            label: Text(
               AppLocalizations.of(context)!.retryConnectionUpper,
               style: TextStyle(
                 fontWeight: FontWeight.w900,

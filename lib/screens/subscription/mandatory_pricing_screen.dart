@@ -12,6 +12,7 @@ import '../../providers/worker_provider.dart';
 import '../../services/subscription_service.dart';
 import '../../services/stripe_runtime_service.dart';
 import '../../theme/app_theme.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 enum _MandatoryPaymentMethod { credits, stripe }
 
@@ -298,7 +299,7 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
             isUserCancelled
                 ? AppLocalizations.of(context)!.paymentCancelled
                 : (e.error.localizedMessage ??
-                      AppLocalizations.of(context)!.paymentFailed),
+                      AppLocalizations.of(context)!.paymentFailedGeneric),
             isWarning: true,
           );
         }
@@ -593,7 +594,7 @@ class _Header extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.lock_rounded, color: Colors.white, size: 12),
@@ -617,7 +618,7 @@ class _Header extends StatelessWidget {
             shaderCallback: (bounds) => LinearGradient(
               colors: [AppTheme.primaryColor, AppTheme.secondaryColor],
             ).createShader(bounds),
-            child: const Text(
+            child: Text(
               AppLocalizations.of(context)!.chooseYourPlan,
               style: TextStyle(
                 fontSize: 28,
@@ -1381,7 +1382,7 @@ class _ErrorState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               AppLocalizations.of(context)!.failedLoadPlans,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -1420,7 +1421,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

@@ -9,6 +9,7 @@ import '../../services/subscription_service.dart';
 import '../../services/stripe_runtime_service.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 enum _SubscriptionPaymentMethod { credits, stripe }
 
@@ -143,7 +144,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
               pinned: true,
               stretch: true,
               flexibleSpace: FlexibleSpaceBar(
-                title: const Text(
+                title: Text(
                   AppLocalizations.of(context)!.farmyPremium,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
@@ -417,7 +418,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: const [
+                          children: [
                             Icon(
                               Icons.check_circle,
                               color: Colors.green,

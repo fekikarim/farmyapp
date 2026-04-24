@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/hedera_service.dart';
-
+import 'package:farmyapp/l10n/app_localizations.dart';
 class HederaRegistryScreen extends StatefulWidget {
   const HederaRegistryScreen({super.key});
 
@@ -615,9 +615,9 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
     final now = DateTime.now();
     final diff = now.difference(dt);
     if (diff.inMinutes < 1) return AppLocalizations.of(context)!.justNow;
-    if (diff.inHours < 1) return AppLocalizations.of(context)!.minutesAgo(diff.inMinutes);
-    if (diff.inDays < 1) return AppLocalizations.of(context)!.hoursAgo(diff.inHours);
-    if (diff.inDays < 7) return AppLocalizations.of(context)!.daysAgo(diff.inDays);
+    if (diff.inHours < 1) return AppLocalizations.of(context)!.minutesAgo(diff.inMinutes.toString());
+    if (diff.inDays < 1) return AppLocalizations.of(context)!.hoursAgo(diff.inHours.toString());
+    if (diff.inDays < 7) return AppLocalizations.of(context)!.daysAgo(diff.inDays.toString());
     return '${dt.day}/${dt.month}/${dt.year}';
   }
 

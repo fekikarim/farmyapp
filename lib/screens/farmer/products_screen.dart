@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class FarmerProductsScreen extends StatelessWidget {
   const FarmerProductsScreen({super.key});

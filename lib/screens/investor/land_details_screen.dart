@@ -13,6 +13,7 @@ import '../farmer/workforce_screen.dart';
 import '../investment_agent_screen.dart';
 import 'rental_checkout_screen.dart';
 import 'dart:ui';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class LandDetailsScreen extends StatefulWidget {
   final Land land;
@@ -341,7 +342,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                         Icons.people_alt_outlined,
                         color: Colors.white,
                       ),
-                      label: const Text(
+                      label: Text(
                         AppLocalizations.of(context)!.manageWorkers,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,

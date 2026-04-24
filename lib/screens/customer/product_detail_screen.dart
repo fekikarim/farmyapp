@@ -4,6 +4,7 @@ import '../../models/product_model.dart';
 import '../../providers/basket_provider.dart';
 import '../../widgets/profile_preview_sheet.dart';
 import '../../services/auth_service.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -118,7 +119,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   if (_isOutOfStock)
                     Container(
                       color: Colors.black.withOpacity(0.5),
-                      child: const Center(
+                      child: Center(
                         child: Text(
                           AppLocalizations.of(context)!.outOfStock,
                           style: TextStyle(

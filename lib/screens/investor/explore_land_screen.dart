@@ -11,6 +11,7 @@ import '../../models/land_rental_model.dart';
 import 'land_details_screen.dart';
 import 'package:farmyapp/widgets/subscription_limit_bar.dart';
 import 'widgets/investor_workforce_screen.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class InvestorExploreLandScreen extends StatefulWidget {
   const InvestorExploreLandScreen({super.key});
@@ -285,7 +286,7 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                       Icons.engineering_rounded,
                       color: Colors.white,
                     ),
-                    label: const Text(
+                    label: Text(
                       AppLocalizations.of(context)!.workforce,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,

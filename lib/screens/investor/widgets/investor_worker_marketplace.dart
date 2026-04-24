@@ -4,6 +4,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../../providers/worker_provider.dart';
 import '../../../../models/worker_profile_model.dart';
 import '../../shared/worker_detail_screen.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class InvestorWorkerMarketplace extends StatefulWidget {
   final String landId;
@@ -305,7 +306,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             AppLocalizations.of(context)!.noWorkersFoundUpper,
             style: TextStyle(
               fontSize: 16,
@@ -315,7 +316,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             AppLocalizations.of(context)!.tryAdjustingFilters,
             style: TextStyle(fontSize: 14, color: Colors.white54),
           ),
@@ -620,7 +621,7 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                           color: Colors.greenAccent.withOpacity(0.5),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         AppLocalizations.of(context)!.hireUpper,
                         style: TextStyle(
                           color: Colors.greenAccent,

@@ -58,7 +58,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
     if (!_formKey.currentState!.validate()) return;
     if (_selectedSkills.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(AppLocalizations.of(context)!.selectAtLeastOneSkill),
           backgroundColor: Colors.redAccent,
         ),
@@ -79,7 +79,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
+            content: Text(
               AppLocalizations.of(context)!.workerProfileCreated,
             ),
             backgroundColor: Colors.green.shade700,

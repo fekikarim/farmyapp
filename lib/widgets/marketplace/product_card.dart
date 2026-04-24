@@ -292,7 +292,7 @@ class ProductCard extends StatelessWidget {
     } else {
       messenger.showSnackBar(
         SnackBar(
-          content: const Row(
+          content: Row(
             children: [
               Icon(Icons.warning_amber_rounded,
                   color: Colors.white, size: 18),

@@ -202,7 +202,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                             fit: BoxFit.cover,
                           ),
                         )
-                      : const Column(
+                      : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(

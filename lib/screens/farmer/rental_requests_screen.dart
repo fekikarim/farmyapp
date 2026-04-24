@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/shop_service.dart';
 import '../../widgets/profile_preview_sheet.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class FarmerRentalRequestsScreen extends StatefulWidget {
   const FarmerRentalRequestsScreen({super.key});
@@ -57,7 +58,7 @@ class _FarmerRentalRequestsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
+            content: Text(
               AppLocalizations.of(context)!.imageProofRequiredToApprove,
             ),
             backgroundColor: Colors.orange.shade600,
@@ -75,7 +76,7 @@ class _FarmerRentalRequestsScreenState
       if (error == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Row(
+            content: Row(
               children: [
                 Icon(Icons.check_circle, color: Colors.white),
                 SizedBox(width: 12),
@@ -255,7 +256,7 @@ class _FarmerRentalRequestsScreenState
                         color: Colors.white,
                       ),
                     )
-                  : const Text(
+                  : Text(
                       AppLocalizations.of(context)!.confirmReject,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
@@ -268,7 +269,7 @@ class _FarmerRentalRequestsScreenState
     if (result == true && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Row(
+          content: Row(
             children: [
               Icon(Icons.check_circle, color: Colors.white),
               SizedBox(width: 12),
@@ -286,7 +287,7 @@ class _FarmerRentalRequestsScreenState
     } else if (result == false && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Row(
+          content: Row(
             children: [
               Icon(Icons.error_outline, color: Colors.white),
               SizedBox(width: 12),
@@ -809,7 +810,7 @@ class _FarmerRentalRequestsScreenState
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         AppLocalizations.of(context)!.rejectUpper,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -842,7 +843,7 @@ class _FarmerRentalRequestsScreenState
                                 color: Colors.white,
                               ),
                             )
-                          : const Text(
+                          : Text(
                               AppLocalizations.of(context)!.approveUpper,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -1066,7 +1067,7 @@ class _NetworkItemImageState extends State<_NetworkItemImage>
                 color: Colors.white.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.refresh, size: 10, color: Colors.white38),

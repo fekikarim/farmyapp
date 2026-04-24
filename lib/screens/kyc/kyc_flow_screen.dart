@@ -539,7 +539,7 @@ class _ValidationScreenState extends State<_ValidationScreen>
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       AppLocalizations.of(context)!.verifying,
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),

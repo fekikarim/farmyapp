@@ -177,7 +177,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
         if (!_isDisposed && mounted) {
           setState(() => _isListening = false);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
                 AppLocalizations.of(context)!.unableToStartVoiceInput,
               ),
@@ -275,7 +275,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
     } catch (_) {
       if (_isDisposed || !mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(AppLocalizations.of(context)!.couldNotSendMessage),
         ),
       );
@@ -300,7 +300,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
             onFieldSubmitted: (value) {
               Navigator.of(dialogContext).pop(value);
             },
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: AppLocalizations.of(context)!.updateYourMessage,
               border: OutlineInputBorder(),
             ),
@@ -353,7 +353,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
           onFieldSubmitted: (value) {
             Navigator.of(dialogContext).pop(value);
           },
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: AppLocalizations.of(context)!.chatTitle,
             border: OutlineInputBorder(),
           ),
@@ -550,7 +550,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
             PopupMenuButton<String>(
               tooltip: AppLocalizations.of(context)!.moreActions,
               onSelected: _handleTopBarAction,
-              itemBuilder: (context) => const [
+              itemBuilder: (context) => [
                 PopupMenuItem<String>(
                   value: 'sync',
                   child: Text(AppLocalizations.of(context)!.syncBackend),
@@ -592,7 +592,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               color: const Color(0xFFE4F2FF),
-              child: const Row(
+              child: Row(
                 children: [
                   SizedBox(
                     width: 14,
@@ -618,7 +618,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               color: const Color(0xFFFFF1D6),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(Icons.sync_problem, size: 16, color: Color(0xFF8A5A00)),
                   SizedBox(width: 8),
@@ -640,7 +640,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               color: const Color(0xFFFFF4D1),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(Icons.wifi_off, size: 16, color: Color(0xFFA06A00)),
                   SizedBox(width: 8),
@@ -731,7 +731,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
               padding: const EdgeInsets.fromLTRB(16, 10, 8, 10),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       AppLocalizations.of(context)!.conversations,
                       style: TextStyle(
@@ -797,7 +797,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                           trailing: PopupMenuButton<String>(
                             onSelected: (action) =>
                                 _handleChatMenuAction(action, chat),
-                            itemBuilder: (context) => const [
+                            itemBuilder: (context) => [
                               PopupMenuItem(
                                 value: 'rename',
                                 child: Text(AppLocalizations.of(context)!.rename),

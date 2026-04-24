@@ -36,7 +36,7 @@ class BannedScreen extends StatelessWidget {
                   color: Colors.white,
                 ),
                 const SizedBox(height: 24),
-                const Text(
+                Text(
                   AppLocalizations.of(context)!.accountBanned,
                   style: TextStyle(
                     fontSize: 28, 
@@ -46,7 +46,7 @@ class BannedScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   AppLocalizations.of(context)!.bannedDescription,
                   style: TextStyle(fontSize: 16, color: Colors.white70),
                   textAlign: TextAlign.center,

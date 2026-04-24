@@ -4,6 +4,7 @@ import '../../providers/worker_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../widgets/subscription_limit_bar.dart';
 import '../../models/task_model.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class TaskBoardScreen extends StatefulWidget {
   final String landId;
@@ -82,7 +83,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
+                  Text(
                     AppLocalizations.of(context)!.createNewTask,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
@@ -125,7 +126,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                   const SizedBox(height: 14),
 
                   // Task Type
-                  const Text(
+                  Text(
                     AppLocalizations.of(context)!.taskType,
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
@@ -147,7 +148,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                   // Reward
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         AppLocalizations.of(context)!.rewardLabel,
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
@@ -173,7 +174,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                   // Time
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         AppLocalizations.of(context)!.timeLabel,
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
@@ -210,7 +211,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         AppLocalizations.of(context)!.createTask,
                         style: TextStyle(
                           fontSize: 16,
@@ -255,7 +256,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
   Future<void> _createTask(BuildContext sheetContext) async {
     if (_titleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(AppLocalizations.of(context)!.pleaseEnterTaskTitle),
           backgroundColor: Colors.redAccent,
         ),
@@ -325,7 +326,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
             fontWeight: FontWeight.w600,
             fontSize: 13,
           ),
-          tabs: const [
+          tabs: [
             Tab(text: AppLocalizations.of(context)!.all),
             Tab(text: AppLocalizations.of(context)!.open),
             Tab(text: AppLocalizations.of(context)!.active),
@@ -595,7 +596,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   AppLocalizations.of(context)!.viewPlans,
                   style: TextStyle(
                     fontWeight: FontWeight.w900,

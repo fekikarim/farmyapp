@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import '../../models/worker_contract_model.dart';
 import '../../models/contract_negotiation_model.dart';
 import '../../providers/worker_lifecycle_provider.dart';
 import '../../services/auth_service.dart';
 import '../../services/stripe_runtime_service.dart';
 import '../../services/worker_lifecycle_service.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class ContractNegotiationScreen extends StatefulWidget {
   final WorkerContract contract;
@@ -684,7 +687,7 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
       if (mounted) {
         setState(() => _actionLoading = false);
         _showSnack(
-          AppLocalizations.of(context)!.paymentFailed(e.toString().replaceAll('Exception: ', '')),
+          AppLocalizations.of(context)!.paymentFailedWithError(e.toString().replaceAll('Exception: ', '')),
           isError: true,
         );
       }
@@ -1040,7 +1043,7 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
 
   /// System messages (accept / decline records) are rendered as centered pills
   bool _isSystemMessage(ContractNegotiation n) {
-    const systemPhrases = [
+    systemPhrases = [
       'Offer accepted. Proceeding to payment.',
       'Offer declined. This negotiation has been cancelled.',
       AppLocalizations.of(context)!.systemOfferAccepted,
@@ -1617,7 +1620,7 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
                   elevation: 0,
                   shadowColor: Colors.transparent,
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
@@ -1999,7 +2002,7 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
                   elevation: 0,
                   shadowColor: Colors.transparent,
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
@@ -2339,8 +2342,8 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     final diff = now.difference(dt);
     final l10n = AppLocalizations.of(context)!;
     if (diff.inMinutes < 1) return l10n.justNow;
-    if (diff.inMinutes < 60) return l10n.minutesAgo(diff.inMinutes);
-    if (diff.inHours < 24) return l10n.hoursAgo(diff.inHours);
+    if (diff.inMinutes < 60) return l10n.minutesAgo(diff.inMinutes.toString());
+    if (diff.inHours < 24) return l10n.hoursAgo(diff.inHours.toString());
     return DateFormat.Md(Localizations.localeOf(context).toString()).add_Hm().format(dt);
   }
 }

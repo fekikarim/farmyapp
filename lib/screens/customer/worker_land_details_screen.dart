@@ -10,6 +10,7 @@ import '../../providers/worker_lifecycle_provider.dart';
 import '../../providers/worker_provider.dart';
 import '../../services/land_service.dart';
 import '../../widgets/profile_preview_sheet.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class WorkerLandDetailsScreen extends StatefulWidget {
   final LandWorker assignment;
@@ -545,7 +546,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                 color: Colors.black.withOpacity(0.65),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Text(
+              child: Text(
                 AppLocalizations.of(context)!.landBoundary,
                 style: TextStyle(
                   color: Colors.white,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/wallet_provider.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class PaymentMethodsScreen extends StatefulWidget {
   const PaymentMethodsScreen({super.key});
@@ -184,7 +185,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                       padding: const EdgeInsets.all(24.0),
                       child: Column(
                         children: [
-                          const Text(
+                          Text(
                             AppLocalizations.of(context)!.currentBalance,
                             style: TextStyle(
                               color: Colors.white70,
@@ -216,7 +217,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   ),
 
                   const SizedBox(height: 24),
-                  const Text(
+                  Text(
                     AppLocalizations.of(context)!.paymentMethods,
                     style: TextStyle(
                       fontSize: 18,

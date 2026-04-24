@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../services/auth_service.dart';
 import '../../providers/auth_provider.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class WorkerTasksScreen extends StatefulWidget {
   const WorkerTasksScreen({Key? key}) : super(key: key);

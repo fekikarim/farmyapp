@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/validators.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -42,7 +43,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
     if (error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(AppLocalizations.of(context)!.passwordChangedSuccess),
           backgroundColor: Colors.green,
         ),

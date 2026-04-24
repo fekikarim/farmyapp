@@ -205,7 +205,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                       child: DropdownButton<LandRental>(
                         isExpanded: true,
                         value: _selectedLand,
-                        hint: const Text(
+                        hint: Text(
                           AppLocalizations.of(context)!.allLands,
                           style: TextStyle(
                             color: Colors.greenAccent,
@@ -225,7 +225,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                           fontWeight: FontWeight.bold,
                         ),
                         items: [
-                          const DropdownMenuItem<LandRental>(
+                          DropdownMenuItem<LandRental>(
                             value: null,
                             child: Text(AppLocalizations.of(context)!.allLands),
                           ),

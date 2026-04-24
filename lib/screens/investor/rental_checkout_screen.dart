@@ -9,6 +9,7 @@ import '../../providers/land_provider.dart';
 import '../../providers/wallet_provider.dart';
 import '../wallet/payment_methods_screen.dart'; // Added
 import 'dart:ui';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class RentalCheckoutScreen extends StatefulWidget {
   final Land land;
@@ -1105,7 +1106,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          AppLocalizations.of(context)!.paymentFailed,
+          AppLocalizations.of(context)!.paymentFailedGeneric,
           style: TextStyle(color: isDark ? Colors.white : Colors.black),
         ),
         content: Column(

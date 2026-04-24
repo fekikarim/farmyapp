@@ -68,7 +68,7 @@ class _MainScreenState extends State<MainScreen> {
         const SubscriptionsScreen(),
         const SettingsScreen(),
       ];
-      items = const [
+      items = [
         BottomNavigationBarItem(
           icon: Icon(Icons.home_outlined),
           activeIcon: Icon(Icons.home),
@@ -98,7 +98,7 @@ class _MainScreenState extends State<MainScreen> {
         const SizedBox(), // FarmerMyFarmsScreen() removed
         const SettingsScreen(),
       ];
-      items = const [
+      items = [
         BottomNavigationBarItem(
           icon: Icon(Icons.analytics_outlined),
           activeIcon: Icon(Icons.analytics),
@@ -133,7 +133,7 @@ class _MainScreenState extends State<MainScreen> {
         const InvestorRevenueScreen(),
         const SettingsScreen(),
       ];
-      items = const [
+      items = [
         BottomNavigationBarItem(
           icon: Icon(Icons.explore_outlined),
           activeIcon: Icon(Icons.explore),
@@ -162,7 +162,7 @@ class _MainScreenState extends State<MainScreen> {
       ];
     } else if (role == 'worker') {
       screens = [const WorkerTasksScreen(), const SettingsScreen()];
-      items = const [
+      items = [
         BottomNavigationBarItem(
           icon: Icon(Icons.assignment_outlined),
           activeIcon: Icon(Icons.assignment),

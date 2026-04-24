@@ -626,7 +626,7 @@ class _ShopOverlayState extends State<ShopOverlay>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
-              children: const [
+              children: [
                 Icon(Icons.verified, color: Color(0xFF9B59B6), size: 16),
                 SizedBox(width: 8),
                 Expanded(
@@ -853,7 +853,7 @@ class _ShopOverlayState extends State<ShopOverlay>
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.paymentFailed),
+          content: Text(AppLocalizations.of(context)!.paymentFailedCancelled),
           backgroundColor: Colors.redAccent,
         ),
       );

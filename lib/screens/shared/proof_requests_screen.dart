@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/proof_service.dart';
 import '../../services/auth_service.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class ProofRequestsScreen extends StatefulWidget {
   const ProofRequestsScreen({super.key});

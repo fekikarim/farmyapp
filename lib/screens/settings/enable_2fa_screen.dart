@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../providers/auth_provider.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class Enable2FAScreen extends StatefulWidget {
   const Enable2FAScreen({super.key});
@@ -37,7 +38,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppLocalizations.of(context)!.failedInitiate2FA)),
+        SnackBar(content: Text(AppLocalizations.of(context)!.failedInitiate2FA)),
       );
     }
   }
@@ -47,7 +48,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
     final error = await authProvider.confirm2fa(_codeController.text);
     if (error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppLocalizations.of(context)!.twoFAEnabledSuccess)),
+        SnackBar(content: Text(AppLocalizations.of(context)!.twoFAEnabledSuccess)),
       );
       Navigator.pop(context);
     } else {
@@ -62,7 +63,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
     final error = await authProvider.disable2fa(_codeController.text);
     if (error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppLocalizations.of(context)!.twoFADisabledSuccess)),
+        SnackBar(content: Text(AppLocalizations.of(context)!.twoFADisabledSuccess)),
       );
       Navigator.pop(context);
     } else {
@@ -75,7 +76,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
   void _copyToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Text(AppLocalizations.of(context)!.codeCopied),
         behavior: SnackBarBehavior.floating,
         duration: Duration(seconds: 2),
@@ -159,12 +160,12 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           AppLocalizations.of(context)!.linkYourAppStep,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           AppLocalizations.of(context)!.scanQRCodeDesc,
           style: TextStyle(color: Colors.grey),
         ),
@@ -203,7 +204,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
           ),
         ),
         const SizedBox(height: 40),
-        const Text(
+        Text(
           AppLocalizations.of(context)!.enterCodeManually,
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -238,7 +239,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
           ),
         ),
         const SizedBox(height: 48),
-        const Text(
+        Text(
           AppLocalizations.of(context)!.confirmEnablementStep,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),

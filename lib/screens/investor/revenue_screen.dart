@@ -5,6 +5,7 @@ import '../../providers/product_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../models/product_model.dart';
 import '../investment_agent_screen.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class InvestorRevenueScreen extends StatefulWidget {
   const InvestorRevenueScreen({super.key});
@@ -179,7 +180,7 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               AppLocalizations.of(context)!.investmentRevenue,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -211,7 +212,7 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
               // Premium Investor Features Header
               Row(
                 children: [
-                  const Text(
+                  Text(
                     AppLocalizations.of(context)!.portfolioInsights,
                     style: TextStyle(
                       fontSize: 20,
@@ -239,7 +240,7 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
                           ),
                         ],
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Icon(
                             Icons.star_rounded,
@@ -326,7 +327,7 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
   }
 
   Widget _buildPremiumInsightsContent() {
-    return const Card(
+    return Card(
       elevation: 2,
       child: Padding(
         padding: EdgeInsets.all(24),

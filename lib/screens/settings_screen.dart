@@ -215,7 +215,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       return Center(
                         child: Column(
                           children: [
-                            const Text(
+                            Text(
                               AppLocalizations.of(context)!.latestSubmittedProof,
                               style: TextStyle(
                                 fontSize: 10,

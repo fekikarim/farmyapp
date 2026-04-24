@@ -10,6 +10,7 @@ import 'product_detail_screen.dart';
 import 'basket_screen.dart';
 import 'my_orders_screen.dart';
 import '../wallet/payment_methods_screen.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class CustomerMarketplaceScreen extends StatefulWidget {
   const CustomerMarketplaceScreen({super.key});

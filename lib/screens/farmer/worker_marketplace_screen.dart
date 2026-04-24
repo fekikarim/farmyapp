@@ -5,6 +5,7 @@ import '../../models/worker_profile_model.dart';
 import '../shared/worker_detail_screen.dart';
 import '../../widgets/profile_preview_sheet.dart';
 import '../../services/auth_service.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class WorkerMarketplaceScreen extends StatefulWidget {
   final String landId;

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/worker_provider.dart';
 import '../../providers/worker_lifecycle_provider.dart';
 import '../../models/worker_profile_model.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class WorkerDetailScreen extends StatelessWidget {
   final WorkerProfile workerProfile;
@@ -237,12 +238,14 @@ class WorkerDetailScreen extends StatelessWidget {
 
                   // Coming Soon Placeholders
                   _comingSoonCard(
+                    context,
                     '💬 ${AppLocalizations.of(context)!.messageWorker}',
                     AppLocalizations.of(context)!.directMessagingDescription,
                     isDark,
                   ),
                   const SizedBox(height: 10),
                   _comingSoonCard(
+                    context,
                     '📝 ${AppLocalizations.of(context)!.viewReviews}',
                     AppLocalizations.of(context)!.readReviewsDescription,
                     isDark,
@@ -260,7 +263,7 @@ class WorkerDetailScreen extends StatelessWidget {
                           Icons.mail_outline,
                           color: Colors.white,
                         ),
-                        label: const Text(
+                        label: Text(
                           AppLocalizations.of(context)!.inviteToLand,
                           style: TextStyle(
                             fontSize: 16,
@@ -286,6 +289,7 @@ class WorkerDetailScreen extends StatelessWidget {
                       child: ElevatedButton.icon(
                         onPressed: () => _assignToLand(context),
                         icon: const Icon(Icons.person_add, color: Colors.white),
+                        label: Text(
                           AppLocalizations.of(context)!.assignToLand,
                           style: TextStyle(
                             fontSize: 16,
@@ -422,7 +426,7 @@ class WorkerDetailScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text(
+            child: Text(
               AppLocalizations.of(context)!.sendInvite,
               style: TextStyle(color: Colors.white),
             ),
@@ -458,7 +462,7 @@ class WorkerDetailScreen extends StatelessWidget {
           ..pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(AppLocalizations.of(context)!.failedToAssignWorker),
             backgroundColor: Colors.redAccent,
           ),
@@ -590,7 +594,7 @@ class WorkerDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _comingSoonCard(String title, String subtitle, bool isDark) {
+  Widget _comingSoonCard(BuildContext context, String title, String subtitle, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

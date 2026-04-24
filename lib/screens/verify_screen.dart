@@ -233,7 +233,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                                 strokeWidth: 2,
                               ),
                             )
-                          : const Text(
+                          : Text(
                               AppLocalizations.of(context)!.verifyAccount,
                               style: TextStyle(
                                 fontSize: 16,
@@ -271,7 +271,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                         style: TextButton.styleFrom(
                           splashFactory: NoSplash.splashFactory,
                         ),
-                        child: const Text(
+                        child: Text(
                           AppLocalizations.of(context)!.resendNewCode,
                           style: TextStyle(color: AppTheme.primaryColor),
                         ),

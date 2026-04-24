@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/land_provider.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class InvestorFarmingActivitiesScreen extends StatefulWidget {
   const InvestorFarmingActivitiesScreen({super.key});
@@ -24,7 +25,7 @@ class _InvestorFarmingActivitiesScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           AppLocalizations.of(context)!.farmingActivities,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
@@ -42,7 +43,7 @@ class _InvestorFarmingActivitiesScreenState
                 children: [
                   Icon(Icons.grass, size: 80, color: Colors.grey[300]),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     AppLocalizations.of(context)!.noActiveFarmingActivities,
                     style: TextStyle(fontSize: 18, color: Colors.grey),
                   ),
@@ -108,7 +109,7 @@ class _InvestorFarmingActivitiesScreenState
                         ],
                       ),
                       const Divider(height: 32),
-                      const Text(
+                      Text(
                         AppLocalizations.of(context)!.activeStatusUpper,
                         style: TextStyle(
                           fontSize: 12,

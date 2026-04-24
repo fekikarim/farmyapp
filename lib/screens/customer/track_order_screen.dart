@@ -6,6 +6,7 @@ import '../../widgets/delivery/delivery_timeline.dart';
 import '../../widgets/delivery/delivery_info_card.dart';
 import '../../widgets/delivery/delivery_map_section.dart';
 import '../../widgets/delivery/delivery_tracking_skeleton.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 /// Track Order Screen — shows real-time delivery tracking information.
 ///

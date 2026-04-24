@@ -27,13 +27,13 @@
   "pestControl": "Pest Control",
   "viewManageLandInvestments": "View and manage your land investments",
   "enableGameEdgePanel": "Enable Game Edge Panel",
-  "accessFarmView": "Access your farm view from anywhere",
+  "accessFarmView": "Access the 2.5D farm view",
   "tasksProofs": "Tasks & Proofs",
   "aiProofRequests": "AI Proof Requests",
-  "viewManageProofRequests": "View and manage your AI proof requests",
+  "viewManageProofRequests": "View and manage proof requests",
   "freeTier": "Free Tier",
-  "upgradePremium": "Upgrade to Premium",
-  "freeForever": "Free Forever",
+  "upgradePremium": "Upgrade for premium features",
+  "freeForever": "No expiration · Free forever",
   "validUntil": "Valid until {date}",
   "@validUntil": {
     "placeholders": {
@@ -55,7 +55,7 @@
   },
   "deleteLandActionWarning": "This action cannot be undone. All associated data will be permanently removed.",
   "landDeletedSuccess": "Land deleted successfully",
-  "delete": "DELETE",
+  "delete": "Delete",
   "comingSoon": "Coming Soon",
   "featureOptimizedDescription": "The \"{feature}\" module is currently being optimized for personal farming management.",
   "@featureOptimizedDescription": {
@@ -98,7 +98,7 @@
   "workforce": "Workforce",
   "active": "ACTIVE",
   "rented": "RENTED",
-  "available": "AVAILABLE",
+  "available": "available",
   "owner": "Owner: {id}",
   "@owner": {
     "placeholders": {
@@ -219,7 +219,7 @@
   "quote8": "Sustainability is not a goal, it's a lifestyle.",
   "totalEarningsWallet": "Total Earnings (Wallet)",
   "totalSalesValue": "Total Sales Value",
-  "itemsSold": "{count} Items Sold",
+  "itemsSold": "Items Sold",
   "@itemsSold": {
     "placeholders": {
       "count": {
@@ -248,7 +248,6 @@
   "pro": "PRO",
   "enabled": "ENABLED",
   "off": "OFF",
-  "confirmPurchase": "Confirm Purchase",
   "buyProductConfirmation": "Do you want to buy {title} for {price} credits?",
   "@buyProductConfirmation": {
     "placeholders": {
@@ -326,7 +325,6 @@
   "sendMessage": "Send message",
   "voiceInput": "Voice input",
   "rename": "Rename",
-  "delete": "Delete",
   "startANewConversation": "Start a new conversation",
   "createChatDescription": "Create a chat to ask for practical farming guidance.",
   "askAnythingAboutFarm": "Ask anything about your farm",
@@ -367,7 +365,7 @@
   "messageNoReadableText": "This message has no readable text.",
   "unableToPlayVoiceOutput": "Unable to play voice output now.",
   "couldNotSendMessage": "Could not send your message. Please try again.",
-  "upgradeRequired": "Upgrade required to access this feature.",
+  "upgradeRequired": "Upgrade Required",
   "upgrade": "Upgrade",
   "editAndResend": "Edit and resend",
   "copy": "Copy",
@@ -416,7 +414,6 @@
   "skip": "Skip",
   "finish": "Finish",
   "continueText": "Continue",
-  "freeTier": "Free Tier",
   "language": "Language",
   "english": "English",
   "french": "French",
@@ -426,16 +423,6 @@
   "verified": "Verified",
   "unverified": "Unverified",
   "subscription": "Subscription",
-  "upgradePremium": "Upgrade for premium features",
-  "freeForever": "No expiration · Free forever",
-  "validUntil": "Valid until {date}",
-  "@validUntil": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
   "payments": "Payments",
   "walletCards": "Wallet & Cards",
   "manageCredits": "Manage credits and payment methods",
@@ -463,15 +450,9 @@
   "workerDashboard": "Worker Dashboard",
   "viewAssignmentsTasks": "View your assignments & tasks",
   "gameFeatures": "Game Features",
-  "enableGameEdgePanel": "Enable Game Edge Panel",
-  "accessFarmView": "Access the 2.5D farm view",
-  "tasksProofs": "Tasks & Proofs",
-  "aiProofRequests": "AI Proof Requests",
-  "viewManageProofRequests": "View and manage proof requests",
   "appearance": "Appearance",
   "darkMode": "Dark Mode",
   "aboutUs": "About Us - Farmy Team",
-  "comingSoon": "Coming Soon",
   "featureUnderDevelopment": "This feature is currently under development.",
   "home": "Home",
   "marketplace": "Marketplace",
@@ -485,7 +466,6 @@
   "investments": "Investments",
   "revenue": "Revenue",
   "tasks": "Tasks",
-  "logout": "Logout",
   "openInvestmentAssistant": "Open investment assistant",
   "openAiAssistant": "Open AI assistant",
   "myWorkerTasks": "My Worker Tasks",
@@ -538,8 +518,6 @@
       }
     }
   },
-  "cancel": "Cancel",
-  "delete": "Delete",
   "productDeleted": "Product deleted",
   "failedToDeleteProduct": "Failed to delete product",
   "analyzeInventory": "Analyze Inventory",
@@ -547,12 +525,10 @@
   "addProductFirst": "Add your first product to see it here!",
   "edit": "Edit",
   "credits": "Credits",
-  "available": "available",
   "productLimitReached": "Product Limit Reached",
-  "viewPlans": "VIEW PLANS",
+  "viewPlans": "View Plans",
   "maybeLater": "Maybe Later",
   "oopsSomethingWentWrong": "Oops! Something went wrong",
-  "retry": "Retry",
   "productListingsUsed": "Product Listings Used",
   "upgradePlanName": "Farmer Pro",
   "analyzeInventoryPrompt": "Analyse my current product inventory. Are these good products to hold or should I focus on something else based on the market?",
@@ -782,8 +758,12 @@
   "acceptOfferConfirmation": "You are about to accept the offer of ${amount} {type}. This will establish a legal contract.",
   "@acceptOfferConfirmation": {
     "placeholders": {
-      "amount": { "type": "String" },
-      "type": { "type": "String" }
+      "amount": {
+        "type": "String"
+      },
+      "type": {
+        "type": "String"
+      }
     }
   },
   "contractApproved": "Contract approved! Waiting for investor payment.",
@@ -792,7 +772,9 @@
   "declineOfferConfirmation": "Are you sure you want to decline the offer from {name}?",
   "@declineOfferConfirmation": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "theInvestor": "the investor",
@@ -813,9 +795,15 @@
   "investorAcceptOfferConfirmation": "You are about to accept {name}'s counter-offer of ${amount} {type}. Once accepted, you must pay the first month's salary to activate the contract.",
   "@investorAcceptOfferConfirmation": {
     "placeholders": {
-      "name": { "type": "String" },
-      "amount": { "type": "String" },
-      "type": { "type": "String" }
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "type": {
+        "type": "String"
+      }
     }
   },
   "theWorker": "the worker",
@@ -824,20 +812,24 @@
   "declineNegotiationConfirmation": "Are you sure you want to decline further negotiations with {name}?",
   "@declineNegotiationConfirmation": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "thisWorker": "this worker",
   "negotiationDeclined": "Negotiation declined and closed.",
   "failedToCreatePayment": "Failed to create payment intent.",
   "contractActivated": "Contract activated successfully!",
-  "invalidPaymentData": "Received invalid payment data from server.",
+  "invalidPaymentData": "Invalid payment data received from server. Please try again.",
   "paymentSubmittedHint": "Payment submitted. The contract will be activated once confirmed.",
   "paymentCancelled": "Payment was cancelled.",
   "contractForWorker": "Contract for {name}",
   "@contractForWorker": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "negotiationDeclinedBanner": "Negotiation Declined",
@@ -846,7 +838,9 @@
   "contractIsStatus": "This contract is {status}",
   "@contractIsStatus": {
     "placeholders": {
-      "status": { "type": "String" }
+      "status": {
+        "type": "String"
+      }
     }
   },
   "noMessagesYet": "No messages yet",
@@ -858,23 +852,29 @@
   "proposedSalaryAmount": "Proposed Salary: ${amount}",
   "@proposedSalaryAmount": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "editingYourMessage": "Editing your message",
   "editYourMessageHint": "Edit your message...",
   "salaryOptional": "Salary (optional)",
-  "justNow": "just now",
-  "minutesAgo": "{count}m ago",
+  "justNow": "Just now",
+  "minutesAgo": "{mins} min ago",
   "@minutesAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "mins": {
+        "type": "String"
+      }
     }
   },
-  "hoursAgo": "{count}h ago",
+  "hoursAgo": "{hours}h ago",
   "@hoursAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "hours": {
+        "type": "String"
+      }
     }
   },
   "negotiateTerms": "Negotiate Terms",
@@ -885,7 +885,9 @@
   "payAmountToActivate": "Pay ${amount} to Activate",
   "@payAmountToActivate": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "hiringPending": "Hiring Pending",
@@ -896,13 +898,17 @@
   "squareMeters": "{value} m²",
   "@squareMeters": {
     "placeholders": {
-      "value": { "type": "String" }
+      "value": {
+        "type": "String"
+      }
     }
   },
   "amountPrefix": "${amount}",
   "@amountPrefix": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "terminatedLabel": "Terminated",
@@ -910,39 +916,29 @@
   "accept": "Accept",
   "decline": "Decline",
   "contract": "Contract",
-  "paymentFailed": "Payment failed: {error}",
-  "@paymentFailed": {
+  "paymentFailedCancelled": "Payment failed or cancelled.",
+  "@paymentFailedWithError": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "farmerInfoSyncedFromAssignment": "Information synced from assignment",
   "tapToViewProfile": "Tap to view profile",
-  "invitationApproved": "Invitation Approved",
-  "invitationPending": "Invitation Pending",
-  "invitationDeclined": "Invitation Declined",
-  "invitationExpired": "Invitation Expired",
-  "assigned": "Assigned",
-  "landBoundary": "Land Boundary",
-  "landInformation": "Land Information",
-  "noDescriptionAvailable": "No description available",
-  "grid": "Grid",
-  "area": "Area",
-  "assignmentRole": "Assignment Role",
-  "assignmentStatus": "Assignment Status",
   "salaryPerMonth": "${amount} / month",
   "@salaryPerMonth": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
-  "revenueTitle": "Revenue",
   "revenueAnalysisPrompt": "Analyze my revenue sources and suggest ways to maximize my profits based on current market trends.",
   "analyzeRevenueTooltip": "Analyze Revenue",
   "totalDetailsRevenue": "Total Details Revenue",
   "creditsLabel": "Credits",
   "productSales": "Product Sales",
-  "itemsSold": "Items Sold",
   "unitsLabel": "Units",
   "investmentRevenue": "Investment Revenue",
   "viewInvestmentBreakdown": "View detailed breakdown in Investments",
@@ -952,25 +948,19 @@
   "premiumPortfolioDesc": "Get real-time ROI tracking, automated dividend reports, and AI-powered investment advice.",
   "investorPlus": "Investor Plus",
   "portfolioAnalyticsLoading": "Portfolio Analytics Loading...",
-  "upgradeToPlan": "Upgrade to {planName}",
-  "@upgradeToPlan": {
-    "placeholders": {
-      "planName": { "type": "String" }
-    }
-  },
   "passwordChangedSuccess": "Password changed successfully",
   "changePasswordTitle": "Change Password",
   "createNewPassword": "Create a new password",
   "passwordPolicyHint": "Your new password must be different from previous used passwords.",
   "currentPassword": "Current Password",
   "enterCurrentPasswordError": "Please enter your current password",
-  "newPassword": "New Password",
-  "confirmNewPassword": "Confirm New Password",
   "updatePassword": "Update Password",
   "profileSyncFailed": "Failed to sync profile: {error}",
   "@profileSyncFailed": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "unsavedChangesTitle": "Unsaved Changes",
@@ -987,7 +977,9 @@
   "uploadFailed": "Upload failed: {error}",
   "@uploadFailed": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "editProfileTitle": "Edit Profile",
@@ -996,7 +988,6 @@
   "rolePrivacyTab": "Role & Privacy",
   "saveChangesTooltip": "Save Changes",
   "profileCompleteness": "Profile Completeness",
-  "fullName": "Full Name",
   "nameRequired": "Name is required",
   "nameTooShort": "Name is too short",
   "onlyLettersAllowed": "Only letters and spaces allowed",
@@ -1052,7 +1043,6 @@
   "premiumAccess": "Premium Access",
   "chooseYourPlan": "Choose Your Plan",
   "subscriptionHeadline": "Select a plan to unlock the full Farmy experience.\nOne subscription opens every door.",
-  "monthly": "Monthly",
   "yearly": "Yearly",
   "alwaysFree": "Always Free",
   "freeLabel": "Free",
@@ -1061,38 +1051,51 @@
   "savingsLabel": "Was {oldPrice}/yr — save {savings}",
   "@savingsLabel": {
     "placeholders": {
-      "oldPrice": { "type": "String" },
-      "savings": { "type": "String" }
+      "oldPrice": {
+        "type": "String"
+      },
+      "savings": {
+        "type": "String"
+      }
     }
   },
   "continueWithFree": "Continue with Free",
   "getPlan": "Get {planName}",
   "@getPlan": {
     "placeholders": {
-      "planName": { "type": "String" }
+      "planName": {
+        "type": "String"
+      }
     }
   },
-  "selectPaymentMethod": "Select Payment Method",
   "paymentSummary": "{price} · {cycle} · {planName}",
   "@paymentSummary": {
     "placeholders": {
-      "price": { "type": "String" },
-      "cycle": { "type": "String" },
-      "planName": { "type": "String" }
+      "price": {
+        "type": "String"
+      },
+      "cycle": {
+        "type": "String"
+      },
+      "planName": {
+        "type": "String"
+      }
     }
   },
-  "payWithCredits": "Pay with Farmy Credits",
-  "loadingBalance": "Loading balance...",
   "balanceStatusSuccess": "Balance: {amount} ✓",
   "@balanceStatusSuccess": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "balanceStatusInsufficient": "Balance: {amount} — Insufficient",
   "@balanceStatusInsufficient": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "payWithCardStripe": "Pay with Card (Stripe)",
@@ -1100,16 +1103,15 @@
   "failedLoadPlans": "Failed to load plans",
   "noPlansAvailable": "No plans available",
   "contactSupport": "Please contact support.",
-  "invalidPaymentData": "Invalid payment data received from server. Please try again.",
-  "paymentCancelled": "Payment was cancelled.",
-  "paymentFailed": "Payment could not be completed.",
   "paymentPendingVerifying": "Payment submitted. We are verifying it in the background.",
   "paymentProcessingSync": "Payment is still processing. Your subscription will sync automatically.",
   "paymentStatusDelay": "Payment status check is delayed. We will keep syncing in the background.",
   "paymentError": "Payment Error: {error}",
   "@paymentError": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "deliveriesTitle": "Deliveries",
@@ -1117,11 +1119,12 @@
   "totalCount": "{total} total",
   "@totalCount": {
     "placeholders": {
-      "total": { "type": "String" }
+      "total": {
+        "type": "String"
+      }
     }
   },
   "totalOrdersLabel": "Total Orders",
-  "activeLabel": "Active",
   "deliveredLabel": "Delivered",
   "noDeliveriesYet": "No deliveries yet",
   "noDeliveriesDesc": "Deliveries for your products will\nappear here when customers order.",
@@ -1132,13 +1135,14 @@
   "etaLabel": "ETA: {time}",
   "@etaLabel": {
     "placeholders": {
-      "time": { "type": "String" }
+      "time": {
+        "type": "String"
+      }
     }
   },
   "orderDetails": "Order Details",
   "productLabel": "Product",
   "quantityLabel": "Quantity",
-  "totalLabel": "Total",
   "orderIdLabel": "Order ID",
   "customerLabel": "Customer",
   "deliveryInfo": "Delivery Info",
@@ -1149,14 +1153,18 @@
   "updateToStatusQuestion": "Update to {status}?",
   "@updateToStatusQuestion": {
     "placeholders": {
-      "status": { "type": "String" }
+      "status": {
+        "type": "String"
+      }
     }
   },
   "cancelNotifyCustomer": "This will cancel the delivery and notify the customer.",
   "advanceNotifyCustomer": "This will advance the delivery to \"{status}\" and notify the customer.",
   "@advanceNotifyCustomer": {
     "placeholders": {
-      "status": { "type": "String" }
+      "status": {
+        "type": "String"
+      }
     }
   },
   "cancellationReasonHint": "Reason for cancellation...",
@@ -1166,14 +1174,18 @@
   "statusUpdatedTo": "Status updated to {status}",
   "@statusUpdatedTo": {
     "placeholders": {
-      "status": { "type": "String" }
+      "status": {
+        "type": "String"
+      }
     }
   },
   "failedUpdateStatus": "Failed to update status",
   "moveToStatus": "Move to {status}",
   "@moveToStatus": {
     "placeholders": {
-      "status": { "type": "String" }
+      "status": {
+        "type": "String"
+      }
     }
   },
   "successfullyDelivered": "Successfully Delivered",
@@ -1181,14 +1193,20 @@
   "completedOn": "Completed on {date}",
   "@completedOn": {
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
   },
   "dateTimeAt": "{date} at {time}",
   "@dateTimeAt": {
     "placeholders": {
-      "date": { "type": "String" },
-      "time": { "type": "String" }
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
     }
   },
   "cardAddedSuccess": "Card added successfully",
@@ -1197,23 +1215,29 @@
   "selectAmount": "Select Amount",
   "customAmountLabel": "Custom Amount",
   "maxAmountError": "Maximum amount is $999,999.99",
-  "payAmount": "Pay ${amount}",
+  "payAmount": "PAY ${amount}",
   "@payAmount": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
-  "enterAmount": "Enter Amount",
+  "enterAmount": "ENTER AMOUNT",
   "successfullyAddedCredits": "Successfully added ${amount}",
   "@successfullyAddedCredits": {
     "placeholders": {
-      "amount": { "type": "String" }
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "priceTnd": "{price} TND",
   "@priceTnd": {
     "placeholders": {
-      "price": { "type": "String" }
+      "price": {
+        "type": "String"
+      }
     }
   },
   "failedAddCredits": "Failed to add credits",
@@ -1224,7 +1248,9 @@
   "expiresLabel": "Expires {expiry}",
   "@expiresLabel": {
     "placeholders": {
-      "expiry": { "type": "String" }
+      "expiry": {
+        "type": "String"
+      }
     }
   },
   "failedLoadTasks": "Failed to load tasks",
@@ -1234,7 +1260,9 @@
   "errorWithPrefix": "Error: {error}",
   "@errorWithPrefix": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "myTasksTitle": "My Tasks",
@@ -1251,7 +1279,6 @@
   "harvestChroniclesTitle": "Harvest Chronicles",
   "noHistoryYet": "No history yet",
   "farmAnalysisDefault": "Farm Analysis",
-  "creditsLabel": "Credits",
   "assetsLabel": "Assets",
   "failedReachAnalyst": "Failed to reach AI Strategy Analyst.",
   "strategicPortfolioAnalystTitle": "Strategic Portfolio Analyst",
@@ -1280,27 +1307,26 @@
   "arrivingSoon": "Arriving soon",
   "etaMinutes": "~{mins} min",
   "@etaMinutes": {
-    "placeholders": { "mins": { "type": "String" } }
+    "placeholders": {
+      "mins": {
+        "type": "String"
+      }
+    }
   },
   "etaHours": "~{hours}h {mins}min",
   "@etaHours": {
     "placeholders": {
-      "hours": { "type": "String" },
-      "mins": { "type": "String" }
+      "hours": {
+        "type": "String"
+      },
+      "mins": {
+        "type": "String"
+      }
     }
   },
   "driverNearby": "Driver Nearby!",
   "onTheWay": "On the way",
   "youLabel": "You",
-  "justNow": "Just now",
-  "minutesAgo": "{mins} min ago",
-  "@minutesAgo": {
-    "placeholders": { "mins": { "type": "String" } }
-  },
-  "hoursAgo": "{hours}h ago",
-  "@hoursAgo": {
-    "placeholders": { "hours": { "type": "String" } }
-  },
   "filterAll": "All",
   "filterNew": "New",
   "filterConfirmed": "Confirmed",
@@ -1311,39 +1337,43 @@
   "unknownCustomer": "Unknown Customer",
   "orderLabel": "Order",
   "manageButton": "Manage",
-  "outOfStock": "OUT OF STOCK",
   "unavailable": "Unavailable",
   "addMore": "Add More",
-  "addToBasket": "Add to Basket",
   "qtyUpdatedTo": "{title} — qty updated to {qty}",
   "@qtyUpdatedTo": {
     "placeholders": {
-      "title": { "type": "String" },
-      "qty": { "type": "String" }
+      "title": {
+        "type": "String"
+      },
+      "qty": {
+        "type": "String"
+      }
     }
-  },
-  "addedToBasket": "{title} added to basket",
-  "@addedToBasket": {
-    "placeholders": { "title": { "type": "String" } }
   },
   "maximumStockReached": "Maximum stock reached",
   "pricePerUnit": "{price} TND / {unit}",
   "@pricePerUnit": {
     "placeholders": {
-      "price": { "type": "String" },
-      "unit": { "type": "String" }
+      "price": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
     }
   },
   "premiumFeatureTitle": "Premium Feature",
   "premiumFeatureDesc": "Upgrade your subscription to unlock this feature.",
   "upgradeNow": "Upgrade Now",
-  "upgradeRequired": "Upgrade Required",
   "upgradeRequiredDesc": "This feature ({featureKey}) is available on a premium plan. Upgrade your subscription to unlock it.",
   "@upgradeRequiredDesc": {
-    "placeholders": { "featureKey": { "type": "String" } }
+    "placeholders": {
+      "featureKey": {
+        "type": "String"
+      }
+    }
   },
   "laterButton": "Later",
-  "viewPlans": "View Plans",
   "myLandsTitle": "My Lands",
   "noLandsFound": "No lands found",
   "noLandsRented": "You haven't rented any lands yet.",
@@ -1354,11 +1384,14 @@
   "roleLabel": "Role",
   "aboutLabel": "About",
   "directLinksLabel": "Direct Links",
-  "linkedinProfile": "LinkedIn Profile",
   "websiteLabel": "Website",
   "farmyMemberSince": "Farmy Community Member since {date}",
   "@farmyMemberSince": {
-    "placeholders": { "date": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "privacyRestricted": "Privacy Restricted",
   "profileNotFound": "Profile not found or private",
@@ -1366,13 +1399,21 @@
   "retryButton": "Retry",
   "upgradeForUnlimited": "Upgrade{plan} for unlimited access",
   "@upgradeForUnlimited": {
-    "placeholders": { "plan": { "type": "String" } }
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
   },
-  "tapToViewPlans": "Tap to view plans \u2192",
+  "tapToViewPlans": "Tap to view plans →",
   "assignTaskTitle": "Assign Task",
   "workersAvailable": "{count} Available",
   "@workersAvailable": {
-    "placeholders": { "count": { "type": "String" } }
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
   },
   "noTasksDefined": "No tasks defined for this item.",
   "noAvailableWorkers": "No available workers!",
@@ -1399,18 +1440,20 @@
   "customAmount": "Custom Amount",
   "maximumAmount": "Maximum amount is ${max}",
   "@maximumAmount": {
-    "placeholders": { "max": { "type": "String" } }
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
   },
-  "payAmount": "PAY ${amount}",
-  "@payAmount": {
-    "placeholders": { "amount": { "type": "String" } }
-  },
-  "enterAmount": "ENTER AMOUNT",
   "creditsAdded": "Successfully added ${amount}!",
   "@creditsAdded": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
-  "paymentFailed": "Payment failed or cancelled.",
   "myInventory": "MY INVENTORY",
   "allLands": "All Lands",
   "unknownLandFallback": "Unknown",
@@ -1420,7 +1463,11 @@
   "tabRejected": "REJECTED",
   "noItemsFound": "No {status} items found",
   "@noItemsFound": {
-    "placeholders": { "status": { "type": "String" } }
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
   },
   "placedBadge": "PLACED",
   "itemActions": "Item Actions",
@@ -1440,14 +1487,22 @@
   "itemPlacedSuccess": "Item placed successfully!",
   "placingLabel": "Placing: {name}",
   "@placingLabel": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "loadingFootprint": "Loading footprint...",
   "sizeLabel": "Size: {w}x{h}",
   "@sizeLabel": {
     "placeholders": {
-      "w": { "type": "String" },
-      "h": { "type": "String" }
+      "w": {
+        "type": "String"
+      },
+      "h": {
+        "type": "String"
+      }
     }
   },
   "confirmButton": "Confirm",
@@ -1465,7 +1520,94 @@
   "mapTooltipTasks": "Tasks",
   "placementFailed": "Placement failed: {error}",
   "@placementFailed": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
-  "placementFailedGeneric": "Failed to place item. Try elsewhere."
+  "placementFailedGeneric": "Failed to place item. Try elsewhere.",
+  "daysAgo": "{count}d ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenHashScan": "Could not open HashScan",
+  "setMonthlySalary": "Set Monthly Salary",
+  "assign": "Assign",
+  "tasksLabelShort": "Tasks",
+  "assignToLand": "Assign to Land",
+  "invitationSentTo": "Invitation sent to {worker}",
+  "@invitationSentTo": {
+    "placeholders": {
+      "worker": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSendInvitation": "Failed to send invitation",
+  "inviteWorker": "Invite Worker",
+  "inviteWorkerMessage": "Invite {worker} to {landName}",
+  "@inviteWorkerMessage": {
+    "placeholders": {
+      "worker": {
+        "type": "String"
+      },
+      "landName": {
+        "type": "String"
+      }
+    }
+  },
+  "optionalMessageHint": "Optional message...",
+  "sendInvite": "Send Invite",
+  "workerAssignedToLand": "{worker} assigned to {landName}",
+  "@workerAssignedToLand": {
+    "placeholders": {
+      "worker": {
+        "type": "String"
+      },
+      "landName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAssignWorker": "Failed to assign worker",
+  "directMessagingDescription": "Direct messaging description",
+  "readReviewsDescription": "Read reviews description",
+  "messageWorker": "Message Worker",
+  "viewReviews": "View Reviews",
+  "inviteToLand": "Invite to Land",
+  "amountPerHour": "${amount}/h",
+  "@amountPerHour": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "onTimeLabel": "On-Time",
+  "disputesLabel": "Disputes",
+  "skills": "Skills",
+  "about": "About",
+  "performance": "Performance",
+  "performanceGraphComingSoon": "Performance Graph Coming Soon",
+  "manager": "Manager",
+  "pendingLabel": "Pending",
+  "inactiveLabel": "Inactive",
+  "name": "Name",
+  "salary": "Salary",
+  "supervisor": "Supervisor",
+  "landDetails": "Land Details",
+  "amountPerMonth": "${amount}/mo",
+  "@amountPerMonth": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "hourly": "Hourly"
 }

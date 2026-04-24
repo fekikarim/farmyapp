@@ -14,6 +14,7 @@ import '../../services/auth_service.dart';
 import 'package:image_picker/image_picker.dart';
 import '../shared/contract_negotiation_screen.dart';
 import 'worker_land_details_screen.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class WorkerDashboardScreen extends StatefulWidget {
   const WorkerDashboardScreen({super.key});
@@ -1701,7 +1702,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   color: Colors.green.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Text(
+                child: Text(
                   AppLocalizations.of(context)!.activeLabelUpper,
                   style: TextStyle(
                     fontSize: 9,

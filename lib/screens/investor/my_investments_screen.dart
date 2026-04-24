@@ -5,6 +5,7 @@ import '../../models/land_rental_model.dart';
 import '../../widgets/subscription_limit_bar.dart';
 import 'package:intl/intl.dart';
 import '../investment_agent_screen.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class InvestorMyInvestmentsScreen extends StatefulWidget {
   const InvestorMyInvestmentsScreen({super.key});
@@ -28,7 +29,7 @@ class _InvestorMyInvestmentsScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           AppLocalizations.of(context)!.myInvestments,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),

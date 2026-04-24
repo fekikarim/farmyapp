@@ -21,7 +21,7 @@ class NoInternetScreen extends StatelessWidget {
                 color: Colors.redAccent,
               ),
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 AppLocalizations.of(context)!.noInternetConnection,
                 style: TextStyle(
                   fontSize: 22,
@@ -29,7 +29,7 @@ class NoInternetScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 AppLocalizations.of(context)!.noInternetDescription,
                 textAlign: TextAlign.center,
                 style: TextStyle(

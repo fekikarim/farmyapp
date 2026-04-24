@@ -1790,9 +1790,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get contract => 'Contrato';
 
   @override
-  String paymentFailed(String error) {
-    return 'Pago fallido o cancelado.';
-  }
+  String get paymentFailedCancelled => 'Pago fallido o cancelado.';
 
   @override
   String get farmerInfoSyncedFromAssignment =>
@@ -2885,4 +2883,119 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get placementFailedGeneric =>
       'No se pudo colocar el artículo. Intenta en otro lugar.';
+
+  @override
+  String daysAgo(String count) {
+    return 'hace ${count}d';
+  }
+
+  @override
+  String get couldNotOpenHashScan => 'No se pudo abrir HashScan';
+
+  @override
+  String get setMonthlySalary => 'Establecer salario mensual';
+
+  @override
+  String get assign => 'Asignar';
+
+  @override
+  String get tasksLabelShort => 'Tareas';
+
+  @override
+  String get assignToLand => 'Asignar al terreno';
+
+  @override
+  String invitationSentTo(String worker) {
+    return 'Invitación enviada a $worker';
+  }
+
+  @override
+  String get failedToSendInvitation => 'Error al enviar la invitación';
+
+  @override
+  String get inviteWorker => 'Invitar trabajador';
+
+  @override
+  String inviteWorkerMessage(String worker, String landName) {
+    return 'Invitar a $worker a $landName';
+  }
+
+  @override
+  String get optionalMessageHint => 'Mensaje opcional...';
+
+  @override
+  String get sendInvite => 'Enviar invitación';
+
+  @override
+  String workerAssignedToLand(String worker, String landName) {
+    return '$worker asignado a $landName';
+  }
+
+  @override
+  String get failedToAssignWorker => 'Error al asignar trabajador';
+
+  @override
+  String get directMessagingDescription => 'Descripción de mensajería directa';
+
+  @override
+  String get readReviewsDescription => 'Descripción de leer reseñas';
+
+  @override
+  String get messageWorker => 'Contactar trabajador';
+
+  @override
+  String get viewReviews => 'Ver reseñas';
+
+  @override
+  String get inviteToLand => 'Invitar al terreno';
+
+  @override
+  String amountPerHour(String amount) {
+    return '\$$amount/h';
+  }
+
+  @override
+  String get onTimeLabel => 'A tiempo';
+
+  @override
+  String get disputesLabel => 'Disputas';
+
+  @override
+  String get skills => 'Habilidades';
+
+  @override
+  String get about => 'Acerca de';
+
+  @override
+  String get performance => 'Rendimiento';
+
+  @override
+  String get performanceGraphComingSoon =>
+      'Gráfico de rendimiento próximamente';
+
+  @override
+  String get manager => 'Gerente';
+
+  @override
+  String get pendingLabel => 'Pendiente';
+
+  @override
+  String get inactiveLabel => 'Inactivo';
+
+  @override
+  String get name => 'Nombre';
+
+  @override
+  String get salary => 'Salario';
+
+  @override
+  String get supervisor => 'Supervisor';
+
+  @override
+  String get landDetails => 'Detalles del terreno';
+
+  @override
+  String amountPerMonth(String amount) {
+    return '\$$amount/mes';
+  }
 }

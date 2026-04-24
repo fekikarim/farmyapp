@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/auth_service.dart';
 import '../../models/user_model.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -231,7 +232,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
   Future<void> _saveProfile() async {
     if (_isCheckingUsername) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(AppLocalizations.of(context)!.waitUsernameCheck),
           backgroundColor: Colors.orange,
         ),
@@ -246,7 +247,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
 
     if (_isUsernameAvailable == false) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(AppLocalizations.of(context)!.usernameTaken),
           backgroundColor: Colors.red,
         ),
@@ -306,7 +307,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
           _completenessScore = updatedUser.profile?.completenessScore ?? 0;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(AppLocalizations.of(context)!.profileUpdatedSuccess),
             backgroundColor: Colors.green,
           ),
@@ -336,7 +337,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 16),
               child: Text(
                 AppLocalizations.of(context)!.changeProfilePicture,
@@ -381,7 +382,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
         // Soft-sync the state
         _fetchLiveProfile();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(AppLocalizations.of(context)!.profilePictureUpdated),
             backgroundColor: Colors.green,
           ),
@@ -405,7 +406,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
             Icon(Icons.error_outline, color: Colors.red),
             SizedBox(width: 8),
@@ -442,7 +443,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
           centerTitle: true,
           bottom: TabBar(
             controller: _tabController,
-            tabs: const [
+            tabs: [
               Tab(text: AppLocalizations.of(context)!.identityTab),
               Tab(text: AppLocalizations.of(context)!.trustTab),
               Tab(text: AppLocalizations.of(context)!.rolePrivacyTab),

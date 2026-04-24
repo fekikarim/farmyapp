@@ -1770,9 +1770,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contract => 'Contract';
 
   @override
-  String paymentFailed(String error) {
-    return 'Payment failed or cancelled.';
-  }
+  String get paymentFailedCancelled => 'Payment failed or cancelled.';
 
   @override
   String get farmerInfoSyncedFromAssignment =>
@@ -2851,4 +2849,118 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get placementFailedGeneric => 'Failed to place item. Try elsewhere.';
+
+  @override
+  String daysAgo(String count) {
+    return '${count}d ago';
+  }
+
+  @override
+  String get couldNotOpenHashScan => 'Could not open HashScan';
+
+  @override
+  String get setMonthlySalary => 'Set Monthly Salary';
+
+  @override
+  String get assign => 'Assign';
+
+  @override
+  String get tasksLabelShort => 'Tasks';
+
+  @override
+  String get assignToLand => 'Assign to Land';
+
+  @override
+  String invitationSentTo(String worker) {
+    return 'Invitation sent to $worker';
+  }
+
+  @override
+  String get failedToSendInvitation => 'Failed to send invitation';
+
+  @override
+  String get inviteWorker => 'Invite Worker';
+
+  @override
+  String inviteWorkerMessage(String worker, String landName) {
+    return 'Invite $worker to $landName';
+  }
+
+  @override
+  String get optionalMessageHint => 'Optional message...';
+
+  @override
+  String get sendInvite => 'Send Invite';
+
+  @override
+  String workerAssignedToLand(String worker, String landName) {
+    return '$worker assigned to $landName';
+  }
+
+  @override
+  String get failedToAssignWorker => 'Failed to assign worker';
+
+  @override
+  String get directMessagingDescription => 'Direct messaging description';
+
+  @override
+  String get readReviewsDescription => 'Read reviews description';
+
+  @override
+  String get messageWorker => 'Message Worker';
+
+  @override
+  String get viewReviews => 'View Reviews';
+
+  @override
+  String get inviteToLand => 'Invite to Land';
+
+  @override
+  String amountPerHour(String amount) {
+    return '\$$amount/h';
+  }
+
+  @override
+  String get onTimeLabel => 'On-Time';
+
+  @override
+  String get disputesLabel => 'Disputes';
+
+  @override
+  String get skills => 'Skills';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get performance => 'Performance';
+
+  @override
+  String get performanceGraphComingSoon => 'Performance Graph Coming Soon';
+
+  @override
+  String get manager => 'Manager';
+
+  @override
+  String get pendingLabel => 'Pending';
+
+  @override
+  String get inactiveLabel => 'Inactive';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get salary => 'Salary';
+
+  @override
+  String get supervisor => 'Supervisor';
+
+  @override
+  String get landDetails => 'Land Details';
+
+  @override
+  String amountPerMonth(String amount) {
+    return '\$$amount/mo';
+  }
 }

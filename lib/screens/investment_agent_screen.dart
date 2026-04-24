@@ -230,7 +230,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(color: theme.primaryColor),
-            child: const Center(
+            child: Center(
               child: Text(
                 AppLocalizations.of(context)!.investmentStrategyChroniclesTitle,
                 style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),

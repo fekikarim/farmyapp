@@ -733,17 +733,17 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
           value: '${land.gridWidth}x${land.gridHeight}',
           icon: Icons.grid_4x4,
         ),
-        const _DetailItem(
+        _DetailItem(
           label: AppLocalizations.of(context)!.rentals,
           value: '2 Active',
           icon: Icons.people,
         ),
-        const _DetailItem(
+        _DetailItem(
           label: AppLocalizations.of(context)!.earnings,
           value: '2,400 TND',
           icon: Icons.wallet,
         ),
-        const _DetailItem(
+        _DetailItem(
           label: AppLocalizations.of(context)!.safety,
           value: 'Verified',
           icon: Icons.verified_user,
@@ -847,7 +847,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E2125),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Row(
+        title: Row(
           children: [
             Icon(
               Icons.warning_amber_rounded,
@@ -885,7 +885,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
+            child: Text(
               AppLocalizations.of(context)!.cancel,
               style: TextStyle(
                 color: Colors.white70,
@@ -904,7 +904,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                           Navigator.pop(context); // Close dialog
                           Navigator.pop(context); // Close details sheet
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
+                            SnackBar(
                               content: Text(AppLocalizations.of(context)!.landDeletedSuccess),
                               backgroundColor: Colors.redAccent,
                             ),
@@ -920,7 +920,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                           color: Colors.redAccent,
                         ),
                       )
-                    : const Text(
+                    : Text(
                         AppLocalizations.of(context)!.delete,
                         style: TextStyle(
                           color: Colors.redAccent,
@@ -1299,7 +1299,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                         color: Colors.orange.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Text(
+                      child: Text(
                         AppLocalizations.of(context)!.notYours,
                         style: TextStyle(
                           color: Colors.orange,
@@ -1383,7 +1383,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       AppLocalizations.of(context)!.dismiss,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),

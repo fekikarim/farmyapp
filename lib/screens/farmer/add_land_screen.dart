@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:latlong2/latlong.dart';
 import '../../providers/land_provider.dart';
 import '../../utils/geometry_utils.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class FarmerAddLandScreen extends StatefulWidget {
   const FarmerAddLandScreen({super.key});
@@ -151,7 +152,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                           ),
                         ),
                       )
-                    : const Text(
+                    : Text(
                         AppLocalizations.of(context)!.publishListing,
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
@@ -296,7 +297,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                     color: Colors.green,
                     size: 20,
                   ),
-                  label: const Text(
+                  label: Text(
                     AppLocalizations.of(context)!.defineOnMap,
                     style: TextStyle(
                       color: Colors.green,
@@ -751,7 +752,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                 color: Colors.black.withOpacity(0.6),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Text(
+              child: Text(
                 AppLocalizations.of(context)!.drawInstructions,
                 style: TextStyle(color: Colors.white, fontSize: 12),
                 textAlign: TextAlign.center,
@@ -982,7 +983,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
+            child: Text(
               AppLocalizations.of(context)!.retryUpper,
               style: TextStyle(
                 color: Colors.green,
@@ -1053,7 +1054,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   AppLocalizations.of(context)!.continueLabelUpper,
                   style: TextStyle(
                     color: Colors.white,

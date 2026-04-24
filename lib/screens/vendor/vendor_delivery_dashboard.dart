@@ -7,6 +7,7 @@ import '../../widgets/vendor_delivery/delivery_status_filter.dart';
 import '../../widgets/vendor_delivery/vendor_delivery_tile.dart';
 import '../../widgets/vendor_delivery/vendor_dashboard_skeleton.dart';
 import 'vendor_delivery_detail_screen.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 /// Vendor Delivery Management Dashboard — accessible by Farmers & Investors.
 class VendorDeliveryDashboard extends StatefulWidget {

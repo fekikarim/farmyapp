@@ -4,6 +4,7 @@ import '../../models/delivery_model.dart';
 import '../../models/vendor_delivery_model.dart';
 import '../../providers/vendor_delivery_provider.dart';
 import '../../widgets/delivery/delivery_timeline.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 /// Full vendor delivery detail + management screen.
 class VendorDeliveryDetailScreen extends StatefulWidget {

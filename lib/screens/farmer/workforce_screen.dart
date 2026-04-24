@@ -7,6 +7,7 @@ import '../../models/worker_invitation_model.dart';
 import 'worker_marketplace_screen.dart';
 import '../../widgets/profile_preview_sheet.dart';
 import '../../services/auth_service.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class WorkforceScreen extends StatefulWidget {
   final String landId;
