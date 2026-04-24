@@ -219,7 +219,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucune description fournie pour cette terre.';
 
   @override
-  String get area => 'Surface';
+  String get area => 'Superficie';
 
   @override
   String get rentals => 'Locations';
@@ -422,7 +422,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String itemsSold(int count) {
-    return '$count Articles vendus';
+    return 'Articles vendus';
   }
 
   @override
@@ -450,7 +450,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String upgradeToPlan(String planName) {
-    return 'Mettre à niveau vers $planName';
+    return 'Passer à $planName';
   }
 
   @override
@@ -735,8 +735,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible d\'envoyer votre message. Veuillez réessayer.';
 
   @override
-  String get upgradeRequired =>
-      'Mise à jour requise pour accéder à cette fonctionnalité.';
+  String get upgradeRequired => 'Mise à niveau requise';
 
   @override
   String get upgrade => 'Mettre à jour';
@@ -1025,7 +1024,19 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get appTitle => 'Farmy';
+  String get appName => 'Farmy';
+
+  @override
+  String get unknown => 'Inconnu';
+
+  @override
+  String get somethingWentWrong => 'Quelque chose s\'est mal passé';
+
+  @override
+  String get revenueTitle => 'Revenus';
+
+  @override
+  String get cancel => 'Annuler';
 
   @override
   String get login => 'Connexion';
@@ -1109,9 +1120,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get cancel => 'Annuler';
-
-  @override
   String get productDeleted => 'Produit supprimé';
 
   @override
@@ -1137,7 +1145,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get productLimitReached => 'Limite de produits atteinte';
 
   @override
-  String get viewPlans => 'VOIR LES PLANS';
+  String get viewPlans => 'Voir les plans';
 
   @override
   String get maybeLater => 'Plus tard';
@@ -1295,7 +1303,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Revenez plus tard pour des produits frais';
 
   @override
-  String get outOfStock => 'EN RUPTURE DE STOCK';
+  String get outOfStock => 'RUPTURE DE STOCK';
 
   @override
   String get inBasket => 'Dans le panier';
@@ -1403,7 +1411,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get payWithCredits => 'Payer avec les crédits Farmy';
+  String get payWithCredits => 'Payer avec des crédits Farmy';
 
   @override
   String get loadingBalance => 'Chargement du solde...';
@@ -1497,10 +1505,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de traiter la réponse à l\'invitation.';
 
   @override
-  String get landBoundary => 'Limite de la Terre';
+  String get landBoundary => 'Limite du terrain';
 
   @override
-  String get landInformation => 'Informations sur la Terre';
+  String get landInformation => 'Informations sur le terrain';
 
   @override
   String get noDescriptionAvailable => 'Aucune description disponible';
@@ -1509,7 +1517,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get grid => 'Grille';
 
   @override
-  String get assignmentRole => 'Rôle d\'Affectation';
+  String get assignmentRole => 'Rôle d\'affectation';
 
   @override
   String get salaryLabel => 'Salaire';
@@ -1520,7 +1528,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get assignmentStatus => 'Statut de l\'Affectation';
+  String get assignmentStatus => 'Statut d\'affectation';
 
   @override
   String get farmerProfileUnavailable =>
@@ -1537,11 +1545,1362 @@ class AppLocalizationsFr extends AppLocalizations {
   String get invitationPending => 'Invitation en Attente';
 
   @override
-  String get invitationDeclined => 'Invitation Déclinée';
+  String get invitationDeclined => 'Invitation Refusée';
 
   @override
   String get invitationExpired => 'Invitation Expirée';
 
   @override
   String get assigned => 'Assigné';
+
+  @override
+  String get acceptThisOfferQuestion => 'Accepter cette offre ?';
+
+  @override
+  String acceptOfferConfirmation(String amount, String type) {
+    return 'Vous êtes sur le point d\'accepter l\'offre de $amount $type. Cela établira un contrat légal.';
+  }
+
+  @override
+  String get contractApproved =>
+      'Contrat approuvé ! En attente du paiement de l\'investisseur.';
+
+  @override
+  String get failedToAccept => 'Échec de l\'acceptation de l\'offre.';
+
+  @override
+  String get declineThisOfferQuestion => 'Décliner cette offre ?';
+
+  @override
+  String declineOfferConfirmation(String name) {
+    return 'Êtes-vous sûr de vouloir décliner l\'offre de $name ?';
+  }
+
+  @override
+  String get theInvestor => 'l\'investisseur';
+
+  @override
+  String get contractDeclined => 'Offre de contrat déclinée.';
+
+  @override
+  String get failedToDecline => 'Échec du refus de l\'offre.';
+
+  @override
+  String get pleaseEnterAMessage => 'Veuillez entrer un message';
+
+  @override
+  String get pleaseEnterValidSalary =>
+      'Veuillez entrer un montant de salaire valide';
+
+  @override
+  String get counterOfferSent => 'Contre-offre envoyée avec succès !';
+
+  @override
+  String get failedToSendCounterOffer =>
+      'Échec de l\'envoi de la contre-offre.';
+
+  @override
+  String get messageCannotBeEmpty => 'Le message ne peut pas être vide';
+
+  @override
+  String get messageUpdated => 'Message mis à jour avec succès';
+
+  @override
+  String get failedToEditMessage => 'Échec de la mise à jour du message';
+
+  @override
+  String get withdrawMessageQuestion => 'Retirer ce message ?';
+
+  @override
+  String get withdrawMessageConfirmation =>
+      'Cela supprimera définitivement votre dernier message de négociation.';
+
+  @override
+  String get withdraw => 'Retirer';
+
+  @override
+  String get messageWithdrawn => 'Message retiré';
+
+  @override
+  String get failedToWithdrawMessage => 'Échec du retrait du message';
+
+  @override
+  String investorAcceptOfferConfirmation(
+    String name,
+    String amount,
+    String type,
+  ) {
+    return 'Vous êtes sur le point d\'accepter la contre-offre de $name de $amount $type. Une fois acceptée, vous devrez payer le premier mois de salaire pour activer le contrat.';
+  }
+
+  @override
+  String get theWorker => 'le travailleur';
+
+  @override
+  String get offerAcceptedProceedToPayment =>
+      'Offre acceptée ! Veuillez procéder au paiement pour activer le contrat.';
+
+  @override
+  String get declineNegotiationQuestion => 'Décliner la négociation ?';
+
+  @override
+  String declineNegotiationConfirmation(String name) {
+    return 'Êtes-vous sûr de vouloir décliner toute négociation ultérieure avec $name ?';
+  }
+
+  @override
+  String get thisWorker => 'ce travailleur';
+
+  @override
+  String get negotiationDeclined => 'Négociation déclinée et fermée.';
+
+  @override
+  String get failedToCreatePayment =>
+      'Échec de la création de l\'intention de paiement.';
+
+  @override
+  String get contractActivated => 'Contrat activé avec succès !';
+
+  @override
+  String get invalidPaymentData =>
+      'Données de paiement invalides reçues du serveur. Veuillez réessayer.';
+
+  @override
+  String get paymentSubmittedHint =>
+      'Paiement soumis. Le contrat sera activé une fois confirmé.';
+
+  @override
+  String get paymentCancelled => 'Le paiement a été annulé.';
+
+  @override
+  String contractForWorker(String name) {
+    return 'Contrat pour $name';
+  }
+
+  @override
+  String get negotiationDeclinedBanner => 'Négociation déclinée';
+
+  @override
+  String get contractTerminatedBanner => 'Contrat résilié';
+
+  @override
+  String get contractExpiredBanner => 'Contrat expiré';
+
+  @override
+  String contractIsStatus(String status) {
+    return 'Ce contrat est $status';
+  }
+
+  @override
+  String get noMessagesYet => 'Pas encore de messages';
+
+  @override
+  String get startNegotiationHint =>
+      'Commencez la négociation en envoyant un message.';
+
+  @override
+  String get systemOfferAccepted => 'Offre acceptée. Passage au paiement.';
+
+  @override
+  String get systemOfferDeclined =>
+      'Offre déclinée. Cette négociation a été annulée.';
+
+  @override
+  String get you => 'Vous';
+
+  @override
+  String get otherParty => 'Autre partie';
+
+  @override
+  String proposedSalaryAmount(String amount) {
+    return 'Salaire proposé : $amount';
+  }
+
+  @override
+  String get editingYourMessage => 'Modification de votre message';
+
+  @override
+  String get editYourMessageHint => 'Modifiez votre message...';
+
+  @override
+  String get salaryOptional => 'Salaire (optionnel)';
+
+  @override
+  String get justNow => 'À l\'instant';
+
+  @override
+  String minutesAgo(String mins) {
+    return 'il y a $mins min';
+  }
+
+  @override
+  String hoursAgo(String hours) {
+    return 'il y a ${hours}h';
+  }
+
+  @override
+  String get negotiateTerms => 'Négocier les termes';
+
+  @override
+  String get salaryAmount => 'Montant du salaire';
+
+  @override
+  String get addAMessageHint => 'Ajouter un message...';
+
+  @override
+  String get counter => 'Contre-offre';
+
+  @override
+  String get counterOffer => 'Contre-offre';
+
+  @override
+  String payAmountToActivate(String amount) {
+    return 'Payer $amount pour activer';
+  }
+
+  @override
+  String get hiringPending => 'Embauche en attente';
+
+  @override
+  String get negotiating => 'Négociation en cours';
+
+  @override
+  String get awaitingPayment => 'En attente de paiement';
+
+  @override
+  String get negotiate => 'Négocier';
+
+  @override
+  String get perTask => 'par tâche';
+
+  @override
+  String squareMeters(String value) {
+    return '$value m²';
+  }
+
+  @override
+  String amountPrefix(String amount) {
+    return '$amount \$';
+  }
+
+  @override
+  String get terminatedLabel => 'Résilié';
+
+  @override
+  String get hourlyLabel => 'par heure';
+
+  @override
+  String get accept => 'Accepter';
+
+  @override
+  String get decline => 'Refuser';
+
+  @override
+  String get contract => 'Contrat';
+
+  @override
+  String paymentFailed(String error) {
+    return 'Paiement échoué ou annulé.';
+  }
+
+  @override
+  String get farmerInfoSyncedFromAssignment =>
+      'Informations synchronisées depuis l\'affectation';
+
+  @override
+  String get tapToViewProfile => 'Appuyez pour voir le profil';
+
+  @override
+  String salaryPerMonth(String amount) {
+    return '$amount \$ / mois';
+  }
+
+  @override
+  String get revenueAnalysisPrompt =>
+      'Analysez mes sources de revenus et suggérez des moyens de maximiser mes profits en fonction des tendances actuelles du marché.';
+
+  @override
+  String get analyzeRevenueTooltip => 'Analyser les revenus';
+
+  @override
+  String get totalDetailsRevenue => 'Revenus détaillés totaux';
+
+  @override
+  String get creditsLabel => 'Crédits';
+
+  @override
+  String get productSales => 'Ventes de produits';
+
+  @override
+  String get unitsLabel => 'Unités';
+
+  @override
+  String get investmentRevenue => 'Revenus d\'investissement';
+
+  @override
+  String get viewInvestmentBreakdown => 'Voir le détail dans Investissements';
+
+  @override
+  String get portfolioInsights => 'Aperçu du portefeuille';
+
+  @override
+  String get premiumLabel => 'PREMIUM';
+
+  @override
+  String get unlockPortfolioMaster => 'Débloquer Portfolio Master';
+
+  @override
+  String get premiumPortfolioDesc =>
+      'Obtenez un suivi du ROI en temps réel, des rapports de dividendes automatisés et des conseils d\'investissement optimisés par l\'IA.';
+
+  @override
+  String get investorPlus => 'Investisseur Plus';
+
+  @override
+  String get portfolioAnalyticsLoading =>
+      'Chargement des analyses du portefeuille...';
+
+  @override
+  String get passwordChangedSuccess => 'Mot de passe modifié avec succès';
+
+  @override
+  String get changePasswordTitle => 'Modifier le mot de passe';
+
+  @override
+  String get createNewPassword => 'Créer un nouveau mot de passe';
+
+  @override
+  String get passwordPolicyHint =>
+      'Votre nouveau mot de passe doit être différent des anciens.';
+
+  @override
+  String get currentPassword => 'Mot de passe actuel';
+
+  @override
+  String get enterCurrentPasswordError =>
+      'Veuillez saisir votre mot de passe actuel';
+
+  @override
+  String get updatePassword => 'Mettre à jour le mot de passe';
+
+  @override
+  String profileSyncFailed(String error) {
+    return 'Échec de la synchronisation du profil : $error';
+  }
+
+  @override
+  String get unsavedChangesTitle => 'Modifications non enregistrées';
+
+  @override
+  String get unsavedChangesDesc =>
+      'Vous avez des modifications non enregistrées. Voulez-vous les abandonner ?';
+
+  @override
+  String get discard => 'Abandonner';
+
+  @override
+  String get waitUsernameCheck =>
+      'Veuillez patienter pendant la vérification du nom d\'utilisateur';
+
+  @override
+  String get correctErrorsInForm =>
+      'Veuillez corriger les erreurs dans le formulaire';
+
+  @override
+  String get usernameTaken => 'Ce nom d\'utilisateur est déjà pris';
+
+  @override
+  String get profileUpdatedSuccess => 'Profil mis à jour avec succès !';
+
+  @override
+  String get changeProfilePicture => 'Changer la photo de profil';
+
+  @override
+  String get chooseFromGallery => 'Choisir dans la galerie';
+
+  @override
+  String get takeAPhoto => 'Prendre une photo';
+
+  @override
+  String get profilePictureUpdated => 'Photo de profil mise à jour !';
+
+  @override
+  String uploadFailed(String error) {
+    return 'Échec du téléchargement : $error';
+  }
+
+  @override
+  String get editProfileTitle => 'Modifier le profil';
+
+  @override
+  String get identityTab => 'Identité';
+
+  @override
+  String get trustTab => 'Confiance';
+
+  @override
+  String get rolePrivacyTab => 'Rôle et confidentialité';
+
+  @override
+  String get saveChangesTooltip => 'Enregistrer les modifications';
+
+  @override
+  String get profileCompleteness => 'Complétude du profil';
+
+  @override
+  String get nameRequired => 'Le nom est requis';
+
+  @override
+  String get nameTooShort => 'Le nom est trop court';
+
+  @override
+  String get onlyLettersAllowed =>
+      'Seules les lettres et les espaces sont autorisés';
+
+  @override
+  String get usernameLabel => 'Nom d\'utilisateur';
+
+  @override
+  String get publicUniqueHandle => 'Identifiant unique public';
+
+  @override
+  String get usernameRequired => 'Le nom d\'utilisateur est requis';
+
+  @override
+  String get tooShortMin3 => 'Trop court (min 3)';
+
+  @override
+  String get usernameFormatError =>
+      'Utilisez des minuscules, des chiffres, des points, des tirets bas';
+
+  @override
+  String get phoneNumber => 'Numéro de téléphone';
+
+  @override
+  String get invalidPhoneFormat => 'Format de téléphone invalide';
+
+  @override
+  String get countryLabel => 'Pays';
+
+  @override
+  String get cityLabel => 'Ville';
+
+  @override
+  String get headlineLabel => 'Slogan';
+
+  @override
+  String get headlineHint => 'Une courte description de ce que vous faites';
+
+  @override
+  String get aboutMe => 'À propos de moi';
+
+  @override
+  String get portfolioLinks => 'Portfolio et liens';
+
+  @override
+  String get linkedinProfile => 'Profil LinkedIn';
+
+  @override
+  String get linkedinUrlError =>
+      'Entrez une URL ou un identifiant LinkedIn valide';
+
+  @override
+  String get personalWebsite => 'Site web personnel';
+
+  @override
+  String get websiteUrlError => 'Entrez une URL de site web valide';
+
+  @override
+  String get farmerDetailsTitle => 'Détails de l\'agriculteur';
+
+  @override
+  String get businessFarmName => 'Nom de l\'entreprise/ferme';
+
+  @override
+  String get investorDetailsTitle => 'Détails de l\'investisseur';
+
+  @override
+  String get expectedBudgetRange => 'Plage budgétaire prévue';
+
+  @override
+  String get budgetRangeHint => 'ex: 10 000 \$ - 50 000 \$';
+
+  @override
+  String get privacyControls => 'Contrôles de confidentialité';
+
+  @override
+  String get discoverableMarketplace => 'Découvrable sur le marché';
+
+  @override
+  String get discoverableSubtitle =>
+      'Permettre aux autres de trouver et de voir votre profil';
+
+  @override
+  String get showContactInfoLabel => 'Afficher les coordonnées';
+
+  @override
+  String get showContactInfoSubtitle =>
+      'Rendre le téléphone et l\'e-mail visibles par les relations';
+
+  @override
+  String get failedInitiate2FA =>
+      'Échec de l\'initialisation de la configuration 2FA';
+
+  @override
+  String get twoFAEnabledSuccess => '2FA activé avec succès';
+
+  @override
+  String get twoFADisabledSuccess => '2FA désactivé avec succès';
+
+  @override
+  String get codeCopied => 'Code copié dans le presse-papiers';
+
+  @override
+  String get disable2FA => 'Désactiver la 2FA';
+
+  @override
+  String get enable2FA => 'Activer la 2FA';
+
+  @override
+  String get secureYourAccount => 'Sécurisez votre compte';
+
+  @override
+  String get twoFADesc =>
+      'L\'authentification à deux facteurs ajoute une couche de sécurité supplémentaire à votre compte. Pour vous connecter, vous devrez fournir un code à 6 chiffres provenant de votre application d\'authentification.';
+
+  @override
+  String get startSetup => 'Démarrer la configuration';
+
+  @override
+  String get linkYourAppStep => 'Étape 1 : Lier votre application';
+
+  @override
+  String get scanQRCodeDesc =>
+      'Scannez ce code QR avec votre application d\'authentification (Google Authenticator, Authy, etc.)';
+
+  @override
+  String get enterCodeManually => 'Ou entrez ce code manuellement :';
+
+  @override
+  String get copyToClipboardTooltip => 'Copier dans le presse-papiers';
+
+  @override
+  String get confirmEnablementStep => 'Étape 2 : Confirmer l\'activation';
+
+  @override
+  String get enter6DigitCodeConfirm =>
+      'Saisissez le code à 6 chiffres de votre application pour confirmer :';
+
+  @override
+  String get backButton => 'Retour';
+
+  @override
+  String get enter6DigitCodeDisable =>
+      'Saisissez le code à 6 chiffres de votre application d\'authentification pour désactiver l\'authentification à deux facteurs.';
+
+  @override
+  String get allNotificationsMarkedRead =>
+      'Toutes les notifications sont marquées comme lues';
+
+  @override
+  String get failedToDeleteNotification =>
+      'Échec de la suppression de la notification';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get markAllAsReadTooltip => 'Tout marquer comme lu';
+
+  @override
+  String get noNotificationsYet => 'Pas encore de notifications';
+
+  @override
+  String get premiumAccess => 'Accès Premium';
+
+  @override
+  String get chooseYourPlan => 'Choisissez votre forfait';
+
+  @override
+  String get subscriptionHeadline =>
+      'Sélectionnez un forfait pour débloquer l\'expérience complète Farmy.\nUn abonnement ouvre toutes les portes.';
+
+  @override
+  String get yearly => 'Annuel';
+
+  @override
+  String get alwaysFree => 'Toujours gratuit';
+
+  @override
+  String get freeLabel => 'Gratuit';
+
+  @override
+  String get monthlySuffix => '/mois';
+
+  @override
+  String get yearlySuffix => '/an';
+
+  @override
+  String savingsLabel(String oldPrice, String savings) {
+    return 'Était $oldPrice/an — économisez $savings';
+  }
+
+  @override
+  String get continueWithFree => 'Continuer avec le gratuit';
+
+  @override
+  String getPlan(String planName) {
+    return 'Obtenir $planName';
+  }
+
+  @override
+  String paymentSummary(String price, String cycle, String planName) {
+    return '$price · $cycle · $planName';
+  }
+
+  @override
+  String balanceStatusSuccess(String amount) {
+    return 'Solde : $amount ✓';
+  }
+
+  @override
+  String balanceStatusInsufficient(String amount) {
+    return 'Solde : $amount — Insuffisant';
+  }
+
+  @override
+  String get payWithCardStripe => 'Payer par carte (Stripe)';
+
+  @override
+  String get secureCardPaymentDesc =>
+      'Paiement sécurisé par carte de crédit/débit';
+
+  @override
+  String get failedLoadPlans => 'Échec du chargement des forfaits';
+
+  @override
+  String get noPlansAvailable => 'Aucun forfait disponible';
+
+  @override
+  String get contactSupport => 'Veuillez contacter le support.';
+
+  @override
+  String get paymentPendingVerifying =>
+      'Paiement soumis. Nous le vérifions en arrière-plan.';
+
+  @override
+  String get paymentProcessingSync =>
+      'Le paiement est toujours en cours de traitement. Votre abonnement se synchronisera automatiquement.';
+
+  @override
+  String get paymentStatusDelay =>
+      'La vérification du statut du paiement est retardée. Nous continuerons la synchronisation en arrière-plan.';
+
+  @override
+  String paymentError(String error) {
+    return 'Erreur de paiement : $error';
+  }
+
+  @override
+  String get deliveriesTitle => 'Livraisons';
+
+  @override
+  String get ordersTitle => 'Commandes';
+
+  @override
+  String totalCount(String total) {
+    return '$total au total';
+  }
+
+  @override
+  String get totalOrdersLabel => 'Total des commandes';
+
+  @override
+  String get deliveredLabel => 'Livré';
+
+  @override
+  String get noDeliveriesYet => 'Pas encore de livraisons';
+
+  @override
+  String get noDeliveriesDesc =>
+      'Les livraisons de vos produits\napparaîtront ici quand les clients commanderont.';
+
+  @override
+  String get manageDeliveryTitle => 'Gérer la livraison';
+
+  @override
+  String get deliveryNotFound => 'Livraison non trouvée';
+
+  @override
+  String get deliveryTimeline => 'Chronologie de livraison';
+
+  @override
+  String get updateStatus => 'Mettre à jour le statut';
+
+  @override
+  String etaLabel(String time) {
+    return 'Heure d\'arrivée prévue : $time';
+  }
+
+  @override
+  String get orderDetails => 'Détails de la commande';
+
+  @override
+  String get productLabel => 'Produit';
+
+  @override
+  String get quantityLabel => 'Quantité';
+
+  @override
+  String get orderIdLabel => 'ID de la commande';
+
+  @override
+  String get customerLabel => 'Client';
+
+  @override
+  String get deliveryInfo => 'Infos de livraison';
+
+  @override
+  String get addressLabel => 'Adresse';
+
+  @override
+  String get createdLabel => 'Créé';
+
+  @override
+  String get startedLabel => 'Commencé';
+
+  @override
+  String get cancelDeliveryQuestion => 'Annuler la livraison ?';
+
+  @override
+  String updateToStatusQuestion(String status) {
+    return 'Passer à $status ?';
+  }
+
+  @override
+  String get cancelNotifyCustomer =>
+      'Ceci annulera la livraison et en informera le client.';
+
+  @override
+  String advanceNotifyCustomer(String status) {
+    return 'Ceci fera passer la livraison à \"$status\" et en informera le client.';
+  }
+
+  @override
+  String get cancellationReasonHint => 'Raison de l\'annulation...';
+
+  @override
+  String get addNoteHint => 'Ajouter une note (optionnel)...';
+
+  @override
+  String get confirmUpdate => 'Confirmer';
+
+  @override
+  String get cancelDeliveryAction => 'Annuler la livraison';
+
+  @override
+  String statusUpdatedTo(String status) {
+    return 'Statut mis à jour à $status';
+  }
+
+  @override
+  String get failedUpdateStatus => 'Échec de la mise à jour du statut';
+
+  @override
+  String moveToStatus(String status) {
+    return 'Passer à $status';
+  }
+
+  @override
+  String get successfullyDelivered => 'Livré avec succès';
+
+  @override
+  String get deliveryCancelled => 'Livraison annulée';
+
+  @override
+  String completedOn(String date) {
+    return 'Terminé le $date';
+  }
+
+  @override
+  String dateTimeAt(String date, String time) {
+    return '$date à $time';
+  }
+
+  @override
+  String get cardAddedSuccess => 'Carte ajoutée avec succès';
+
+  @override
+  String get failedAddCard => 'Échec de l\'ajout de la carte';
+
+  @override
+  String get addCreditsTitle => 'Ajouter des crédits';
+
+  @override
+  String get selectAmount => 'Sélectionner le montant';
+
+  @override
+  String get customAmountLabel => 'Montant personnalisé';
+
+  @override
+  String get maxAmountError => 'Le montant maximum est de 999 999,99 \$';
+
+  @override
+  String payAmount(String amount) {
+    return 'PAYER \$$amount';
+  }
+
+  @override
+  String get enterAmount => 'SAISIR UN MONTANT';
+
+  @override
+  String successfullyAddedCredits(String amount) {
+    return 'Ajout réussi de $amount \$';
+  }
+
+  @override
+  String priceTnd(String price) {
+    return '$price TND';
+  }
+
+  @override
+  String get failedAddCredits => 'Échec de l\'ajout de crédits';
+
+  @override
+  String get walletPaymentsTitle => 'Portefeuille et paiements';
+
+  @override
+  String get currentBalance => 'Solde actuel';
+
+  @override
+  String get paymentMethods => 'Méthodes de paiement';
+
+  @override
+  String get addNewCard => 'Ajouter une nouvelle carte';
+
+  @override
+  String expiresLabel(String expiry) {
+    return 'Expire le $expiry';
+  }
+
+  @override
+  String get failedLoadTasks => 'Échec du chargement des tâches';
+
+  @override
+  String get errorFetchingTasks =>
+      'Erreur lors de la récupération de vos tâches';
+
+  @override
+  String get taskCompletedSuccess =>
+      'Tâche terminée ! Vous êtes maintenant disponible.';
+
+  @override
+  String get failedCompleteTask => 'Échec de la finalisation de la tâche';
+
+  @override
+  String errorWithPrefix(String error) {
+    return 'Erreur : $error';
+  }
+
+  @override
+  String get myTasksTitle => 'Mes tâches';
+
+  @override
+  String get noPendingTasks => 'Aucune tâche en attente !';
+
+  @override
+  String get availableForAssignments =>
+      'Vous êtes disponible pour de nouvelles affectations.';
+
+  @override
+  String get taskLabel => 'Tâche';
+
+  @override
+  String get unknownCaps => 'INCONNU';
+
+  @override
+  String get minsSuffix => 'mins';
+
+  @override
+  String get markAsComplete => 'Marquer comme terminé';
+
+  @override
+  String get productionGuruTitle => 'Gourou de la production';
+
+  @override
+  String get sessionHistoryTooltip => 'Historique des sessions';
+
+  @override
+  String get newSessionTooltip => 'Nouvelle session';
+
+  @override
+  String get askGuruHint => 'Demandez à votre gourou...';
+
+  @override
+  String get harvestChroniclesTitle => 'Chroniques de récolte';
+
+  @override
+  String get noHistoryYet => 'Pas encore d\'historique';
+
+  @override
+  String get farmAnalysisDefault => 'Analyse de la ferme';
+
+  @override
+  String get assetsLabel => 'Actifs';
+
+  @override
+  String get failedReachAnalyst =>
+      'Échec de la connexion à l\'analyste stratégique IA.';
+
+  @override
+  String get strategicPortfolioAnalystTitle =>
+      'Analyste de portefeuille stratégique';
+
+  @override
+  String get investmentStrategyChroniclesTitle =>
+      'Chroniques de stratégie d\'investissement';
+
+  @override
+  String get strategySessionDefault => 'Session stratégique';
+
+  @override
+  String get welcomeStrategicAnalysis =>
+      'Bienvenue dans l\'analyse stratégique';
+
+  @override
+  String get investmentAgentWelcomeDesc =>
+      'Dites-moi votre budget et votre préférence en matière de risques, ou posez des questions sur le marché actuel et les tendances météorologiques.';
+
+  @override
+  String get consultedLiveData => 'Données en direct consultées :';
+
+  @override
+  String get marketLabel => 'Marché';
+
+  @override
+  String get weatherLabel => 'Météo';
+
+  @override
+  String get suggestedRealEstate => 'Immobilier suggéré :';
+
+  @override
+  String get unknownFarm => 'Ferme inconnue';
+
+  @override
+  String get tndPerMeter => 'TND/m';
+
+  @override
+  String get enterPreferencesHint =>
+      'Entrez vos préférences ou demandez une analyse...';
+
+  @override
+  String get laborMarketLabel => 'MARCHÉ DU TRAVAIL';
+
+  @override
+  String get specificationsLabel => 'Spécifications :';
+
+  @override
+  String get priceLabel => 'Prix';
+
+  @override
+  String get rateLabel => 'Taux';
+
+  @override
+  String get ratingLabel => 'Évaluation';
+
+  @override
+  String get closeButton => 'Fermer';
+
+  @override
+  String get estimatedDelivery => 'Livraison estimée';
+
+  @override
+  String get deliveryAddress => 'Adresse de livraison';
+
+  @override
+  String get sellerLabel => 'Vendeur';
+
+  @override
+  String get cancellationReasonLabel => 'Raison d\'annulation';
+
+  @override
+  String get orderSummary => 'Récapitulatif de commande';
+
+  @override
+  String get arrivingSoon => 'Arrive bientôt';
+
+  @override
+  String etaMinutes(String mins) {
+    return '~$mins min';
+  }
+
+  @override
+  String etaHours(String hours, String mins) {
+    return '~${hours}h ${mins}min';
+  }
+
+  @override
+  String get driverNearby => 'Livreur à proximité !';
+
+  @override
+  String get onTheWay => 'En route';
+
+  @override
+  String get youLabel => 'Vous';
+
+  @override
+  String get filterAll => 'Tous';
+
+  @override
+  String get filterNew => 'Nouveau';
+
+  @override
+  String get filterConfirmed => 'Confirmé';
+
+  @override
+  String get filterPreparing => 'En préparation';
+
+  @override
+  String get filterInTransit => 'En transit';
+
+  @override
+  String get filterDelivered => 'Livré';
+
+  @override
+  String get filterCancelled => 'Annulé';
+
+  @override
+  String get unknownCustomer => 'Client inconnu';
+
+  @override
+  String get orderLabel => 'Commande';
+
+  @override
+  String get manageButton => 'Gérer';
+
+  @override
+  String get unavailable => 'Indisponible';
+
+  @override
+  String get addMore => 'Ajouter plus';
+
+  @override
+  String qtyUpdatedTo(String title, String qty) {
+    return '$title — quantité mise à jour à $qty';
+  }
+
+  @override
+  String get maximumStockReached => 'Stock maximum atteint';
+
+  @override
+  String pricePerUnit(String price, String unit) {
+    return '$price TND / $unit';
+  }
+
+  @override
+  String get premiumFeatureTitle => 'Fonctionnalité Premium';
+
+  @override
+  String get premiumFeatureDesc =>
+      'Mettez à niveau votre abonnement pour débloquer cette fonctionnalité.';
+
+  @override
+  String get upgradeNow => 'Mettre à niveau';
+
+  @override
+  String upgradeRequiredDesc(String featureKey) {
+    return 'Cette fonctionnalité ($featureKey) est disponible dans un plan premium. Mettez à niveau votre abonnement pour la débloquer.';
+  }
+
+  @override
+  String get laterButton => 'Plus tard';
+
+  @override
+  String get myLandsTitle => 'Mes Terres';
+
+  @override
+  String get noLandsFound => 'Aucune terre trouvée';
+
+  @override
+  String get noLandsRented => 'Vous n\'avez encore loué aucune terre.';
+
+  @override
+  String get landActive => 'Actif';
+
+  @override
+  String get landInactive => 'Inactif';
+
+  @override
+  String get landsRented => 'Terres Louées';
+
+  @override
+  String get completenessLabel => 'Complétude';
+
+  @override
+  String get roleLabel => 'Rôle';
+
+  @override
+  String get aboutLabel => 'À propos';
+
+  @override
+  String get directLinksLabel => 'Liens directs';
+
+  @override
+  String get websiteLabel => 'Site web';
+
+  @override
+  String farmyMemberSince(String date) {
+    return 'Membre de la communauté Farmy depuis $date';
+  }
+
+  @override
+  String get privacyRestricted => 'Accès restreint';
+
+  @override
+  String get profileNotFound => 'Profil introuvable ou privé';
+
+  @override
+  String get profileLoadError =>
+      'Impossible de charger le profil. Vérifiez votre connexion.';
+
+  @override
+  String get retryButton => 'Réessayer';
+
+  @override
+  String upgradeForUnlimited(String plan) {
+    return 'Passer$plan pour un accès illimité';
+  }
+
+  @override
+  String get tapToViewPlans => 'Appuyez pour voir les plans →';
+
+  @override
+  String get assignTaskTitle => 'Assigner une tâche';
+
+  @override
+  String workersAvailable(String count) {
+    return '$count Disponibles';
+  }
+
+  @override
+  String get noTasksDefined => 'Aucune tâche définie pour cet élément.';
+
+  @override
+  String get noAvailableWorkers => 'Aucun travailleur disponible !';
+
+  @override
+  String get taskAssigned => 'Tâche assignée !';
+
+  @override
+  String get assignButton => 'Assigner';
+
+  @override
+  String get myTasksOnLand => 'Mes tâches sur cette terre';
+
+  @override
+  String get noPendingTasksHere => 'Aucune tâche en attente ici !';
+
+  @override
+  String get availableForAssignment =>
+      'Vous êtes disponible pour des assignations.';
+
+  @override
+  String get taskCompleted =>
+      'Tâche terminée ! Vous êtes maintenant disponible.';
+
+  @override
+  String get markCompleteButton => 'Marquer comme terminé';
+
+  @override
+  String get errorFetchingYourTasks =>
+      'Erreur lors de la récupération de vos tâches';
+
+  @override
+  String get closeTip => 'Fermer';
+
+  @override
+  String get farmyStore => 'BOUTIQUE FARMY';
+
+  @override
+  String get nothingFoundHere => 'Rien trouvé ici';
+
+  @override
+  String get shopBack => 'RETOUR';
+
+  @override
+  String get shopVariants => 'VARIANTES';
+
+  @override
+  String get shopBuy => 'ACHETER';
+
+  @override
+  String get mustRentLand =>
+      'Vous devez louer une terre pour acheter des articles.';
+
+  @override
+  String get selectLand => 'Sélectionner une terre';
+
+  @override
+  String get unknownLand => 'Terre inconnue';
+
+  @override
+  String get purchaseRequestSent =>
+      'Demande envoyée ! Transaction enregistrée sur Hedera.';
+
+  @override
+  String get purchaseFailed => 'Achat échoué. Crédits insuffisants ?';
+
+  @override
+  String get topUpCredits => 'RECHARGER LES CRÉDITS';
+
+  @override
+  String get customAmount => 'Montant personnalisé';
+
+  @override
+  String maximumAmount(String max) {
+    return 'Montant maximum : \$$max';
+  }
+
+  @override
+  String creditsAdded(String amount) {
+    return 'Ajout réussi de \$$amount !';
+  }
+
+  @override
+  String get myInventory => 'MON INVENTAIRE';
+
+  @override
+  String get allLands => 'Toutes les terres';
+
+  @override
+  String get unknownLandFallback => 'Inconnu';
+
+  @override
+  String get tabAll => 'TOUT';
+
+  @override
+  String get tabPending => 'EN ATTENTE';
+
+  @override
+  String get tabApproved => 'APPROUVÉ';
+
+  @override
+  String get tabRejected => 'REJETÉ';
+
+  @override
+  String noItemsFound(String status) {
+    return 'Aucun article $status trouvé';
+  }
+
+  @override
+  String get placedBadge => 'PLACÉ';
+
+  @override
+  String get itemActions => 'Actions sur l\'article';
+
+  @override
+  String get alreadyPlaced => 'Déjà placé';
+
+  @override
+  String get addToLand => 'Ajouter à la terre';
+
+  @override
+  String get wrongLand => 'Mauvaise terre';
+
+  @override
+  String get alreadyPlacedSubtitle => 'Cet article est déjà sur la carte.';
+
+  @override
+  String get wrongLandSubtitle => 'Cet article appartient à une autre terre.';
+
+  @override
+  String get buyMore => 'Acheter plus';
+
+  @override
+  String get failedToLoadData =>
+      'Impossible de charger les données. Veuillez réessayer.';
+
+  @override
+  String get failedToLoadInventory =>
+      'Impossible de charger l\'inventaire. Veuillez réessayer.';
+
+  @override
+  String get comingSoonTitle => 'Bientôt disponible';
+
+  @override
+  String get comingSoonDesc =>
+      'Cette fonctionnalité est en cours de développement. Vous pourrez bientôt placer des articles sur votre terre !';
+
+  @override
+  String get okButton => 'OK';
+
+  @override
+  String get gotItButton => 'Compris';
+
+  @override
+  String get placingItem => 'Placement de l\'article...';
+
+  @override
+  String get itemPlacedSuccess => 'Article placé avec succès !';
+
+  @override
+  String placingLabel(String name) {
+    return 'Placement : $name';
+  }
+
+  @override
+  String get loadingFootprint => 'Chargement de l\'empreinte...';
+
+  @override
+  String sizeLabel(String w, String h) {
+    return 'Taille : ${w}x$h';
+  }
+
+  @override
+  String get confirmButton => 'Confirmer';
+
+  @override
+  String get cancelButton => 'Annuler';
+
+  @override
+  String get failedToLoadFarm => 'Impossible de charger la ferme';
+
+  @override
+  String get goBackButton => 'Retour';
+
+  @override
+  String get menuWorkforce => 'Main-d\'œuvre';
+
+  @override
+  String get menuMyTasks => 'Mes tâches';
+
+  @override
+  String get menuAiAdvisor => 'Conseiller IA';
+
+  @override
+  String get menuInventory => 'Inventaire';
+
+  @override
+  String get menuShop => 'Boutique';
+
+  @override
+  String get menuExitGame => 'Quitter le jeu';
+
+  @override
+  String get mapTooltipInfo => 'Info';
+
+  @override
+  String get mapTooltipMove => 'Déplacer';
+
+  @override
+  String get mapTooltipTasks => 'Tâches';
+
+  @override
+  String placementFailed(String error) {
+    return 'Échec du placement : $error';
+  }
+
+  @override
+  String get placementFailedGeneric =>
+      'Impossible de placer l\'article. Essayez ailleurs.';
 }

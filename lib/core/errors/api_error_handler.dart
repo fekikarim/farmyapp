@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 
 /// Custom exception for upgrade-required (HTTP 403) responses.

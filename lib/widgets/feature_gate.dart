@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/subscription_provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 /// A widget that conditionally renders its [child] based on the user's
 /// entitlements. If the feature is locked, it shows [lockedChild] or

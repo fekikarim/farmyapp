@@ -4,7 +4,7 @@ import '../providers/land_provider.dart';
 import '../models/land_model.dart';
 import '../models/land_rental_model.dart';
 import '../game/game_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class MyLandsBottomSheet extends StatefulWidget {
   const MyLandsBottomSheet({super.key});

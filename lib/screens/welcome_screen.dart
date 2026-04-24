@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 import 'subscription/mandatory_pricing_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {

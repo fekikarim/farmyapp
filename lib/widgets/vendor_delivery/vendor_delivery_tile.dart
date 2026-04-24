@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/vendor_delivery_model.dart';
 import '../../models/delivery_model.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 /// A single delivery card in the vendor list.
 class VendorDeliveryTile extends StatelessWidget {

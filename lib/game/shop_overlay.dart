@@ -7,6 +7,7 @@ import '../services/shop_service.dart';
 import '../services/land_rental_service.dart';
 import '../models/land_rental_model.dart';
 import '../providers/wallet_provider.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class ShopOverlay extends StatefulWidget {
   final String? preSelectedLandId;
@@ -129,9 +130,9 @@ class _ShopOverlayState extends State<ShopOverlay>
             onPressed: () => Navigator.pop(context),
           ),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Text(
-              'FARMY STORE',
+              AppLocalizations.of(context)!.farmyStore,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -228,10 +229,10 @@ class _ShopOverlayState extends State<ShopOverlay>
     }
 
     if (_items == null || _items!.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          'Nothing found here',
-          style: TextStyle(color: Colors.white38),
+          AppLocalizations.of(context)!.nothingFoundHere,
+          style: const TextStyle(color: Colors.white38),
         ),
       );
     }
@@ -320,16 +321,16 @@ class _ShopOverlayState extends State<ShopOverlay>
                     color: Colors.white.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.chevron_left,
                         color: Colors.greenAccent,
                         size: 16,
                       ),
                       Text(
-                        'BACK',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.shopBack,
+                        style: const TextStyle(
                           color: Colors.greenAccent,
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
@@ -400,9 +401,9 @@ class _ShopOverlayState extends State<ShopOverlay>
               ),
 
               const SizedBox(height: 20),
-              const Text(
-                'VARIANTS',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.shopVariants,
+                style: const TextStyle(
                   color: Colors.white24,
                   fontWeight: FontWeight.w900,
                   fontSize: 10,
@@ -484,9 +485,9 @@ class _ShopOverlayState extends State<ShopOverlay>
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text(
-                  'BUY',
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11),
+                child: Text(
+                  AppLocalizations.of(context)!.shopBuy,
+                  style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11),
                 ),
               ),
             ],
@@ -548,8 +549,8 @@ class _ShopOverlayState extends State<ShopOverlay>
 
       if (rentals.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('You must rent a land to buy items.'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.mustRentLand),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -574,9 +575,9 @@ class _ShopOverlayState extends State<ShopOverlay>
             context: context,
             builder: (context) => SimpleDialog(
             backgroundColor: const Color(0xFF1E293B),
-            title: const Text(
-              'Select Land',
-              style: TextStyle(
+            title: Text(
+              AppLocalizations.of(context)!.selectLand,
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -588,7 +589,7 @@ class _ShopOverlayState extends State<ShopOverlay>
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Text(
-                        r.land?.name ?? 'Unknown Land',
+                        r.land?.name ?? AppLocalizations.of(context)!.unknownLand,
                         style: const TextStyle(color: Colors.white70),
                       ),
                     ),
@@ -630,7 +631,7 @@ class _ShopOverlayState extends State<ShopOverlay>
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Request sent! Transaction recorded on Hedera.',
+                    AppLocalizations.of(context)!.purchaseRequestSent,
                     style: TextStyle(fontWeight: FontWeight.w500),
                   ),
                 ),
@@ -644,8 +645,8 @@ class _ShopOverlayState extends State<ShopOverlay>
         context.read<WalletProvider>().fetchWalletStatus();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Purchase failed. Insufficient credits?'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.purchaseFailed),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -700,9 +701,9 @@ class _ShopOverlayState extends State<ShopOverlay>
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'TOP UP CREDITS',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.topUpCredits,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
@@ -758,7 +759,7 @@ class _ShopOverlayState extends State<ShopOverlay>
                   ),
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: 'Custom Amount',
+                    labelText: AppLocalizations.of(context)!.customAmount,
                     labelStyle: const TextStyle(
                       color: Colors.white38,
                       fontSize: 13,
@@ -790,7 +791,9 @@ class _ShopOverlayState extends State<ShopOverlay>
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                      'Maximum amount is \$${_maxAmount.toStringAsFixed(2)}',
+                      AppLocalizations.of(context)!.maximumAmount(
+                        _maxAmount.toStringAsFixed(2),
+                      ),
                       style: const TextStyle(
                         color: Colors.redAccent,
                         fontSize: 12,
@@ -819,8 +822,10 @@ class _ShopOverlayState extends State<ShopOverlay>
                   ),
                   child: Text(
                     selectedAmount != null
-                        ? 'PAY \$${selectedAmount!.toStringAsFixed(2)}'
-                        : 'ENTER AMOUNT',
+                        ? AppLocalizations.of(context)!.payAmount(
+                            selectedAmount!.toStringAsFixed(2),
+                          )
+                        : AppLocalizations.of(context)!.enterAmount,
                     style: const TextStyle(
                       fontWeight: FontWeight.w900,
                       fontSize: 14,
@@ -841,14 +846,14 @@ class _ShopOverlayState extends State<ShopOverlay>
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Successfully added \$$amount!'),
+          content: Text(AppLocalizations.of(context)!.creditsAdded(amount.toString())),
           backgroundColor: Colors.green,
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Payment failed or cancelled.'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.paymentFailed),
           backgroundColor: Colors.redAccent,
         ),
       );

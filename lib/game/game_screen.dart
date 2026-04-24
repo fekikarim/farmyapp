@@ -22,6 +22,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'asset_manager.dart';
 import 'package:flutter/scheduler.dart';
 import '../widgets/virtual_joystick.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class GameScreen extends StatefulWidget {
   final Land land;
@@ -733,7 +734,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                     child: FilledButton.icon(
                       onPressed: () => Navigator.pop(ctx),
                       icon: const Icon(Icons.check),
-                      label: const Text('Got it'),
+                      label: Text(AppLocalizations.of(ctx)!.gotItButton),
                     ),
                   ),
                 ],
@@ -831,9 +832,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Placing item...'),
-        duration: Duration(milliseconds: 500),
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.placingItem),
+        duration: const Duration(milliseconds: 500),
       ),
     );
 
@@ -860,8 +861,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       _initializeApp();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Item placed successfully!'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.itemPlacedSuccess),
           backgroundColor: Colors.green,
         ),
       );
@@ -873,8 +874,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         SnackBar(
           content: Text(
             errorMessage != null
-                ? 'Placement failed: $errorMessage'
-                : 'Failed to place item. Try elsewhere.',
+                ? AppLocalizations.of(context)!.placementFailed(errorMessage!)
+                : AppLocalizations.of(context)!.placementFailedGeneric,
           ),
           backgroundColor: Colors.red,
         ),
@@ -969,7 +970,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Placing: ${_placementItem?['details']?['name'] ?? 'Item'}',
+                              AppLocalizations.of(context)!.placingLabel(
+                                _placementItem?['details']?['name'] ?? 'Item',
+                              ),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -977,16 +980,19 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                               ),
                             ),
                             if (_placementFootprint == null)
-                              const Text(
-                                'Loading footprint...',
-                                style: TextStyle(
+                              Text(
+                                AppLocalizations.of(context)!.loadingFootprint,
+                                style: const TextStyle(
                                   color: Colors.grey,
                                   fontSize: 12,
                                 ),
                               )
                             else
                               Text(
-                                'Size: ${_placementFootprint!['base_size']['width']}x${_placementFootprint!['base_size']['height']}',
+                                AppLocalizations.of(context)!.sizeLabel(
+                                  '${_placementFootprint!['base_size']['width']}',
+                                  '${_placementFootprint!['base_size']['height']}',
+                                ),
                                 style: const TextStyle(
                                   color: Colors.greenAccent,
                                   fontSize: 12,
@@ -1001,7 +1007,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                             ? _handlePlacement
                             : null,
                         icon: const Icon(Icons.check),
-                        label: const Text('Confirm'),
+                        label: Text(AppLocalizations.of(context)!.confirmButton),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.greenAccent,
                           foregroundColor: Colors.black,
@@ -1012,7 +1018,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                       ElevatedButton.icon(
                         onPressed: _cancelPlacement,
                         icon: const Icon(Icons.close),
-                        label: const Text('Cancel'),
+                        label: Text(AppLocalizations.of(context)!.cancelButton),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.redAccent,
                           foregroundColor: Colors.white,
@@ -1106,9 +1112,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         children: [
           const Icon(Icons.error_outline, size: 60, color: Colors.redAccent),
           const SizedBox(height: 16),
-          const Text(
-            'Failed to load farm',
-            style: TextStyle(color: Colors.white, fontSize: 18),
+          Text(
+            AppLocalizations.of(context)!.failedToLoadFarm,
+            style: const TextStyle(color: Colors.white, fontSize: 18),
           ),
           const SizedBox(height: 20),
           ElevatedButton(
@@ -1118,11 +1124,11 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
               });
               _initializeApp();
             },
-            child: const Text('Retry'),
+            child: Text(AppLocalizations.of(context)!.retryButton),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Go Back'),
+            child: Text(AppLocalizations.of(context)!.goBackButton),
           ),
         ],
       ),
@@ -1138,7 +1144,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
           // Workforce Button
           if (canManageWorkforce)
             _buildMenuItem(
-              label: 'Workforce',
+              label: AppLocalizations.of(context)!.menuWorkforce,
               icon: Icons.engineering,
               color: Colors.blue.shade600,
               delay: 0,
@@ -1158,7 +1164,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
           if (context.read<AuthProvider>().user?.role == 'worker')
             _buildMenuItem(
-              label: 'My Tasks',
+              label: AppLocalizations.of(context)!.menuMyTasks,
               icon: Icons.assignment_rounded,
               color: Colors.amberAccent,
               textColor: Colors.black,
@@ -1172,7 +1178,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
           // AI Advisor Button
           if (context.read<AuthProvider>().user?.role != 'worker')
             _buildMenuItem(
-              label: 'AI Advisor',
+              label: AppLocalizations.of(context)!.menuAiAdvisor,
               icon: Icons.auto_awesome,
               color: Colors.purpleAccent,
               textColor: Colors.white,
@@ -1199,7 +1205,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
           // Inventory Button
           if (context.read<AuthProvider>().user?.role != 'worker')
             _buildMenuItem(
-              label: 'Inventory',
+              label: AppLocalizations.of(context)!.menuInventory,
               icon: Icons.inventory_2_rounded,
               color: Colors.orangeAccent,
               textColor: Colors.black,
@@ -1213,7 +1219,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
           // Shop Button
           if (context.read<AuthProvider>().user?.role != 'worker')
             _buildMenuItem(
-              label: 'Shop',
+              label: AppLocalizations.of(context)!.menuShop,
               icon: Icons.storefront_rounded,
               color: Colors.greenAccent,
               textColor: Colors.black,
@@ -1226,7 +1232,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
           // Exit Button
           _buildMenuItem(
-            label: 'Exit Game',
+            label: AppLocalizations.of(context)!.menuExitGame,
             icon: Icons.exit_to_app_rounded,
             color: Colors.redAccent,
             delay: 150,

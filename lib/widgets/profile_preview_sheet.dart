@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../models/user_model.dart';
 import '../../services/auth_service.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class ProfilePreviewSheet extends StatefulWidget {
   final String userId;

@@ -5,6 +5,7 @@ import '../services/shop_service.dart';
 import '../services/land_rental_service.dart';
 import '../models/land_rental_model.dart';
 import 'shop_overlay.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 class InventoryOverlay extends StatefulWidget {
   final String? initialLandId;
@@ -67,7 +68,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Failed to load data. Please try again.';
+          _errorMessage = AppLocalizations.of(context)!.failedToLoadData;
         });
       }
     }
@@ -98,7 +99,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Failed to load inventory. Please try again.';
+          _errorMessage = AppLocalizations.of(context)!.failedToLoadInventory;
         });
       }
     }
@@ -175,7 +176,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'MY INVENTORY',
+                  AppLocalizations.of(context)!.myInventory,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -205,7 +206,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                         isExpanded: true,
                         value: _selectedLand,
                         hint: const Text(
-                          'All Lands',
+                          AppLocalizations.of(context)!.allLands,
                           style: TextStyle(
                             color: Colors.greenAccent,
                             fontSize: 12,
@@ -226,13 +227,13 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                         items: [
                           const DropdownMenuItem<LandRental>(
                             value: null,
-                            child: Text('All Lands'),
+                            child: Text(AppLocalizations.of(context)!.allLands),
                           ),
                           ..._rentedLands.map((land) {
                             return DropdownMenuItem<LandRental>(
                               value: land,
                               child: Text(
-                                land.land?.name ?? 'Unknown',
+                                land.land?.name ?? AppLocalizations.of(context)!.unknownLandFallback,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             );
@@ -278,11 +279,11 @@ class _InventoryOverlayState extends State<InventoryOverlay>
           fontSize: 11,
           letterSpacing: 1,
         ),
-        tabs: const [
-          Tab(text: 'ALL'),
-          Tab(text: 'PENDING'),
-          Tab(text: 'APPROVED'),
-          Tab(text: 'REJECTED'),
+        tabs: [
+          Tab(text: AppLocalizations.of(context)!.tabAll),
+          Tab(text: AppLocalizations.of(context)!.tabPending),
+          Tab(text: AppLocalizations.of(context)!.tabApproved),
+          Tab(text: AppLocalizations.of(context)!.tabRejected),
         ],
       ),
     );
@@ -304,7 +305,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
             Icon(Icons.inbox, size: 48, color: Colors.white.withOpacity(0.1)),
             const SizedBox(height: 16),
             Text(
-              'No $filterStatus items found',
+              AppLocalizations.of(context)!.noItemsFound(filterStatus),
               style: TextStyle(color: Colors.white.withOpacity(0.3)),
             ),
           ],
@@ -410,8 +411,8 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                                   color: Colors.blueAccent.withOpacity(0.9),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: const Text(
-                                  'PLACED',
+                                child: Text(
+                                  AppLocalizations.of(context)!.placedBadge,
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w900,
@@ -665,7 +666,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
               backgroundColor: Colors.white10,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Retry'),
+            child: Text(AppLocalizations.of(context)!.retryButton),
           ),
         ],
       ),
@@ -750,8 +751,8 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Item Actions',
+              Text(
+                AppLocalizations.of(context)!.itemActions,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -761,7 +762,9 @@ class _InventoryOverlayState extends State<InventoryOverlay>
               const SizedBox(height: 24),
               _buildActionButton(
                 context,
-                isPlaced ? 'Already Placed' : (isMatchingLand ? 'Add to Land' : 'Wrong Land'),
+                isPlaced ? AppLocalizations.of(context)!.alreadyPlaced
+                    : (isMatchingLand ? AppLocalizations.of(context)!.addToLand
+                        : AppLocalizations.of(context)!.wrongLand),
                 Icons.landscape_rounded,
               (isMatchingLand && !isPlaced)
                   ? () {
@@ -782,7 +785,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
               const SizedBox(height: 12),
               _buildActionButton(
                 context,
-                'Buy More',
+                AppLocalizations.of(context)!.buyMore,
                 Icons.shopping_cart_outlined,
                 () {
                   Navigator.pop(context); // Close sheet
@@ -882,15 +885,15 @@ class _InventoryOverlayState extends State<InventoryOverlay>
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF0F172A),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Coming Soon', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'This feature is under development. You will be able to place items on your land soon!',
-          style: TextStyle(color: Colors.white70),
+        title: Text(AppLocalizations.of(context)!.comingSoonTitle, style: const TextStyle(color: Colors.white)),
+        content: Text(
+          AppLocalizations.of(context)!.comingSoonDesc,
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK', style: TextStyle(color: Color(0xFF4ADE80))),
+            child: Text(AppLocalizations.of(context)!.okButton, style: const TextStyle(color: Color(0xFF4ADE80))),
           ),
         ],
       ),

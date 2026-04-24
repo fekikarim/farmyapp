@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/delivery_model.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 
 /// Horizontal filter chip bar for delivery status filtering.
 class DeliveryStatusFilter extends StatelessWidget {

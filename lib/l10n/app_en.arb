@@ -1384,5 +1384,88 @@
   "taskCompleted": "Task completed! You are now available.",
   "markCompleteButton": "Mark as Complete",
   "errorFetchingYourTasks": "Error fetching your tasks",
-  "closeTip": "Close"
+  "closeTip": "Close",
+  "farmyStore": "FARMY STORE",
+  "nothingFoundHere": "Nothing found here",
+  "shopBack": "BACK",
+  "shopVariants": "VARIANTS",
+  "shopBuy": "BUY",
+  "mustRentLand": "You must rent a land to buy items.",
+  "selectLand": "Select Land",
+  "unknownLand": "Unknown Land",
+  "purchaseRequestSent": "Request sent! Transaction recorded on Hedera.",
+  "purchaseFailed": "Purchase failed. Insufficient credits?",
+  "topUpCredits": "TOP UP CREDITS",
+  "customAmount": "Custom Amount",
+  "maximumAmount": "Maximum amount is ${max}",
+  "@maximumAmount": {
+    "placeholders": { "max": { "type": "String" } }
+  },
+  "payAmount": "PAY ${amount}",
+  "@payAmount": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "enterAmount": "ENTER AMOUNT",
+  "creditsAdded": "Successfully added ${amount}!",
+  "@creditsAdded": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "paymentFailed": "Payment failed or cancelled.",
+  "myInventory": "MY INVENTORY",
+  "allLands": "All Lands",
+  "unknownLandFallback": "Unknown",
+  "tabAll": "ALL",
+  "tabPending": "PENDING",
+  "tabApproved": "APPROVED",
+  "tabRejected": "REJECTED",
+  "noItemsFound": "No {status} items found",
+  "@noItemsFound": {
+    "placeholders": { "status": { "type": "String" } }
+  },
+  "placedBadge": "PLACED",
+  "itemActions": "Item Actions",
+  "alreadyPlaced": "Already Placed",
+  "addToLand": "Add to Land",
+  "wrongLand": "Wrong Land",
+  "alreadyPlacedSubtitle": "This item is already on the map.",
+  "wrongLandSubtitle": "This item belongs to another land.",
+  "buyMore": "Buy More",
+  "failedToLoadData": "Failed to load data. Please try again.",
+  "failedToLoadInventory": "Failed to load inventory. Please try again.",
+  "comingSoonTitle": "Coming Soon",
+  "comingSoonDesc": "This feature is under development. You will be able to place items on your land soon!",
+  "okButton": "OK",
+  "gotItButton": "Got it",
+  "placingItem": "Placing item...",
+  "itemPlacedSuccess": "Item placed successfully!",
+  "placingLabel": "Placing: {name}",
+  "@placingLabel": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "loadingFootprint": "Loading footprint...",
+  "sizeLabel": "Size: {w}x{h}",
+  "@sizeLabel": {
+    "placeholders": {
+      "w": { "type": "String" },
+      "h": { "type": "String" }
+    }
+  },
+  "confirmButton": "Confirm",
+  "cancelButton": "Cancel",
+  "failedToLoadFarm": "Failed to load farm",
+  "goBackButton": "Go Back",
+  "menuWorkforce": "Workforce",
+  "menuMyTasks": "My Tasks",
+  "menuAiAdvisor": "AI Advisor",
+  "menuInventory": "Inventory",
+  "menuShop": "Shop",
+  "menuExitGame": "Exit Game",
+  "mapTooltipInfo": "Info",
+  "mapTooltipMove": "Move",
+  "mapTooltipTasks": "Tasks",
+  "placementFailed": "Placement failed: {error}",
+  "@placementFailed": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "placementFailedGeneric": "Failed to place item. Try elsewhere."
 }

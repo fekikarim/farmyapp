@@ -5,7 +5,7 @@ import '../providers/auth_provider.dart';
 import '../providers/game_provider.dart';
 import '../providers/worker_provider.dart';
 import '../providers/locale_provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 import 'settings/edit_profile_screen.dart';
 import 'settings/change_password_screen.dart';
 import 'settings/enable_2fa_screen.dart';
