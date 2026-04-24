@@ -62,7 +62,7 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Explore Lands',
+          AppLocalizations.of(context)!.exploreLands,
           style: TextStyle(
             color: theme.textTheme.titleLarge?.color,
             fontSize: 24,
@@ -142,10 +142,10 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                             child: SubscriptionLimitBar(
                               limitKey: 'rental_limit',
                               currentCount: provider.myRentals.length,
-                              label: 'Rental Slots Usage',
+                              label: AppLocalizations.of(context)!.rentalSlotsUsage,
                               icon: Icons.vpn_key_rounded,
                               accentColor: Colors.blue,
-                              upgradePlanName: 'Investor Plus',
+                              upgradePlanName: AppLocalizations.of(context)!.investorPlus,
                             ),
                           );
                         }
@@ -286,7 +286,7 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                       color: Colors.white,
                     ),
                     label: const Text(
-                      'Workforce',
+                      AppLocalizations.of(context)!.workforce,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -423,7 +423,7 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
         error.contains('SocketException') ||
         error.contains('Failed host lookup');
     String displayError = isNetwork
-        ? 'No internet connection. Please check your network and try again.'
+        ? AppLocalizations.of(context)!.noInternetConnection
         : error.replaceAll('Exception: ', '').replaceAll('HttpException: ', '');
     return Center(
       child: Padding(
@@ -445,8 +445,8 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Connection Error',
+            Text(
+              AppLocalizations.of(context)!.connectionError,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 22,
@@ -480,8 +480,8 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                label: const Text(
-                  'TRY AGAIN',
+                label: Text(
+                  AppLocalizations.of(context)!.tryAgainUpper,
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.1,
@@ -502,8 +502,8 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
         children: [
           Icon(Icons.landscape_rounded, size: 100, color: Colors.white12),
           const SizedBox(height: 16),
-          const Text(
-            'No lands found',
+          Text(
+            AppLocalizations.of(context)!.noLandsFound,
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -511,8 +511,8 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Check back later for new opportunities.',
+          Text(
+            AppLocalizations.of(context)!.checkBackLaterOpportunities,
             style: TextStyle(color: Colors.white38),
           ),
         ],
@@ -758,8 +758,8 @@ class _InvestorLandCard extends StatelessWidget {
                     children: [
                       _buildInfoItem(
                         context,
-                        'Size',
-                        '${land.gridWidth}x${land.gridHeight} Plots',
+                        AppLocalizations.of(context)!.size,
+                        AppLocalizations.of(context)!.plotsCount(land.gridWidth, land.gridHeight),
                         Icons.grid_3x3_rounded,
                       ),
                       _buildPriceInfo(context, land),
@@ -780,8 +780,8 @@ class _InvestorLandCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(14),
                             ),
                           ),
-                          child: const Text(
-                            'View Details',
+                          child: Text(
+                            AppLocalizations.of(context)!.viewDetails,
                             style: TextStyle(
                               color: Colors.green,
                               fontWeight: FontWeight.bold,
@@ -814,7 +814,7 @@ class _InvestorLandCard extends StatelessWidget {
         ),
       ),
       child: Text(
-        land.isRented ? 'RENTED' : 'AVAILABLE',
+        land.isRented ? AppLocalizations.of(context)!.rentedUpper : AppLocalizations.of(context)!.availableUpper,
         style: TextStyle(
           color: land.isRented ? Colors.orange : Colors.green,
           fontSize: 10,
@@ -864,7 +864,7 @@ class _InvestorLandCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
-          'Price starting from',
+          AppLocalizations.of(context)!.priceStartingFrom,
           style: TextStyle(
             color: isDark ? Colors.white38 : Colors.black38,
             fontSize: 11,
@@ -872,7 +872,7 @@ class _InvestorLandCard extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '${NumberFormat('#,###').format(land.price)} TND',
+          AppLocalizations.of(context)!.amountTND(NumberFormat('#,###').format(land.price)),
           style: const TextStyle(
             color: Colors.green,
             fontSize: 15,

@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../utils/validators.dart';
@@ -149,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'Welcome Back',
+                              AppLocalizations.of(context)!.welcomeBack,
                               style: Theme.of(context).textTheme.headlineSmall
                                   ?.copyWith(
                                     fontWeight: FontWeight.w800,
@@ -159,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'Sign in to your Farmy account',
+                              AppLocalizations.of(context)!.signInToFarmyAccount,
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(
                                     color: Theme.of(context)
@@ -209,7 +210,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                           autofocus: false,
                                           style: const TextStyle(fontSize: 14),
                                           decoration: InputDecoration(
-                                            labelText: 'Email',
+                                            labelText: AppLocalizations.of(context)!.email,
                                             labelStyle: TextStyle(
                                               fontSize: 12,
                                               color: Theme.of(context)
@@ -282,7 +283,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                           obscureText: _obscurePassword,
                                           style: const TextStyle(fontSize: 14),
                                           decoration: InputDecoration(
-                                            labelText: 'Password',
+                                            labelText: AppLocalizations.of(context)!.password,
                                             labelStyle: TextStyle(
                                               fontSize: 12,
                                               color: Theme.of(context)
@@ -394,7 +395,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                               foregroundColor: primaryColor,
                                             ),
                                             child: Text(
-                                              'Forgot Password?',
+                                              AppLocalizations.of(context)!.forgotPassword,
                                               style: TextStyle(
                                                 fontSize: 11,
                                                 fontWeight: FontWeight.w600,
@@ -445,7 +446,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                                                 ),
                                                           ),
                                                           title: const Text(
-                                                            'Login Failed',
+                                                            AppLocalizations.of(context)!.loginFailed,
                                                             style: TextStyle(
                                                               fontSize: 18,
                                                             ),
@@ -464,7 +465,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                                                     context,
                                                                   ),
                                                               child: const Text(
-                                                                'OK',
+                                                                AppLocalizations.of(context)!.ok,
                                                               ),
                                                             ),
                                                           ],
@@ -496,8 +497,8 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                                         color: Colors.white,
                                                       ),
                                                 )
-                                              : const Text(
-                                                  'Sign In',
+                                              : Text(
+                                                  AppLocalizations.of(context)!.signIn,
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     letterSpacing: 0.5,
@@ -529,7 +530,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                     horizontal: 12,
                                   ),
                                   child: Text(
-                                    'OR CONTINUE WITH',
+                                    AppLocalizations.of(context)!.orContinueWith,
                                     style: TextStyle(
                                       fontSize: 9,
                                       fontWeight: FontWeight.w800,
@@ -579,9 +580,9 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                                   borderRadius:
                                                       BorderRadius.circular(20),
                                                 ),
-                                                title: const Text(
-                                                  'Login Failed',
-                                                  style: TextStyle(
+                                                title: Text(
+                                                  AppLocalizations.of(context)!.loginFailed,
+                                                  style: const TextStyle(
                                                     fontSize: 18,
                                                   ),
                                                 ),
@@ -595,7 +596,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                                   TextButton(
                                                     onPressed: () =>
                                                         Navigator.pop(context),
-                                                    child: const Text('OK'),
+                                                    child: Text(AppLocalizations.of(context)!.ok),
                                                   ),
                                                 ],
                                               ),
@@ -633,9 +634,9 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                                   borderRadius:
                                                       BorderRadius.circular(20),
                                                 ),
-                                                title: const Text(
-                                                  'Login Failed',
-                                                  style: TextStyle(
+                                                title: Text(
+                                                  AppLocalizations.of(context)!.loginFailed,
+                                                  style: const TextStyle(
                                                     fontSize: 18,
                                                   ),
                                                 ),
@@ -649,7 +650,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                                   TextButton(
                                                     onPressed: () =>
                                                         Navigator.pop(context),
-                                                    child: const Text('OK'),
+                                                    child: Text(AppLocalizations.of(context)!.ok),
                                                   ),
                                                 ],
                                               ),
@@ -676,7 +677,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                 ),
                                 child: RichText(
                                   text: TextSpan(
-                                    text: "Don't have an account? ",
+                                    text: "${AppLocalizations.of(context)!.dontHaveAccount} ",
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium
@@ -690,7 +691,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                         ),
                                     children: [
                                       TextSpan(
-                                        text: 'Sign Up',
+                                        text: AppLocalizations.of(context)!.signup,
                                         style: TextStyle(
                                           color: primaryColor,
                                           fontWeight: FontWeight.w800,

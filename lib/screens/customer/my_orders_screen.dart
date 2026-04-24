@@ -31,7 +31,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Orders'),
+        title: Text(AppLocalizations.of(context)!.myOrders),
         centerTitle: false,
         titleTextStyle: theme.textTheme.headlineMedium?.copyWith(
           fontWeight: FontWeight.w800,
@@ -99,14 +99,14 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
           ),
           const SizedBox(height: 24),
           Text(
-            'No orders yet',
+            AppLocalizations.of(context)!.noOrdersYet,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Your order history will appear here\nafter your first purchase.',
+            AppLocalizations.of(context)!.orderHistoryEmptyHint,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.5),
@@ -199,7 +199,7 @@ class _OrderCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    delivery.order?.productName ?? 'Order',
+                    delivery.order?.productName ?? AppLocalizations.of(context)!.order,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,

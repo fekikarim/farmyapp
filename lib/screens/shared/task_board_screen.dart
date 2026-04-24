@@ -83,7 +83,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    'Create New Task',
+                    AppLocalizations.of(context)!.createNewTask,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
@@ -92,8 +92,8 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                   TextField(
                     controller: _titleController,
                     decoration: InputDecoration(
-                      labelText: 'Task Title',
-                      hintText: 'e.g. Water the tomato field',
+                      labelText: AppLocalizations.of(context)!.taskTitle,
+                      hintText: AppLocalizations.of(context)!.taskTitleHint,
                       filled: true,
                       fillColor: isDark
                           ? const Color(0xFF1C2333)
@@ -111,7 +111,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                     controller: _descController,
                     maxLines: 2,
                     decoration: InputDecoration(
-                      labelText: 'Description (optional)',
+                      labelText: AppLocalizations.of(context)!.descriptionOptional,
                       filled: true,
                       fillColor: isDark
                           ? const Color(0xFF1C2333)
@@ -126,7 +126,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
 
                   // Task Type
                   const Text(
-                    'Task Type',
+                    AppLocalizations.of(context)!.taskType,
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
@@ -148,7 +148,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                   Row(
                     children: [
                       const Text(
-                        'Reward:',
+                        AppLocalizations.of(context)!.rewardLabel,
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                       Expanded(
@@ -157,14 +157,14 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                           min: 0,
                           max: 200,
                           divisions: 20,
-                          label: '${_reward.toInt()} TND',
+                          label: AppLocalizations.of(context)!.rewardAmountTnd(_reward.toInt().toString()),
                           activeColor: Colors.green.shade600,
                           onChanged: (val) =>
                               setSheetState(() => _reward = val),
                         ),
                       ),
                       Text(
-                        '${_reward.toInt()} TND',
+                        AppLocalizations.of(context)!.rewardAmountTnd(_reward.toInt().toString()),
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ],
@@ -174,7 +174,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                   Row(
                     children: [
                       const Text(
-                        'Time:',
+                        AppLocalizations.of(context)!.timeLabel,
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                       Expanded(
@@ -183,14 +183,14 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                           min: 5,
                           max: 180,
                           divisions: 35,
-                          label: '$_timeMinutes min',
+                          label: AppLocalizations.of(context)!.minutesCount(_timeMinutes),
                           activeColor: Colors.blue.shade600,
                           onChanged: (val) =>
                               setSheetState(() => _timeMinutes = val.toInt()),
                         ),
                       ),
                       Text(
-                        '$_timeMinutes min',
+                        AppLocalizations.of(context)!.minutesCount(_timeMinutes),
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ],
@@ -211,7 +211,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                         ),
                       ),
                       child: const Text(
-                        'Create Task',
+                        AppLocalizations.of(context)!.createTask,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -242,7 +242,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
           ),
         ),
         child: Text(
-          '$emoji ${type[0].toUpperCase()}${type.substring(1)}',
+          '$emoji ${_translateTaskType(context, type)}',
           style: TextStyle(
             fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
             color: selected ? Colors.green.shade800 : Colors.grey.shade600,
@@ -256,7 +256,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
     if (_titleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please enter a task title'),
+          content: Text(AppLocalizations.of(context)!.pleaseEnterTaskTitle),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -282,7 +282,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
         _descController.clear();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Task created! 🎯'),
+            content: Text(AppLocalizations.of(context)!.taskCreated),
             backgroundColor: Colors.green.shade700,
           ),
         );
@@ -313,7 +313,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0D1117) : Colors.grey.shade50,
       appBar: AppBar(
-        title: Text('Tasks — ${widget.landName}'),
+        title: Text(AppLocalizations.of(context)!.tasksForLand(widget.landName)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         bottom: TabBar(
@@ -326,10 +326,10 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
             fontSize: 13,
           ),
           tabs: const [
-            Tab(text: 'All'),
-            Tab(text: 'Open'),
-            Tab(text: 'Active'),
-            Tab(text: 'Done'),
+            Tab(text: AppLocalizations.of(context)!.all),
+            Tab(text: AppLocalizations.of(context)!.open),
+            Tab(text: AppLocalizations.of(context)!.active),
+            Tab(text: AppLocalizations.of(context)!.done),
           ],
         ),
       ),
@@ -376,7 +376,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'No tasks here',
+                          AppLocalizations.of(context)!.noTasksHere,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.grey.shade500,
@@ -400,10 +400,10 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                             currentCount: workerProvider.tasks
                                 .where((t) => !t.isCompleted && !t.isVerified)
                                 .length,
-                            label: 'Active Tasks Count',
+                            label: AppLocalizations.of(context)!.activeTasksCount,
                             icon: Icons.task_alt_rounded,
                             accentColor: Colors.green,
-                            upgradePlanName: 'Farmer Pro',
+                            upgradePlanName: AppLocalizations.of(context)!.farmerPro,
                           ),
                         );
                       }
@@ -469,11 +469,11 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _taskInfo(Icons.category, task.typeLabel),
-              _taskInfo(Icons.timer, '${task.timeRequiredMinutes} min'),
+              _taskInfo(Icons.category, _translateTaskType(context, task.typeLabel)),
+              _taskInfo(Icons.timer, AppLocalizations.of(context)!.minutesCount(task.timeRequiredMinutes)),
               _taskInfo(
                 Icons.monetization_on,
-                '${task.reward.toStringAsFixed(0)} TND',
+                AppLocalizations.of(context)!.rewardAmountTnd(task.reward.toStringAsFixed(0)),
               ),
             ],
           ),
@@ -484,7 +484,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                 Icon(Icons.person, size: 14, color: Colors.grey.shade500),
                 const SizedBox(width: 4),
                 Text(
-                  'Assigned to: ${task.assigneeName}',
+                  AppLocalizations.of(context)!.assignedTo(task.assigneeName!),
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ],
@@ -516,7 +516,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        task.statusLabel,
+        _translateTaskStatus(context, task.statusLabel),
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
@@ -561,7 +561,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
             ),
             const SizedBox(height: 20),
             Text(
-              'Task Limit Reached',
+              AppLocalizations.of(context)!.taskLimitReached,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: isDark ? Colors.white : Colors.black87,
@@ -571,7 +571,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
             ),
             const SizedBox(height: 10),
             Text(
-              "You've reached the active task limit for this land on your $planName plan. Upgrade to Farmer Pro for unlimited tasks!",
+              AppLocalizations.of(context)!.taskLimitReachedMessage(planName),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: isDark ? Colors.white60 : Colors.black54,
@@ -596,7 +596,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                   ),
                 ),
                 child: const Text(
-                  'VIEW PLANS',
+                  AppLocalizations.of(context)!.viewPlans,
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.1,
@@ -608,7 +608,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
             TextButton(
               onPressed: () => Navigator.pop(ctx),
               child: Text(
-                'Maybe Later',
+                AppLocalizations.of(context)!.maybeLater,
                 style: TextStyle(
                   color: isDark ? Colors.white38 : Colors.black38,
                 ),
@@ -618,5 +618,30 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
         ),
       ),
     );
+  }
+
+  String _translateTaskType(BuildContext context, String type) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (type.toLowerCase()) {
+      case 'water': return l10n.water;
+      case 'harvest': return l10n.harvest;
+      case 'feed': return l10n.feed;
+      case 'install': return l10n.install;
+      case 'verify': return l10n.verify;
+      case 'maintenance': return l10n.maintenance;
+      default: return type;
+    }
+  }
+
+  String _translateTaskStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toLowerCase()) {
+      case 'open': return l10n.open;
+      case 'assigned': return l10n.assigned;
+      case 'in_progress': return l10n.inProgress;
+      case 'completed': return l10n.completed;
+      case 'verified': return l10n.verified;
+      default: return status;
+    }
   }
 }

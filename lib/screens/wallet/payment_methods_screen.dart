@@ -22,11 +22,11 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     final success = await context.read<WalletProvider>().addCard();
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Card added successfully')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.cardAddedSuccess)),
       );
     } else if (mounted) {
        ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to add card')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.failedAddCard)),
       );
     }
   }
@@ -55,7 +55,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Add Credits',
+                  AppLocalizations.of(context)!.addCreditsTitle,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -63,7 +63,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Select Amount',
+                  AppLocalizations.of(context)!.selectAmount,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         color: Colors.grey,
                       ),
@@ -92,10 +92,10 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                 TextField(
                   controller: customAmountController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(
-                    labelText: 'Custom Amount',
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.customAmountLabel,
                     prefixText: '\$ ',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -104,11 +104,11 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   },
                 ),
                 if (selectedAmount != null && selectedAmount! > 999999.99)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 8.0),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                      'Maximum amount is \$999,999.99',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.maxAmountError,
+                      style: const TextStyle(
                         color: Colors.red,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -133,8 +133,8 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   ),
                   child: Text(
                     selectedAmount != null
-                        ? 'Pay \$${selectedAmount!.toStringAsFixed(2)}'
-                        : 'Enter Amount',
+                        ? AppLocalizations.of(context)!.payAmount(selectedAmount!.toStringAsFixed(2))
+                        : AppLocalizations.of(context)!.enterAmount,
                     style: const TextStyle(fontSize: 16),
                   ),
                 ),
@@ -153,11 +153,11 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     final success = await context.read<WalletProvider>().chargeCredits(amount);
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Successfully added \$$amount')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.successfullyAddedCredits(amount.toStringAsFixed(2)))),
       );
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to add credits')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.failedAddCredits)),
       );
     }
   }
@@ -168,7 +168,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wallet & Payments'),
+        title: Text(AppLocalizations.of(context)!.walletPaymentsTitle),
       ),
       body: wallet.isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -185,7 +185,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                       child: Column(
                         children: [
                           const Text(
-                            'Current Balance',
+                            AppLocalizations.of(context)!.currentBalance,
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 16,
@@ -204,7 +204,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                           ElevatedButton.icon(
                             onPressed: _handleAddCredits,
                             icon: const Icon(Icons.add),
-                            label: const Text('Add Credits'),
+                            label: Text(AppLocalizations.of(context)!.addCreditsTitle),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                               foregroundColor: Theme.of(context).primaryColor,
@@ -217,7 +217,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
 
                   const SizedBox(height: 24),
                   const Text(
-                    'Payment Methods',
+                    AppLocalizations.of(context)!.paymentMethods,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -228,7 +228,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   // Add Card Button (List Tile style)
                   ListTile(
                     leading: const Icon(Icons.credit_card),
-                    title: const Text('Add New Card'),
+                    title: Text(AppLocalizations.of(context)!.addNewCard),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: _handleAddCard,
                     tileColor: Theme.of(context).cardColor,
@@ -251,7 +251,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                               child: ListTile(
                                 leading: const Icon(Icons.credit_card),
                                 title: Text('${method.brand.toUpperCase()} **** ${method.last4}'),
-                                subtitle: Text('Expires ${method.expiryMonth}/${method.expiryYear}'),
+                                subtitle: Text(AppLocalizations.of(context)!.expiresLabel('${method.expiryMonth}/${method.expiryYear}')),
                                 trailing: IconButton(
                                   icon: const Icon(Icons.delete, color: Colors.red),
                                   onPressed: () => wallet.deletePaymentMethod(method.id),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'subscription/mandatory_pricing_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -14,36 +15,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final List<Map<String, String>> _pages = [
-    {
-      'role': 'customer',
-      'image': 'assets/welcome/customer-welcome-component.png',
-      'title': 'Welcome to Farmy!',
-      'subtitle':
-          'Support local farmers and enjoy fresh, sustainable products directly from the source.',
-    },
-    {
-      'role': 'worker',
-      'image': 'assets/welcome/worker-welcome-component.png',
-      'title': 'Join the Workforce',
-      'subtitle':
-          'Connect with modern farms and start your productive journey in sustainable agriculture.',
-    },
-    {
-      'role': 'farmer',
-      'image': 'assets/welcome/farmer-welcome-component.png',
-      'title': 'Empowering Farmers',
-      'subtitle':
-          'Your journey to digital farm management starts here. Let\'s grow your business together!',
-    },
-    {
-      'role': 'investor',
-      'image': 'assets/welcome/investor-welcome-component.png',
-      'title': 'Invest in the Future',
-      'subtitle':
-          'Explore sustainable opportunities and grow your green agricultural portfolio with us.',
-    },
-  ];
 
   @override
   void dispose() {
@@ -51,8 +22,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     super.dispose();
   }
 
-  void _onNext() {
-    if (_currentPage < _pages.length - 1) {
+  void _onNext(int totalPages) {
+    if (_currentPage < totalPages - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 600),
         curve: Curves.easeInOutCubic,
@@ -70,6 +41,33 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final List<Map<String, String>> pages = [
+      {
+        'role': 'customer',
+        'image': 'assets/welcome/customer-welcome-component.png',
+        'title': l10n.welcomeCustomerTitle,
+        'subtitle': l10n.welcomeCustomerSubtitle,
+      },
+      {
+        'role': 'worker',
+        'image': 'assets/welcome/worker-welcome-component.png',
+        'title': l10n.welcomeWorkerTitle,
+        'subtitle': l10n.welcomeWorkerSubtitle,
+      },
+      {
+        'role': 'farmer',
+        'image': 'assets/welcome/farmer-welcome-component.png',
+        'title': l10n.welcomeFarmerTitle,
+        'subtitle': l10n.welcomeFarmerSubtitle,
+      },
+      {
+        'role': 'investor',
+        'image': 'assets/welcome/investor-welcome-component.png',
+        'title': l10n.welcomeInvestorTitle,
+        'subtitle': l10n.welcomeInvestorSubtitle,
+      },
+    ];
     final size = MediaQuery.of(context).size;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -98,7 +96,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   child: TextButton(
                     onPressed: _onFinish,
                     child: Text(
-                      'Skip',
+                      l10n.skip,
                       style: TextStyle(
                         color: AppTheme.primaryColor.withOpacity(0.8),
                         fontWeight: FontWeight.bold,
@@ -116,9 +114,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       _currentPage = index;
                     });
                   },
-                  itemCount: _pages.length,
+                  itemCount: pages.length,
                   itemBuilder: (context, index) {
-                    final page = _pages[index];
+                    final page = pages[index];
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -179,7 +177,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               // Page Indicators
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(_pages.length, (index) {
+                children: List.generate(pages.length, (index) {
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
                     margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -201,7 +199,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(32, 0, 32, 32),
                 child: ElevatedButton(
-                  onPressed: _onNext,
+                  onPressed: () => _onNext(pages.length),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
                     foregroundColor: Colors.white,
@@ -213,7 +211,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     shadowColor: AppTheme.primaryColor.withOpacity(0.4),
                   ),
                   child: Text(
-                    _currentPage == _pages.length - 1 ? 'Finish' : 'Continue',
+                    _currentPage == pages.length - 1 ? l10n.finish : l10n.continueText,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

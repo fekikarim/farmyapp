@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 
 /// Custom exception for upgrade-required (HTTP 403) responses.
@@ -21,7 +22,9 @@ class ApiErrorHandler {
     if (response.statusCode == 403) {
       final body = jsonDecode(response.body);
       throw UpgradeRequiredException(
-        body['message'] ?? 'Upgrade required to access this feature.',
+        body['message'] ?? 'UPGRADE_REQUIRED', // Use a sentinel or pass context if possible. 
+        // Actually, handleResponse is static and doesn't have context. 
+        // I'll keep the key or handle it in showUpgradeSnackbar.
       );
     }
   }
@@ -38,7 +41,7 @@ class ApiErrorHandler {
           ],
         ),
         action: SnackBarAction(
-          label: 'Upgrade',
+          label: AppLocalizations.of(context)!.upgrade,
           onPressed: () {
             Navigator.of(context).pushNamed('/subscriptions');
           },
@@ -58,7 +61,12 @@ class ApiErrorHandler {
     try {
       return await apiCall();
     } on UpgradeRequiredException catch (e) {
-      showUpgradeSnackbar(context, e.message);
+      showUpgradeSnackbar(
+        context,
+        e.message == 'UPGRADE_REQUIRED'
+            ? AppLocalizations.of(context)!.upgradeRequired
+            : e.message,
+      );
       return null;
     }
   }

@@ -36,7 +36,7 @@ class _VendorDeliveryDetailScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manage Delivery'),
+        title: Text(AppLocalizations.of(context)!.manageDeliveryTitle),
         centerTitle: false,
         titleTextStyle: theme.textTheme.headlineMedium?.copyWith(
           fontWeight: FontWeight.w800,
@@ -55,7 +55,7 @@ class _VendorDeliveryDetailScreenState
 
           final detail = provider.selectedDetail;
           if (detail == null) {
-            return _buildError(theme, 'Delivery not found');
+            return _buildError(theme, AppLocalizations.of(context)!.deliveryNotFound);
           }
 
           return RefreshIndicator(
@@ -85,7 +85,7 @@ class _VendorDeliveryDetailScreenState
 
                   // ── Timeline ──
                   Text(
-                    'Delivery Timeline',
+                    AppLocalizations.of(context)!.deliveryTimeline,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
@@ -101,7 +101,7 @@ class _VendorDeliveryDetailScreenState
                   // ── Status Update Controls ──
                   if (!detail.isTerminal) ...[
                     Text(
-                      'Update Status',
+                      AppLocalizations.of(context)!.updateStatus,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
@@ -147,7 +147,7 @@ class _VendorDeliveryDetailScreenState
             ElevatedButton.icon(
               onPressed: _onRefresh,
               icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context)!.retry),
             ),
           ],
         ),
@@ -233,7 +233,7 @@ class _StatusHeader extends StatelessWidget {
                     !detail.isTerminal) ...[
                   const SizedBox(height: 4),
                   Text(
-                    'ETA: ${_formatTime(detail.estimatedDeliveryTime!)}',
+                    AppLocalizations.of(context)!.etaLabel(_formatTime(context, detail.estimatedDeliveryTime!)),
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.85),
                       fontSize: 13,
@@ -249,12 +249,12 @@ class _StatusHeader extends StatelessWidget {
     );
   }
 
-  String _formatTime(DateTime dt) {
+  String _formatTime(BuildContext context, DateTime dt) {
     final h = dt.hour.toString().padLeft(2, '0');
     final m = dt.minute.toString().padLeft(2, '0');
     final day = dt.day.toString().padLeft(2, '0');
     final mon = dt.month.toString().padLeft(2, '0');
-    return '$day/$mon/${dt.year} $h:$m';
+    return AppLocalizations.of(context)!.dateTimeAt('$day/$mon/${dt.year}', '$h:$m');
   }
 }
 
@@ -297,7 +297,7 @@ class _OrderInfoCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Order Details',
+                AppLocalizations.of(context)!.orderDetails,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
@@ -307,26 +307,26 @@ class _OrderInfoCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _InfoRow(
-            label: 'Product',
+            label: AppLocalizations.of(context)!.productLabel,
             value: order?.productName ?? 'N/A',
             theme: theme,
           ),
           _InfoRow(
-            label: 'Quantity',
+            label: AppLocalizations.of(context)!.quantityLabel,
             value: order?.quantity.toStringAsFixed(0) ?? 'N/A',
             theme: theme,
           ),
           _InfoRow(
-            label: 'Total',
+            label: AppLocalizations.of(context)!.totalLabel,
             value: order != null
-                ? '${order.totalPrice.toStringAsFixed(2)} TND'
+                ? AppLocalizations.of(context)!.priceTnd(order.totalPrice.toStringAsFixed(2))
                 : 'N/A',
             theme: theme,
             valueColor: theme.colorScheme.primary,
             valueBold: true,
           ),
           _InfoRow(
-            label: 'Order ID',
+            label: AppLocalizations.of(context)!.orderIdLabel,
             value: detail.orderId.length > 8
                 ? '${detail.orderId.substring(0, 8)}...'
                 : detail.orderId,
@@ -377,7 +377,7 @@ class _CustomerInfoCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Customer',
+                AppLocalizations.of(context)!.customerLabel,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
@@ -411,7 +411,7 @@ class _CustomerInfoCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      customer?.name ?? 'Unknown',
+                      customer?.name ?? AppLocalizations.of(context)!.unknown,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -472,7 +472,7 @@ class _DeliveryDetailsCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Delivery Info',
+                AppLocalizations.of(context)!.deliveryInfo,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
@@ -483,25 +483,25 @@ class _DeliveryDetailsCard extends StatelessWidget {
           const SizedBox(height: 12),
           if (detail.deliveryAddress != null)
             _InfoRow(
-              label: 'Address',
+              label: AppLocalizations.of(context)!.addressLabel,
               value: detail.deliveryAddress!,
               theme: theme,
             ),
           _InfoRow(
-            label: 'Created',
-            value: _formatDateTime(detail.createdAt),
+            label: AppLocalizations.of(context)!.createdLabel,
+            value: _formatDateTime(context, detail.createdAt),
             theme: theme,
           ),
           if (detail.startedAt != null)
             _InfoRow(
-              label: 'Started',
-              value: _formatDateTime(detail.startedAt!),
+              label: AppLocalizations.of(context)!.startedLabel,
+              value: _formatDateTime(context, detail.startedAt!),
               theme: theme,
             ),
           if (detail.deliveredAt != null)
             _InfoRow(
-              label: 'Delivered',
-              value: _formatDateTime(detail.deliveredAt!),
+              label: AppLocalizations.of(context)!.deliveredLabel,
+              value: _formatDateTime(context, detail.deliveredAt!),
               theme: theme,
             ),
           if (detail.cancellationReason != null) ...[
@@ -541,12 +541,12 @@ class _DeliveryDetailsCard extends StatelessWidget {
     );
   }
 
-  String _formatDateTime(DateTime dt) {
+  String _formatDateTime(BuildContext context, DateTime dt) {
     final d = dt.day.toString().padLeft(2, '0');
     final m = dt.month.toString().padLeft(2, '0');
     final h = dt.hour.toString().padLeft(2, '0');
     final min = dt.minute.toString().padLeft(2, '0');
-    return '$d/$m/${dt.year} at $h:$min';
+    return AppLocalizations.of(context)!.dateTimeAt('$d/$m/${dt.year}', '$h:$min');
   }
 }
 
@@ -624,8 +624,8 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
               Expanded(
                 child: Text(
                   isCancellation
-                      ? 'Cancel Delivery?'
-                      : 'Update to ${newStatus.label}?',
+                      ? AppLocalizations.of(context)!.cancelDeliveryQuestion
+                      : AppLocalizations.of(context)!.updateToStatusQuestion(newStatus.label),
                   style: const TextStyle(fontSize: 17),
                 ),
               ),
@@ -636,8 +636,8 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
             children: [
               Text(
                 isCancellation
-                    ? 'This will cancel the delivery and notify the customer.'
-                    : 'This will advance the delivery to "${newStatus.label}" and notify the customer.',
+                    ? AppLocalizations.of(context)!.cancelNotifyCustomer
+                    : AppLocalizations.of(context)!.advanceNotifyCustomer(newStatus.label),
                 style: TextStyle(
                   color: widget.theme.colorScheme.onSurface.withOpacity(0.6),
                   fontSize: 13,
@@ -648,7 +648,7 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
                 TextField(
                   controller: _cancelReasonController,
                   decoration: InputDecoration(
-                    hintText: 'Reason for cancellation...',
+                    hintText: AppLocalizations.of(context)!.cancellationReasonHint,
                     hintStyle: TextStyle(
                       color: widget.theme.colorScheme.onSurface.withOpacity(
                         0.35,
@@ -662,7 +662,7 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
                 TextField(
                   controller: _noteController,
                   decoration: InputDecoration(
-                    hintText: 'Add a note (optional)...',
+                    hintText: AppLocalizations.of(context)!.addNoteHint,
                     hintStyle: TextStyle(
                       color: widget.theme.colorScheme.onSurface.withOpacity(
                         0.35,
@@ -677,7 +677,7 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(ctx, true),
@@ -688,7 +688,7 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: Text(isCancellation ? 'Cancel Delivery' : 'Confirm'),
+              child: Text(isCancellation ? AppLocalizations.of(context)!.cancelDeliveryAction : AppLocalizations.of(context)!.confirmUpdate),
             ),
           ],
         );
@@ -724,7 +724,7 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
                 size: 18,
               ),
               const SizedBox(width: 8),
-              Text('Status updated to ${newStatus.label}'),
+              Text(AppLocalizations.of(context)!.statusUpdatedTo(newStatus.label)),
             ],
           ),
           backgroundColor: color,
@@ -746,7 +746,7 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(provider.updateError ?? 'Failed to update status'),
+                child: Text(provider.updateError ?? AppLocalizations.of(context)!.failedUpdateStatus),
               ),
             ],
           ),
@@ -802,7 +802,7 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
                       ),
                     )
                   : Icon(_transitionIcon(status), size: 18),
-              label: Text('Move to ${status.label}'),
+              label: Text(AppLocalizations.of(context)!.moveToStatus(status.label)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: _transitionColor(status),
                 foregroundColor: Colors.white,
@@ -830,7 +830,7 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
                   ? null
                   : () => _confirmAndUpdate(DeliveryStatus.cancelled),
               icon: const Icon(Icons.cancel_outlined, size: 18),
-              label: const Text('Cancel Delivery'),
+              label: Text(AppLocalizations.of(context)!.cancelDeliveryAction),
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.red.shade500,
                 side: BorderSide(color: Colors.red.shade300),
@@ -883,7 +883,7 @@ class _TerminalBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isDelivered ? 'Successfully Delivered' : 'Delivery Cancelled',
+                  isDelivered ? AppLocalizations.of(context)!.successfullyDelivered : AppLocalizations.of(context)!.deliveryCancelled,
                   style: TextStyle(
                     color: color,
                     fontWeight: FontWeight.w700,
@@ -892,7 +892,7 @@ class _TerminalBanner extends StatelessWidget {
                 ),
                 if (detail.deliveredAt != null && isDelivered)
                   Text(
-                    'Completed on ${_fmt(detail.deliveredAt!)}',
+                    AppLocalizations.of(context)!.completedOn(_fmt(detail.deliveredAt!)),
                     style: TextStyle(
                       color: color.withOpacity(0.7),
                       fontSize: 12,

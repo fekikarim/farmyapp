@@ -144,8 +144,8 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
               stretch: true,
               flexibleSpace: FlexibleSpaceBar(
                 title: const Text(
-                  'Farmy Premium',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!.farmyPremium,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 background: Container(
                   decoration: BoxDecoration(
@@ -187,7 +187,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                'Current: ${subProvider.currentSubscription!.plan.name}',
+                                AppLocalizations.of(context)!.currentPlanLabel(subProvider.currentSubscription!.plan.name),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
@@ -221,7 +221,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                     else if (subProvider.error != null &&
                         subProvider.availablePlans.isEmpty)
                       _buildErrorState(
-                        title: 'Failed to load subscriptions',
+                        title: AppLocalizations.of(context)!.failedToLoadSubscriptions,
                         message: _friendlyErrorMessage(subProvider.error!),
                         onRetry: _loadData,
                         isNetwork:
@@ -232,7 +232,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                         workerProvider.profileError != null &&
                         subProvider.availablePlans.isEmpty)
                       _buildErrorState(
-                        title: 'Failed to load worker profile',
+                        title: AppLocalizations.of(context)!.failedToLoadWorkerProfile,
                         message: _friendlyErrorMessage(
                           workerProvider.profileError!,
                         ),
@@ -304,8 +304,8 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _toggleButton('Monthly', 'monthly'),
-            _toggleButton('Yearly (Save 33%)', 'yearly'),
+            _toggleButton(AppLocalizations.of(context)!.monthly, 'monthly'),
+            _toggleButton(AppLocalizations.of(context)!.yearlySave, 'yearly'),
           ],
         ),
       ),
@@ -362,16 +362,16 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
     String buttonText;
     if (isSamePlanFamily) {
       if (isCurrentCycle) {
-        buttonText = 'Current Plan';
+        buttonText = AppLocalizations.of(context)!.currentPlan;
       } else if (_selectedCycle == 'yearly') {
-        buttonText = 'Upgrade to Yearly';
+        buttonText = AppLocalizations.of(context)!.upgradeToYearly;
       } else {
-        buttonText = 'Switch to Monthly';
+        buttonText = AppLocalizations.of(context)!.switchToMonthly;
       }
     } else if (plan.isFree) {
-      buttonText = 'Downgrade to Free';
+      buttonText = AppLocalizations.of(context)!.downgradeToFree;
     } else {
-      buttonText = 'Get Started';
+      buttonText = AppLocalizations.of(context)!.getStarted;
     }
 
     final isButtonDisabled = isCurrent || _isProcessing;
@@ -425,8 +425,8 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                             ),
                             SizedBox(width: 4),
                             Text(
-                              'Active',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.activeLabel,
+                              style: const TextStyle(
                                 color: Colors.green,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 10,
@@ -447,7 +447,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          'Active on ${currentSub?.billingCycle ?? 'monthly'}',
+                          AppLocalizations.of(context)!.activeOnCycle(currentSub?.billingCycle ?? 'monthly'),
                           style: const TextStyle(
                             color: Colors.blue,
                             fontWeight: FontWeight.bold,
@@ -496,7 +496,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                plan.isFree ? 'Free' : '\$${price.toStringAsFixed(2)}',
+                plan.isFree ? AppLocalizations.of(context)!.free : '\$${price.toStringAsFixed(2)}',
                 style: theme.textTheme.displaySmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: plan.accentColor,
@@ -640,7 +640,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Confirm Downgrade',
+                    AppLocalizations.of(context)!.confirmDowngrade,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -648,7 +648,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Are you sure you want to downgrade to ${plan.name}? You will lose your premium features and active perks associated with your current plan.',
+                    AppLocalizations.of(context)!.downgradeWarning(plan.name),
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.grey.shade600,
@@ -666,7 +666,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                               borderRadius: BorderRadius.circular(14),
                             ),
                           ),
-                          child: const Text('Cancel'),
+                          child: Text(AppLocalizations.of(context)!.cancel),
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -685,7 +685,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                             ),
                             elevation: 0,
                           ),
-                          child: const Text('Downgrade'),
+                          child: Text(AppLocalizations.of(context)!.delete),
                         ),
                       ),
                     ],
@@ -756,7 +756,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                   ),
                 ),
                 Text(
-                  'Select Payment Method',
+                  AppLocalizations.of(context)!.selectPaymentMethod,
                   style: Theme.of(
                     sheetContext,
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -764,7 +764,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Total: \$${price.toStringAsFixed(2)} · ${_selectedCycle == 'monthly' ? 'Monthly' : 'Yearly'}',
+                  AppLocalizations.of(context)!.totalWithCycle(price.toStringAsFixed(2), _selectedCycle == 'monthly' ? AppLocalizations.of(context)!.monthly : AppLocalizations.of(context)!.yearlySave),
                   style: Theme.of(
                     sheetContext,
                   ).textTheme.bodySmall?.copyWith(color: Colors.grey),
@@ -773,10 +773,10 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                 const SizedBox(height: 24),
                 _buildPaymentOption(
                   icon: Icons.monetization_on,
-                  title: 'Pay with Farmy Credits',
+                  title: AppLocalizations.of(context)!.payWithCredits,
                   subtitle: isWalletLoading
-                      ? 'Loading balance...'
-                      : 'Balance: \$${credits.toStringAsFixed(2)}',
+                      ? AppLocalizations.of(context)!.loadingBalance
+                      : AppLocalizations.of(context)!.balanceValue(credits.toStringAsFixed(2)),
                   onTap: () {
                     Navigator.pop(
                       sheetContext,
@@ -789,8 +789,8 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                 const SizedBox(height: 12),
                 _buildPaymentOption(
                   icon: Icons.credit_card,
-                  title: 'Pay with Card (Stripe)',
-                  subtitle: 'Secure credit card payment',
+                  title: AppLocalizations.of(context)!.payWithStripe,
+                  subtitle: AppLocalizations.of(context)!.secureCreditCardPayment,
                   onTap: () {
                     Navigator.pop(
                       sheetContext,

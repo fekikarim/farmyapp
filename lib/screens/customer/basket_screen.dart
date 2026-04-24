@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../providers/basket_provider.dart';
 import '../../providers/product_provider.dart';
 import '../../providers/wallet_provider.dart';
@@ -18,7 +19,7 @@ class BasketScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Basket'),
+        title: Text(AppLocalizations.of(context)!.myBasket),
         centerTitle: false,
         titleTextStyle: theme.textTheme.headlineMedium?.copyWith(
           fontWeight: FontWeight.w800,
@@ -29,7 +30,7 @@ class BasketScreen extends StatelessWidget {
             TextButton.icon(
               onPressed: () => _confirmClear(context, basket),
               icon: const Icon(Icons.delete_sweep_outlined, size: 20),
-              label: const Text('Clear'),
+              label: Text(AppLocalizations.of(context)!.clear),
               style: TextButton.styleFrom(foregroundColor: Colors.red.shade400),
             ),
         ],
@@ -85,7 +86,7 @@ class BasketScreen extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'Your basket is empty',
+            AppLocalizations.of(context)!.yourBasketIsEmpty,
             style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.w700,
               fontSize: 20,
@@ -93,7 +94,7 @@ class BasketScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Browse the marketplace and add\nsome fresh products!',
+            AppLocalizations.of(context)!.browseMarketplaceDescription,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.5),
@@ -103,7 +104,7 @@ class BasketScreen extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: () => Navigator.pop(context),
             icon: const Icon(Icons.storefront_rounded, size: 20),
-            label: const Text('Browse Products'),
+            label: Text(AppLocalizations.of(context)!.browseProducts),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
               shape: RoundedRectangleBorder(
@@ -140,13 +141,13 @@ class BasketScreen extends StatelessWidget {
           children: [
             // Price breakdown
             _PriceRow(
-              label: 'Subtotal',
+              label: AppLocalizations.of(context)!.subtotal,
               value: '${basket.subtotalTND.toStringAsFixed(2)} TND',
               theme: theme,
             ),
             const SizedBox(height: 8),
             _PriceRow(
-              label: 'TVA (19%)',
+              label: AppLocalizations.of(context)!.tva,
               value: '${basket.taxTND.toStringAsFixed(2)} TND',
               theme: theme,
             ),
@@ -157,7 +158,7 @@ class BasketScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Total',
+                  AppLocalizations.of(context)!.total,
                   style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w800,
                     fontSize: 18,
@@ -177,7 +178,7 @@ class BasketScreen extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: Text(
-                'Balance: ${wallet.credits.toStringAsFixed(2)} Credits',
+                AppLocalizations.of(context)!.balanceWithCredits(wallet.credits.toStringAsFixed(2)),
                 style: TextStyle(
                   color: theme.colorScheme.onSurface.withOpacity(0.4),
                   fontSize: 12,
@@ -226,7 +227,7 @@ class BasketScreen extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'Checkout (${basket.itemCount} items)',
+                            AppLocalizations.of(context)!.checkoutWithItems(basket.itemCount),
                             style: const TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
@@ -266,14 +267,14 @@ class BasketScreen extends StatelessWidget {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Insufficient Funds'),
+          title: Text(AppLocalizations.of(context)!.insufficientFunds),
           content: Text(
-            'Your balance is ${wallet.credits.toStringAsFixed(2)} Credits, but the total is ${basket.totalTND.toStringAsFixed(2)} TND.\n\nPlease top up your wallet.',
+            AppLocalizations.of(context)!.insufficientFundsDescription(wallet.credits.toStringAsFixed(2), basket.totalTND.toStringAsFixed(2)),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('OK'),
+              child: Text(AppLocalizations.of(context)!.ok),
             ),
           ],
         ),
@@ -286,20 +287,20 @@ class BasketScreen extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Confirm Purchase'),
+        title: Text(AppLocalizations.of(context)!.confirmPurchase),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${basket.itemCount} item(s)'),
+            Text(AppLocalizations.of(context)!.itemsCount(basket.itemCount)),
             const SizedBox(height: 8),
             Text(
-              'Total: ${basket.totalTND.toStringAsFixed(2)} TND',
+              '${AppLocalizations.of(context)!.total}: ${basket.totalTND.toStringAsFixed(2)} TND',
               style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
             ),
             const SizedBox(height: 4),
             Text(
-              '(including 19% TVA: ${basket.taxTND.toStringAsFixed(2)} TND)',
+              AppLocalizations.of(context)!.includingTva(basket.taxTND.toStringAsFixed(2)),
               style: TextStyle(
                 color: Theme.of(ctx).colorScheme.onSurface.withOpacity(0.5),
                 fontSize: 12,
@@ -310,7 +311,7 @@ class BasketScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -319,7 +320,7 @@ class BasketScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text('Confirm'),
+            child: Text(AppLocalizations.of(context)!.confirm),
           ),
         ],
       ),
@@ -382,7 +383,7 @@ class BasketScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Order Placed!',
+                  AppLocalizations.of(context)!.orderPlaced,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w800,
                     fontSize: 22,
@@ -390,7 +391,7 @@ class BasketScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '$successCount item(s) purchased successfully.',
+                  AppLocalizations.of(context)!.itemsPurchasedSuccess(successCount),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurface.withOpacity(0.6),
@@ -412,7 +413,7 @@ class BasketScreen extends StatelessWidget {
                         );
                       },
                       icon: const Icon(Icons.local_shipping_rounded, size: 18),
-                      label: const Text('Track Order'),
+                      label: Text(AppLocalizations.of(context)!.trackOrder),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.colorScheme.primary,
                         foregroundColor: Colors.white,
@@ -437,7 +438,7 @@ class BasketScreen extends StatelessWidget {
                         );
                       },
                       icon: const Icon(Icons.receipt_long_rounded, size: 18),
-                      label: const Text('View My Orders'),
+                      label: Text(AppLocalizations.of(context)!.viewMyOrders),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.colorScheme.primary,
                         foregroundColor: Colors.white,
@@ -457,7 +458,7 @@ class BasketScreen extends StatelessWidget {
                       Navigator.pop(context);
                     },
                     child: Text(
-                      'Back to Marketplace',
+                      AppLocalizations.of(context)!.backToMarketplace,
                       style: TextStyle(
                         color: theme.colorScheme.onSurface.withOpacity(0.5),
                         fontWeight: FontWeight.w600,
@@ -474,7 +475,7 @@ class BasketScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '$successCount purchased, $failCount failed. Failed items remain in basket.',
+            AppLocalizations.of(context)!.checkoutResultFeedback(successCount, failCount),
           ),
           backgroundColor: Colors.orange.shade700,
           behavior: SnackBarBehavior.floating,
@@ -492,12 +493,12 @@ class BasketScreen extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Clear Basket?'),
-        content: const Text('This will remove all items from your basket.'),
+        title: Text(AppLocalizations.of(context)!.clearBasketTitle),
+        content: Text(AppLocalizations.of(context)!.clearBasketDescription),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -505,7 +506,7 @@ class BasketScreen extends StatelessWidget {
               Navigator.pop(ctx);
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Clear All'),
+            child: Text(AppLocalizations.of(context)!.clearAll),
           ),
         ],
       ),

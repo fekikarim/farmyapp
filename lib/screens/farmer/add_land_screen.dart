@@ -108,7 +108,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'List New Land',
+          AppLocalizations.of(context)!.listNewLand,
           style: TextStyle(color: theme.textTheme.titleLarge?.color),
         ),
         backgroundColor: Colors.transparent,
@@ -152,7 +152,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                         ),
                       )
                     : const Text(
-                        'PUBLISH LISTING',
+                        AppLocalizations.of(context)!.publishListing,
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1.1,
@@ -174,7 +174,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Property Details',
+              AppLocalizations.of(context)!.propertyDetails,
               style: TextStyle(
                 color: theme.textTheme.titleLarge?.color,
                 fontSize: 20,
@@ -184,33 +184,33 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
             const SizedBox(height: 24),
             _buildInputField(
               controller: _nameController,
-              label: 'Land Name',
-              hint: 'e.g. Sunny Valley Plot',
+              label: AppLocalizations.of(context)!.landName,
+              hint: AppLocalizations.of(context)!.landNameHint,
               icon: Icons.landscape_rounded,
               validator: (v) {
-                if (v == null || v.isEmpty) return 'Land name is required';
-                if (v.length < 5) return 'Name must be at least 5 characters';
+                if (v == null || v.isEmpty) return AppLocalizations.of(context)!.landNameRequired;
+                if (v.length < 5) return AppLocalizations.of(context)!.landNameTooShort;
                 return null;
               },
             ),
             const SizedBox(height: 20),
             _buildInputField(
               controller: _descriptionController,
-              label: 'Description',
-              hint: 'Describe the soil, location, and potential...',
+              label: AppLocalizations.of(context)!.description,
+              hint: AppLocalizations.of(context)!.landDescriptionHint,
               icon: Icons.description_rounded,
               maxLines: 4,
               validator: (v) {
-                if (v == null || v.isEmpty) return 'Description is required';
+                if (v == null || v.isEmpty) return AppLocalizations.of(context)!.descriptionRequired;
                 if (v.length < 20)
-                  return 'Please provide more detail (min 20 chars)';
+                  return AppLocalizations.of(context)!.descriptionTooShort;
                 return null;
               },
             ),
             const SizedBox(height: 20),
             _buildInputField(
               controller: _priceController,
-              label: 'Monthly Rent Price (TND)',
+              label: AppLocalizations.of(context)!.monthlyRentPriceTND,
               hint: '1200.0',
               icon: Icons.payments_rounded,
               keyboardType: const TextInputType.numberWithOptions(
@@ -218,17 +218,17 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               ),
               validator: (v) {
                 if (v == null || v.trim().isEmpty)
-                  return 'Price cannot be empty';
+                  return AppLocalizations.of(context)!.priceCannotBeEmpty;
                 final val = double.tryParse(v.trim());
-                if (val == null) return 'Please enter a valid numeric amount';
-                if (val <= 0) return 'Price must be greater than 0';
-                if (val > 1000000) return 'Price exceeds maximum allowed limit';
+                if (val == null) return AppLocalizations.of(context)!.invalidNumericAmount;
+                if (val <= 0) return AppLocalizations.of(context)!.priceGreaterThanZero;
+                if (val > 1000000) return AppLocalizations.of(context)!.priceExceedsLimit;
                 return null;
               },
             ),
             const SizedBox(height: 32),
             Text(
-              'Spatial Dimensions',
+              AppLocalizations.of(context)!.spatialDimensions,
               style: TextStyle(
                 color: theme.textTheme.titleLarge?.color,
                 fontSize: 18,
@@ -241,8 +241,8 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                 Expanded(
                   child: _buildInputField(
                     controller: _widthController,
-                    label: 'Width (Auto)',
-                    hint: 'Auto from boundary',
+                    label: AppLocalizations.of(context)!.widthAuto,
+                    hint: AppLocalizations.of(context)!.autoFromBoundary,
                     icon: Icons.straighten_rounded,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
@@ -260,8 +260,8 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                 Expanded(
                   child: _buildInputField(
                     controller: _heightController,
-                    label: 'Height (Auto)',
-                    hint: 'Auto from boundary',
+                    label: AppLocalizations.of(context)!.heightAuto,
+                    hint: AppLocalizations.of(context)!.autoFromBoundary,
                     icon: Icons.square_foot_rounded,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
@@ -282,7 +282,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Boundaries',
+                  AppLocalizations.of(context)!.boundaries,
                   style: TextStyle(
                     color: theme.textTheme.titleLarge?.color,
                     fontSize: 18,
@@ -297,7 +297,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                     size: 20,
                   ),
                   label: const Text(
-                    'DEFINE ON MAP',
+                    AppLocalizations.of(context)!.defineOnMap,
                     style: TextStyle(
                       color: Colors.green,
                       fontWeight: FontWeight.w900,
@@ -357,12 +357,12 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                         children: [
                           Text(
                             _hasInvalidGeometry
-                                ? 'Invalid Geometry'
+                                ? AppLocalizations.of(context)!.invalidGeometry
                                 : (_hasConflict
-                                      ? 'Conflict Detected'
+                                      ? AppLocalizations.of(context)!.conflictDetected
                                       : (_selectedPoints.isEmpty
-                                            ? 'Perimeter not set'
-                                            : '${_selectedPoints.length} Points Defined')),
+                                            ? AppLocalizations.of(context)!.perimeterNotSet
+                                            : AppLocalizations.of(context)!.pointsDefined(_selectedPoints.length))),
                             style: TextStyle(
                               color: _hasShapeIssue
                                   ? Colors.red
@@ -376,12 +376,12 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                           const SizedBox(height: 4),
                           Text(
                             _hasInvalidGeometry
-                                ? 'Polygon edges intersect. Adjust points to fix shape.'
+                                ? AppLocalizations.of(context)!.invalidGeometryHint
                                 : (_hasConflict
-                                      ? 'Overlaps with existing land'
+                                      ? AppLocalizations.of(context)!.overlapsExistingLand
                                       : (_selectedPoints.length < 3
-                                            ? 'Tap to draw land boundaries'
-                                            : 'Geometry verified and valid')),
+                                            ? AppLocalizations.of(context)!.tapToDrawBoundaries
+                                            : AppLocalizations.of(context)!.geometryVerified)),
                             style: TextStyle(
                               color: _hasShapeIssue
                                   ? Colors.red.withOpacity(0.7)
@@ -728,10 +728,10 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildToolButton(0, Icons.edit_location_alt_rounded, 'Draw'),
-                _buildToolButton(1, Icons.open_with_rounded, 'Move Point'),
-                _buildToolButton(2, Icons.drag_indicator_rounded, 'Move All'),
-                _buildToolButton(3, Icons.delete_outline_rounded, 'Delete'),
+                _buildToolButton(0, Icons.edit_location_alt_rounded, AppLocalizations.of(context)!.draw),
+                _buildToolButton(1, Icons.open_with_rounded, AppLocalizations.of(context)!.movePoint),
+                _buildToolButton(2, Icons.drag_indicator_rounded, AppLocalizations.of(context)!.moveAll),
+                _buildToolButton(3, Icons.delete_outline_rounded, AppLocalizations.of(context)!.delete),
               ],
             ),
           ),
@@ -752,7 +752,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Text(
-                'Select "Draw" and tap map to add points',
+                AppLocalizations.of(context)!.drawInstructions,
                 style: TextStyle(color: Colors.white, fontSize: 12),
                 textAlign: TextAlign.center,
               ),
@@ -786,8 +786,8 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                   Expanded(
                     child: Text(
                       _hasInvalidGeometry
-                          ? 'Invalid geometry! Boundary edges intersect each other.'
-                          : 'Boundary conflict! Overlaps with an existing property.',
+                          ? AppLocalizations.of(context)!.invalidGeometryAlert
+                          : AppLocalizations.of(context)!.boundaryConflictAlert,
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -810,7 +810,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                 _checkConflicts();
               });
             },
-            label: const Text('Clear'),
+            label: Text(AppLocalizations.of(context)!.clear),
             icon: const Icon(Icons.clear),
             backgroundColor: Colors.redAccent,
             foregroundColor: Colors.white,
@@ -837,7 +837,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                 onPressed: _hasShapeIssue
                     ? null
                     : () => setState(() => _isMapView = false),
-                label: const Text('Confirm'),
+                label: Text(AppLocalizations.of(context)!.confirm),
                 icon: const Icon(Icons.check),
                 backgroundColor: _hasShapeIssue ? Colors.grey : Colors.green,
                 foregroundColor: Colors.white,
@@ -896,17 +896,17 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedPoints.length < 3) {
-      _showErrorSnackBar('Please select at least 3 points on the map.');
+      _showErrorSnackBar(AppLocalizations.of(context)!.selectAtLeast3Points);
       return;
     }
     if (_hasInvalidGeometry) {
       _showErrorSnackBar(
-        'Cannot publish: Invalid geometry. Boundary edges intersect.',
+        AppLocalizations.of(context)!.cannotPublishInvalidGeometry,
       );
       return;
     }
     if (_hasConflict) {
-      _showErrorSnackBar('Cannot publish: Boundary conflicts detected.');
+      _showErrorSnackBar(AppLocalizations.of(context)!.cannotPublishBoundaryConflicts);
       return;
     }
 
@@ -968,7 +968,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
             const Icon(Icons.error_outline_rounded, color: Colors.redAccent),
             const SizedBox(width: 12),
             Text(
-              'Publishing Failed',
+              AppLocalizations.of(context)!.publishingFailed,
               style: TextStyle(color: theme.textTheme.titleLarge?.color),
             ),
           ],
@@ -983,7 +983,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text(
-              'RETRY',
+              AppLocalizations.of(context)!.retryUpper,
               style: TextStyle(
                 color: Colors.green,
                 fontWeight: FontWeight.bold,
@@ -1021,7 +1021,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Listing Published!',
+              AppLocalizations.of(context)!.listingPublished,
               style: TextStyle(
                 color: theme.textTheme.titleLarge?.color,
                 fontSize: 22,
@@ -1030,7 +1030,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Your land is now live and visible to potential investors.',
+              AppLocalizations.of(context)!.listingPublishedHint,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
@@ -1054,7 +1054,7 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                   ),
                 ),
                 child: const Text(
-                  'CONTINUE',
+                  AppLocalizations.of(context)!.continueLabelUpper,
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,

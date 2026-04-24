@@ -132,7 +132,7 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Marketplace',
+                            AppLocalizations.of(context)!.marketplace,
                             style: theme.textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.w800,
                               fontSize: 28,
@@ -212,7 +212,7 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                         children: [
                           Expanded(
                             child: Text(
-                              'Fresh products from local farmers',
+                              AppLocalizations.of(context)!.freshProductsFarmers,
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: theme.colorScheme.onSurface.withOpacity(
                                   0.5,
@@ -259,7 +259,7 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      'My Orders',
+                                      AppLocalizations.of(context)!.myOrders,
                                       style: TextStyle(
                                         color: theme.colorScheme.primary,
                                         fontWeight: FontWeight.w700,
@@ -292,7 +292,7 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                           controller: _searchController,
                           onChanged: _onSearchChanged,
                           decoration: InputDecoration(
-                            hintText: 'Search products...',
+                            hintText: AppLocalizations.of(context)!.searchProducts,
                             prefixIcon: Icon(
                               Icons.search_rounded,
                               color: theme.colorScheme.onSurface.withOpacity(
@@ -337,7 +337,7 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     children: [
                       _CategoryChip(
-                        label: 'All',
+                        label: AppLocalizations.of(context)!.all,
                         isSelected: _selectedCategoryId == null,
                         onTap: () => _onCategorySelected(null),
                         theme: theme,
@@ -432,8 +432,8 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
           const SizedBox(height: 16),
           Text(
             _searchQuery.isNotEmpty
-                ? 'No products found'
-                : 'No products available',
+                ? AppLocalizations.of(context)!.noProductsFoundMarketplace
+                : AppLocalizations.of(context)!.noProductsAvailableMarketplace,
             style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.w600,
               fontSize: 18,
@@ -442,8 +442,8 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
           const SizedBox(height: 8),
           Text(
             _searchQuery.isNotEmpty
-                ? 'Try adjusting your search or filters'
-                : 'Check back later for fresh products',
+                ? AppLocalizations.of(context)!.adjustSearchFilters
+                : AppLocalizations.of(context)!.checkBackLaterFreshProducts,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.5),
             ),

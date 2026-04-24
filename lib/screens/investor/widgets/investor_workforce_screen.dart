@@ -112,7 +112,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'WORKFORCE',
+                          AppLocalizations.of(context)!.workforceUpper,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
@@ -191,7 +191,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text('APPROVED'),
+                            Text(AppLocalizations.of(context)!.approvedUpper),
                             if (lifecycle.approvedWorkers.isNotEmpty) ...[
                               const SizedBox(width: 6),
                               _buildTabBadge(lifecycle.approvedWorkers.length),
@@ -203,7 +203,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text('NEGOTIATIONS'),
+                            Text(AppLocalizations.of(context)!.negotiationsUpper),
                             if (lifecycle.negotiatingContracts.isNotEmpty) ...[
                               const SizedBox(width: 6),
                               _buildTabBadge(
@@ -217,7 +217,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text('ACTIVE'),
+                            Text(AppLocalizations.of(context)!.activeUpper),
                             if (lifecycle.activeContracts.isNotEmpty) ...[
                               const SizedBox(width: 6),
                               _buildTabBadge(lifecycle.activeContracts.length),
@@ -229,7 +229,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text('PROOFS'),
+                            Text(AppLocalizations.of(context)!.proofsUpper),
                             if (lifecycle.pendingLandProofs.isNotEmpty) ...[
                               const SizedBox(width: 6),
                               _buildTabBadge(
@@ -330,7 +330,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
             side: BorderSide(color: Colors.white.withOpacity(0.08)),
           ),
           title: Text(
-            'HIRE ${(worker.userName ?? "Worker").toUpperCase()}',
+            AppLocalizations.of(context)!.hireWorkerUpper((worker.userName ?? AppLocalizations.of(context)!.worker).toUpperCase()),
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w900,
@@ -344,7 +344,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
               children: [
                 // Salary Amount
                 const Text(
-                  'SALARY AMOUNT (TND)',
+                  AppLocalizations.of(context)!.salaryAmountTNDUpper,
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
@@ -357,13 +357,13 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                   controller: salaryController,
                   keyboardType: TextInputType.number,
                   style: const TextStyle(color: Colors.white),
-                  decoration: _inputDecoration('e.g. 1500'),
+                  decoration: _inputDecoration(AppLocalizations.of(context)!.egSalaryHint),
                 ),
                 const SizedBox(height: 16),
 
                 // Salary Type
                 const Text(
-                  'SALARY TYPE',
+                  AppLocalizations.of(context)!.salaryTypeUpper,
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
@@ -394,9 +394,9 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                           ),
                           child: Center(
                             child: Text(
-                              type == 'per_task'
-                                  ? 'PER TASK'
-                                  : type.toUpperCase(),
+                                type == 'per_task'
+                                  ? AppLocalizations.of(context)!.perTaskUpper
+                                  : (type == 'monthly' ? AppLocalizations.of(context)!.monthlyUpper : AppLocalizations.of(context)!.hourlyUpper),
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
@@ -422,7 +422,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'START DATE',
+                            AppLocalizations.of(context)!.startDateUpper,
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w900,
@@ -471,7 +471,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                                 ),
                               ),
                               child: Text(
-                                '${startDate.day}/${startDate.month}/${startDate.year}',
+                                DateFormat.yMd(Localizations.localeOf(context).toString()).format(startDate),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   color: Colors.white,
@@ -489,7 +489,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'END DATE',
+                            AppLocalizations.of(context)!.endDateUpper,
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w900,
@@ -538,7 +538,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                                 ),
                               ),
                               child: Text(
-                                '${endDate.day}/${endDate.month}/${endDate.year}',
+                                DateFormat.yMd(Localizations.localeOf(context).toString()).format(endDate),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   color: Colors.white,
@@ -556,7 +556,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
 
                 // Message
                 const Text(
-                  'MESSAGE (OPTIONAL)',
+                  AppLocalizations.of(context)!.messageOptionalUpper,
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
@@ -569,7 +569,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                   controller: messageController,
                   maxLines: 2,
                   style: const TextStyle(color: Colors.white),
-                  decoration: _inputDecoration('Optional message...'),
+                  decoration: _inputDecoration(AppLocalizations.of(context)!.optionalMessageHint),
                 ),
               ],
             ),
@@ -578,7 +578,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
             TextButton(
               onPressed: () => Navigator.pop(ctx),
               child: const Text(
-                'CANCEL',
+                AppLocalizations.of(context)!.cancelUpper,
                 style: TextStyle(
                   color: Colors.white54,
                   fontWeight: FontWeight.bold,
@@ -592,7 +592,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                 if (salary == null || salary <= 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Please enter a valid salary'),
+                      content: Text(AppLocalizations.of(context)!.pleaseEnterValidSalary),
                       backgroundColor: Colors.redAccent,
                     ),
                   );
@@ -618,7 +618,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        error == null ? 'Hiring proposal sent!' : error,
+                        error == null ? AppLocalizations.of(context)!.hiringProposalSent : error,
                       ),
                       backgroundColor: error == null
                           ? Colors.greenAccent
@@ -640,7 +640,7 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                 ),
               ),
               child: const Text(
-                'SEND PROPOSAL',
+                AppLocalizations.of(context)!.sendProposalUpper,
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1.0,
@@ -723,7 +723,7 @@ class _ApprovedWorkersTab extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'NO APPROVED WORKERS',
+              AppLocalizations.of(context)!.noApprovedWorkersUpper,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w900,
@@ -733,7 +733,7 @@ class _ApprovedWorkersTab extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Invite workers inside the marketplace',
+              AppLocalizations.of(context)!.inviteWorkersMarketplaceHint,
               style: TextStyle(fontSize: 14, color: Colors.white54),
             ),
           ],
@@ -813,7 +813,7 @@ class _ApprovedWorkersTab extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            (w.userName ?? 'Worker').toUpperCase(),
+                            (w.userName ?? AppLocalizations.of(context)!.worker).toUpperCase(),
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w900,
@@ -851,7 +851,7 @@ class _ApprovedWorkersTab extends StatelessWidget {
                             )
                           else
                             const Text(
-                              'NO SPECIAL SKILLS',
+                              AppLocalizations.of(context)!.noSpecialSkillsUpper,
                               style: TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold,
@@ -876,7 +876,7 @@ class _ApprovedWorkersTab extends StatelessWidget {
                         elevation: 0,
                       ),
                       child: const Text(
-                        'HIRE',
+                        AppLocalizations.of(context)!.hireUpper,
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w900,
@@ -940,7 +940,7 @@ class _NegotiationsTab extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'NO ACTIVE NEGOTIATIONS',
+              AppLocalizations.of(context)!.noActiveNegotiationsUpper,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w900,
@@ -950,7 +950,7 @@ class _NegotiationsTab extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Hire an approved worker to start\na contract negotiation',
+              AppLocalizations.of(context)!.hireApprovedWorkerNegotiationHint,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.white54),
             ),
@@ -1008,19 +1008,19 @@ class _NegotiationCard extends StatelessWidget {
     switch (contract.status) {
       case 'hiring_pending':
         statusColor = Colors.blueAccent;
-        statusText = 'PROPOSED';
+        statusText = AppLocalizations.of(context)!.proposedUpper;
         break;
       case 'negotiation_pending':
         statusColor = Colors.orangeAccent;
-        statusText = 'NEGOTIATING';
+        statusText = AppLocalizations.of(context)!.negotiatingUpper;
         break;
       case 'negotiation_countered':
         statusColor = Colors.deepOrangeAccent;
-        statusText = 'COUNTER-OFFER';
+        statusText = AppLocalizations.of(context)!.counterOfferUpper;
         break;
       case 'payment_pending':
         statusColor = Colors.purpleAccent;
-        statusText = 'PAY NOW';
+        statusText = AppLocalizations.of(context)!.payNowUpper;
         break;
       default:
         statusColor = Colors.white54;
@@ -1092,7 +1092,7 @@ class _NegotiationCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            (contract.workerName ?? 'Worker').toUpperCase(),
+                            (contract.workerName ?? AppLocalizations.of(context)!.worker).toUpperCase(),
                             style: const TextStyle(
                               fontWeight: FontWeight.w900,
                               fontSize: 13,
@@ -1117,7 +1117,7 @@ class _NegotiationCard extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              '${contract.salaryAmount.toStringAsFixed(0)} TND / ${contract.salaryTypeLabel.toUpperCase()}',
+                              AppLocalizations.of(context)!.salaryAmountType(contract.salaryAmount.toStringAsFixed(0), _translateSalaryTypeLabel(context, contract.salaryTypeLabel)),
                               style: const TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold,
@@ -1180,8 +1180,8 @@ class _NegotiationCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             contract.status == 'payment_pending'
-                                ? 'PAYMENT REQUIRED TO ACTIVATE CONTRACT'
-                                : 'WORKER RESPONDED — REVIEW COUNTER-OFFER',
+                                ? AppLocalizations.of(context)!.paymentRequiredToActivate
+                                : AppLocalizations.of(context)!.workerRespondedReviewCounterOffer,
                             style: TextStyle(
                               fontSize: 9,
                               color: Colors.amberAccent.shade100,
@@ -1248,7 +1248,7 @@ class _ActiveWorkersTab extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'NO ACTIVE WORKERS',
+              AppLocalizations.of(context)!.noActiveWorkersUpper,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w900,
@@ -1258,7 +1258,7 @@ class _ActiveWorkersTab extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Hire and complete payment to\nactivate workers on this land',
+              AppLocalizations.of(context)!.hireActivateWorkersHint,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.white54),
             ),
@@ -1281,7 +1281,7 @@ class _ActiveWorkersTab extends StatelessWidget {
           final badgeColor = isSuspended
               ? Colors.orangeAccent
               : Colors.greenAccent;
-          final badgeText = isSuspended ? 'SUSPENDED' : 'ACTIVE';
+          final badgeText = isSuspended ? AppLocalizations.of(context)!.suspendedUpper : AppLocalizations.of(context)!.activeUpper;
           final dotColor = isSuspended
               ? Colors.orangeAccent
               : Colors.greenAccent;
@@ -1364,7 +1364,7 @@ class _ActiveWorkersTab extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            (c.workerName ?? 'Worker').toUpperCase(),
+                            (c.workerName ?? AppLocalizations.of(context)!.worker).toUpperCase(),
                             style: const TextStyle(
                               fontWeight: FontWeight.w900,
                               fontSize: 13,
@@ -1389,7 +1389,7 @@ class _ActiveWorkersTab extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              '${c.salaryAmount.toStringAsFixed(0)} TND / ${c.salaryTypeLabel.toUpperCase()}',
+                              AppLocalizations.of(context)!.salaryAmountType(c.salaryAmount.toStringAsFixed(0), _translateSalaryTypeLabel(context, c.salaryTypeLabel)),
                               style: TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold,
@@ -1431,7 +1431,7 @@ class _ActiveWorkersTab extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'UNTIL ${DateFormat('MMM d').format(c.contractEndDate).toUpperCase()}',
+                          AppLocalizations.of(context)!.untilDateUpper(DateFormat.MMMd(Localizations.localeOf(context).toString()).format(c.contractEndDate).toUpperCase()),
                           style: const TextStyle(
                             fontSize: 8,
                             fontWeight: FontWeight.bold,
@@ -1504,7 +1504,7 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
             borderRadius: BorderRadius.circular(16),
           ),
           title: Text(
-            'Request Proof',
+            AppLocalizations.of(context)!.requestProof,
             style: TextStyle(
               color: widget.isDark ? Colors.white : Colors.black87,
               fontWeight: FontWeight.bold,
@@ -1516,7 +1516,7 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'What do you want proof for?',
+                AppLocalizations.of(context)!.proofRequestQuestion,
                 style: TextStyle(
                   color: widget.isDark ? Colors.white70 : Colors.black54,
                   fontSize: 13,
@@ -1532,11 +1532,11 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
                 ),
                 child: RadioListTile<String>(
                   title: const Text(
-                    'Entire Land',
+                    AppLocalizations.of(context)!.entireLand,
                     style: TextStyle(fontSize: 14),
                   ),
                   subtitle: const Text(
-                    'General farming activity',
+                    AppLocalizations.of(context)!.generalFarmingActivity,
                     style: TextStyle(fontSize: 11),
                   ),
                   value: 'land',
@@ -1544,14 +1544,14 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
                   onChanged: (val) => setDialogState(() {
                     targetType = val!;
                     targetId = null;
-                    targetLabel = 'Current Land';
+                    targetLabel = AppLocalizations.of(context)!.currentLand;
                   }),
                 ),
               ),
               if (items.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Or select an item:',
+                  AppLocalizations.of(context)!.orSelectAnItem,
                   style: TextStyle(
                     color: widget.isDark ? Colors.white38 : Colors.black38,
                     fontSize: 11,
@@ -1586,7 +1586,7 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
               ],
               const SizedBox(height: 16),
               Text(
-                'The worker has 1 hour to submit an AI-verified image of $targetLabel.',
+                AppLocalizations.of(context)!.proofSubmissionHint(targetLabel),
                 style: TextStyle(
                   color: Colors.blue.shade400,
                   fontSize: 12,
@@ -1599,7 +1599,7 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
             TextButton(
               onPressed: () => Navigator.pop(ctx),
               child: Text(
-                'Cancel',
+                AppLocalizations.of(context)!.cancel,
                 style: TextStyle(
                   color: widget.isDark
                       ? Colors.grey.shade400
@@ -1620,7 +1620,7 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
                 ),
               ),
               child: const Text(
-                'Request',
+                AppLocalizations.of(context)!.request,
                 style: TextStyle(color: Colors.white),
               ),
             ),
@@ -1645,7 +1645,7 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text(
-              'Proof requested! The worker has 1 hour to submit.',
+              AppLocalizations.of(context)!.proofRequestedHint,
             ),
             backgroundColor: Colors.green.shade600,
           ),
@@ -1678,7 +1678,7 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
         size: 20,
         color: Colors.blue.shade400,
       ),
-      tooltip: 'Request AI Proof',
+      tooltip: AppLocalizations.of(context)!.requestAIProof,
       style: IconButton.styleFrom(
         backgroundColor: Colors.blue.withOpacity(0.08),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -1727,7 +1727,7 @@ class _ProofsTab extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'NO PROOFS REQUESTED',
+              AppLocalizations.of(context)!.noProofsRequestedUpper,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w900,
@@ -1737,7 +1737,7 @@ class _ProofsTab extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Request a photo proof from an active\nworker to see it here.',
+              AppLocalizations.of(context)!.requestProofHint,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.white54),
             ),
@@ -1831,7 +1831,7 @@ class _ProofsTab extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            'REQUESTED • ${_formatDate(p.createdAt).toUpperCase()}',
+                            AppLocalizations.of(context)!.requestedDateUpper(DateFormat.MMMd(Localizations.localeOf(context).toString()).add_Hm().format(p.createdAt).toUpperCase()),
                             style: const TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
@@ -1843,7 +1843,7 @@ class _ProofsTab extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(top: 4),
                               child: Text(
-                                'ITEM ID: ${p.targetId?.substring(0, 8)}...',
+                                AppLocalizations.of(context)!.itemIdUpper(p.targetId?.substring(0, 8) ?? ''),
                                 style: const TextStyle(
                                   fontSize: 8,
                                   fontWeight: FontWeight.bold,
@@ -2112,14 +2112,14 @@ class _RemoveWorkerButtonState extends State<_RemoveWorkerButton> {
         backgroundColor: widget.isDark ? const Color(0xFF2A2D30) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Remove Worker',
+          AppLocalizations.of(context)!.removeWorker,
           style: TextStyle(
             color: widget.isDark ? Colors.white : Colors.black87,
             fontWeight: FontWeight.bold,
           ),
         ),
         content: Text(
-          'Are you sure you want to permanently remove ${widget.contract.workerName ?? "this worker"} from this land?\n\nThis action will terminate the contract and cannot be undone.',
+          AppLocalizations.of(context)!.removeWorkerConfirmation(widget.contract.workerName ?? AppLocalizations.of(context)!.worker),
           style: TextStyle(
             color: widget.isDark ? Colors.white70 : Colors.black54,
             fontSize: 14,
@@ -2129,7 +2129,7 @@ class _RemoveWorkerButtonState extends State<_RemoveWorkerButton> {
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
-              'Cancel',
+              AppLocalizations.of(context)!.cancel,
               style: TextStyle(
                 color: widget.isDark
                     ? Colors.grey.shade400
@@ -2145,7 +2145,7 @@ class _RemoveWorkerButtonState extends State<_RemoveWorkerButton> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Remove', style: TextStyle(color: Colors.white)),
+            child: Text(AppLocalizations.of(context)!.remove, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -2161,7 +2161,7 @@ class _RemoveWorkerButtonState extends State<_RemoveWorkerButton> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            success ? 'Worker removed successfully' : 'Failed to remove worker',
+            success ? AppLocalizations.of(context)!.workerRemovedSuccessfully : AppLocalizations.of(context)!.failedToRemoveWorker,
           ),
           backgroundColor: success ? Colors.green.shade700 : Colors.redAccent,
         ),
@@ -2189,7 +2189,7 @@ class _RemoveWorkerButtonState extends State<_RemoveWorkerButton> {
         size: 20,
         color: Colors.red.shade400,
       ),
-      tooltip: 'Remove worker',
+      tooltip: AppLocalizations.of(context)!.removeWorker,
       style: IconButton.styleFrom(
         backgroundColor: Colors.red.withOpacity(0.08),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -2225,7 +2225,7 @@ Widget _errorView({
           ),
           const SizedBox(height: 20),
           const Text(
-            'SYSTEM ERROR',
+            AppLocalizations.of(context)!.systemErrorUpper,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w900,
@@ -2249,7 +2249,7 @@ Widget _errorView({
             onPressed: onRetry,
             icon: const Icon(Icons.refresh, size: 18, color: Colors.black),
             label: const Text(
-              'RETRY CONNECTION',
+              AppLocalizations.of(context)!.retryConnectionUpper,
               style: TextStyle(
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1.0,
@@ -2330,4 +2330,15 @@ Widget _shimmerList(bool isDark) {
       ),
     ),
   );
+}
+
+String _translateSalaryTypeLabel(BuildContext context, String label) {
+  final l10n = AppLocalizations.of(context)!;
+  switch (label.toLowerCase()) {
+    case 'monthly': return l10n.monthly;
+    case 'hourly': return l10n.hourly;
+    case 'per task':
+    case 'per_task': return l10n.perTask;
+    default: return label;
+  }
 }

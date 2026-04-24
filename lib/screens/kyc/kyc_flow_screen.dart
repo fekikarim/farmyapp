@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:farmyapp/providers/auth_provider.dart';
 import 'package:farmyapp/services/ml_kit_service.dart';
@@ -49,7 +50,7 @@ class _KycFlowScreenState extends State<KycFlowScreen>
     if (cameras.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No cameras found on this device.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.noCamerasFound)),
         );
       }
       return;
@@ -148,12 +149,12 @@ class _KycFlowScreenState extends State<KycFlowScreen>
         // Show transition animation
         if (_currentStep == 0) {
           await _showTransitionScreen(
-            'Great! Now flip your ID over',
+            AppLocalizations.of(context)!.flipIdInstruction,
             Icons.flip,
           );
         } else if (_currentStep == 1) {
           await _showTransitionScreen(
-            'Perfect! Now let\'s take a selfie',
+            AppLocalizations.of(context)!.selfieInstruction,
             Icons.face,
           );
         }
@@ -178,7 +179,7 @@ class _KycFlowScreenState extends State<KycFlowScreen>
     try {
       // Show uploading screen
       setState(() => _showTransition = true);
-      _transitionMessage = 'Uploading documents...';
+      _transitionMessage = AppLocalizations.of(context)!.uploadingDocuments;
       _transitionIcon = Icons.cloud_upload;
       _animController.reset();
       _animController.repeat();
@@ -198,7 +199,7 @@ class _KycFlowScreenState extends State<KycFlowScreen>
         // Show success and navigate to main screen
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Success! You are now a ${widget.role}!'),
+            content: Text(AppLocalizations.of(context)!.kycSuccess(widget.role)),
             backgroundColor: Colors.green,
           ),
         );
@@ -220,11 +221,11 @@ class _KycFlowScreenState extends State<KycFlowScreen>
   String get _instruction {
     switch (_currentStep) {
       case 0:
-        return 'Scan Front of ID';
+        return AppLocalizations.of(context)!.scanFrontId;
       case 1:
-        return 'Scan Back of ID';
+        return AppLocalizations.of(context)!.scanBackId;
       case 2:
-        return 'Take a Selfie';
+        return AppLocalizations.of(context)!.takeSelfie;
       default:
         return '';
     }
@@ -233,11 +234,11 @@ class _KycFlowScreenState extends State<KycFlowScreen>
   String get _hint {
     switch (_currentStep) {
       case 0:
-        return 'Position your ID within the frame';
+        return AppLocalizations.of(context)!.positionIdHint;
       case 1:
-        return 'Flip your ID and scan the back';
+        return AppLocalizations.of(context)!.flipIdHint;
       case 2:
-        return 'Look directly at the camera with eyes open';
+        return AppLocalizations.of(context)!.lookAtCameraHint;
       default:
         return '';
     }
@@ -539,7 +540,7 @@ class _ValidationScreenState extends State<_ValidationScreen>
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Verifying...',
+                      AppLocalizations.of(context)!.verifying,
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                   ] else if (_result != null) ...[
@@ -562,7 +563,7 @@ class _ValidationScreenState extends State<_ValidationScreen>
                       ElevatedButton.icon(
                         onPressed: () => Navigator.pop(context, false),
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Try Again'),
+                        label: Text(AppLocalizations.of(context)!.tryAgain),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: Colors.black,

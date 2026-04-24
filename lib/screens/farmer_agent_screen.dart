@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FarmerAgentScreen extends StatefulWidget {
   final String? landId;
@@ -190,7 +191,7 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Production Guru'),
+        title: Text(AppLocalizations.of(context)!.productionGuruTitle),
         backgroundColor: Colors.green.shade800,
         foregroundColor: Colors.white,
         leading: IconButton(
@@ -202,7 +203,7 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
             builder: (context) => IconButton(
               icon: const Icon(Icons.history),
               onPressed: () => Scaffold.of(context).openEndDrawer(),
-              tooltip: 'Session History',
+              tooltip: AppLocalizations.of(context)!.sessionHistoryTooltip,
             ),
           ),
           IconButton(
@@ -215,7 +216,7 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
               });
               _fetchAnalysis();
             },
-            tooltip: 'New Session',
+            tooltip: AppLocalizations.of(context)!.newSessionTooltip,
           )
         ],
       ),
@@ -294,7 +295,7 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
                 controller: _messageController,
                 style: TextStyle(color: theme.textTheme.bodyMedium?.color),
                 decoration: InputDecoration(
-                  hintText: 'Ask your guru...',
+                  hintText: AppLocalizations.of(context)!.askGuruHint,
                   hintStyle: TextStyle(color: theme.hintColor),
                   filled: true,
                   fillColor: theme.cardColor,
@@ -338,7 +339,7 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
                   Icon(Icons.history_edu_rounded, color: Colors.white, size: 40),
                   SizedBox(height: 12),
                   Text(
-                    'Harvest Chronicles',
+                    AppLocalizations.of(context)!.harvestChroniclesTitle,
                     style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -347,7 +348,7 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
           ),
           Expanded(
             child: _history.isEmpty
-                ? const Center(child: Text('No history yet'))
+                ? Center(child: Text(AppLocalizations.of(context)!.noHistoryYet))
                 : ListView.builder(
                     itemCount: _history.length,
                     itemBuilder: (context, index) {
@@ -355,7 +356,7 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
                       final date = DateTime.parse(session['createdAt']);
                       return ListTile(
                         leading: const Icon(Icons.forum_outlined, color: Colors.green),
-                        title: Text(session['title'] ?? 'Farm Analysis', maxLines: 1, overflow: TextOverflow.ellipsis),
+                        title: Text(session['title'] ?? AppLocalizations.of(context)!.farmAnalysisDefault, maxLines: 1, overflow: TextOverflow.ellipsis),
                         subtitle: Text(DateFormat('MMM d, HH:mm').format(date)),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
@@ -376,9 +377,9 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
   Widget _buildSummaryCards() {
     return Row(
       children: [
-        _statCard('Credits', '${_context!['currentCredits'] ?? 0} TND', Icons.monetization_on, Colors.orange),
+        _statCard(AppLocalizations.of(context)!.creditsLabel, '${_context!['currentCredits'] ?? 0} TND', Icons.monetization_on, Colors.orange),
         const SizedBox(width: 8),
-        _statCard('Assets', '${_context!['activeAssetsCount'] ?? 0}', Icons.eco, Colors.green),
+        _statCard(AppLocalizations.of(context)!.assetsLabel, '${_context!['activeAssetsCount'] ?? 0}', Icons.eco, Colors.green),
       ],
     );
   }

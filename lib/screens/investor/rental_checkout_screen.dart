@@ -51,7 +51,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'Checkout',
+          AppLocalizations.of(context)!.checkout,
           style: TextStyle(
             color: theme.textTheme.titleLarge?.color,
             fontWeight: FontWeight.bold,
@@ -78,7 +78,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
               children: [
                 _buildPremiumHeader(),
                 Text(
-                  'Lease Start Date',
+                  AppLocalizations.of(context)!.leaseStartDate,
                   style: TextStyle(
                     color: theme.textTheme.titleLarge?.color,
                     fontSize: 18,
@@ -89,7 +89,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 _buildStartDateSelector(),
                 const SizedBox(height: 32),
                 Text(
-                  'Rental Duration',
+                  AppLocalizations.of(context)!.rentalDuration,
                   style: TextStyle(
                     color: theme.textTheme.titleLarge?.color,
                     fontSize: 18,
@@ -100,7 +100,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 _buildPeriodSelector(),
                 const SizedBox(height: 32),
                 Text(
-                  'Payment Security',
+                  AppLocalizations.of(context)!.paymentSecurity,
                   style: TextStyle(
                     color: theme.textTheme.titleLarge?.color,
                     fontSize: 18,
@@ -241,8 +241,8 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.green.withOpacity(0.2)),
                     ),
-                    child: const Text(
-                      'AVAILABLE',
+                    child: Text(
+                      AppLocalizations.of(context)!.availableUpper,
                       style: TextStyle(
                         color: Colors.green,
                         fontSize: 10,
@@ -261,7 +261,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                     ),
                   ),
                   Text(
-                    '${widget.land.gridWidth}x${widget.land.gridHeight} Organic Plot',
+                    AppLocalizations.of(context)!.organicPlotGrid(widget.land.gridWidth, widget.land.gridHeight),
                     style: TextStyle(
                       color: isDark ? Colors.white70 : Colors.black54,
                       fontSize: 14,
@@ -309,7 +309,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Starting From',
+                    AppLocalizations.of(context)!.startingFrom,
                     style: TextStyle(
                       color: isDark ? Colors.white38 : Colors.black38,
                       fontSize: 13,
@@ -317,7 +317,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    DateFormat('MMMM dd, yyyy').format(_startDate),
+                    DateFormat.yMMMMd(Localizations.localeOf(context).toString()).format(_startDate),
                     style: TextStyle(
                       color: theme.textTheme.titleMedium?.color,
                       fontWeight: FontWeight.bold,
@@ -395,7 +395,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(
-                  '$m${m == 1 ? " Mo" : " Mos"}', // Abbreviated to fit
+                  m == 1 ? AppLocalizations.of(context)!.monthAbbreviation : AppLocalizations.of(context)!.monthsAbbreviation(m),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: isSelected
@@ -484,7 +484,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         child: Column(
           children: [
             Text(
-              'Insufficient Credits (${NumberFormat('#,###').format(walletProvider.credits)} TND)',
+              AppLocalizations.of(context)!.insufficientCredits(NumberFormat('#,###').format(walletProvider.credits)),
               style: TextStyle(
                 color: Colors.redAccent,
                 fontWeight: FontWeight.bold,
@@ -494,7 +494,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
             TextButton.icon(
               icon: Icon(Icons.add_card, color: Colors.green),
               label: Text(
-                "Add Payment Method",
+                AppLocalizations.of(context)!.addPaymentMethod,
                 style: TextStyle(color: Colors.green),
               ),
               onPressed: () => _handleAddCard(context),
@@ -554,7 +554,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 children: [
                   Text(
                     isCredits
-                        ? 'Wallet Credits'
+                        ? AppLocalizations.of(context)!.walletCredits
                         : '${_selectedPaymentMethod?.brand.toUpperCase()} •••• ${_selectedPaymentMethod?.last4}',
                     style: TextStyle(
                       color: Colors.white,
@@ -565,10 +565,10 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                   const SizedBox(height: 4),
                   Text(
                     isCredits
-                        ? 'Balance: ${NumberFormat('#,###').format(walletProvider.credits)} TND'
+                        ? AppLocalizations.of(context)!.balanceAmount(NumberFormat('#,###').format(walletProvider.credits))
                         : (_selectedPaymentMethod?.isDefault == true
-                              ? 'Default Method'
-                              : 'Saved Card'),
+                              ? AppLocalizations.of(context)!.defaultMethod
+                              : AppLocalizations.of(context)!.savedCard),
                     style: TextStyle(color: Colors.white38, fontSize: 12),
                   ),
                 ],
@@ -581,7 +581,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                "Change",
+                AppLocalizations.of(context)!.changeAction,
                 style: TextStyle(
                   color: Colors.white70,
                   fontSize: 12,
@@ -626,8 +626,8 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
-                "Select Payment Method",
+              Text(
+                AppLocalizations.of(context)!.selectPaymentMethod,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -663,7 +663,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          "Add New Card",
+                          AppLocalizations.of(context)!.addNewCard,
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -721,7 +721,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                                 children: [
                                   Text(
                                     isCredit
-                                        ? 'Wallet Credits'
+                                        ? AppLocalizations.of(context)!.walletCredits
                                         : '${method.brand.toUpperCase()} •••• ${method.last4}',
                                     style: const TextStyle(
                                       color: Colors.white,
@@ -731,7 +731,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                                   ),
                                   if (isCredit)
                                     Text(
-                                      'Available: Instant payment',
+                                      AppLocalizations.of(context)!.availableInstantPayment,
                                       style: TextStyle(
                                         color: Colors.white54,
                                         fontSize: 12,
@@ -775,11 +775,11 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
       child: Column(
         children: [
           _buildRow(
-            'Monthly Rent',
-            '${NumberFormat('#,###').format(_monthlyRent)} TND',
+            AppLocalizations.of(context)!.monthlyRent,
+            AppLocalizations.of(context)!.amountTND(NumberFormat('#,###').format(_monthlyRent)),
           ),
           const SizedBox(height: 16),
-          _buildRow('Duration', '$_months Months'),
+          _buildRow(AppLocalizations.of(context)!.duration, AppLocalizations.of(context)!.nMonths(_months)),
           const SizedBox(height: 16),
           Divider(
             color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
@@ -789,7 +789,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Total Project',
+                AppLocalizations.of(context)!.totalProject,
                 style: TextStyle(
                   color: isDark ? Colors.white70 : Colors.black54,
                   fontSize: 16,
@@ -797,7 +797,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 ),
               ),
               Text(
-                '${NumberFormat('#,###').format(_monthlyRent * _months)} TND',
+                AppLocalizations.of(context)!.amountTND(NumberFormat('#,###').format(_monthlyRent * _months)),
                 style: const TextStyle(
                   color: Colors.green,
                   fontSize: 20,
@@ -872,7 +872,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         const SizedBox(width: 12),
         Expanded(
           child: Text(
-            'I agree to the Terms of Service & Privacy Policy',
+            AppLocalizations.of(context)!.agreeToTermsAndPrivacy,
             style: TextStyle(
               color: _highlightTerms
                   ? Colors.redAccent
@@ -921,7 +921,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Total Amount',
+                AppLocalizations.of(context)!.totalAmount,
                 style: TextStyle(
                   color: isDark ? Colors.white38 : Colors.black38,
                   fontSize: 12,
@@ -929,7 +929,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                '${NumberFormat('#,###').format(_monthlyRent * _months)} TND',
+                AppLocalizations.of(context)!.amountTND(NumberFormat('#,###').format(_monthlyRent * _months)),
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -958,7 +958,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 }
                 if (_selectedPaymentMethod == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       content: Row(
                         children: [
                           Icon(
@@ -968,7 +968,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                           SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              "Please select a payment method",
+                              AppLocalizations.of(context)!.pleaseSelectPaymentMethod,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -992,8 +992,8 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 ),
                 disabledBackgroundColor: Colors.green.withOpacity(0.3),
               ),
-              child: const Text(
-                'PAY NOW',
+              child: Text(
+                AppLocalizations.of(context)!.payNowUpper,
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1.1,
@@ -1022,7 +1022,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
               ),
               const SizedBox(height: 24),
               Text(
-                'Securing Rental...',
+                AppLocalizations.of(context)!.securingRental,
                 style: TextStyle(
                   color: isDark ? Colors.white : Colors.black,
                   fontSize: 20,
@@ -1031,7 +1031,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Allocating spatial resources',
+                AppLocalizations.of(context)!.allocatingSpatialResources,
                 style: TextStyle(
                   color: isDark ? Colors.white38 : Colors.black38,
                   fontSize: 14,
@@ -1077,7 +1077,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         if (mounted) {
           _showErrorSnackBar(
             context.read<LandProvider>().error ??
-                'Payment failed, please try again.',
+                AppLocalizations.of(context)!.paymentFailedTryAgain,
           );
         }
       }
@@ -1105,14 +1105,14 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          "Payment Failed",
+          AppLocalizations.of(context)!.paymentFailed,
           style: TextStyle(color: isDark ? Colors.white : Colors.black),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "There was an issue processing your payment method. Please ensure you have sufficient balance or a valid card and try again.",
+              AppLocalizations.of(context)!.paymentIssueHint,
               style: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
             ),
             const SizedBox(height: 12),
@@ -1153,7 +1153,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -1173,7 +1173,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 context.read<WalletProvider>().fetchWalletStatus();
               });
             },
-            child: const Text("Manage Cards"),
+            child: Text(AppLocalizations.of(context)!.manageCards),
           ),
         ],
       ),
@@ -1186,7 +1186,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
       final success = await context.read<WalletProvider>().addCard();
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Card added successfully")),
+          SnackBar(content: Text(AppLocalizations.of(context)!.cardAddedSuccessfully)),
         );
         // Auto-select the new card (logic relies on provider list update)
         // We can assume the last added card is the one we want, or just let the user pick it.
@@ -1207,8 +1207,8 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         }
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Cancelled or failed to add card"),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.cancelledOrFailedToAddCard),
             backgroundColor: Colors.orange,
           ),
         );
@@ -1280,7 +1280,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
               ),
               const SizedBox(height: 32),
               Text(
-                'Rental Confirmed!',
+                AppLocalizations.of(context)!.rentalConfirmed,
                 style: TextStyle(
                   color: theme.textTheme.titleLarge?.color,
                   fontSize: 24,
@@ -1289,7 +1289,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Your plot has been secured. You can now start managing your crops.',
+                AppLocalizations.of(context)!.rentalConfirmedDescription,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: isDark ? Colors.white60 : Colors.black54,
@@ -1316,8 +1316,8 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'GO TO DASHBOARD',
+                  child: Text(
+                    AppLocalizations.of(context)!.goToDashboardUpper,
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
                       letterSpacing: 1.2,

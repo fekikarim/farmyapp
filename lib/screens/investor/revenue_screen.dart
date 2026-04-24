@@ -38,7 +38,7 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Revenue'),
+        title: Text(AppLocalizations.of(context)!.revenueTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.auto_awesome, color: Colors.green),
@@ -49,7 +49,7 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => InvestmentAgentScreen(
-                    initialMessage: "Analyze my revenue sources and suggest ways to maximize my profits based on current market trends.",
+                    initialMessage: AppLocalizations.of(context)!.revenueAnalysisPrompt,
                     initialContext: {
                       'revenue': wallet.credits,
                       'inventory_value': products.myProducts.fold(0.0, (sum, p) => sum + p.price),
@@ -59,7 +59,7 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
                 ),
               );
             },
-            tooltip: 'Analyze Revenue',
+            tooltip: AppLocalizations.of(context)!.analyzeRevenueTooltip,
           ),
         ],
       ),
@@ -95,7 +95,7 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
                 child: Column(
                   children: [
                     Text(
-                      'Total Details Revenue',
+                      AppLocalizations.of(context)!.totalDetailsRevenue,
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.8),
                         fontSize: 14,
@@ -104,7 +104,7 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      '${walletProvider.credits.toStringAsFixed(2)} Credits',
+                      '${walletProvider.credits.toStringAsFixed(2)} ${AppLocalizations.of(context)!.creditsLabel}',
                       style: const TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.w900,
@@ -122,9 +122,9 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
                 children: [
                   Expanded(
                     child: _buildStatCard(
-                      'Product Sales',
+                      AppLocalizations.of(context)!.productSales,
                       '${totalSales.toStringAsFixed(2)}',
-                      'Credits',
+                      AppLocalizations.of(context)!.creditsLabel,
                       Icons.storefront_rounded,
                       Colors.blue,
                     ),
@@ -132,9 +132,9 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: _buildStatCard(
-                      'Items Sold',
+                      AppLocalizations.of(context)!.itemsSold,
                       '${productProvider.myProducts.where((p) => p.status == ProductStatus.sold).length}',
-                      'Units',
+                      AppLocalizations.of(context)!.unitsLabel,
                       Icons.shopping_bag_rounded,
                       Colors.orange,
                     ),
@@ -180,14 +180,14 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Investment Revenue',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.investmentRevenue,
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15,
                               ),
                             ),
                             Text(
-                              'View detailed breakdown in Investments',
+                              AppLocalizations.of(context)!.viewInvestmentBreakdown,
                               style: TextStyle(
                                 color: theme.textTheme.bodySmall?.color,
                                 fontSize: 12,
@@ -212,7 +212,7 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
               Row(
                 children: [
                   const Text(
-                    'Portfolio Insights',
+                    AppLocalizations.of(context)!.portfolioInsights,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w900,
@@ -248,7 +248,7 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
                           ),
                           SizedBox(width: 4),
                           Text(
-                            'PREMIUM',
+                            AppLocalizations.of(context)!.premiumLabel,
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w900,
@@ -265,9 +265,9 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
                 _buildPremiumInsightsContent()
               else
                 _buildLockedPremiumCard(
-                  'Unlock Portfolio Master',
-                  'Get real-time ROI tracking, automated dividend reports, and AI-powered investment advice.',
-                  'Investor Plus',
+                  AppLocalizations.of(context)!.unlockPortfolioMaster,
+                  AppLocalizations.of(context)!.premiumPortfolioDesc,
+                  AppLocalizations.of(context)!.investorPlus,
                 ),
               const SizedBox(height: 40), // Bottom padding
             ],
@@ -335,7 +335,7 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
             children: [
               Icon(Icons.pie_chart_rounded, size: 48, color: Colors.blue),
               SizedBox(height: 12),
-              Text('Portfolio Analytics Loading...'),
+              Text(AppLocalizations.of(context)!.portfolioAnalyticsLoading),
             ],
           ),
         ),
@@ -383,7 +383,7 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
             ),
-            child: Text('Upgrade to $planName'),
+            child: Text(AppLocalizations.of(context)!.upgradeToPlan(planName)),
           ),
         ],
       ),

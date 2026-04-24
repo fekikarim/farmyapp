@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class NoInternetScreen extends StatelessWidget {
   final VoidCallback onRetry;
@@ -21,7 +22,7 @@ class NoInternetScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               const Text(
-                'No Internet Connection',
+                AppLocalizations.of(context)!.noInternetConnection,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -29,7 +30,7 @@ class NoInternetScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               const Text(
-                'We could not connect to the server. Please check your internet connection and try again.',
+                AppLocalizations.of(context)!.noInternetDescription,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
@@ -40,7 +41,7 @@ class NoInternetScreen extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
+                label: Text(AppLocalizations.of(context)!.retry),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,

@@ -243,8 +243,8 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
           publishableKey == null ||
           paymentIntentId == null ||
           paymentIntentId.isEmpty) {
-        throw const SubscriptionException(
-          'Invalid payment data received from server. Please try again.',
+        throw SubscriptionException(
+          AppLocalizations.of(context)!.invalidPaymentData,
           code: 'invalid_response',
           statusCode: 500,
         );
@@ -296,15 +296,15 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
           final isUserCancelled = e.error.code == FailureCode.Canceled;
           _showErrorSnack(
             isUserCancelled
-                ? 'Payment was cancelled.'
+                ? AppLocalizations.of(context)!.paymentCancelled
                 : (e.error.localizedMessage ??
-                      'Payment could not be completed.'),
+                      AppLocalizations.of(context)!.paymentFailed),
             isWarning: true,
           );
         }
       } else if (mounted) {
         _showErrorSnack(
-          e.error.localizedMessage ?? 'Payment cancelled',
+          e.error.localizedMessage ?? AppLocalizations.of(context)!.paymentCancelled,
           isWarning: true,
         );
       }
@@ -314,7 +314,7 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
         if (!recovered) {
           _showErrorSnack(
             e.isRetryable
-                ? 'Payment submitted. We are verifying it in the background.'
+                ? AppLocalizations.of(context)!.paymentPendingVerifying
                 : e.message,
             isWarning: e.isRetryable,
           );
@@ -326,7 +326,7 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
       if (paymentIntentId != null) {
         await _recoverStripePayment(paymentIntentId);
       }
-      _showErrorSnack('Payment Error: ${e.toString()}');
+      _showErrorSnack(AppLocalizations.of(context)!.paymentError(e.toString()));
     } finally {
       if (mounted) setState(() => _isProcessing = false);
     }
@@ -357,14 +357,14 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
       }
 
       _showErrorSnack(
-        'Payment is still processing. Your subscription will sync automatically.',
+        AppLocalizations.of(context)!.paymentProcessingSync,
         isWarning: true,
       );
       return false;
     } on SubscriptionException catch (e) {
       if (e.isNetworkError || e.isRetryable) {
         _showErrorSnack(
-          'Payment status check is delayed. We will keep syncing in the background.',
+          AppLocalizations.of(context)!.paymentStatusDelay,
           isWarning: true,
         );
       }
@@ -599,7 +599,7 @@ class _Header extends StatelessWidget {
                     Icon(Icons.lock_rounded, color: Colors.white, size: 12),
                     SizedBox(width: 4),
                     Text(
-                      'Premium Access',
+                      AppLocalizations.of(context)!.premiumAccess,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 11,
@@ -618,7 +618,7 @@ class _Header extends StatelessWidget {
               colors: [AppTheme.primaryColor, AppTheme.secondaryColor],
             ).createShader(bounds),
             child: const Text(
-              'Choose Your Plan',
+              AppLocalizations.of(context)!.chooseYourPlan,
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.w900,
@@ -630,7 +630,7 @@ class _Header extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Select a plan to unlock the full Farmy experience.\nOne subscription opens every door.',
+            AppLocalizations.of(context)!.subscriptionHeadline,
             style: TextStyle(
               fontSize: 13,
               color: isDark ? Colors.white54 : Colors.black45,
@@ -670,12 +670,12 @@ class _BillingToggle extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _ToggleButton(
-            label: 'Monthly',
+            label: AppLocalizations.of(context)!.monthly,
             isSelected: selected == 'monthly',
             onTap: () => onChanged('monthly'),
           ),
           _ToggleButton(
-            label: 'Yearly',
+            label: AppLocalizations.of(context)!.yearly,
             badge: '−33%',
             isSelected: selected == 'yearly',
             onTap: () => onChanged('yearly'),
@@ -890,7 +890,7 @@ class _PlanCard extends StatelessWidget {
                         color: isRecommended ? Colors.orange : accentColor,
                       ),
                     if (plan.isFree)
-                      _Badge(label: 'Always Free', color: Colors.teal),
+                      _Badge(label: AppLocalizations.of(context)!.alwaysFree, color: Colors.teal),
                   ],
                 ),
               ],
@@ -921,7 +921,7 @@ class _PlanCard extends StatelessWidget {
               textBaseline: TextBaseline.alphabetic,
               children: [
                 Text(
-                  plan.isFree ? 'Free' : '\$${price.toStringAsFixed(2)}',
+                  plan.isFree ? AppLocalizations.of(context)!.freeLabel : '\$${price.toStringAsFixed(2)}',
                   style: TextStyle(
                     fontSize: plan.isFree ? 30 : 36,
                     fontWeight: FontWeight.w900,
@@ -932,7 +932,7 @@ class _PlanCard extends StatelessWidget {
                 if (!plan.isFree) ...[
                   const SizedBox(width: 4),
                   Text(
-                    cycle == 'monthly' ? '/mo' : '/yr',
+                    cycle == 'monthly' ? AppLocalizations.of(context)!.monthlySuffix : AppLocalizations.of(context)!.yearlySuffix,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: isDark ? Colors.white38 : Colors.black38,
                       fontSize: 13,
@@ -945,7 +945,10 @@ class _PlanCard extends StatelessWidget {
             if (!plan.isFree && cycle == 'yearly' && plan.price > 0) ...[
               const SizedBox(height: 4),
               Text(
-                'Was \$${(plan.price * 12).toStringAsFixed(2)}/yr — save \$${((plan.price * 12) - plan.priceYearly).toStringAsFixed(2)}',
+                AppLocalizations.of(context)!.savingsLabel(
+                  (plan.price * 12).toStringAsFixed(2),
+                  ((plan.price * 12) - plan.priceYearly).toStringAsFixed(2),
+                ),
                 style: TextStyle(
                   fontSize: 11,
                   color: Colors.green.shade500,
@@ -1005,7 +1008,7 @@ class _PlanCard extends StatelessWidget {
                         foregroundColor: accentColor,
                       ),
                       child: Text(
-                        'Continue with Free',
+                        AppLocalizations.of(context)!.continueWithFree,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
@@ -1024,7 +1027,7 @@ class _PlanCard extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        'Get ${plan.name}',
+                        AppLocalizations.of(context)!.getPlan(plan.name),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
@@ -1128,7 +1131,7 @@ class _PaymentSheet extends StatelessWidget {
                 ),
               ),
               Text(
-                'Select Payment Method',
+                AppLocalizations.of(context)!.selectPaymentMethod,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -1136,7 +1139,13 @@ class _PaymentSheet extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                '\$${price.toStringAsFixed(2)} · ${cycle == 'monthly' ? 'Monthly' : 'Yearly'} · ${plan.name}',
+                AppLocalizations.of(context)!.paymentSummary(
+                  price.toStringAsFixed(2),
+                  cycle == 'monthly'
+                      ? AppLocalizations.of(context)!.monthly
+                      : AppLocalizations.of(context)!.yearly,
+                  plan.name,
+                ),
                 style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
@@ -1145,12 +1154,12 @@ class _PaymentSheet extends StatelessWidget {
               // Farmy Credits option
               _PaymentOptionTile(
                 icon: Icons.monetization_on_rounded,
-                title: 'Pay with Farmy Credits',
+                title: AppLocalizations.of(context)!.payWithCredits,
                 subtitle: isWalletLoading
-                    ? 'Loading balance...'
+                    ? AppLocalizations.of(context)!.loadingBalance
                     : isSufficient
-                    ? 'Balance: \$${credits.toStringAsFixed(2)} ✓'
-                    : 'Balance: \$${credits.toStringAsFixed(2)} — Insufficient',
+                    ? AppLocalizations.of(context)!.balanceStatusSuccess(credits.toStringAsFixed(2))
+                    : AppLocalizations.of(context)!.balanceStatusInsufficient(credits.toStringAsFixed(2)),
                 isSufficient: !isWalletLoading && isSufficient,
                 isLoading: isWalletLoading,
                 onTap: onPayWithCredits,
@@ -1160,8 +1169,8 @@ class _PaymentSheet extends StatelessWidget {
               // Stripe option
               _PaymentOptionTile(
                 icon: Icons.credit_card_rounded,
-                title: 'Pay with Card (Stripe)',
-                subtitle: 'Secure credit / debit card payment',
+                title: AppLocalizations.of(context)!.payWithCardStripe,
+                subtitle: AppLocalizations.of(context)!.secureCardPaymentDesc,
                 isSufficient: true,
                 onTap: onPayWithStripe,
               ),
@@ -1373,7 +1382,7 @@ class _ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Failed to load plans',
+              AppLocalizations.of(context)!.failedLoadPlans,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -1386,7 +1395,7 @@ class _ErrorState extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context)!.retry),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryColor,
                 foregroundColor: Colors.white,
@@ -1418,12 +1427,12 @@ class _EmptyState extends StatelessWidget {
           Icon(Icons.subscriptions_outlined, size: 60, color: Colors.grey),
           SizedBox(height: 16),
           Text(
-            'No plans available',
+            AppLocalizations.of(context)!.noPlansAvailable,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
           Text(
-            'Please contact support.',
+            AppLocalizations.of(context)!.contactSupport,
             style: TextStyle(color: Colors.grey, fontSize: 13),
           ),
         ],

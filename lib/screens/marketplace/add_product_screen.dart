@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:image/image.dart' as img;
@@ -109,7 +110,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedProductTypeId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a product type')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseSelectProductType)),
       );
       return;
     }
@@ -144,8 +145,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
         SnackBar(
           content: Text(
             widget.product != null
-                ? 'Product updated!'
-                : 'Product listed successfully!',
+                ? AppLocalizations.of(context)!.productUpdated
+                : AppLocalizations.of(context)!.productListedSuccessfully,
           ),
         ),
       );
@@ -154,8 +155,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
         SnackBar(
           content: Text(
             widget.product != null
-                ? 'Failed to update product.'
-                : 'Failed to list product.',
+                ? AppLocalizations.of(context)!.failedToUpdateProduct
+                : AppLocalizations.of(context)!.failedToListProduct,
           ),
         ),
       );
@@ -170,7 +171,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.product != null ? 'Edit Product' : 'Add Product'),
+        title: Text(widget.product != null ? AppLocalizations.of(context)!.editProduct : AppLocalizations.of(context)!.addProduct),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -211,8 +212,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                             ),
                             SizedBox(height: 8),
                             Text(
-                              'Tap to add image',
-                              style: TextStyle(color: Colors.grey),
+                              AppLocalizations.of(context)!.tapToAddImage,
+                              style: const TextStyle(color: Colors.grey),
                             ),
                           ],
                         ),
@@ -221,13 +222,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Title'),
-                validator: (v) => v!.isEmpty ? 'Please enter a title' : null,
+                decoration: InputDecoration(labelText: AppLocalizations.of(context)!.title),
+                validator: (v) => v!.isEmpty ? AppLocalizations.of(context)!.pleaseEnterTitle : null,
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _selectedProductTypeId,
-                decoration: const InputDecoration(labelText: 'Product Type'),
+                decoration: InputDecoration(labelText: AppLocalizations.of(context)!.productType),
                 items: productTypes.map((type) {
                   return DropdownMenuItem(
                     value: type.id,
@@ -243,7 +244,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(labelText: AppLocalizations.of(context)!.description),
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
@@ -252,8 +253,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _priceController,
-                      decoration: const InputDecoration(
-                        labelText: 'Price (Credits)',
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context)!.priceCredits,
                       ),
                       keyboardType: TextInputType.number,
                       validator: (v) => v!.isEmpty ? 'Required' : null,
@@ -263,7 +264,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _quantityController,
-                      decoration: const InputDecoration(labelText: 'Quantity'),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.quantity),
                       keyboardType: TextInputType.number,
                       validator: (v) => v!.isEmpty ? 'Required' : null,
                     ),
@@ -273,10 +274,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _unitController,
-                decoration: const InputDecoration(
-                  labelText: 'Unit (e.g., kg, liter, piece)',
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.unitHint,
                 ),
-                validator: (v) => v!.isEmpty ? 'Please enter a unit' : null,
+                validator: (v) => v!.isEmpty ? AppLocalizations.of(context)!.pleaseEnterUnit : null,
               ),
               const SizedBox(height: 24),
               ElevatedButton(
@@ -288,8 +289,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     ? const CircularProgressIndicator()
                     : Text(
                         widget.product != null
-                            ? 'Update Product'
-                            : 'List Product',
+                            ? AppLocalizations.of(context)!.updateProduct
+                            : AppLocalizations.of(context)!.listProduct,
                       ),
               ),
             ],

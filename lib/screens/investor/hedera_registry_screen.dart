@@ -164,8 +164,8 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'HEDERA REGISTRY',
+              Text(
+                AppLocalizations.of(context)!.hederaRegistryUpper,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
@@ -174,7 +174,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
                 ),
               ),
               Text(
-                'Immutable on-chain records',
+                AppLocalizations.of(context)!.immutableOnChainRecords,
                 style: TextStyle(
                   color: _hederaAccent.withOpacity(0.7),
                   fontSize: 11,
@@ -208,11 +208,11 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
       child: Row(
         children: [
-          _buildStatCard('Total', _entries.length.toString(), Icons.link_rounded),
+          _buildStatCard(AppLocalizations.of(context)!.totalLabel, _entries.length.toString(), Icons.link_rounded),
           const SizedBox(width: 12),
-          _buildStatCard('Rentals', rentals.toString(), Icons.landscape_rounded),
+          _buildStatCard(AppLocalizations.of(context)!.rentalsLabel, rentals.toString(), Icons.landscape_rounded),
           const SizedBox(width: 12),
-          _buildStatCard('Purchases', items.toString(), Icons.shopping_bag_outlined),
+          _buildStatCard(AppLocalizations.of(context)!.purchasesLabel, items.toString(), Icons.shopping_bag_outlined),
         ],
       ),
     );
@@ -392,7 +392,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
                           const Icon(Icons.verified_rounded, color: Color(0xFF8259EF), size: 13),
                           const SizedBox(width: 5),
                           Text(
-                            'HEDERA CONSENSUS SERVICE',
+                            AppLocalizations.of(context)!.hederaConsensusServiceUpper,
                             style: TextStyle(
                               color: _hederaAccent.withOpacity(0.8),
                               fontSize: 9,
@@ -422,7 +422,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
                               Clipboard.setData(ClipboardData(text: entry.hederaTransactionId));
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: const Text('Transaction ID copied!'),
+                                  content: Text(AppLocalizations.of(context)!.transactionIdCopied),
                                   backgroundColor: _hederaPurple,
                                   behavior: SnackBarBehavior.floating,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -511,6 +511,10 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
         border: Border.all(color: color.withOpacity(0.4)),
       ),
       child: Text(
+        status.toUpperCase() == 'PAID' ? AppLocalizations.of(context)!.paidUpper :
+        status.toUpperCase() == 'APPROVED' ? AppLocalizations.of(context)!.approvedUpper :
+        status.toUpperCase() == 'PENDING' ? AppLocalizations.of(context)!.pendingUpper :
+        status.toUpperCase() == 'REJECTED' ? AppLocalizations.of(context)!.rejectedUpper :
         status.toUpperCase(),
         style: TextStyle(color: color, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5),
       ),
@@ -544,7 +548,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
             ),
           ),
           const SizedBox(height: 20),
-          Text('Fetching blockchain records…',
+          Text(AppLocalizations.of(context)!.fetchingBlockchainRecords,
               style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13)),
         ],
       ),
@@ -558,7 +562,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
         children: [
           const Icon(Icons.error_outline_rounded, color: Color(0xFFF87171), size: 48),
           const SizedBox(height: 16),
-          const Text('Failed to load records', style: TextStyle(color: Colors.white70)),
+          Text(AppLocalizations.of(context)!.failedToLoadRecords, style: const TextStyle(color: Colors.white70)),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _load,
@@ -567,7 +571,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text('Retry'),
+            child: Text(AppLocalizations.of(context)!.retry),
           ),
         ],
       ),
@@ -596,10 +600,10 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
             ),
           ),
           const SizedBox(height: 20),
-          const Text('No blockchain records yet',
-              style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(AppLocalizations.of(context)!.noBlockchainRecordsYet,
+              style: const TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          Text('Make a purchase to see your\nimmutable Hedera records here.',
+          Text(AppLocalizations.of(context)!.makePurchaseImmutableRecordsHint,
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 13, height: 1.5)),
         ],
@@ -610,10 +614,10 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
   String _formatDate(DateTime dt) {
     final now = DateTime.now();
     final diff = now.difference(dt);
-    if (diff.inMinutes < 1) return 'just now';
-    if (diff.inHours < 1) return '${diff.inMinutes}m ago';
-    if (diff.inDays < 1) return '${diff.inHours}h ago';
-    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    if (diff.inMinutes < 1) return AppLocalizations.of(context)!.justNow;
+    if (diff.inHours < 1) return AppLocalizations.of(context)!.minutesAgo(diff.inMinutes);
+    if (diff.inDays < 1) return AppLocalizations.of(context)!.hoursAgo(diff.inHours);
+    if (diff.inDays < 7) return AppLocalizations.of(context)!.daysAgo(diff.inDays);
     return '${dt.day}/${dt.month}/${dt.year}';
   }
 
@@ -629,7 +633,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open HashScan')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotOpenHashScan)),
         );
       }
     }

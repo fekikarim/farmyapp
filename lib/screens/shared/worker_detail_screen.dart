@@ -72,7 +72,7 @@ class WorkerDetailScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            workerProfile.userName ?? 'Worker',
+                            workerProfile.userName ?? AppLocalizations.of(context)!.worker,
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -91,7 +91,7 @@ class WorkerDetailScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${workerProfile.hourlyRate.toStringAsFixed(0)} TND/hour',
+                        AppLocalizations.of(context)!.amountPerHour(workerProfile.hourlyRate.toStringAsFixed(0)),
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.white.withOpacity(0.85),
@@ -114,28 +114,28 @@ class WorkerDetailScreen extends StatelessWidget {
                   Row(
                     children: [
                       _statCard(
-                        'Rating',
+                        AppLocalizations.of(context)!.ratingLabel,
                         '⭐ ${workerProfile.rating.toStringAsFixed(1)}',
                         Colors.amber,
                         isDark,
                       ),
                       const SizedBox(width: 10),
                       _statCard(
-                        'Tasks',
+                        AppLocalizations.of(context)!.tasksLabelShort,
                         '${workerProfile.completedTasks}',
                         Colors.blue,
                         isDark,
                       ),
                       const SizedBox(width: 10),
                       _statCard(
-                        'On-time',
+                        AppLocalizations.of(context)!.onTimeLabel,
                         '${workerProfile.onTimeRate.toStringAsFixed(0)}%',
                         Colors.green,
                         isDark,
                       ),
                       const SizedBox(width: 10),
                       _statCard(
-                        'Disputes',
+                        AppLocalizations.of(context)!.disputesLabel,
                         '${workerProfile.disputeCount}',
                         Colors.red,
                         isDark,
@@ -145,7 +145,7 @@ class WorkerDetailScreen extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // Skills
-                  _sectionTitle('Skills', isDark),
+                  _sectionTitle(AppLocalizations.of(context)!.skills, isDark),
                   const SizedBox(height: 10),
                   Wrap(
                     spacing: 8,
@@ -167,7 +167,7 @@ class WorkerDetailScreen extends StatelessWidget {
                           border: Border.all(color: Colors.green.shade200),
                         ),
                         child: Text(
-                          skill,
+                          _translateSkill(context, skill),
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             color: Colors.green.shade800,
@@ -181,7 +181,7 @@ class WorkerDetailScreen extends StatelessWidget {
                   // Bio
                   if (workerProfile.bio != null &&
                       workerProfile.bio!.isNotEmpty) ...[
-                    _sectionTitle('About', isDark),
+                    _sectionTitle(AppLocalizations.of(context)!.about, isDark),
                     const SizedBox(height: 10),
                     Container(
                       width: double.infinity,
@@ -203,7 +203,7 @@ class WorkerDetailScreen extends StatelessWidget {
                   ],
 
                   // Performance Graph Placeholder
-                  _sectionTitle('Performance', isDark),
+                  _sectionTitle(AppLocalizations.of(context)!.performance, isDark),
                   const SizedBox(height: 10),
                   Container(
                     height: 160,
@@ -223,7 +223,7 @@ class WorkerDetailScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Performance graph coming soon',
+                            AppLocalizations.of(context)!.performanceGraphComingSoon,
                             style: TextStyle(
                               color: Colors.grey.shade500,
                               fontSize: 13,
@@ -237,14 +237,14 @@ class WorkerDetailScreen extends StatelessWidget {
 
                   // Coming Soon Placeholders
                   _comingSoonCard(
-                    '💬 Message Worker',
-                    'Direct messaging between farmers and workers',
+                    '💬 ${AppLocalizations.of(context)!.messageWorker}',
+                    AppLocalizations.of(context)!.directMessagingDescription,
                     isDark,
                   ),
                   const SizedBox(height: 10),
                   _comingSoonCard(
-                    '📝 View Reviews',
-                    'Read reviews from previous employers',
+                    '📝 ${AppLocalizations.of(context)!.viewReviews}',
+                    AppLocalizations.of(context)!.readReviewsDescription,
                     isDark,
                   ),
                   const SizedBox(height: 32),
@@ -261,7 +261,7 @@ class WorkerDetailScreen extends StatelessWidget {
                           color: Colors.white,
                         ),
                         label: const Text(
-                          'Invite to Land',
+                          AppLocalizations.of(context)!.inviteToLand,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -286,8 +286,7 @@ class WorkerDetailScreen extends StatelessWidget {
                       child: ElevatedButton.icon(
                         onPressed: () => _assignToLand(context),
                         icon: const Icon(Icons.person_add, color: Colors.white),
-                        label: const Text(
-                          'Assign to Land',
+                          AppLocalizations.of(context)!.assignToLand,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -330,14 +329,14 @@ class WorkerDetailScreen extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Invitation sent to ${workerProfile.userName ?? "Worker"}',
+              AppLocalizations.of(context)!.invitationSentTo(workerProfile.userName ?? AppLocalizations.of(context)!.worker),
             ),
             backgroundColor: Colors.green.shade700,
           ),
         );
         Navigator.of(context).pop(true);
       } else {
-        final errorMsg = provider.lastError ?? 'Failed to send invitation';
+        final errorMsg = provider.lastError ?? AppLocalizations.of(context)!.failedToSendInvitation;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(errorMsg), backgroundColor: Colors.redAccent),
         );
@@ -355,14 +354,14 @@ class WorkerDetailScreen extends StatelessWidget {
         backgroundColor: isDark ? Colors.grey.shade800 : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Invite Worker',
+          AppLocalizations.of(context)!.inviteWorker,
           style: TextStyle(color: isDark ? Colors.white : Colors.black87),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Send an invitation to ${workerProfile.userName ?? "this worker"} for $landName.',
+              AppLocalizations.of(context)!.inviteWorkerMessage(workerProfile.userName ?? AppLocalizations.of(context)!.thisWorker, landName ?? ""),
               style: TextStyle(
                 fontSize: 13,
                 color: isDark ? Colors.white70 : Colors.black54,
@@ -374,7 +373,7 @@ class WorkerDetailScreen extends StatelessWidget {
               maxLines: 3,
               style: TextStyle(color: isDark ? Colors.white : Colors.black87),
               decoration: InputDecoration(
-                hintText: 'Optional message...',
+                hintText: AppLocalizations.of(context)!.optionalMessageHint,
                 hintStyle: TextStyle(
                   color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
                 ),
@@ -409,7 +408,7 @@ class WorkerDetailScreen extends StatelessWidget {
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              'Cancel',
+              AppLocalizations.of(context)!.cancel,
               style: TextStyle(
                 color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
               ),
@@ -424,7 +423,7 @@ class WorkerDetailScreen extends StatelessWidget {
               ),
             ),
             child: const Text(
-              'Send Invite',
+              AppLocalizations.of(context)!.sendInvite,
               style: TextStyle(color: Colors.white),
             ),
           ),
@@ -449,7 +448,7 @@ class WorkerDetailScreen extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '${workerProfile.userName ?? "Worker"} assigned to $landName',
+              AppLocalizations.of(context)!.workerAssignedToLand(workerProfile.userName ?? AppLocalizations.of(context)!.worker, landName ?? ""),
             ),
             backgroundColor: Colors.green.shade700,
           ),
@@ -460,7 +459,7 @@ class WorkerDetailScreen extends StatelessWidget {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to assign worker'),
+            content: Text(AppLocalizations.of(context)!.failedToAssignWorker),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -478,7 +477,7 @@ class WorkerDetailScreen extends StatelessWidget {
         backgroundColor: isDark ? Colors.grey.shade800 : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Set Monthly Salary',
+          AppLocalizations.of(context)!.setMonthlySalary,
           style: TextStyle(color: isDark ? Colors.white : Colors.black87),
         ),
         content: TextField(
@@ -490,7 +489,7 @@ class WorkerDetailScreen extends StatelessWidget {
             hintStyle: TextStyle(
               color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
             ),
-            suffixText: 'TND/month',
+            suffixText: AppLocalizations.of(context)!.tndMo,
             suffixStyle: TextStyle(
               color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
             ),
@@ -520,7 +519,7 @@ class WorkerDetailScreen extends StatelessWidget {
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              'Cancel',
+              AppLocalizations.of(context)!.cancel,
               style: TextStyle(
                 color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
               ),
@@ -537,7 +536,7 @@ class WorkerDetailScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Assign', style: TextStyle(color: Colors.white)),
+            child: Text(AppLocalizations.of(context)!.assign, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -624,7 +623,7 @@ class WorkerDetailScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              'Coming Soon',
+              AppLocalizations.of(context)!.soon,
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
@@ -635,5 +634,21 @@ class WorkerDetailScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _translateSkill(BuildContext context, String skill) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (skill.toLowerCase()) {
+      case 'watering': return l10n.watering;
+      case 'harvesting': return l10n.harvesting;
+      case 'planting': return l10n.planting;
+      case 'animal care':
+      case 'animal_care': return l10n.animalCare;
+      case 'machine operation':
+      case 'machine_operation': return l10n.machineOperation;
+      case 'soil management':
+      case 'soil_management': return l10n.soilManagement;
+      default: return skill;
+    }
   }
 }

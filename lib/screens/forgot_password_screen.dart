@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../utils/validators.dart';
 import '../theme/app_theme.dart';
@@ -85,12 +86,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ),
                           const SizedBox(height: 48),
                           Text(
-                            'Forgot Password?',
+                            AppLocalizations.of(context)!.forgotPasswordTitle,
                             style: Theme.of(context).textTheme.headlineMedium,
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Enter your email address and we will send you a 6-digit code to reset your password.',
+                            AppLocalizations.of(context)!.forgotPasswordSubtitle,
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           const SizedBox(height: 48),
@@ -99,7 +100,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             keyboardType: TextInputType.emailAddress,
                             style: const TextStyle(fontSize: 14),
                             decoration: InputDecoration(
-                              labelText: 'Email Address',
+                              labelText: AppLocalizations.of(context)!.emailAddress,
                               labelStyle: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5)),
                               prefixIcon: Icon(Icons.email_outlined, size: 18, color: Theme.of(context).colorScheme.primary.withOpacity(0.7)),
                               contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
@@ -140,7 +141,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                     width: 24,
                                     child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                                   )
-                                : const Text('Send Reset Code'),
+                                : Text(AppLocalizations.of(context)!.sendResetCode),
                           ),
                           const SizedBox(height: 24),
                           Center(
@@ -151,7 +152,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 foregroundColor: Colors.transparent,
                               ),
                               child: Text(
-                                'Back to Login',
+                                AppLocalizations.of(context)!.backToLogin,
                                 style: TextStyle(
                                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                                   fontSize: 13,

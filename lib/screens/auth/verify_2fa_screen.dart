@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 
 class Verify2FAScreen extends StatefulWidget {
@@ -36,7 +37,7 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Two-Factor Authentication'),
+        title: Text(AppLocalizations.of(context)!.twoFactorAuthentication),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -52,12 +53,12 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
                     const Icon(Icons.security, size: 80, color: Colors.green),
                     const SizedBox(height: 24),
                     Text(
-                      'Verification Required',
+                      AppLocalizations.of(context)!.verificationRequired,
                       style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Enter the 6-digit code from your authenticator app to continue.',
+                    Text(
+                      AppLocalizations.of(context)!.enter2faCode,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 40),
@@ -119,12 +120,12 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
                               width: 20,
                               child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                             ) 
-                          : const Text('Verify'),
+                          : Text(AppLocalizations.of(context)!.verify),
                       ),
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      child: Text(AppLocalizations.of(context)!.cancel),
                     ),
                   ],
                 ),

@@ -95,15 +95,15 @@ class _WorkforceScreenState extends State<WorkforceScreen>
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Add Worker',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              AppLocalizations.of(context)!.addWorker,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
             _buildOptionTile(
               icon: Icons.person_search,
-              title: 'Invite Existing Worker',
-              subtitle: 'Search the worker marketplace',
+              title: AppLocalizations.of(context)!.inviteExistingWorker,
+              subtitle: AppLocalizations.of(context)!.searchWorkerMarketplace,
               color: Colors.green,
               onTap: () async {
                 Navigator.pop(ctx);
@@ -126,8 +126,8 @@ class _WorkforceScreenState extends State<WorkforceScreen>
             const SizedBox(height: 12),
             _buildOptionTile(
               icon: Icons.work_outline,
-              title: 'Open Job Request',
-              subtitle: 'Coming Soon',
+              title: AppLocalizations.of(context)!.openJobRequest,
+              subtitle: AppLocalizations.of(context)!.soon,
               color: Colors.grey,
               onTap: null,
               comingSoon: true,
@@ -206,7 +206,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  'Soon',
+                  AppLocalizations.of(context)!.soon,
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
@@ -333,7 +333,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    worker.workerName ?? 'Unknown Worker',
+                    worker.workerName ?? AppLocalizations.of(context)!.unknownWorker,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
@@ -367,7 +367,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '${worker.salary.toStringAsFixed(0)} TND/mo',
+                        '${worker.salary.toStringAsFixed(0)} ${AppLocalizations.of(context)!.tndMo}',
                         style: TextStyle(
                           fontSize: 12,
                           color: isDark
@@ -411,7 +411,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
     return Scaffold(
       backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
       appBar: AppBar(
-        title: Text('Workforce — ${widget.landName}'),
+        title: Text(AppLocalizations.of(context)!.workforceLandName(widget.landName)),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -419,9 +419,9 @@ class _WorkforceScreenState extends State<WorkforceScreen>
         onPressed: _showAddWorkerModal,
         backgroundColor: Colors.green.shade600,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text(
-          'Add Worker',
-          style: TextStyle(color: Colors.white),
+        label: Text(
+          AppLocalizations.of(context)!.addWorker,
+          style: const TextStyle(color: Colors.white),
         ),
       ),
       body: workerProvider.landWorkersLoading
@@ -435,7 +435,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                   children: [
                     if (workerProvider.landWorkersError != null)
                       _buildErrorBanner(
-                        title: 'Workers sync issue',
+                        title: AppLocalizations.of(context)!.workersSyncIssue,
                         message: workerProvider.landWorkersError!,
                         isDark: isDark,
                         onRetry: _refreshAll,
@@ -445,7 +445,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                             .landInvitationsError !=
                         null)
                       _buildErrorBanner(
-                        title: 'Invitations sync issue',
+                        title: AppLocalizations.of(context)!.invitationsSyncIssue,
                         message: context
                             .watch<WorkerLifecycleProvider>()
                             .landInvitationsError!,
@@ -457,21 +457,21 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                     Row(
                       children: [
                         _buildStatCard(
-                          'Total',
+                          AppLocalizations.of(context)!.totalLabel,
                           '${stats['total'] ?? 0}',
                           Icons.people,
                           Colors.blue,
                         ),
                         const SizedBox(width: 10),
                         _buildStatCard(
-                          'Active',
+                          AppLocalizations.of(context)!.activeLabel,
                           '${stats['active'] ?? 0}',
                           Icons.check_circle,
                           Colors.green,
                         ),
                         const SizedBox(width: 10),
                         _buildStatCard(
-                          'Suspended',
+                          AppLocalizations.of(context)!.suspendedLabel,
                           '${stats['suspended'] ?? 0}',
                           Icons.pause_circle,
                           Colors.orange,
@@ -482,14 +482,14 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                     Row(
                       children: [
                         _buildStatCard(
-                          'Monthly Cost',
+                          AppLocalizations.of(context)!.monthlyCost,
                           '${stats['monthly_salary_expense'] ?? 0} TND',
                           Icons.payments,
                           Colors.purple,
                         ),
                         const SizedBox(width: 10),
                         _buildStatCard(
-                          'Productivity',
+                          AppLocalizations.of(context)!.productivity,
                           '${stats['productivity'] ?? 0}%',
                           Icons.trending_up,
                           Colors.teal,
@@ -503,7 +503,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Workers',
+                          AppLocalizations.of(context)!.workforce,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -511,7 +511,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                           ),
                         ),
                         Text(
-                          '${workers.length} total',
+                          AppLocalizations.of(context)!.totalSuffix(workers.length),
                           style: TextStyle(
                             fontSize: 13,
                             color: Colors.grey.shade500,
@@ -533,7 +533,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'No workers yet',
+                              AppLocalizations.of(context)!.noWorkersYet,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
@@ -542,7 +542,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Tap the + button to add workers from the marketplace',
+                              AppLocalizations.of(context)!.addWorkersMarketplaceHint,
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.grey.shade400,
@@ -579,7 +579,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Pending Invitations',
+                                AppLocalizations.of(context)!.pendingInvitations,
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -629,7 +629,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                                   Row(
                                     children: [
                                       Text(
-                                        'Pending Invitations',
+                                        AppLocalizations.of(context)!.pendingInvitations,
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -674,7 +674,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                'Waiting for worker response',
+                                AppLocalizations.of(context)!.waitingForWorkerResponse,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: isDark
@@ -694,7 +694,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                               Row(
                                 children: [
                                   Text(
-                                    'Invitation Decisions',
+                                    AppLocalizations.of(context)!.invitationDecisions,
                                     style: TextStyle(
                                       fontSize: 17,
                                       fontWeight: FontWeight.bold,
@@ -728,7 +728,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                'Workers who accepted or declined your invites',
+                                AppLocalizations.of(context)!.workersAcceptedDeclinedInvites,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: isDark
@@ -775,7 +775,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Coming Soon',
+                                AppLocalizations.of(context)!.soon,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   color: isDark
@@ -786,11 +786,11 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                             ],
                           ),
                           const SizedBox(height: 12),
-                          _comingSoonItem('🤖 AI Auto-Assign Tasks', isDark),
-                          _comingSoonItem('📍 GPS-verified Work Proof', isDark),
-                          _comingSoonItem('🌡️ IoT Sensor Dashboard', isDark),
+                          _comingSoonItem(AppLocalizations.of(context)!.aiAutoAssignTasks, isDark),
+                          _comingSoonItem(AppLocalizations.of(context)!.gpsVerifiedWorkProof, isDark),
+                          _comingSoonItem(AppLocalizations.of(context)!.iotSensorDashboard, isDark),
                           _comingSoonItem(
-                            '💰 Smart Payroll Integration',
+                            AppLocalizations.of(context)!.smartPayrollIntegration,
                             isDark,
                           ),
                         ],
@@ -810,13 +810,13 @@ class _WorkforceScreenState extends State<WorkforceScreen>
     if (invitation.expiresAt != null) {
       final remaining = invitation.expiresAt!.difference(DateTime.now());
       if (remaining.isNegative) {
-        timeLeft = 'Expired';
+        timeLeft = AppLocalizations.of(context)!.expiredLabel;
       } else if (remaining.inDays > 0) {
-        timeLeft = '${remaining.inDays}d left';
+        timeLeft = AppLocalizations.of(context)!.daysLeft(remaining.inDays);
       } else if (remaining.inHours > 0) {
-        timeLeft = '${remaining.inHours}h left';
+        timeLeft = AppLocalizations.of(context)!.hoursLeft(remaining.inHours);
       } else {
-        timeLeft = '${remaining.inMinutes}m left';
+        timeLeft = AppLocalizations.of(context)!.minutesLeft(remaining.inMinutes);
       }
     }
 
@@ -828,12 +828,12 @@ class _WorkforceScreenState extends State<WorkforceScreen>
         ? Colors.red
         : Colors.grey;
     final statusLabel = invitation.isPending
-        ? 'PENDING'
+        ? AppLocalizations.of(context)!.pendingUpper
         : invitation.isApproved
-        ? 'ACCEPTED'
+        ? AppLocalizations.of(context)!.acceptedUpper
         : invitation.isDeclined
-        ? 'DECLINED'
-        : 'EXPIRED';
+        ? AppLocalizations.of(context)!.declinedUpper
+        : AppLocalizations.of(context)!.expiredUpper;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -878,7 +878,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  invitation.workerName ?? 'Worker',
+                  invitation.workerName ?? AppLocalizations.of(context)!.worker,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
@@ -1006,7 +1006,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
               ],
             ),
           ),
-          TextButton(onPressed: onRetry, child: const Text('Retry')),
+          TextButton(onPressed: onRetry, child: Text(AppLocalizations.of(context)!.retry)),
         ],
       ),
     );

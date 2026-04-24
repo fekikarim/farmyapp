@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -109,8 +110,8 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
       _isTogglingListening = false;
       if (_isDisposed || !mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Voice input is not available on this device.'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.voiceInputNotAvailable),
         ),
       );
       return;
@@ -178,7 +179,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
-                'Unable to start voice input. Please check permissions.',
+                AppLocalizations.of(context)!.unableToStartVoiceInput,
               ),
             ),
           );
@@ -222,8 +223,8 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
 
     if (!_voiceOutputEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Voice output is muted. Unmute to read this message.'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.voiceOutputMuted),
         ),
       );
       return;
@@ -232,7 +233,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
     final text = message.text.trim();
     if (text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This message has no readable text.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.messageNoReadableText)),
       );
       return;
     }
@@ -243,7 +244,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
     } catch (_) {
       if (_isDisposed || !mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to play voice output now.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.unableToPlayVoiceOutput)),
       );
     }
   }
@@ -275,7 +276,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
       if (_isDisposed || !mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Could not send your message. Please try again.'),
+          content: Text(AppLocalizations.of(context)!.couldNotSendMessage),
         ),
       );
     }
@@ -289,7 +290,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Edit and resend'),
+          title: Text(AppLocalizations.of(context)!.editAndResend),
           content: TextFormField(
             initialValue: editedText,
             onChanged: (value) => editedText = value,
@@ -300,18 +301,18 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
               Navigator.of(dialogContext).pop(value);
             },
             decoration: const InputDecoration(
-              hintText: 'Update your message',
+              hintText: AppLocalizations.of(context)!.updateYourMessage,
               border: OutlineInputBorder(),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(editedText),
-              child: const Text('Resend'),
+              child: Text(AppLocalizations.of(context)!.resend),
             ),
           ],
         );
@@ -332,7 +333,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
     await Clipboard.setData(ClipboardData(text: text));
     if (_isDisposed || !mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Response copied to clipboard.')),
+      SnackBar(content: Text(AppLocalizations.of(context)!.responseCopied)),
     );
   }
 
@@ -343,7 +344,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
     final nextTitle = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Rename chat'),
+        title: Text(AppLocalizations.of(context)!.renameChat),
         content: TextFormField(
           initialValue: titleDraft,
           onChanged: (value) => titleDraft = value,
@@ -353,18 +354,18 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
             Navigator.of(dialogContext).pop(value);
           },
           decoration: const InputDecoration(
-            hintText: 'Chat title',
+            hintText: AppLocalizations.of(context)!.chatTitle,
             border: OutlineInputBorder(),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(titleDraft),
-            child: const Text('Save'),
+            child: Text(AppLocalizations.of(context)!.save),
           ),
         ],
       ),
@@ -387,19 +388,19 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete chat'),
-        content: Text('Delete "${chat.title}" permanently?'),
+        title: Text(AppLocalizations.of(context)!.deleteChat),
+        content: Text(AppLocalizations.of(context)!.deleteChatConfirmation(chat.title)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: FilledButton.styleFrom(
               backgroundColor: const Color(0xFFC63D3D),
             ),
-            child: const Text('Delete'),
+            child: Text(AppLocalizations.of(context)!.delete),
           ),
         ],
       ),
@@ -514,7 +515,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
           children: [
             Expanded(
               child: Text(
-                activeChat?.title ?? 'AI Assistant',
+                activeChat?.title ?? AppLocalizations.of(context)!.aiAssistant,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 softWrap: false,
@@ -536,8 +537,8 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
         actions: [
           IconButton(
             tooltip: _voiceOutputEnabled
-                ? 'Mute voice output'
-                : 'Enable voice output',
+                ? AppLocalizations.of(context)!.muteVoiceOutput
+                : AppLocalizations.of(context)!.enableVoiceOutput,
             onPressed: () async {
               await _toggleVoiceOutput();
             },
@@ -547,19 +548,19 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
           ),
           if (compactTopBar)
             PopupMenuButton<String>(
-              tooltip: 'More actions',
+              tooltip: AppLocalizations.of(context)!.moreActions,
               onSelected: _handleTopBarAction,
               itemBuilder: (context) => const [
                 PopupMenuItem<String>(
                   value: 'sync',
-                  child: Text('Sync backend'),
+                  child: Text(AppLocalizations.of(context)!.syncBackend),
                 ),
-                PopupMenuItem<String>(value: 'new', child: Text('New chat')),
+                PopupMenuItem<String>(value: 'new', child: Text(AppLocalizations.of(context)!.newChat)),
               ],
             )
           else ...[
             IconButton(
-              tooltip: 'Sync backend',
+              tooltip: AppLocalizations.of(context)!.syncBackend,
               onPressed: () {
                 ref
                     .read(aiAssistantControllerProvider.notifier)
@@ -568,7 +569,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
               icon: const Icon(Icons.sync),
             ),
             IconButton(
-              tooltip: 'New chat',
+              tooltip: AppLocalizations.of(context)!.newChat,
               onPressed: () {
                 ref.read(aiAssistantControllerProvider.notifier).createChat();
               },
@@ -576,7 +577,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
             ),
           ],
           IconButton(
-            tooltip: 'Close assistant',
+            tooltip: AppLocalizations.of(context)!.closeAssistant,
             onPressed: () async {
               await _closeAssistantScreen();
             },
@@ -601,7 +602,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Syncing with backend...',
+                      AppLocalizations.of(context)!.syncingWithBackend,
                       style: TextStyle(
                         fontSize: 12,
                         color: Color(0xFF0D4A7A),
@@ -623,7 +624,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Backend disconnected. Reconnecting automatically...',
+                      AppLocalizations.of(context)!.backendDisconnected,
                       style: TextStyle(
                         fontSize: 12,
                         color: Color(0xFF8A5A00),
@@ -645,7 +646,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Offline mode: cached answers will be used when available.',
+                      AppLocalizations.of(context)!.offlineModeCached,
                       style: TextStyle(
                         fontSize: 12,
                         color: Color(0xFFA06A00),
@@ -732,7 +733,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                 children: [
                   const Expanded(
                     child: Text(
-                      'Conversations',
+                      AppLocalizations.of(context)!.conversations,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
@@ -740,7 +741,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                     ),
                   ),
                   IconButton(
-                    tooltip: 'New chat',
+                    tooltip: AppLocalizations.of(context)!.newChat,
                     onPressed: () async {
                       Navigator.of(context).pop();
                       await ref
@@ -755,7 +756,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
             const Divider(height: 1),
             Expanded(
               child: state.chats.isEmpty
-                  ? const Center(child: Text('No conversations yet.'))
+                  ? Center(child: Text(AppLocalizations.of(context)!.noConversationsYet))
                   : ListView.separated(
                       itemCount: state.chats.length,
                       separatorBuilder: (_, __) => const Divider(height: 1),
@@ -799,11 +800,11 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                             itemBuilder: (context) => const [
                               PopupMenuItem(
                                 value: 'rename',
-                                child: Text('Rename'),
+                                child: Text(AppLocalizations.of(context)!.rename),
                               ),
                               PopupMenuItem(
                                 value: 'delete',
-                                child: Text('Delete'),
+                                child: Text(AppLocalizations.of(context)!.delete),
                               ),
                             ],
                           ),
@@ -831,14 +832,14 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
             ),
             const SizedBox(height: 14),
             Text(
-              'Start a new conversation',
+              AppLocalizations.of(context)!.startANewConversation,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Create a chat to ask for practical farming guidance.',
+              AppLocalizations.of(context)!.createChatDescription,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium,
             ),
@@ -848,7 +849,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                 ref.read(aiAssistantControllerProvider.notifier).createChat();
               },
               icon: const Icon(Icons.add),
-              label: const Text('New chat'),
+              label: Text(AppLocalizations.of(context)!.newChat),
             ),
           ],
         ),
@@ -878,14 +879,14 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
             ),
             const SizedBox(height: 18),
             Text(
-              'Ask anything about your farm',
+              AppLocalizations.of(context)!.askAnythingAboutFarm,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Planting times, crop health, fertilizers, and practical guidance with automatic language detection.',
+              AppLocalizations.of(context)!.aiAssistantDescription,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.textTheme.bodyMedium?.color?.withValues(
@@ -917,7 +918,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
           children: [
             Semantics(
               button: true,
-              label: 'Voice input',
+              label: AppLocalizations.of(context)!.voiceInput,
               child: Material(
                 color: _isListening
                     ? const Color(0xFFE85151)
@@ -925,8 +926,8 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                 shape: const CircleBorder(),
                 child: IconButton(
                   tooltip: _isListening
-                      ? 'Disable voice input'
-                      : 'Enable voice input',
+                      ? AppLocalizations.of(context)!.disableVoiceInput
+                      : AppLocalizations.of(context)!.enableVoiceInput,
                   onPressed: state.isSending
                       ? null
                       : () => _toggleListening(state),
@@ -955,7 +956,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                   }
                 },
                 decoration: InputDecoration(
-                  hintText: 'Ask your farming question...',
+                  hintText: AppLocalizations.of(context)!.askFarmingQuestion,
                   hintStyle: TextStyle(
                     fontSize: 15,
                     color: Theme.of(
@@ -978,7 +979,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
             const SizedBox(width: 8),
             Semantics(
               button: true,
-              label: 'Send message',
+              label: AppLocalizations.of(context)!.sendMessage,
               child: Material(
                 color: state.isSending ? Colors.grey : const Color(0xFF2C8A55),
                 shape: const CircleBorder(),

@@ -73,7 +73,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     } catch (e) {
       if (mounted) {
         _showErrorAlert(
-          'Failed to sync profile: ${e.toString().replaceAll('Exception: ', '')}',
+          AppLocalizations.of(context)!.profileSyncFailed(e.toString().replaceAll('Exception: ', '')),
         );
       }
     } finally {
@@ -208,19 +208,19 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Unsaved Changes'),
-        content: const Text(
-          'You have unsaved changes. Do you want to discard them?',
+        title: Text(AppLocalizations.of(context)!.unsavedChangesTitle),
+        content: Text(
+          AppLocalizations.of(context)!.unsavedChangesDesc,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Discard'),
+            child: Text(AppLocalizations.of(context)!.discard),
           ),
         ],
       ),
@@ -232,7 +232,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     if (_isCheckingUsername) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please wait for username availability check'),
+          content: Text(AppLocalizations.of(context)!.waitUsernameCheck),
           backgroundColor: Colors.orange,
         ),
       );
@@ -240,14 +240,14 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     }
 
     if (!_formKey.currentState!.validate()) {
-      _showErrorAlert('Please correct the errors in the form');
+      _showErrorAlert(AppLocalizations.of(context)!.correctErrorsInForm);
       return;
     }
 
     if (_isUsernameAvailable == false) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('This username is already taken'),
+          content: Text(AppLocalizations.of(context)!.usernameTaken),
           backgroundColor: Colors.red,
         ),
       );
@@ -307,7 +307,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
         });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Profile updated successfully!'),
+            content: Text(AppLocalizations.of(context)!.profileUpdatedSuccess),
             backgroundColor: Colors.green,
           ),
         );
@@ -339,18 +339,18 @@ class _EditProfileScreenState extends State<EditProfileScreen>
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 16),
               child: Text(
-                'Change Profile Picture',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                AppLocalizations.of(context)!.changeProfilePicture,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Choose from Gallery'),
+              title: Text(AppLocalizations.of(context)!.chooseFromGallery),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
             ListTile(
               leading: const Icon(Icons.camera_alt),
-              title: const Text('Take a Photo'),
+              title: Text(AppLocalizations.of(context)!.takeAPhoto),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             const SizedBox(height: 8),
@@ -382,7 +382,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
         _fetchLiveProfile();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Profile picture updated!'),
+            content: Text(AppLocalizations.of(context)!.profilePictureUpdated),
             backgroundColor: Colors.green,
           ),
         );
@@ -390,7 +390,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     } catch (e) {
       if (mounted) {
         _showErrorAlert(
-          'Upload failed: ${e.toString().replaceAll('Exception: ', '')}',
+          AppLocalizations.of(context)!.uploadFailed(e.toString().replaceAll('Exception: ', '')),
         );
       }
     } finally {
@@ -409,14 +409,14 @@ class _EditProfileScreenState extends State<EditProfileScreen>
           children: [
             Icon(Icons.error_outline, color: Colors.red),
             SizedBox(width: 8),
-            Text('Error'),
+            Text(AppLocalizations.of(context)!.error),
           ],
         ),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            child: Text(AppLocalizations.of(context)!.ok),
           ),
         ],
       ),
@@ -438,14 +438,14 @@ class _EditProfileScreenState extends State<EditProfileScreen>
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Edit Profile'),
+          title: Text(AppLocalizations.of(context)!.editProfileTitle),
           centerTitle: true,
           bottom: TabBar(
             controller: _tabController,
             tabs: const [
-              Tab(text: 'Identity'),
-              Tab(text: 'Trust'),
-              Tab(text: 'Role & Privacy'),
+              Tab(text: AppLocalizations.of(context)!.identityTab),
+              Tab(text: AppLocalizations.of(context)!.trustTab),
+              Tab(text: AppLocalizations.of(context)!.rolePrivacyTab),
             ],
             indicatorColor: theme.colorScheme.primary,
           ),
@@ -460,7 +460,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
                       )
                     : const Icon(Icons.save),
                 onPressed: _isLoading ? null : _saveProfile,
-                tooltip: 'Save Changes',
+                tooltip: AppLocalizations.of(context)!.saveChangesTooltip,
               ),
           ],
         ),
@@ -484,7 +484,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Profile Completeness',
+                                AppLocalizations.of(context)!.profileCompleteness,
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -552,9 +552,9 @@ class _EditProfileScreenState extends State<EditProfileScreen>
                               strokeWidth: 2,
                             ),
                           )
-                        : const Text(
-                            'Save Changes',
-                            style: TextStyle(
+                        : Text(
+                            AppLocalizations.of(context)!.saveChangesTooltip,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -637,30 +637,30 @@ class _EditProfileScreenState extends State<EditProfileScreen>
         const SizedBox(height: 24),
         _buildTextField(
           controller: _nameController,
-          label: 'Full Name',
+          label: AppLocalizations.of(context)!.fullName,
           icon: Icons.person_outline,
           validator: (val) {
-            if (val == null || val.trim().isEmpty) return 'Name is required';
-            if (val.trim().length < 2) return 'Name is too short';
+            if (val == null || val.trim().isEmpty) return AppLocalizations.of(context)!.nameRequired;
+            if (val.trim().length < 2) return AppLocalizations.of(context)!.nameTooShort;
             if (!RegExp(r"^[a-zA-Z\s']+$").hasMatch(val.trim())) {
-              return 'Only letters and spaces allowed';
+              return AppLocalizations.of(context)!.onlyLettersAllowed;
             }
             return null;
           },
         ),
         _buildTextField(
           controller: _usernameController,
-          label: 'Username',
+          label: AppLocalizations.of(context)!.usernameLabel,
           icon: Icons.alternate_email,
-          helperText: 'Public unique handle',
+          helperText: AppLocalizations.of(context)!.publicUniqueHandle,
           validator: (val) {
-            if (val == null || val.isEmpty) return 'Username is required';
-            if (val.length < 3) return 'Too short (min 3)';
+            if (val == null || val.isEmpty) return AppLocalizations.of(context)!.usernameRequired;
+            if (val.length < 3) return AppLocalizations.of(context)!.tooShortMin3;
             if (!RegExp(r'^[a-z0-9._]{3,20}$').hasMatch(val)) {
-              return 'Use lowercase, numbers, dots, underscores';
+              return AppLocalizations.of(context)!.usernameFormatError;
             }
             if (_isUsernameAvailable == false) {
-              return 'Username is already taken';
+              return AppLocalizations.of(context)!.usernameTaken;
             }
             return null;
           },
@@ -690,13 +690,13 @@ class _EditProfileScreenState extends State<EditProfileScreen>
         ),
         _buildTextField(
           controller: _phoneController,
-          label: 'Phone Number',
+          label: AppLocalizations.of(context)!.phoneNumber,
           icon: Icons.phone_outlined,
           keyboardType: TextInputType.phone,
           validator: (val) {
             if (val != null && val.isNotEmpty) {
               if (!RegExp(r'^\+?[0-9]{8,15}$').hasMatch(val)) {
-                return 'Invalid phone format';
+                return AppLocalizations.of(context)!.invalidPhoneFormat;
               }
             }
             return null;
@@ -707,7 +707,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
             Expanded(
               child: _buildTextField(
                 controller: _countryController,
-                label: 'Country',
+                label: AppLocalizations.of(context)!.countryLabel,
                 icon: Icons.public,
               ),
             ),
@@ -715,7 +715,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
             Expanded(
               child: _buildTextField(
                 controller: _cityController,
-                label: 'City',
+                label: AppLocalizations.of(context)!.cityLabel,
                 icon: Icons.location_city,
               ),
             ),
@@ -731,21 +731,21 @@ class _EditProfileScreenState extends State<EditProfileScreen>
       children: [
         _buildTextField(
           controller: _headlineController,
-          label: 'Headline',
+          label: AppLocalizations.of(context)!.headlineLabel,
           icon: Icons.subtitles_outlined,
-          helperText: 'A short description of what you do',
+          helperText: AppLocalizations.of(context)!.headlineHint,
           maxLength: 150,
         ),
         _buildTextField(
           controller: _bioController,
-          label: 'About Me',
+          label: AppLocalizations.of(context)!.aboutMe,
           icon: Icons.info_outline,
           maxLines: 4,
           maxLength: 2000,
         ),
         const SizedBox(height: 16),
         Text(
-          'Portfolio & Links',
+          AppLocalizations.of(context)!.portfolioLinks,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -753,7 +753,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
         const SizedBox(height: 12),
         _buildTextField(
           controller: _linkedinController,
-          label: 'LinkedIn Profile',
+          label: AppLocalizations.of(context)!.linkedinProfile,
           icon: Icons.link,
           keyboardType: TextInputType.url,
           validator: (val) {
@@ -761,7 +761,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
               final text = val.trim();
               if (!text.contains('linkedin.com') &&
                   !RegExp(r'^[\w\-_]+$').hasMatch(text)) {
-                return 'Enter a valid LinkedIn URL or handle';
+                return AppLocalizations.of(context)!.linkedinUrlError;
               }
             }
             return null;
@@ -769,7 +769,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
         ),
         _buildTextField(
           controller: _websiteController,
-          label: 'Personal Website',
+          label: AppLocalizations.of(context)!.personalWebsite,
           icon: Icons.language,
           keyboardType: TextInputType.url,
           validator: (val) {
@@ -779,7 +779,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
                 r'^(https?:\/\/)?([\w\d\-_]+\.)+[\w\d\-_]+(\/.*)?$',
               );
               if (!urlRegex.hasMatch(text)) {
-                return 'Enter a valid website URL';
+                return AppLocalizations.of(context)!.websiteUrlError;
               }
             }
             return null;
@@ -796,7 +796,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
         // Role specifics
         if (_currentUser.role == 'farmer') ...[
           Text(
-            'Farmer Details',
+            AppLocalizations.of(context)!.farmerDetailsTitle,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.primary,
@@ -805,13 +805,13 @@ class _EditProfileScreenState extends State<EditProfileScreen>
           const SizedBox(height: 12),
           _buildTextField(
             controller: _businessNameController,
-            label: 'Business/Farm Name',
+            label: AppLocalizations.of(context)!.businessFarmName,
             icon: Icons.store_outlined,
           ),
           const SizedBox(height: 24),
         ] else if (_currentUser.role == 'investor') ...[
           Text(
-            'Investor Details',
+            AppLocalizations.of(context)!.investorDetailsTitle,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.primary,
@@ -820,15 +820,15 @@ class _EditProfileScreenState extends State<EditProfileScreen>
           const SizedBox(height: 12),
           _buildTextField(
             controller: _budgetRangeController,
-            label: 'Expected Budget Range',
+            label: AppLocalizations.of(context)!.expectedBudgetRange,
             icon: Icons.monetization_on_outlined,
-            helperText: 'e.g. \$10,000 - \$50,000',
+            helperText: AppLocalizations.of(context)!.budgetRangeHint,
           ),
           const SizedBox(height: 24),
         ],
 
         Text(
-          'Privacy Controls',
+          AppLocalizations.of(context)!.privacyControls,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -849,8 +849,8 @@ class _EditProfileScreenState extends State<EditProfileScreen>
           child: Column(
             children: [
               SwitchListTile(
-                title: const Text('Discoverable in Marketplace'),
-                subtitle: const Text('Let others find and view your profile'),
+                title: Text(AppLocalizations.of(context)!.discoverableMarketplace),
+                subtitle: Text(AppLocalizations.of(context)!.discoverableSubtitle),
                 value: _discoverable,
                 activeColor: theme.colorScheme.primary,
                 onChanged: (val) => setState(() {
@@ -860,9 +860,9 @@ class _EditProfileScreenState extends State<EditProfileScreen>
               ),
               const Divider(height: 1),
               SwitchListTile(
-                title: const Text('Show Contact Info'),
-                subtitle: const Text(
-                  'Make phone and email visible to connections',
+                title: Text(AppLocalizations.of(context)!.showContactInfoLabel),
+                subtitle: Text(
+                  AppLocalizations.of(context)!.showContactInfoSubtitle,
                 ),
                 value: _showContactInfo,
                 activeColor: theme.colorScheme.primary,

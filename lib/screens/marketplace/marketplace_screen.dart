@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../providers/product_provider.dart';
 import '../../providers/wallet_provider.dart';
@@ -25,18 +26,18 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Confirm Purchase'),
+        title: Text(AppLocalizations.of(context)!.confirmPurchase),
         content: Text(
-          'Do you want to buy ${product.title} for ${product.price} credits?',
+          AppLocalizations.of(context)!.buyProductConfirmation(product.title, product.price),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Buy'),
+            child: Text(AppLocalizations.of(context)!.buy),
           ),
         ],
       ),
@@ -69,13 +70,13 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Marketplace'),
+        title: Text(AppLocalizations.of(context)!.marketplace),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Center(
               child: Text(
-                'Credits: ${walletProvider.credits.toStringAsFixed(2)}',
+                AppLocalizations.of(context)!.creditsCount(walletProvider.credits.toStringAsFixed(2)),
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -153,7 +154,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${product.price} Credits',
+                                AppLocalizations.of(context)!.priceCountCredits(product.price),
                                 style: TextStyle(
                                   color: Theme.of(context).primaryColor,
                                   fontWeight: FontWeight.bold,
@@ -180,7 +181,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
-                                  child: const Text('Buy Now'),
+                                  child: Text(AppLocalizations.of(context)!.buyNow),
                                 ),
                               ),
                             ],

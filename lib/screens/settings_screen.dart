@@ -4,6 +4,8 @@ import '../providers/theme_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/game_provider.dart';
 import '../providers/worker_provider.dart';
+import '../providers/locale_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'settings/edit_profile_screen.dart';
 import 'settings/change_password_screen.dart';
 import 'settings/enable_2fa_screen.dart';
@@ -48,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings'), centerTitle: true),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.settings), centerTitle: true),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -82,7 +84,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        user.name ?? 'Farmy User',
+                        user.name ?? AppLocalizations.of(context)!.farmyUser,
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -140,7 +142,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'WORKER',
+                                    AppLocalizations.of(context)!.worker,
                                     style: theme.textTheme.labelSmall?.copyWith(
                                       color: Colors.blue,
                                       fontWeight: FontWeight.bold,
@@ -183,7 +185,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  user.isVerified ? 'Verified' : 'Unverified',
+                                  user.isVerified
+                                      ? AppLocalizations.of(context)!.verified
+                                      : AppLocalizations.of(context)!.unverified,
                                   style: theme.textTheme.labelSmall?.copyWith(
                                     color: user.isVerified
                                         ? Colors.green
@@ -212,7 +216,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         child: Column(
                           children: [
                             const Text(
-                              'Latest Submitted Proof',
+                              AppLocalizations.of(context)!.latestSubmittedProof,
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
@@ -242,21 +246,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 20),
 
                 // Subscription Section
-                _buildSectionTitle(theme, 'Subscription'),
+                _buildSectionTitle(theme, AppLocalizations.of(context)!.subscription),
                 Consumer<SubscriptionProvider>(
                   builder: (context, subProvider, _) {
                     final sub = subProvider.currentSubscription;
                     final isActive = sub?.isActive ?? false;
-                    final planName = sub?.plan.name ?? 'Free Tier';
+                    final planName = sub?.plan.name ?? AppLocalizations.of(context)!.freeTier;
                     final isFree = sub?.plan.planKey.contains('free') ?? true;
 
                     String subtitle;
                     if (!isActive) {
-                      subtitle = 'Upgrade for premium features';
+                      subtitle = AppLocalizations.of(context)!.upgradePremium;
                     } else if (isFree) {
-                      subtitle = 'No expiration · Free forever';
+                      subtitle = AppLocalizations.of(context)!.freeForever;
                     } else {
-                      subtitle = 'Valid until ${_formatDate(sub!.endDate)}';
+                      subtitle = AppLocalizations.of(context)!.validUntil(_formatDate(sub!.endDate));
                     }
 
                     return _buildSettingsTile(
@@ -283,7 +287,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                             ),
                             child: Text(
-                              isFree ? 'FREE' : 'PRO',
+                              isFree ? AppLocalizations.of(context)!.free : AppLocalizations.of(context)!.pro,
                               style: TextStyle(
                                 color: isFree ? Colors.green : Colors.amber,
                                 fontWeight: FontWeight.bold,
@@ -311,12 +315,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 12),
               ],
 
-              _buildSectionTitle(theme, 'Payments'),
+              _buildSectionTitle(theme, AppLocalizations.of(context)!.payments),
               _buildSettingsTile(
                 context,
                 icon: Icons.account_balance_wallet_outlined,
-                title: 'Wallet & Cards',
-                subtitle: 'Manage credits and payment methods',
+                title: AppLocalizations.of(context)!.walletCards,
+                subtitle: AppLocalizations.of(context)!.manageCredits,
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -327,8 +331,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildSettingsTile(
                 context,
                 icon: Icons.hub_outlined,
-                title: 'Hedera Registry',
-                subtitle: 'View your on-chain blockchain records',
+                title: AppLocalizations.of(context)!.hederaRegistry,
+                subtitle: AppLocalizations.of(context)!.viewBlockchainRecords,
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -371,12 +375,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
 
-              _buildSectionTitle(theme, 'General'),
+              _buildSectionTitle(theme, AppLocalizations.of(context)!.general),
               _buildSettingsTile(
                 context,
                 icon: Icons.notifications_none,
-                title: 'Notifications',
-                subtitle: 'View your recent activity and updates',
+                title: AppLocalizations.of(context)!.notifications,
+                subtitle: AppLocalizations.of(context)!.viewRecentActivity,
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -386,11 +390,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 24),
 
-              _buildSectionTitle(theme, 'Security'),
+              _buildSectionTitle(theme, AppLocalizations.of(context)!.security),
               _buildSettingsTile(
                 context,
                 icon: Icons.edit_outlined,
-                title: 'Edit Profile',
+                title: AppLocalizations.of(context)!.editProfile,
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -401,7 +405,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildSettingsTile(
                 context,
                 icon: Icons.lock_outline,
-                title: 'Change Password',
+                title: AppLocalizations.of(context)!.changePassword,
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -415,11 +419,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ? Icons.security
                     : Icons.security_outlined,
                 title: (user?.isTwoFactorEnabled ?? false)
-                    ? 'Disable 2FA'
-                    : 'Enable 2FA',
+                    ? AppLocalizations.of(context)!.disable2fa
+                    : AppLocalizations.of(context)!.enable2fa,
                 subtitle: (user?.isTwoFactorEnabled ?? false)
-                    ? 'Strong security active'
-                    : 'Add an extra layer of security',
+                    ? AppLocalizations.of(context)!.strongSecurityActive
+                    : AppLocalizations.of(context)!.addExtraSecurity,
                 trailing: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -438,7 +442,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   child: Text(
-                    (user?.isTwoFactorEnabled ?? false) ? 'ENABLED' : 'OFF',
+                    (user?.isTwoFactorEnabled ?? false) ? AppLocalizations.of(context)!.enabled : AppLocalizations.of(context)!.off,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: (user?.isTwoFactorEnabled ?? false)
                           ? Colors.green
@@ -458,35 +462,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               if (user?.role == 'customer') ...[
                 const SizedBox(height: 24),
-                _buildSectionTitle(theme, 'Orders'),
+                _buildSectionTitle(theme, AppLocalizations.of(context)!.orders),
                 _buildSettingsTile(
                   context,
                   icon: Icons.receipt_long_outlined,
-                  title: 'My Orders',
-                  subtitle: 'Track and manage your purchases',
+                  title: AppLocalizations.of(context)!.myOrders,
+                  subtitle: AppLocalizations.of(context)!.trackManagePurchases,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const MyOrdersScreen()),
                   ),
                 ),
                 const SizedBox(height: 24),
-                _buildSectionTitle(theme, 'Verification'),
+                _buildSectionTitle(theme, AppLocalizations.of(context)!.verification),
                 _buildSettingsTile(
                   context,
                   icon: Icons.agriculture_outlined,
-                  title: 'Become a Farmer',
-                  subtitle: 'Start selling your produce',
+                  title: AppLocalizations.of(context)!.becomeFarmer,
+                  subtitle: AppLocalizations.of(context)!.startSellingProduce,
                   onTap: () => _handleKyc(context, 'farmer'),
                 ),
                 _buildSettingsTile(
                   context,
                   icon: Icons.monetization_on_outlined,
-                  title: 'Become an Investor',
-                  subtitle: 'Invest in sustainable farming',
+                  title: AppLocalizations.of(context)!.becomeInvestor,
+                  subtitle: AppLocalizations.of(context)!.investSustainableFarming,
                   onTap: () => _handleKyc(context, 'investor'),
                 ),
                 const SizedBox(height: 24),
-                _buildSectionTitle(theme, 'Worker'),
+                _buildSectionTitle(theme, AppLocalizations.of(context)!.worker),
                 Consumer<WorkerProvider>(
                   builder: (context, provider, _) {
                     if (provider.profileLoading && provider.myProfile == null) {
@@ -505,8 +509,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           _buildSettingsTile(
                             context,
                             icon: Icons.construction_outlined,
-                            title: 'Become a Worker',
-                            subtitle: 'Offer your skills on farms',
+                            title: AppLocalizations.of(context)!.becomeWorker,
+                            subtitle: AppLocalizations.of(context)!.offerSkillsFarms,
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -518,8 +522,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           _buildSettingsTile(
                             context,
                             icon: Icons.dashboard_outlined,
-                            title: 'Worker Dashboard',
-                            subtitle: 'View your assignments & tasks',
+                            title: AppLocalizations.of(context)!.workerDashboard,
+                            subtitle: AppLocalizations.of(context)!.viewAssignmentsTasks,
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -535,12 +539,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               if (user?.role == 'investor') ...[
                 const SizedBox(height: 24),
-                _buildSectionTitle(theme, 'Investments'),
+                _buildSectionTitle(theme, AppLocalizations.of(context)!.investments),
                 _buildSettingsTile(
                   context,
                   icon: Icons.monetization_on_outlined,
-                  title: 'My Investments',
-                  subtitle: 'View and manage your land investments',
+                  title: AppLocalizations.of(context)!.myInvestments,
+                  subtitle: AppLocalizations.of(context)!.viewManageLandInvestments, // Need to ensure this exists or use generic
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -549,7 +553,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                _buildSectionTitle(theme, 'Game Features'),
+                _buildSectionTitle(theme, AppLocalizations.of(context)!.gameFeatures),
                 Container(
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surface,
@@ -575,13 +579,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     title: Text(
-                      'Enable Game Edge Panel',
+                      AppLocalizations.of(context)!.enableGameEdgePanel,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     subtitle: Text(
-                      'Access the 2.5D farm view',
+                      AppLocalizations.of(context)!.accessFarmView,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurface.withOpacity(0.5),
                       ),
@@ -598,12 +602,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   user?.role.toLowerCase() == 'investor' ||
                   user?.role.toLowerCase() == 'admin') ...[
                 const SizedBox(height: 24),
-                _buildSectionTitle(theme, 'Tasks & Proofs'),
+                _buildSectionTitle(theme, AppLocalizations.of(context)!.tasksProofs),
                 _buildSettingsTile(
                   context,
                   icon: Icons.verified_user_outlined,
-                  title: 'AI Proof Requests',
-                  subtitle: 'View and manage proof requests',
+                  title: AppLocalizations.of(context)!.aiProofRequests,
+                  subtitle: AppLocalizations.of(context)!.viewManageProofRequests,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -614,7 +618,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
 
               const SizedBox(height: 24),
-              _buildSectionTitle(theme, 'Appearance'),
+              _buildSectionTitle(theme, AppLocalizations.of(context)!.appearance),
               Container(
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
@@ -642,7 +646,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   title: Text(
-                    'Dark Mode',
+                    AppLocalizations.of(context)!.darkMode,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -659,7 +663,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildSettingsTile(
                 context,
                 icon: Icons.info_outline,
-                title: 'About Us - Farmy Team',
+                title: AppLocalizations.of(context)!.aboutUs,
                 onTap: () => _showComingSoonDialog(context),
               ),
 
@@ -676,7 +680,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     }
                   },
                   icon: const Icon(Icons.logout),
-                  label: const Text('Logout'),
+                  label: Text(AppLocalizations.of(context)!.logout),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.error,
                     foregroundColor: theme.colorScheme.onError,
@@ -781,14 +785,62 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Coming Soon'),
-        content: const Text('This feature is currently under development.'),
+        title: Text(AppLocalizations.of(context)!.comingSoon),
+        content: Text(AppLocalizations.of(context)!.featureUnderDevelopment),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(AppLocalizations.of(context)!.ok),
           ),
         ],
+      ),
+    );
+  }
+
+  String _getLanguageName(String code) {
+    switch (code) {
+      case 'en':
+        return AppLocalizations.of(context)!.english;
+      case 'fr':
+        return AppLocalizations.of(context)!.french;
+      case 'es':
+        return AppLocalizations.of(context)!.spanish;
+      default:
+        return code;
+    }
+  }
+
+  void _showLanguageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.selectLanguage),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(AppLocalizations.of(context)!.english),
+              onTap: () {
+                context.read<LocaleProvider>().setLocale(const Locale('en'));
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text(AppLocalizations.of(context)!.french),
+              onTap: () {
+                context.read<LocaleProvider>().setLocale(const Locale('fr'));
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text(AppLocalizations.of(context)!.spanish),
+              onTap: () {
+                context.read<LocaleProvider>().setLocale(const Locale('es'));
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

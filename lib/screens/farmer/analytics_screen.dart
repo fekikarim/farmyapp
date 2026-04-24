@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../providers/wallet_provider.dart';
 import '../../providers/product_provider.dart';
 import '../../providers/subscription_provider.dart';
@@ -35,7 +36,7 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
         .fold(0.0, (sum, item) => sum + item.price);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Analytics')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.analytics)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -49,13 +50,13 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    const Text(
-                      'Total Earnings (Wallet)',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    Text(
+                      AppLocalizations.of(context)!.totalEarningsWallet,
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '${walletProvider.credits.toStringAsFixed(2)} Credits',
+                      '${walletProvider.credits.toStringAsFixed(2)} ${AppLocalizations.of(context)!.credits}',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
@@ -76,13 +77,13 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    const Text(
-                      'Total Sales Value',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    Text(
+                      AppLocalizations.of(context)!.totalSalesValue,
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '${totalSales.toStringAsFixed(2)} Credits',
+                      '${totalSales.toStringAsFixed(2)} ${AppLocalizations.of(context)!.credits}',
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -90,7 +91,7 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '${productProvider.myProducts.where((p) => p.status == ProductStatus.sold).length} Items Sold',
+                      AppLocalizations.of(context)!.itemsSold(productProvider.myProducts.where((p) => p.status == ProductStatus.sold).length),
                       style: const TextStyle(color: Colors.grey),
                     ),
                   ],
@@ -102,9 +103,9 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
             // Advanced Analytics Section
             Row(
               children: [
-                const Text(
-                  'Advanced Analytics',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  AppLocalizations.of(context)!.advancedAnalytics,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(width: 8),
                 if (!hasAdvancedAnalytics)
@@ -117,12 +118,12 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
                       color: Colors.amber.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
                         Icon(Icons.lock_rounded, size: 12, color: Colors.amber),
                         SizedBox(width: 4),
                         Text(
-                          'PREMIUM',
+                          AppLocalizations.of(context)!.premium,
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -139,9 +140,9 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
               _buildAdvancedAnalyticsContent()
             else
               _buildLockedPremiumCard(
-                'Unlock Deep Insights',
-                'Get AI-powered crop forecasting, detailed soil health history, and advanced ROI projections.',
-                'Farmer Pro',
+                AppLocalizations.of(context)!.unlockDeepInsights,
+                AppLocalizations.of(context)!.unlockDeepInsightsDescription,
+                AppLocalizations.of(context)!.upgradePlanName,
               ),
           ],
         ),
@@ -157,20 +158,20 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            const Row(
+            Row(
               children: [
                 Icon(Icons.auto_awesome, size: 24, color: Colors.green),
                 SizedBox(width: 12),
                 Text(
-                  'Production Strategy',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  AppLocalizations.of(context)!.productionStrategy,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Get a deep analysis of your current production overhead, potential yield, and profit-maximization strategies powered by AI.',
-              style: TextStyle(color: Colors.grey, fontSize: 13),
+            Text(
+              AppLocalizations.of(context)!.productionStrategyDescription,
+              style: const TextStyle(color: Colors.grey, fontSize: 13),
             ),
             const SizedBox(height: 20),
             SizedBox(
@@ -185,7 +186,7 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
                   );
                 },
                 icon: const Icon(Icons.psychology),
-                label: const Text('Consult Production Guru'),
+                label: Text(AppLocalizations.of(context)!.consultProductionGuru),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green.shade700,
                   foregroundColor: Colors.white,
@@ -244,7 +245,7 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
             ),
-            child: Text('Upgrade to $planName'),
+            child: Text(AppLocalizations.of(context)!.upgradeToPlan(planName)),
           ),
         ],
       ),

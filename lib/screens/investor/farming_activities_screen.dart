@@ -25,7 +25,7 @@ class _InvestorFarmingActivitiesScreenState
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Farming Activities',
+          AppLocalizations.of(context)!.farmingActivities,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
@@ -43,7 +43,7 @@ class _InvestorFarmingActivitiesScreenState
                   Icon(Icons.grass, size: 80, color: Colors.grey[300]),
                   const SizedBox(height: 16),
                   const Text(
-                    'No active farming activities.',
+                    AppLocalizations.of(context)!.noActiveFarmingActivities,
                     style: TextStyle(fontSize: 18, color: Colors.grey),
                   ),
                   const SizedBox(height: 24),
@@ -51,7 +51,7 @@ class _InvestorFarmingActivitiesScreenState
                     onPressed: () {
                       // Navigate to Explore
                     },
-                    child: const Text('RENT LAND TO START'),
+                    child: Text(AppLocalizations.of(context)!.rentLandToStartUpper),
                   ),
                 ],
               ),
@@ -92,14 +92,14 @@ class _InvestorFarmingActivitiesScreenState
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Plot #${rental.landId.substring(0, 6)}',
+                                  AppLocalizations.of(context)!.plotNumber(rental.landId.substring(0, 6)),
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
-                                  'Rental expires: ${rental.rentalEndDate?.toLocal().toString().split(' ')[0] ?? 'N/A'}',
+                                  AppLocalizations.of(context)!.rentalExpires(rental.rentalEndDate?.toLocal().toString().split(' ')[0] ?? AppLocalizations.of(context)!.na),
                                   style: TextStyle(color: Colors.grey[600]),
                                 ),
                               ],
@@ -109,7 +109,7 @@ class _InvestorFarmingActivitiesScreenState
                       ),
                       const Divider(height: 32),
                       const Text(
-                        'ACTIVE STATUS',
+                        AppLocalizations.of(context)!.activeStatusUpper,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -125,9 +125,9 @@ class _InvestorFarmingActivitiesScreenState
                             color: Colors.blue,
                           ),
                           const SizedBox(width: 8),
-                          const Expanded(
+                          Expanded(
                             child: Text(
-                              'Ready for first activity. Choose what to do next.',
+                              AppLocalizations.of(context)!.readyForActivityHint,
                             ),
                           ),
                         ],
@@ -138,7 +138,7 @@ class _InvestorFarmingActivitiesScreenState
                           Expanded(
                             child: _buildActivityButton(
                               context,
-                              'Plant Crops',
+                              AppLocalizations.of(context)!.plantCrops,
                               Icons.spa,
                               Colors.orange,
                               () {
@@ -150,7 +150,7 @@ class _InvestorFarmingActivitiesScreenState
                           Expanded(
                             child: _buildActivityButton(
                               context,
-                              'Raise Livestock',
+                              AppLocalizations.of(context)!.raiseLivestock,
                               Icons.pets,
                               Colors.brown,
                               () {

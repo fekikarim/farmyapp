@@ -27,7 +27,6 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
   final ScrollController _scrollController = ScrollController();
   String? _selectedSkill;
 
-  final List<String> _skills = [
     'All',
     'Watering',
     'Harvesting',
@@ -109,7 +108,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'HIRE WORKERS',
+                          AppLocalizations.of(context)!.hireWorkersUpper,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
@@ -179,7 +178,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
                           _selectedSkill == skill;
                       return FilterChip(
                         label: Text(
-                          skill.toUpperCase(),
+                          _translateSkill(context, skill).toUpperCase(),
                           style: TextStyle(
                             color: isSelected
                                 ? Colors.greenAccent
@@ -307,7 +306,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
           ),
           const SizedBox(height: 20),
           const Text(
-            'NO WORKERS FOUND',
+            AppLocalizations.of(context)!.noWorkersFoundUpper,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w900,
@@ -317,7 +316,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Try adjusting your filters',
+            AppLocalizations.of(context)!.tryAdjustingFilters,
             style: TextStyle(fontSize: 14, color: Colors.white54),
           ),
         ],
@@ -492,7 +491,7 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                         children: [
                           Flexible(
                             child: Text(
-                              (worker.userName ?? 'Worker').toUpperCase(),
+                              (worker.userName ?? AppLocalizations.of(context)!.worker).toUpperCase(),
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w900,
@@ -533,7 +532,7 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                                   ),
                                 ),
                                 child: Text(
-                                  skill.toUpperCase(),
+                                  _translateSkill(context, skill).toUpperCase(),
                                   style: const TextStyle(
                                     fontSize: 9,
                                     fontWeight: FontWeight.bold,
@@ -572,7 +571,7 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '${worker.completedTasks} TASKS',
+                            AppLocalizations.of(context)!.nTasksUpper(worker.completedTasks),
                             style: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
@@ -590,7 +589,7 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '${worker.hourlyRate.toStringAsFixed(0)} TND',
+                      AppLocalizations.of(context)!.amountTND(worker.hourlyRate.toStringAsFixed(0)),
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w900,
@@ -599,8 +598,8 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    const Text(
-                      'PER HOUR',
+                    Text(
+                      AppLocalizations.of(context)!.perHourUpper,
                       style: TextStyle(
                         fontSize: 9,
                         fontWeight: FontWeight.bold,
@@ -622,7 +621,7 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                         ),
                       ),
                       child: const Text(
-                        'HIRE',
+                        AppLocalizations.of(context)!.hireUpper,
                         style: TextStyle(
                           color: Colors.greenAccent,
                           fontSize: 10,
@@ -639,5 +638,18 @@ class _MarketplaceWorkerCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _translateSkill(BuildContext context, String skill) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (skill) {
+      case 'All': return l10n.all;
+      case 'Watering': return l10n.watering;
+      case 'Harvesting': return l10n.harvesting;
+      case 'Planting': return l10n.planting;
+      case 'Animal Care': return l10n.animalCare;
+      case 'Machine Operation': return l10n.machineOperation;
+      default: return skill;
+    }
   }
 }

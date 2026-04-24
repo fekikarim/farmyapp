@@ -41,7 +41,7 @@ class _FarmerRentalRequestsScreenState
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Failed to load requests. Please try again.';
+          _error = AppLocalizations.of(context)!.failedToLoadRequests;
           _isLoading = false;
         });
       }
@@ -58,7 +58,7 @@ class _FarmerRentalRequestsScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text(
-              'Image proof is required to approve item placement.',
+              AppLocalizations.of(context)!.imageProofRequiredToApprove,
             ),
             backgroundColor: Colors.orange.shade600,
             behavior: SnackBarBehavior.floating,
@@ -79,7 +79,7 @@ class _FarmerRentalRequestsScreenState
               children: [
                 Icon(Icons.check_circle, color: Colors.white),
                 SizedBox(width: 12),
-                Text('Request Approved! Item placed.'),
+                Text(AppLocalizations.of(context)!.requestApprovedItemPlaced),
               ],
             ),
             backgroundColor: Colors.green.shade600,
@@ -140,7 +140,7 @@ class _FarmerRentalRequestsScreenState
                 ),
               ),
               const SizedBox(width: 12),
-              const Text('Reject Request'),
+              Text(AppLocalizations.of(context)!.rejectRequest),
             ],
           ),
           content: SingleChildScrollView(
@@ -151,7 +151,7 @@ class _FarmerRentalRequestsScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Please provide a reason for rejecting this request:',
+                    AppLocalizations.of(context)!.rejectionReasonPrompt,
                     style: TextStyle(
                       color: Theme.of(
                         context,
@@ -166,7 +166,7 @@ class _FarmerRentalRequestsScreenState
                     maxLength: 500,
                     enabled: !isSubmitting,
                     decoration: InputDecoration(
-                      hintText: 'Enter rejection reason...',
+                      hintText: AppLocalizations.of(context)!.enterRejectionReason,
                       filled: true,
                       fillColor: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white.withOpacity(0.05)
@@ -196,10 +196,10 @@ class _FarmerRentalRequestsScreenState
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Please enter a rejection reason';
+                        return AppLocalizations.of(context)!.pleaseEnterRejectionReason;
                       }
                       if (value.trim().length < 5) {
-                        return 'Reason must be at least 5 characters';
+                        return AppLocalizations.of(context)!.reasonTooShort;
                       }
                       return null;
                     },
@@ -214,7 +214,7 @@ class _FarmerRentalRequestsScreenState
                   ? null
                   : () => Navigator.pop(context, false),
               child: Text(
-                'Cancel',
+                AppLocalizations.of(context)!.cancel,
                 style: TextStyle(
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                 ),
@@ -256,7 +256,7 @@ class _FarmerRentalRequestsScreenState
                       ),
                     )
                   : const Text(
-                      'Confirm Reject',
+                      AppLocalizations.of(context)!.confirmReject,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
             ),
@@ -272,7 +272,7 @@ class _FarmerRentalRequestsScreenState
             children: [
               Icon(Icons.check_circle, color: Colors.white),
               SizedBox(width: 12),
-              Text('Request rejected. Investor will be refunded.'),
+              Text(AppLocalizations.of(context)!.requestRejectedRefunded),
             ],
           ),
           backgroundColor: Colors.orange.shade600,
@@ -290,7 +290,7 @@ class _FarmerRentalRequestsScreenState
             children: [
               Icon(Icons.error_outline, color: Colors.white),
               SizedBox(width: 12),
-              Text('Failed to reject request. Please try again.'),
+              Text(AppLocalizations.of(context)!.failedToRejectRequest),
             ],
           ),
           backgroundColor: Colors.red.shade600,
@@ -309,7 +309,7 @@ class _FarmerRentalRequestsScreenState
     if (parts.isNotEmpty) {
       return parts[0];
     }
-    return 'Investor';
+    return AppLocalizations.of(context)!.investor;
   }
 
   /// Gets the investor's display name with proper fallback
@@ -324,7 +324,7 @@ class _FarmerRentalRequestsScreenState
     if (email != null && email.toString().isNotEmpty) {
       return _getDisplayNameFromEmail(email);
     }
-    return 'Unknown Investor';
+    return AppLocalizations.of(context)!.unknownInvestor;
   }
 
   /// Gets the investor's avatar URL with fallback
@@ -347,7 +347,7 @@ class _FarmerRentalRequestsScreenState
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'Item Requests',
+          AppLocalizations.of(context)!.itemRequests,
           style: TextStyle(
             color: theme.textTheme.titleLarge?.color,
             fontWeight: FontWeight.bold,
@@ -485,7 +485,7 @@ class _FarmerRentalRequestsScreenState
             ElevatedButton.icon(
               onPressed: _loadRequests,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context)!.retry),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
@@ -518,7 +518,7 @@ class _FarmerRentalRequestsScreenState
             ),
             const SizedBox(height: 24),
             Text(
-              'No Pending Requests',
+              AppLocalizations.of(context)!.noPendingRequests,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -527,7 +527,7 @@ class _FarmerRentalRequestsScreenState
             ),
             const SizedBox(height: 8),
             Text(
-              'You\'ll see investor requests here when they want to place items on your land.',
+              AppLocalizations.of(context)!.noPendingRequestsHint,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: (isDark ? Colors.white : Colors.black).withOpacity(0.5),
@@ -548,10 +548,10 @@ class _FarmerRentalRequestsScreenState
 
     final investorName = _getInvestorDisplayName(user);
     final avatarUrl = _getInvestorAvatar(user);
-    final itemName = itemDetails['name'] ?? 'Unknown Item';
+    final itemName = itemDetails['name'] ?? AppLocalizations.of(context)!.unknownItem;
     final variantName = itemDetails['variant_name'] ?? '';
     final itemImage = itemDetails['image_url'];
-    final landName = land['name'] ?? 'Unknown Land';
+    final landName = land['name'] ?? AppLocalizations.of(context)!.unknownLand;
     final rawPrice = req['price_paid'];
     final pricePaid = rawPrice is num
         ? rawPrice.toDouble()
@@ -654,7 +654,7 @@ class _FarmerRentalRequestsScreenState
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            'Investor',
+                            AppLocalizations.of(context)!.investor,
                             style: TextStyle(
                               color: Colors.blue.shade400,
                               fontSize: 11,
@@ -770,7 +770,7 @@ class _FarmerRentalRequestsScreenState
                   _buildDetailChip(
                     context,
                     Icons.landscape_rounded,
-                    'Land',
+                    AppLocalizations.of(context)!.land,
                     landName,
                     Colors.blue,
                     isDark,
@@ -779,7 +779,7 @@ class _FarmerRentalRequestsScreenState
                   _buildDetailChip(
                     context,
                     Icons.monetization_on_rounded,
-                    'Amount',
+                    AppLocalizations.of(context)!.amount,
                     '\$${pricePaid.toStringAsFixed(2)}',
                     Colors.green,
                     isDark,
@@ -810,7 +810,7 @@ class _FarmerRentalRequestsScreenState
                         ),
                       ),
                       child: const Text(
-                        'REJECT',
+                        AppLocalizations.of(context)!.rejectUpper,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.5,
@@ -843,7 +843,7 @@ class _FarmerRentalRequestsScreenState
                               ),
                             )
                           : const Text(
-                              'APPROVE',
+                              AppLocalizations.of(context)!.approveUpper,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.5,
@@ -1072,7 +1072,7 @@ class _NetworkItemImageState extends State<_NetworkItemImage>
                   Icon(Icons.refresh, size: 10, color: Colors.white38),
                   SizedBox(width: 4),
                   Text(
-                    'Retry',
+                    AppLocalizations.of(context)!.retry,
                     style: TextStyle(
                       color: Colors.white38,
                       fontSize: 8,

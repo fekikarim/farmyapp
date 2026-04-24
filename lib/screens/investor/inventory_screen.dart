@@ -34,14 +34,14 @@ class _InvestorInventoryScreenState extends State<InvestorInventoryScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
       appBar: AppBar(
-        title: const Text('My Inventory', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context)!.myInventory, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
-              ? const Center(child: Text('No items found.', style: TextStyle(color: Colors.white54)))
+              ? Center(child: Text(AppLocalizations.of(context)!.noItemsFound, style: const TextStyle(color: Colors.white54)))
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _items.length,
@@ -74,7 +74,7 @@ class _InvestorInventoryScreenState extends State<InvestorInventoryScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  request['asset_category']?.toString().toUpperCase() ?? 'ITEM',
+                                  request['asset_category']?.toString().toUpperCase() ?? AppLocalizations.of(context)!.itemUpper,
                                   style: const TextStyle(
                                     color: Colors.greenAccent,
                                     fontSize: 10,
@@ -84,7 +84,7 @@ class _InvestorInventoryScreenState extends State<InvestorInventoryScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  request['variant_id'] ?? 'Unknown Item',
+                                  request['variant_id'] ?? AppLocalizations.of(context)!.unknownItem,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
@@ -97,7 +97,7 @@ class _InvestorInventoryScreenState extends State<InvestorInventoryScreen> {
                                     const Icon(Icons.landscape, color: Colors.white38, size: 14),
                                     const SizedBox(width: 4),
                                     Text(
-                                      land['name'] ?? 'Unknown Land',
+                                      land['name'] ?? AppLocalizations.of(context)!.unknownLand,
                                       style: const TextStyle(color: Colors.white54, fontSize: 13),
                                     ),
                                   ],

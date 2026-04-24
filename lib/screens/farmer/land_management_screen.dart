@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
@@ -49,7 +50,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('✨ Land Data Synchronized Successfully!'),
+          content: Text(AppLocalizations.of(context)!.landDataSyncSuccess),
           backgroundColor: Colors.green.withOpacity(0.9),
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 2),
@@ -137,7 +138,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'My Lands',
+          AppLocalizations.of(context)!.myLands,
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
             color: theme.textTheme.titleLarge?.color,
@@ -214,7 +215,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                     ),
                   ),
             label: Text(
-              isAtLimit ? 'Limit Reached' : 'New Listing',
+              isAtLimit ? AppLocalizations.of(context)!.limitReached : AppLocalizations.of(context)!.newListing,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             icon: Icon(
@@ -258,7 +259,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
             ),
             const SizedBox(height: 20),
             Text(
-              'Land Limit Reached',
+              AppLocalizations.of(context)!.landLimitReachedTitle,
               style: TextStyle(
                 color: isDark ? Colors.white : Colors.black87,
                 fontSize: 20,
@@ -267,7 +268,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
             ),
             const SizedBox(height: 10),
             Text(
-              "You've used all land slots on your $planName plan. Upgrade to Farmer Pro to unlock unlimited lands!",
+              AppLocalizations.of(context)!.landLimitReachedDescription(planName),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: isDark ? Colors.white60 : Colors.black54,
@@ -291,8 +292,8 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
-                  'VIEW PLANS',
+                child: Text(
+                  AppLocalizations.of(context)!.viewPlans,
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.1,
@@ -304,7 +305,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
             TextButton(
               onPressed: () => Navigator.pop(ctx),
               child: Text(
-                'Maybe Later',
+                AppLocalizations.of(context)!.maybeLater,
                 style: TextStyle(
                   color: isDark ? Colors.white38 : Colors.black38,
                 ),
@@ -361,7 +362,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
               child: SubscriptionLimitBar(
                 limitKey: 'land_limit',
                 currentCount: lands.length,
-                label: 'Land Slots Used',
+                label: AppLocalizations.of(context)!.landSlotsUsed,
                 icon: Icons.terrain_rounded,
                 accentColor: Colors.green,
                 upgradePlanName: 'Farmer Pro',
@@ -473,7 +474,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                     borderColor: Colors.orange.withOpacity(0.6),
                     borderStrokeWidth: 2,
                     isFilled: true,
-                    label: 'Owner: ${land.ownerId.substring(0, 8)}...',
+                    label: AppLocalizations.of(context)!.owner(land.ownerId.substring(0, 8)),
                     labelStyle: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
@@ -519,8 +520,8 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                         strokeWidth: 3,
                       ),
                       const SizedBox(height: 24),
-                      const Text(
-                        'SYNCHRONIZING BOUNDARIES',
+                      Text(
+                        AppLocalizations.of(context)!.synchronizingBoundaries,
                         style: TextStyle(
                           color: Colors.green,
                           fontWeight: FontWeight.w900,
@@ -532,8 +533,8 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Fetching precise spatial data...',
+                      Text(
+                        AppLocalizations.of(context)!.fetchingSpatialData,
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 12,
@@ -566,7 +567,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
             Icon(Icons.cloud_off_rounded, color: Colors.redAccent, size: 60),
             SizedBox(height: 24),
             Text(
-              'Sync Interrupted',
+              AppLocalizations.of(context)!.syncInterrupted,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -583,7 +584,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
             ElevatedButton.icon(
               onPressed: _loadData,
               icon: Icon(Icons.refresh_rounded),
-              label: Text('Try to Re-sync'),
+              label: Text(AppLocalizations.of(context)!.tryToResync),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 padding: const EdgeInsets.symmetric(
@@ -693,7 +694,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
               _buildDetailGrid(land),
               const SizedBox(height: 40),
               Text(
-                'Description',
+                AppLocalizations.of(context)!.description,
                 style: TextStyle(
                   color: theme.textTheme.titleLarge?.color,
                   fontSize: 18,
@@ -702,7 +703,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
               ),
               const SizedBox(height: 12),
               Text(
-                land.description ?? 'No description provided for this land.',
+                land.description ?? AppLocalizations.of(context)!.noDescriptionProvided,
                 style: TextStyle(
                   color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                   height: 1.6,
@@ -728,22 +729,22 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
       childAspectRatio: 2.2,
       children: [
         _DetailItem(
-          label: 'Area',
+          label: AppLocalizations.of(context)!.area,
           value: '${land.gridWidth}x${land.gridHeight}',
           icon: Icons.grid_4x4,
         ),
         const _DetailItem(
-          label: 'Rentals',
+          label: AppLocalizations.of(context)!.rentals,
           value: '2 Active',
           icon: Icons.people,
         ),
         const _DetailItem(
-          label: 'Earnings',
+          label: AppLocalizations.of(context)!.earnings,
           value: '2,400 TND',
           icon: Icons.wallet,
         ),
         const _DetailItem(
-          label: 'Safety',
+          label: AppLocalizations.of(context)!.safety,
           value: 'Verified',
           icon: Icons.verified_user,
         ),
@@ -771,7 +772,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
             },
             icon: Icon(Icons.people_alt_outlined),
             label: Text(
-              'Workforce',
+              AppLocalizations.of(context)!.workforce,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             style: ElevatedButton.styleFrom(
@@ -817,7 +818,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                   color: Theme.of(context).iconTheme.color,
                 ),
                 padding: const EdgeInsets.all(16),
-                tooltip: 'Edit Land Details',
+                tooltip: AppLocalizations.of(context)!.editLandDetails,
               ),
               Container(
                 height: 24,
@@ -831,7 +832,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                   color: Colors.redAccent,
                 ),
                 padding: const EdgeInsets.all(16),
-                tooltip: 'Delete Land',
+                tooltip: AppLocalizations.of(context)!.deleteLand,
               ),
             ],
           ),
@@ -855,7 +856,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
             ),
             SizedBox(width: 12),
             Text(
-              'Delete Land?',
+              AppLocalizations.of(context)!.deleteLandTitle,
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -868,7 +869,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Are you sure you want to delete "${land.name}"?',
+              AppLocalizations.of(context)!.deleteLandConfirmation(land.name),
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -876,8 +877,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'This action cannot be undone. All associated data will be permanently removed.',
+              AppLocalizations.of(context)!.deleteLandActionWarning,
               style: TextStyle(color: Colors.white70, fontSize: 14),
             ),
           ],
@@ -886,7 +886,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text(
-              'CANCEL',
+              AppLocalizations.of(context)!.cancel,
               style: TextStyle(
                 color: Colors.white70,
                 fontWeight: FontWeight.bold,
@@ -905,7 +905,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                           Navigator.pop(context); // Close details sheet
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Land deleted successfully'),
+                              content: Text(AppLocalizations.of(context)!.landDeletedSuccess),
                               backgroundColor: Colors.redAccent,
                             ),
                           );
@@ -921,7 +921,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                         ),
                       )
                     : const Text(
-                        'DELETE',
+                        AppLocalizations.of(context)!.delete,
                         style: TextStyle(
                           color: Colors.redAccent,
                           fontWeight: FontWeight.bold,
@@ -946,7 +946,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
             Icon(Icons.auto_awesome, color: Colors.amber, size: 24),
             SizedBox(width: 12),
             Text(
-              'Coming Soon',
+              AppLocalizations.of(context)!.comingSoon,
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -959,7 +959,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'The "$feature" module is currently being optimized for personal farming management.',
+              AppLocalizations.of(context)!.featureOptimizedDescription(feature),
               style: TextStyle(color: Colors.white70, fontSize: 14),
             ),
             SizedBox(height: 16),
@@ -992,7 +992,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'GOT IT',
+              AppLocalizations.of(context)!.gotIt,
               style: TextStyle(
                 color: Colors.green,
                 fontWeight: FontWeight.bold,
@@ -1006,10 +1006,10 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
 
   Widget _buildStatusTag(bool isActive, {bool isRented = false}) {
     final status = !isActive
-        ? 'INACTIVE'
+        ? AppLocalizations.of(context)!.inactive
         : isRented
-        ? 'RENTED'
-        : 'LIVE';
+            ? AppLocalizations.of(context)!.rented
+            : AppLocalizations.of(context)!.live;
 
     Color color;
     if (!isActive) {
@@ -1137,7 +1137,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
             ),
             SizedBox(height: 16),
             Text(
-              'Failed to sync with backend',
+              AppLocalizations.of(context)!.failedToSyncBackend,
               style: TextStyle(
                 color: theme.textTheme.titleLarge?.color,
                 fontSize: 18,
@@ -1159,7 +1159,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
               ),
-              child: Text('Try Again'),
+              child: Text(AppLocalizations.of(context)!.tryAgain),
             ),
           ],
         ),
@@ -1181,7 +1181,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
           ),
           SizedBox(height: 16),
           Text(
-            'No lands found',
+            AppLocalizations.of(context)!.noLandsFound,
             style: TextStyle(
               color: theme.textTheme.titleLarge?.color,
               fontSize: 20,
@@ -1190,7 +1190,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
           ),
           SizedBox(height: 8),
           Text(
-            'Start by listing your first plot of land.',
+            AppLocalizations.of(context)!.startByListingPlot,
             style: TextStyle(
               color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
             ),
@@ -1269,8 +1269,8 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'EXTERNAL PROPERTY',
+                          Text(
+                            AppLocalizations.of(context)!.externalProperty,
                             style: TextStyle(
                               color: Colors.orange,
                               fontWeight: FontWeight.w900,
@@ -1300,7 +1300,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Text(
-                        'NOT YOURS',
+                        AppLocalizations.of(context)!.notYours,
                         style: TextStyle(
                           color: Colors.orange,
                           fontWeight: FontWeight.bold,
@@ -1348,7 +1348,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Owner',
+                              AppLocalizations.of(context)!.ownerLabel,
                               style: TextStyle(
                                 color: (isDark
                                     ? Colors.white54
@@ -1384,7 +1384,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                       ),
                     ),
                     child: const Text(
-                      'DISMISS',
+                      AppLocalizations.of(context)!.dismiss,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),

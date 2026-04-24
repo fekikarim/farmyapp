@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:math';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../providers/worker_provider.dart';
@@ -14,23 +15,12 @@ class CustomerHomeScreen extends StatefulWidget {
 }
 
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
-  late String _motivationalQuote;
+  String _motivationalQuote = "";
 
-  final List<String> _quotes = [
-    "The future of agriculture is in your hands.",
-    "Support local, eat fresh, live healthy.",
-    "Connecting you to the roots of your food.",
-    "Every investment in nature yields the best interest.",
-    "Small choices make a big impact on our planet.",
-    "Fresh form the farm, straight to your table.",
-    "Empowering farmers, feeding the world.",
-    "Sustainability is not a goal, it's a lifestyle.",
-  ];
 
   @override
   void initState() {
     super.initState();
-    _motivationalQuote = _quotes[Random().nextInt(_quotes.length)];
 
     // Proactively load worker profile for customers to check verification status
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -47,16 +37,32 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
+    final List<String> quotes = [
+      l10n.quote1,
+      l10n.quote2,
+      l10n.quote3,
+      l10n.quote4,
+      l10n.quote5,
+      l10n.quote6,
+      l10n.quote7,
+      l10n.quote8,
+    ];
+
+    if (_motivationalQuote.isEmpty) {
+      _motivationalQuote = quotes[Random().nextInt(quotes.length)];
+    }
 
     // Get time of day for greeting
     final hour = DateTime.now().hour;
     String greeting;
     if (hour < 12) {
-      greeting = 'Good Morning';
+      greeting = l10n.goodMorning;
     } else if (hour < 17) {
-      greeting = 'Good Afternoon';
+      greeting = l10n.goodAfternoon;
     } else {
-      greeting = 'Good Evening';
+      greeting = l10n.goodEvening;
     }
 
     return Scaffold(
@@ -82,7 +88,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          user?.name ?? user?.email?.split('@')[0] ?? 'User',
+                          user?.name ?? user?.email?.split('@')[0] ?? l10n.user,
                           style: theme.textTheme.headlineMedium,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -119,7 +125,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  'Customer Account',
+                  l10n.customerAccount,
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
@@ -172,7 +178,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                     Align(
                       alignment: Alignment.bottomRight,
                       child: Text(
-                        ' Daily Inspiration',
+                        ' ${l10n.dailyInspiration}',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: Colors.white.withOpacity(0.8),
                           fontStyle: FontStyle.italic,
@@ -202,9 +208,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
 
                   return _buildUpgradeCard(
                     context,
-                    title: 'Worker Plus',
-                    description:
-                        'Boost your profile, get priority matching, and instant withdrawals.',
+                    title: l10n.workerPlus,
+                    description: l10n.workerPlusDescription,
                     color: Colors.purple,
                     icon: Icons.work_history,
                     price: '\$4.99',
@@ -220,9 +225,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
 
                   return _buildUpgradeCard(
                     context,
-                    title: 'FarmBox Subscription',
-                    description:
-                        'Get fresh, locally grown vegetables delivered to your doorstep weekly!',
+                    title: l10n.farmboxSubscription,
+                    description: l10n.farmboxDescription,
                     color: Colors.orange.shade700,
                     icon: Icons.local_shipping_rounded,
                     price: 'From \$29.99',
@@ -303,7 +307,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                 ),
               ),
               child: Text(
-                'Upgrade $price',
+                AppLocalizations.of(context)!.upgradeWithPrice(price),
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),

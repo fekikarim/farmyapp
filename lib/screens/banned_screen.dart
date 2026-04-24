@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 
@@ -36,7 +37,7 @@ class BannedScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 const Text(
-                  'Account Banned',
+                  AppLocalizations.of(context)!.accountBanned,
                   style: TextStyle(
                     fontSize: 28, 
                     fontWeight: FontWeight.bold, 
@@ -46,7 +47,7 @@ class BannedScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Your account has been suspended due to specific violations. Please contact support if you believe this is a mistake.',
+                  AppLocalizations.of(context)!.bannedDescription,
                   style: TextStyle(fontSize: 16, color: Colors.white70),
                   textAlign: TextAlign.center,
                 ),
@@ -58,7 +59,7 @@ class BannedScreen extends StatelessWidget {
                     side: const BorderSide(color: Colors.white),
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text('Logout'),
+                  child: Text(AppLocalizations.of(context)!.logout),
                 ),
               ],
             ),

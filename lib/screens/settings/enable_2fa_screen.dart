@@ -37,7 +37,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to initiate 2FA setup')),
+        const SnackBar(content: Text(AppLocalizations.of(context)!.failedInitiate2FA)),
       );
     }
   }
@@ -47,7 +47,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
     final error = await authProvider.confirm2fa(_codeController.text);
     if (error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('2FA enabled successfully')),
+        const SnackBar(content: Text(AppLocalizations.of(context)!.twoFAEnabledSuccess)),
       );
       Navigator.pop(context);
     } else {
@@ -62,7 +62,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
     final error = await authProvider.disable2fa(_codeController.text);
     if (error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('2FA disabled successfully')),
+        const SnackBar(content: Text(AppLocalizations.of(context)!.twoFADisabledSuccess)),
       );
       Navigator.pop(context);
     } else {
@@ -76,7 +76,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Code copied to clipboard'),
+        content: Text(AppLocalizations.of(context)!.codeCopied),
         behavior: SnackBarBehavior.floating,
         duration: Duration(seconds: 2),
       ),
@@ -91,7 +91,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isDisabling ? 'Disable 2FA' : 'Enable 2FA'),
+        title: Text(_isDisabling ? AppLocalizations.of(context)!.disable2FA : AppLocalizations.of(context)!.enable2FA),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -123,13 +123,12 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
         ),
         const SizedBox(height: 32),
         Text(
-          'Secure Your Account',
+          AppLocalizations.of(context)!.secureYourAccount,
           style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Text(
-          'Two-factor authentication adds an extra layer of security to your account. '
-          'To log in, you will need to provide a 6-digit code from your authenticator app.',
+          AppLocalizations.of(context)!.twoFADesc,
           textAlign: TextAlign.center,
           style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
         ),
@@ -149,7 +148,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
                   width: 20,
                   child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                 ) 
-              : const Text('Start Setup', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              : Text(AppLocalizations.of(context)!.startSetup, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
         ),
       ],
@@ -161,12 +160,12 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Step 1: Link your app',
+          AppLocalizations.of(context)!.linkYourAppStep,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         const Text(
-          'Scan this QR code with your Authenticator App (Google Authenticator, Authy, etc.)',
+          AppLocalizations.of(context)!.scanQRCodeDesc,
           style: TextStyle(color: Colors.grey),
         ),
         const SizedBox(height: 32),
@@ -205,7 +204,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
         ),
         const SizedBox(height: 40),
         const Text(
-          'Or enter this code manually:',
+          AppLocalizations.of(context)!.enterCodeManually,
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
@@ -233,19 +232,19 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
                 onPressed: () => _copyToClipboard(_secret ?? ''),
                 icon: const Icon(Icons.copy_rounded, size: 20),
                 color: theme.colorScheme.primary,
-                tooltip: 'Copy to clipboard',
+                tooltip: AppLocalizations.of(context)!.copyToClipboardTooltip,
               ),
             ],
           ),
         ),
         const SizedBox(height: 48),
         const Text(
-          'Step 2: Confirm Enablement',
+          AppLocalizations.of(context)!.confirmEnablementStep,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Text(
-          'Enter the 6-digit code from your app to confirm:',
+          AppLocalizations.of(context)!.enter6DigitCodeConfirm,
           style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)),
         ),
         const SizedBox(height: 24),
@@ -308,14 +307,14 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
                   width: 20,
                   child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                 ) 
-              : const Text('Enable 2FA', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              : Text(AppLocalizations.of(context)!.enable2FA, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
         ),
         const SizedBox(height: 12),
         Center(
           child: TextButton(
             onPressed: () => setState(() => _step = 1),
-            child: Text('Back', style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
+            child: Text(AppLocalizations.of(context)!.backButton, style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
           ),
         ),
         const SizedBox(height: 40),
@@ -337,12 +336,12 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
         ),
         const SizedBox(height: 32),
         Text(
-          'Disable 2FA',
+          AppLocalizations.of(context)!.disable2FA,
           style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Text(
-          'Enter the 6-digit code from your authenticator app to disable two-factor authentication.',
+          AppLocalizations.of(context)!.enter6DigitCodeDisable,
           textAlign: TextAlign.center,
           style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.6)),
         ),
@@ -408,7 +407,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
                   width: 20,
                   child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                 ) 
-              : const Text('Disable 2FA', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              : Text(AppLocalizations.of(context)!.disable2FA, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
         ),
       ],

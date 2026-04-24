@@ -65,8 +65,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
         setState(() {
           if (e.toString().contains('SocketException') ||
               e.toString().contains('Failed host lookup')) {
-            _error =
-                'No internet connection. Please check your network and try again.';
+            _error = AppLocalizations.of(context)!.noInternetConnection;
           } else {
             _error = e
                 .toString()
@@ -129,7 +128,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => InvestmentAgentScreen(
-                        initialMessage: "Tell me about ${_land.name}. Is it a good strategic investment for me?",
+                        initialMessage: AppLocalizations.of(context)!.aiLandInvestmentHint(_land.name),
                         initialContext: {
                           'targetLand': _land.toJson(),
                         },
@@ -137,7 +136,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                     ),
                   );
                 },
-                tooltip: 'Ask AI Analyst',
+                tooltip: AppLocalizations.of(context)!.askAiAnalyst,
               ),
             ),
           ],
@@ -243,7 +242,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                         ),
                       ),
                       child: Text(
-                        _land.isRented ? 'ALREADY RENTED' : 'PREMIUM FARMLAND',
+                        _land.isRented ? AppLocalizations.of(context)!.alreadyRentedUpper : AppLocalizations.of(context)!.premiumFarmlandUpper,
                         style: TextStyle(
                           color: _land.isRented ? Colors.orange : Colors.green,
                           fontSize: 10,
@@ -253,7 +252,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                       ),
                     ),
                     Text(
-                      'ID: ${_land.id.substring(0, 8).toUpperCase()}',
+                      AppLocalizations.of(context)!.idLabel(_land.id.substring(0, 8).toUpperCase()),
                       style: TextStyle(
                         color: theme.textTheme.bodySmall?.color,
                         fontSize: 12,
@@ -276,23 +275,23 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                     children: [
                       _buildInfoChip(
                         Icons.zoom_out_map_rounded,
-                        '${(_land.gridWidth * _land.gridHeight * 1).toInt()} m²',
+                        AppLocalizations.of(context)!.squareMeters((_land.gridWidth * _land.gridHeight * 1).toInt()),
                       ),
                       const SizedBox(width: 12),
                       _buildInfoChip(
                         Icons.grid_on_rounded,
-                        '${_land.gridWidth}x${_land.gridHeight} Grid',
+                        AppLocalizations.of(context)!.gridPlots(_land.gridWidth, _land.gridHeight),
                       ),
                       const SizedBox(width: 12),
-                      _buildInfoChip(Icons.water_drop_rounded, 'Irrigated'),
+                      _buildInfoChip(Icons.water_drop_rounded, AppLocalizations.of(context)!.irrigated),
                     ],
                   ),
                 ),
                 const SizedBox(height: 40),
-                _buildSectionHeader('Description', theme),
+                _buildSectionHeader(AppLocalizations.of(context)!.description, theme),
                 const SizedBox(height: 12),
                 Text(
-                  _land.description ?? 'No description available',
+                  _land.description ?? AppLocalizations.of(context)!.noDescriptionAvailable,
                   style: TextStyle(
                     color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                     fontSize: 16,
@@ -300,27 +299,27 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                   ),
                 ),
                 const SizedBox(height: 40),
-                _buildSectionHeader('Location Highlights', theme),
+                _buildSectionHeader(AppLocalizations.of(context)!.locationHighlights, theme),
                 const SizedBox(height: 24),
                 _buildLocationItem(
                   Icons.wb_sunny_rounded,
-                  'Optimal solar exposure for high-yield crops',
+                  AppLocalizations.of(context)!.optimalSolarExposure,
                   theme,
                 ),
                 _buildLocationItem(
                   Icons.local_shipping_rounded,
-                  'Direct access to regional distribution roads',
+                  AppLocalizations.of(context)!.directRoadAccess,
                   theme,
                 ),
                 _buildLocationItem(
                   Icons.opacity_rounded,
-                  'Secured year-round water access rights',
+                  AppLocalizations.of(context)!.securedWaterAccess,
                   theme,
                 ),
                 const SizedBox(height: 40),
                 // Workforce Management (only for rented lands where investor has authority)
                 if (_land.isRented) ...[
-                  _buildSectionHeader('Workforce', theme),
+                  _buildSectionHeader(AppLocalizations.of(context)!.workforce, theme),
                   const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
@@ -343,7 +342,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                         color: Colors.white,
                       ),
                       label: const Text(
-                        'Manage Workers',
+                        AppLocalizations.of(context)!.manageWorkers,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -365,10 +364,10 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                   SubscriptionLimitBar(
                     limitKey: 'rental_limit',
                     currentCount: _activeRentalCount,
-                    label: 'Rental Slots Used',
+                    label: AppLocalizations.of(context)!.rentalSlotsUsed,
                     icon: Icons.real_estate_agent_rounded,
                     accentColor: Colors.blue,
-                    upgradePlanName: 'Investor Plus',
+                    upgradePlanName: AppLocalizations.of(context)!.investorPlus,
                   ),
                 const SizedBox(height: 240), // Spacer for bottom sheet
               ],
@@ -468,8 +467,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Rental Limit reached',
+                            AppLocalizations.of(context)!.rentalLimitReached,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w900,
@@ -478,7 +476,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'Unlock unlimited slots with Investor Plus',
+                            AppLocalizations.of(context)!.unlockUnlimitedSlotsInvestorPlus,
                             style: TextStyle(
                               color: isDark
                                   ? Colors.amber.shade200
@@ -508,7 +506,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Price per month',
+                    AppLocalizations.of(context)!.pricePerMonth,
                     style: TextStyle(
                       color: isDark ? Colors.white38 : Colors.black38,
                       fontSize: 12,
@@ -516,7 +514,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${NumberFormat('#,###').format(_land.price)} TND',
+                    AppLocalizations.of(context)!.amountTND(NumberFormat('#,###').format(_land.price)),
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -581,8 +579,8 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                     ),
                     child: Text(
                       _land.isRented
-                          ? 'OCCUPIED'
-                          : (isAtRentalLimit ? 'LIMIT REACHED' : 'RENT NOW'),
+                          ? AppLocalizations.of(context)!.occupiedUpper
+                          : (isAtRentalLimit ? AppLocalizations.of(context)!.limitReachedUpper : AppLocalizations.of(context)!.rentNowUpper),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
@@ -705,8 +703,8 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Connection Error',
+            Text(
+              AppLocalizations.of(context)!.connectionError,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 22,
@@ -716,7 +714,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
             const SizedBox(height: 12),
             Text(
               _error ??
-                  'Unable to retrieve land details. Please ensure you are connected to the internet.',
+                  AppLocalizations.of(context)!.unableToRetrieveLandDetails,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white.withOpacity(0.7),
@@ -741,8 +739,8 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                label: const Text(
-                  'TRY AGAIN',
+                label: Text(
+                  AppLocalizations.of(context)!.tryAgainUpper,
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.1,

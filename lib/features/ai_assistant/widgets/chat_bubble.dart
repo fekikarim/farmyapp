@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 import '../ai_models.dart';
@@ -101,7 +102,7 @@ class ChatBubble extends StatelessWidget {
                     visualDensity: VisualDensity.compact,
                     iconSize: 15,
                     splashRadius: 16,
-                    tooltip: 'Edit and resend',
+                    tooltip: AppLocalizations.of(context)!.editAndResend,
                     color: isUser ? Colors.white70 : theme.iconTheme.color,
                     icon: const Icon(Icons.edit_outlined),
                   ),
@@ -111,7 +112,7 @@ class ChatBubble extends StatelessWidget {
                     visualDensity: VisualDensity.compact,
                     iconSize: 15,
                     splashRadius: 16,
-                    tooltip: 'Copy',
+                    tooltip: AppLocalizations.of(context)!.copy,
                     color: isUser ? Colors.white70 : theme.iconTheme.color,
                     icon: const Icon(Icons.content_copy_outlined),
                   ),
@@ -121,7 +122,7 @@ class ChatBubble extends StatelessWidget {
                     visualDensity: VisualDensity.compact,
                     iconSize: 15,
                     splashRadius: 16,
-                    tooltip: 'Read aloud',
+                    tooltip: AppLocalizations.of(context)!.readAloud,
                     color: isUser ? Colors.white70 : theme.iconTheme.color,
                     icon: const Icon(Icons.volume_up_outlined),
                   ),
@@ -129,7 +130,7 @@ class ChatBubble extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(right: 6),
                     child: Text(
-                      'Cached',
+                      AppLocalizations.of(context)!.cached,
                       style: TextStyle(
                         color: isUser
                             ? Colors.white70

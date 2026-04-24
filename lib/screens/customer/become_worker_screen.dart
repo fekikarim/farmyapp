@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../providers/worker_provider.dart';
 
 class BecomeWorkerScreen extends StatefulWidget {
@@ -18,18 +19,21 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
 
-  static const List<String> _availableSkills = [
-    'Watering',
-    'Harvesting',
-    'Planting',
-    'Animal Care',
-    'Machine Operation',
-    'Soil Management',
-    'Structure Installation',
-    'Quality Inspection',
-    'Crop Monitoring',
-    'Pest Control',
-  ];
+  List<String> _getAvailableSkills(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      l10n.watering,
+      l10n.harvesting,
+      l10n.planting,
+      l10n.animalCare,
+      l10n.machineOperation,
+      l10n.soilManagement,
+      l10n.structureInstallation,
+      l10n.qualityInspection,
+      l10n.cropMonitoring,
+      l10n.pestControl,
+    ];
+  }
 
   @override
   void initState() {
@@ -55,7 +59,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
     if (_selectedSkills.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please select at least one skill'),
+          content: Text(AppLocalizations.of(context)!.selectAtLeastOneSkill),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -76,7 +80,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text(
-              '🎉 Worker profile created! Pending verification.',
+              AppLocalizations.of(context)!.workerProfileCreated,
             ),
             backgroundColor: Colors.green.shade700,
           ),
@@ -85,7 +89,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(provider.profileError ?? 'Failed to create profile'),
+            content: Text(provider.profileError ?? AppLocalizations.of(context)!.failedToCreateProfile),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -101,7 +105,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
     return Scaffold(
       backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Become a Worker'),
+        title: Text(AppLocalizations.of(context)!.becomeAWorker),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -158,8 +162,8 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        'Join the Workforce',
+                        Text(
+                          AppLocalizations.of(context)!.joinTheWorkforce,
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
@@ -169,7 +173,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Create your professional profile and\nstart earning on nearby farms today.',
+                        AppLocalizations.of(context)!.joinWorkforceDescription,
                         style: TextStyle(
                           fontSize: 15,
                           color: Colors.white.withOpacity(0.9),
@@ -184,7 +188,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
 
                 // Skills Selection
                 Text(
-                  'Select Your Skills',
+                  AppLocalizations.of(context)!.selectYourSkills,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -195,7 +199,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
                 Wrap(
                   spacing: 10,
                   runSpacing: 10,
-                  children: _availableSkills.map((skill) {
+                  children: _getAvailableSkills(context).map((skill) {
                     final selected = _selectedSkills.contains(skill);
                     return InkWell(
                       onTap: () {
@@ -258,7 +262,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
 
                 // Bio
                 Text(
-                  'About You',
+                  AppLocalizations.of(context)!.aboutYou,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -270,7 +274,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
                   controller: _bioController,
                   maxLines: 3,
                   decoration: InputDecoration(
-                    hintText: 'Tell farmers about your experience...',
+                    hintText: AppLocalizations.of(context)!.aboutYouHint,
                     hintStyle: TextStyle(
                       color: isDark
                           ? Colors.grey.shade400
@@ -303,7 +307,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
 
                 // Hourly Rate
                 Text(
-                  'Hourly Rate (TND)',
+                  AppLocalizations.of(context)!.hourlyRateTnd,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -315,7 +319,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
                   controller: _hourlyRateController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    hintText: 'e.g. 15.00',
+                    hintText: AppLocalizations.of(context)!.hourlyRateHint,
                     hintStyle: TextStyle(
                       color: isDark
                           ? Colors.grey.shade400
@@ -348,7 +352,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
                     if (val != null && val.isNotEmpty) {
                       final rate = double.tryParse(val);
                       if (rate == null || rate < 0) {
-                        return 'Enter a valid rate';
+                        return AppLocalizations.of(context)!.enterValidRate;
                       }
                     }
                     return null;
@@ -382,7 +386,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'AI Verification Coming Soon',
+                              AppLocalizations.of(context)!.aiVerificationComingSoon,
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 color: isDark
@@ -431,9 +435,9 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
                               strokeWidth: 2,
                             ),
                           )
-                        : const Text(
-                            'Create Worker Profile',
-                            style: TextStyle(
+                        : Text(
+                            AppLocalizations.of(context)!.createWorkerProfile,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),

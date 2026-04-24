@@ -42,7 +42,7 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Failed to load proofs. Please try again.';
+          _error = AppLocalizations.of(context)!.failedToLoadProofs;
           _isLoading = false;
         });
       }
@@ -57,7 +57,7 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('AI is verifying your proof image...'))
+      SnackBar(content: Text(AppLocalizations.of(context)!.aiVerifyingProof))
     );
 
     final errorOrRejectMsg = await ProofService.submitProof(id, image);
@@ -66,7 +66,7 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
       if (errorOrRejectMsg == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Proof verified successfully by AI!'),
+            content: Text(AppLocalizations.of(context)!.proofVerifiedSuccessfully),
             backgroundColor: Colors.green.shade600,
           )
         );
@@ -135,14 +135,14 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('AI Proof Requests')),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.aiProofRequests)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AI Proof Requests'),
+        title: Text(AppLocalizations.of(context)!.aiProofRequests),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -153,7 +153,7 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
       body: _error != null
           ? Center(child: Text(_error!))
           : _proofs.isEmpty
-               ? const Center(child: Text('No proof requests found.'))
+               ? Center(child: Text(AppLocalizations.of(context)!.noProofRequestsFound))
                : ListView.builder(
                    padding: const EdgeInsets.all(16),
                    itemCount: _proofs.length,
@@ -176,8 +176,8 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
                                children: [
                                  Text(
                                    isFarmer 
-                                     ? 'From: ${proof['investor_name']}'
-                                     : 'To: ${proof['farmer_name']}',
+                                     ? AppLocalizations.of(context)!.fromLabel(proof['investor_name'] ?? AppLocalizations.of(context)!.investor)
+                                     : AppLocalizations.of(context)!.toLabel(proof['farmer_name'] ?? AppLocalizations.of(context)!.worker),
                                    style: const TextStyle(
                                      fontWeight: FontWeight.bold,
                                      fontSize: 16,
@@ -191,7 +191,7 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
                              const SizedBox(height: 12),
                              if (isPending && !isExpiredLocal) ...[
                                Text(
-                                 'Must submit before: ${DateFormat('MMM d, h:mm a').format(expiresAt)}',
+                                 AppLocalizations.of(context)!.mustSubmitBefore(DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_jm().format(expiresAt)),
                                  style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
                                ),
                                const SizedBox(height: 12),
@@ -203,7 +203,7 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
                                    color: Colors.blue.withOpacity(0.05),
                                    borderRadius: BorderRadius.circular(8),
                                  ),
-                                 child: Text('AI Notes: ${proof['ai_reasoning']}'),
+                                 child: Text(AppLocalizations.of(context)!.aiNotes(proof['ai_reasoning'] ?? '')),
                                ),
                                const SizedBox(height: 12),
                              ],
@@ -231,7 +231,7 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
                                  child: ElevatedButton.icon(
                                    onPressed: () => _handleSubmitProof(proof['id']),
                                    icon: const Icon(Icons.camera_alt),
-                                   label: const Text('Submit Photo Proof'),
+                                   label: Text(AppLocalizations.of(context)!.submitPhotoProof),
                                    style: ElevatedButton.styleFrom(
                                      backgroundColor: Colors.blueAccent,
                                      foregroundColor: Colors.white,

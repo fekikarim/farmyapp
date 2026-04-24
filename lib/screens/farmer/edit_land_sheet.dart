@@ -51,8 +51,8 @@ class _EditLandSheetState extends State<EditLandSheet> {
     if (success && mounted) {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Land updated successfully!'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.landUpdatedSuccess),
           backgroundColor: Colors.green,
         ),
       );
@@ -94,7 +94,7 @@ class _EditLandSheetState extends State<EditLandSheet> {
               ),
               const SizedBox(height: 24),
               Text(
-                'Edit Land Details',
+                AppLocalizations.of(context)!.editLandDetails,
                 style: TextStyle(
                   color: theme.textTheme.titleLarge?.color,
                   fontSize: 24,
@@ -105,7 +105,7 @@ class _EditLandSheetState extends State<EditLandSheet> {
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: 'Land Name',
+                  labelText: AppLocalizations.of(context)!.landName,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -115,14 +115,14 @@ class _EditLandSheetState extends State<EditLandSheet> {
                   ),
                 ),
                 validator: (value) => value == null || value.isEmpty
-                    ? 'Please enter a name'
+                    ? AppLocalizations.of(context)!.pleaseEnterAName
                     : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
                 decoration: InputDecoration(
-                  labelText: 'Description',
+                  labelText: AppLocalizations.of(context)!.description,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -137,7 +137,7 @@ class _EditLandSheetState extends State<EditLandSheet> {
               TextFormField(
                 controller: _priceController,
                 decoration: InputDecoration(
-                  labelText: 'Monthly Rent Price (TND)',
+                  labelText: AppLocalizations.of(context)!.monthlyRentPriceTND,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -152,12 +152,12 @@ class _EditLandSheetState extends State<EditLandSheet> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty)
-                    return 'Price cannot be empty';
+                    return AppLocalizations.of(context)!.priceCannotBeEmpty;
                   final val = double.tryParse(value.trim());
-                  if (val == null) return 'Please enter a valid numeric amount';
-                  if (val <= 0) return 'Price must be greater than 0';
+                  if (val == null) return AppLocalizations.of(context)!.invalidNumericAmount;
+                  if (val <= 0) return AppLocalizations.of(context)!.priceGreaterThanZero;
                   if (val > 1000000)
-                    return 'Price exceeds maximum allowed limit';
+                    return AppLocalizations.of(context)!.priceExceedsLimit;
                   return null;
                 },
               ),
@@ -186,7 +186,7 @@ class _EditLandSheetState extends State<EditLandSheet> {
                               ),
                             )
                           : const Text(
-                              'Save Changes',
+                              AppLocalizations.of(context)!.saveChanges,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,

@@ -43,7 +43,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     if (error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Password changed successfully'),
+          content: Text(AppLocalizations.of(context)!.passwordChangedSuccess),
           backgroundColor: Colors.green,
         ),
       );
@@ -59,7 +59,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Change Password'), centerTitle: true),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.changePasswordTitle), centerTitle: true),
       body: SafeArea(
         child: SingleChildScrollView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -70,14 +70,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Create a new password',
+                  AppLocalizations.of(context)!.createNewPassword,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Your new password must be different from previous used passwords.',
+                  AppLocalizations.of(context)!.passwordPolicyHint,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurface.withOpacity(0.6),
                   ),
@@ -92,7 +92,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     controller: _oldPasswordController,
                     obscureText: _obscureOld,
                     decoration: InputDecoration(
-                      labelText: 'Current Password',
+                      labelText: AppLocalizations.of(context)!.currentPassword,
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -104,7 +104,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your current password';
+                        return AppLocalizations.of(context)!.enterCurrentPasswordError;
                       }
                       return null;
                     },
@@ -120,7 +120,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     controller: _newPasswordController,
                     obscureText: _obscureNew,
                     decoration: InputDecoration(
-                      labelText: 'New Password',
+                      labelText: AppLocalizations.of(context)!.newPassword,
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -143,7 +143,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     controller: _confirmPasswordController,
                     obscureText: _obscureConfirm,
                     decoration: InputDecoration(
-                      labelText: 'Confirm New Password',
+                      labelText: AppLocalizations.of(context)!.confirmNewPassword,
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -212,7 +212,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               strokeWidth: 2,
                             ),
                           )
-                        : const Text('Update Password'),
+                        : Text(AppLocalizations.of(context)!.updatePassword),
                   ),
                 ),
               ],

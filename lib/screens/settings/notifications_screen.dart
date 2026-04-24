@@ -50,7 +50,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('All notifications marked as read')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.allNotificationsMarkedRead)),
         );
       }
     }
@@ -84,7 +84,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to delete notification')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToDeleteNotification)),
         );
       }
       _loadNotifications(); // Reload to restore if failed
@@ -141,12 +141,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications'),
+        title: Text(AppLocalizations.of(context)!.notificationsTitle),
         actions: [
           if (_notifications.any((element) => !element.isRead))
             IconButton(
               icon: const Icon(Icons.done_all),
-              tooltip: 'Mark all as read',
+              tooltip: AppLocalizations.of(context)!.markAllAsReadTooltip,
               onPressed: _markAllAsRead,
             ),
         ],
@@ -171,7 +171,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'No notifications yet',
+                                AppLocalizations.of(context)!.noNotificationsYet,
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   color: theme.colorScheme.onSurface.withOpacity(0.5),
                                 ),

@@ -9,7 +9,7 @@ class FarmerProductsScreen extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Text(
-          'Products Screen',
+          AppLocalizations.of(context)!.products,
           style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
         ),
       ),

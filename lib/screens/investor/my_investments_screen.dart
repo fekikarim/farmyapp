@@ -29,7 +29,7 @@ class _InvestorMyInvestmentsScreenState
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'My Investments',
+          AppLocalizations.of(context)!.myInvestments,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
@@ -41,7 +41,7 @@ class _InvestorMyInvestmentsScreenState
                 context,
                 MaterialPageRoute(
                   builder: (context) => InvestmentAgentScreen(
-                    initialMessage: "Analyze my current investment portfolio and suggest improvements or diversification.",
+                    initialMessage: AppLocalizations.of(context)!.aiPortfolioAnalysisHint,
                     initialContext: {
                       'portfolio': provider.myRentals.map((r) => {
                         'landName': r.land?.name,
@@ -53,7 +53,7 @@ class _InvestorMyInvestmentsScreenState
                 ),
               );
             },
-            tooltip: 'Analyze Portfolio',
+            tooltip: AppLocalizations.of(context)!.analyzePortfolio,
           ),
         ],
       ),
@@ -64,7 +64,7 @@ class _InvestorMyInvestmentsScreenState
           }
 
           if (provider.myRentals.isEmpty) {
-            return const Center(child: Text('No investments yet.'));
+            return Center(child: Text(AppLocalizations.of(context)!.noInvestmentsYet));
           }
 
           return Column(
@@ -82,10 +82,10 @@ class _InvestorMyInvestmentsScreenState
                                 r.rentalEndDate!.isAfter(DateTime.now())),
                       )
                       .length,
-                  label: 'Rental Slots Used',
+                  label: AppLocalizations.of(context)!.rentalSlotsUsed,
                   icon: Icons.real_estate_agent_rounded,
                   accentColor: Colors.blue,
-                  upgradePlanName: 'Investor Plus',
+                  upgradePlanName: AppLocalizations.of(context)!.investorPlus,
                 ),
               ),
               _buildOverviewCard(provider.myRentals),
@@ -104,7 +104,7 @@ class _InvestorMyInvestmentsScreenState
                         ),
                         title: Text(
                           rental.land?.name ??
-                              'Land Plot #${rental.landId.substring(0, 8)}',
+                              AppLocalizations.of(context)!.landPlotNumber(rental.landId.substring(0, 8)),
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
@@ -112,11 +112,11 @@ class _InvestorMyInvestmentsScreenState
                           children: [
                             const SizedBox(height: 4),
                             Text(
-                              'Rent: ${NumberFormat('#,###').format(rental.monthlyRent)} TND/mo',
+                              AppLocalizations.of(context)!.rentAmountMonthly(NumberFormat('#,###').format(rental.monthlyRent)),
                             ),
                             if (rental.rentalEndDate != null)
                               Text(
-                                'Ends: ${DateFormat('MMM dd, yyyy').format(rental.rentalEndDate!)}',
+                                AppLocalizations.of(context)!.endsDate(DateFormat('MMM dd, yyyy').format(rental.rentalEndDate!)),
                                 style: TextStyle(
                                   color:
                                       (rental.rentalEndDate!
@@ -141,6 +141,8 @@ class _InvestorMyInvestmentsScreenState
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
+                            rental.paymentStatus.name.toUpperCase() == 'PAID' ? AppLocalizations.of(context)!.paidUpper :
+                            rental.paymentStatus.name.toUpperCase() == 'PENDING' ? AppLocalizations.of(context)!.pendingUpper :
                             rental.paymentStatus.name.toUpperCase(),
                             style: TextStyle(
                               color: rental.paymentStatus.name == 'paid'
@@ -219,13 +221,13 @@ class _InvestorMyInvestmentsScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Total Capital Invested',
-            style: TextStyle(color: Colors.white70, fontSize: 16),
+          Text(
+            AppLocalizations.of(context)!.totalCapitalInvested,
+            style: const TextStyle(color: Colors.white70, fontSize: 16),
           ),
           const SizedBox(height: 8),
           Text(
-            '${totalCapital.toStringAsFixed(0)} TND', // Formatted
+            AppLocalizations.of(context)!.amountTND(totalCapital.toStringAsFixed(0)),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 32,
@@ -236,9 +238,9 @@ class _InvestorMyInvestmentsScreenState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildMetric('Active Lands', activeLands.toString()),
-              _buildMetric('Expiring Soon', expiringSoon.toString()),
-              _buildMetric('ROI Est.', '12%'), // Still static for now
+              _buildMetric(AppLocalizations.of(context)!.activeLands, activeLands.toString()),
+              _buildMetric(AppLocalizations.of(context)!.expiringSoon, expiringSoon.toString()),
+              _buildMetric(AppLocalizations.of(context)!.roiEst, '12%'),
             ],
           ),
         ],

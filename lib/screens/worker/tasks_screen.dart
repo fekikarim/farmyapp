@@ -44,12 +44,12 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
           });
         }
       } else {
-        throw Exception('Failed to load tasks');
+        throw Exception(AppLocalizations.of(context)!.failedLoadTasks);
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Error fetching your tasks';
+          _error = AppLocalizations.of(context)!.errorFetchingTasks;
           _isLoading = false;
         });
       }
@@ -77,17 +77,17 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Task completed! You are now available.'), backgroundColor: Colors.green),
+          SnackBar(content: Text(AppLocalizations.of(context)!.taskCompletedSuccess), backgroundColor: Colors.green),
         );
         _fetchMyTasks(); // Refresh list
       } else {
-        throw Exception('Failed to complete task');
+        throw Exception(AppLocalizations.of(context)!.failedCompleteTask);
       }
     } catch (e) {
       if (mounted) {
         if (Navigator.canPop(context)) Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorWithPrefix(e.toString())), backgroundColor: Colors.red),
         );
       }
     }
@@ -99,7 +99,7 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Tasks', style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context)!.myTasksTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.amber.shade700,
         actions: [
           IconButton(
@@ -119,8 +119,8 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
                         children: [
                           Icon(Icons.check_circle_outline, size: 80, color: Colors.green.shade200),
                           const SizedBox(height: 16),
-                          const Text('No pending tasks!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          const Text('You are available for new assignments.', style: TextStyle(color: Colors.grey)),
+                          Text(AppLocalizations.of(context)!.noPendingTasks, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text(AppLocalizations.of(context)!.availableForAssignments, style: const TextStyle(color: Colors.grey)),
                         ],
                       ),
                     )
@@ -145,12 +145,12 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        task['title'] ?? 'Task',
+                                        task['title'] ?? AppLocalizations.of(context)!.taskLabel,
                                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                       ),
                                       Chip(
                                         label: Text(
-                                          task['status']?.toUpperCase() ?? 'UNKNOWN',
+                                          task['status']?.toUpperCase() ?? AppLocalizations.of(context)!.unknownCaps,
                                           style: TextStyle(color: isCompleted ? Colors.green.shade700 : Colors.amber.shade900, fontSize: 10, fontWeight: FontWeight.bold),
                                         ),
                                         backgroundColor: isCompleted ? Colors.green.shade50 : Colors.amber.shade50,
@@ -169,7 +169,7 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
                                       const SizedBox(width: 16),
                                       Icon(Icons.schedule, size: 16, color: Colors.blue.shade600),
                                       const SizedBox(width: 4),
-                                      Text('${task['time_required_minutes'] ?? 0} mins'),
+                                      Text('${task['time_required_minutes'] ?? 0} ${AppLocalizations.of(context)!.minsSuffix}'),
                                     ],
                                   ),
                                   if (!isCompleted) ...[
@@ -180,7 +180,7 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
                                         onPressed: () => _completeTask(task['id']),
                                         icon: const Icon(Icons.done_all),
                                         style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
-                                        label: const Text('Mark as Complete'),
+                                        label: Text(AppLocalizations.of(context)!.markAsComplete),
                                       ),
                                     ),
                                   ]

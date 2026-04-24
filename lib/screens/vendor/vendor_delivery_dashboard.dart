@@ -64,7 +64,7 @@ class _VendorDeliveryDashboardState extends State<VendorDeliveryDashboard> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Deliveries'),
+        title: Text(AppLocalizations.of(context)!.deliveriesTitle),
         centerTitle: false,
         titleTextStyle: theme.textTheme.headlineMedium?.copyWith(
           fontWeight: FontWeight.w800,
@@ -136,7 +136,7 @@ class _VendorDeliveryDashboardState extends State<VendorDeliveryDashboard> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Orders',
+                          AppLocalizations.of(context)!.ordersTitle,
                           style: theme.textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.w700,
                             fontSize: 16,
@@ -144,7 +144,7 @@ class _VendorDeliveryDashboardState extends State<VendorDeliveryDashboard> {
                         ),
                         if (provider.pagination != null)
                           Text(
-                            '${provider.pagination!.total} total',
+                            AppLocalizations.of(context)!.totalCount(provider.pagination!.total.toString()),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurface.withOpacity(
                                 0.4,
@@ -224,7 +224,7 @@ class _VendorDeliveryDashboardState extends State<VendorDeliveryDashboard> {
             children: [
               Expanded(
                 child: VendorStatCard(
-                  label: 'Total Orders',
+                  label: AppLocalizations.of(context)!.totalOrdersLabel,
                   value: stats.totalOrdersCount.toString(),
                   icon: Icons.receipt_long_rounded,
                   color: theme.colorScheme.primary,
@@ -233,7 +233,7 @@ class _VendorDeliveryDashboardState extends State<VendorDeliveryDashboard> {
               const SizedBox(width: 12),
               Expanded(
                 child: VendorStatCard(
-                  label: 'Active',
+                  label: AppLocalizations.of(context)!.activeLabel,
                   value: stats.activeDeliveriesCount.toString(),
                   icon: Icons.local_shipping_rounded,
                   color: Colors.blue.shade600,
@@ -246,7 +246,7 @@ class _VendorDeliveryDashboardState extends State<VendorDeliveryDashboard> {
             children: [
               Expanded(
                 child: VendorStatCard(
-                  label: 'Delivered',
+                  label: AppLocalizations.of(context)!.deliveredLabel,
                   value: stats.deliveredCount.toString(),
                   icon: Icons.verified_rounded,
                   color: Colors.green.shade600,
@@ -255,7 +255,7 @@ class _VendorDeliveryDashboardState extends State<VendorDeliveryDashboard> {
               const SizedBox(width: 12),
               Expanded(
                 child: VendorStatCard(
-                  label: 'Revenue',
+                  label: AppLocalizations.of(context)!.revenueTitle,
                   value: '${stats.totalRevenue.toStringAsFixed(2)}',
                   icon: Icons.payments_rounded,
                   color: Colors.amber.shade700,
@@ -289,14 +289,14 @@ class _VendorDeliveryDashboardState extends State<VendorDeliveryDashboard> {
             ),
             const SizedBox(height: 20),
             Text(
-              'No deliveries yet',
+              AppLocalizations.of(context)!.noDeliveriesYet,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Deliveries for your products will\nappear here when customers order.',
+              AppLocalizations.of(context)!.noDeliveriesDesc,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withOpacity(0.5),
@@ -330,7 +330,7 @@ class _VendorDeliveryDashboardState extends State<VendorDeliveryDashboard> {
             ),
             const SizedBox(height: 20),
             Text(
-              'Something went wrong',
+              AppLocalizations.of(context)!.somethingWentWrong,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -347,7 +347,7 @@ class _VendorDeliveryDashboardState extends State<VendorDeliveryDashboard> {
             ElevatedButton.icon(
               onPressed: _onRefresh,
               icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context)!.retry),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 28,

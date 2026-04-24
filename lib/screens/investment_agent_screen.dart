@@ -11,6 +11,7 @@ import '../services/auth_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class InvestmentAgentScreen extends StatefulWidget {
   final Map<String, dynamic>? initialContext;
@@ -120,7 +121,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to reach AI Strategy Analyst.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedReachAnalyst)),
         );
       }
     } finally {
@@ -148,7 +149,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Strategic Portfolio Analyst'),
+        title: Text(AppLocalizations.of(context)!.strategicPortfolioAnalystTitle),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -188,7 +189,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
             builder: (context) => IconButton(
               icon: const Icon(Icons.history),
               onPressed: () => Scaffold.of(context).openEndDrawer(),
-              tooltip: 'Session History',
+              tooltip: AppLocalizations.of(context)!.sessionHistoryTooltip,
             ),
           ),
           IconButton(
@@ -201,7 +202,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                 _lastTools = null;
               });
             },
-            tooltip: 'New Session',
+            tooltip: AppLocalizations.of(context)!.newSessionTooltip,
           )
         ],
       ),
@@ -231,7 +232,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
             decoration: BoxDecoration(color: theme.primaryColor),
             child: const Center(
               child: Text(
-                'Investment Strategy Chronicles',
+                AppLocalizations.of(context)!.investmentStrategyChroniclesTitle,
                 style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
@@ -245,7 +246,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                 final date = DateTime.parse(session['createdAt']);
                 return ListTile(
                   leading: const Icon(Icons.history_edu),
-                  title: Text(session['title'] ?? 'Strategy Session', maxLines: 1, overflow: TextOverflow.ellipsis),
+                  title: Text(session['title'] ?? AppLocalizations.of(context)!.strategySessionDefault, maxLines: 1, overflow: TextOverflow.ellipsis),
                   subtitle: Text(DateFormat('MMM d, HH:mm').format(date)),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
@@ -271,15 +272,15 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
           children: [
             Icon(Icons.auto_graph, size: 64, color: Theme.of(context).primaryColor.withOpacity(0.5)),
             const SizedBox(height: 24),
-            const Text(
-              'Welcome to Strategic Analysis',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              AppLocalizations.of(context)!.welcomeStrategicAnalysis,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Tell me your budget and risk preference, or ask about current market and weather trends.',
+            Text(
+              AppLocalizations.of(context)!.investmentAgentWelcomeDesc,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
+              style: const TextStyle(color: Colors.grey),
             ),
           ],
         ),
@@ -369,14 +370,14 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 12.0),
-          child: Text('Consulted Live Data:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.blueAccent)),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          child: Text(AppLocalizations.of(context)!.consultedLiveData, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.blueAccent)),
         ),
         Row(
           children: [
             _buildSmallToolCard(
-              title: 'Market',
+              title: AppLocalizations.of(context)!.marketLabel,
               icon: Icons.trending_up,
               data: marketDisplay,
               onTap: () {
@@ -385,7 +386,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
             ),
             const SizedBox(width: 8),
             _buildSmallToolCard(
-              title: 'Weather',
+              title: AppLocalizations.of(context)!.weatherLabel,
               icon: Icons.wb_sunny_outlined,
               data: weatherDisplay,
               onTap: () {
@@ -455,9 +456,9 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 12.0),
-          child: Text('Suggested Real Estate:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.green)),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          child: Text(AppLocalizations.of(context)!.suggestedRealEstate, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.green)),
         ),
         SizedBox(
           height: 125,
@@ -490,9 +491,9 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(farm['name'] ?? 'Unknown Farm', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text(farm['name'] ?? AppLocalizations.of(context)!.unknownFarm, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
                         const SizedBox(height: 4),
-                        Text('${farm['price'] ?? '0'} TND/m', style: const TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold)),
+                        Text('${farm['price'] ?? '0'} ${AppLocalizations.of(context)!.tndPerMeter}', style: const TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold)),
                         const Spacer(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -528,7 +529,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
               child: TextField(
                 controller: _messageController,
                 decoration: InputDecoration(
-                  hintText: 'Enter preferences or ask analysis...',
+                  hintText: AppLocalizations.of(context)!.enterPreferencesHint,
                   hintStyle: const TextStyle(fontSize: 14),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
                   filled: true,
@@ -627,15 +628,15 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  const Text('LABOR MARKET', style: TextStyle(color: Colors.blueAccent, fontSize: 10, fontWeight: FontWeight.bold)),
+                  Text(AppLocalizations.of(context)!.laborMarketLabel, style: const TextStyle(color: Colors.blueAccent, fontSize: 10, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
                   if (bio.isNotEmpty) Text(bio, style: const TextStyle(fontSize: 14)),
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      _statChip('Rate', '$rate TND/hr'),
+                      _statChip(AppLocalizations.of(context)!.rateLabel, '$rate TND/hr'),
                       const SizedBox(width: 8),
-                      _statChip('Rating', '$rating/5.0'),
+                      _statChip(AppLocalizations.of(context)!.ratingLabel, '$rating/5.0'),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -706,12 +707,12 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                   const SizedBox(height: 12),
                   if (description.isNotEmpty) Text(description, style: const TextStyle(fontSize: 14)),
                   const SizedBox(height: 16),
-                  const Text('Specifications:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  Text(AppLocalizations.of(context)!.specificationsLabel, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
                     children: [
-                      _statChip('Price', variant['base_price'].toString()),
+                      _statChip(AppLocalizations.of(context)!.priceLabel, variant['base_price'].toString()),
                       for (var attr in attrs.entries) _statChip(attr.key, attr.value.toString()),
                     ],
                   ),

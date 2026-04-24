@@ -120,7 +120,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       color: Colors.black.withOpacity(0.5),
                       child: const Center(
                         child: Text(
-                          'OUT OF STOCK',
+                          AppLocalizations.of(context)!.outOfStock,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 24,
@@ -185,7 +185,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       _InfoChip(
                         icon: Icons.inventory_2_outlined,
                         label:
-                            '${product.quantity.toInt()} ${product.unit} available',
+                            AppLocalizations.of(context)!.availableCount(product.quantity.toInt(), product.unit),
                         color: product.quantity > 5
                             ? theme.colorScheme.primary
                             : Colors.orange.shade700,
@@ -195,7 +195,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       if (inBasket)
                         _InfoChip(
                           icon: Icons.shopping_basket,
-                          label: 'In basket',
+                          label: AppLocalizations.of(context)!.inBasket,
                           color: theme.colorScheme.primary,
                           theme: theme,
                         ),
@@ -208,7 +208,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   if (product.description != null &&
                       product.description!.isNotEmpty) ...[
                     Text(
-                      'Description',
+                      AppLocalizations.of(context)!.description,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
@@ -228,7 +228,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   // Quantity selector
                   if (!_isOutOfStock) ...[
                     Text(
-                      'Quantity',
+                      AppLocalizations.of(context)!.quantity,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
@@ -282,7 +282,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                        'Subtotal: ${(product.price * _selectedQuantity).toStringAsFixed(2)} TND',
+                        AppLocalizations.of(context)!.subtotalLabel((product.price * _selectedQuantity).toStringAsFixed(2)),
                         style: TextStyle(
                           color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w700,
@@ -296,7 +296,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   // Seller info
                   if (product.owner != null) ...[
                     Text(
-                      'Seller',
+                      AppLocalizations.of(context)!.seller,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
@@ -350,14 +350,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   Text(
                                     product.owner?.profile?.name ??
                                         product.owner?.email.split('@').first ??
-                                        'Farmer',
+                                        AppLocalizations.of(context)!.farmer,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14,
                                     ),
                                   ),
                                   Text(
-                                    'Verified Seller',
+                                    AppLocalizations.of(context)!.verifiedSeller,
                                     style: TextStyle(
                                       color: theme.colorScheme.primary,
                                       fontSize: 12,
@@ -411,7 +411,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Total',
+                            AppLocalizations.of(context)!.totalLabel,
                             style: TextStyle(
                               color: theme.colorScheme.onSurface.withOpacity(
                                 0.5,
@@ -449,7 +449,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             const Icon(Icons.shopping_basket_rounded, size: 20),
                             const SizedBox(width: 8),
                             Text(
-                              inBasket ? 'Update Basket' : 'Add to Basket',
+                              inBasket ? AppLocalizations.of(context)!.updateBasket : AppLocalizations.of(context)!.addToBasket,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 15,
@@ -526,8 +526,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             const SizedBox(width: 8),
             Text(
               basket.isInBasket(product.id)
-                  ? '${product.title} — qty set to $_selectedQuantity'
-                  : '${product.title} added to basket',
+                  ? AppLocalizations.of(context)!.qtySetTo(product.title, _selectedQuantity)
+                  : AppLocalizations.of(context)!.addedToBasket(product.title),
             ),
           ],
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../utils/validators.dart';
 
@@ -64,12 +65,12 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   const SizedBox(height: 30),
                   Text(
-                    'Create Account',
+                    AppLocalizations.of(context)!.createAccount,
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Start your journey with Farmy today',
+                    AppLocalizations.of(context)!.startJourneyWithFarmy,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 48),
@@ -78,7 +79,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     autofocus: false,
                     style: const TextStyle(fontSize: 14),
                     decoration: InputDecoration(
-                      labelText: 'Email',
+                      labelText: AppLocalizations.of(context)!.email,
                       labelStyle: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5)),
                       prefixIcon: Icon(Icons.mail_outline_rounded, size: 18, color: Theme.of(context).colorScheme.primary.withOpacity(0.7)),
                       contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
@@ -109,7 +110,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     obscureText: _obscurePassword,
                     style: const TextStyle(fontSize: 14),
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: AppLocalizations.of(context)!.password,
                       labelStyle: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5)),
                       prefixIcon: Icon(Icons.lock_outline_rounded, size: 18, color: Theme.of(context).colorScheme.primary.withOpacity(0.7)),
                       contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
@@ -148,7 +149,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     obscureText: _obscurePassword,
                     style: const TextStyle(fontSize: 14),
                     decoration: InputDecoration(
-                      labelText: 'Confirm Password',
+                      labelText: AppLocalizations.of(context)!.confirmPassword,
                       labelStyle: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5)),
                       prefixIcon: Icon(Icons.lock_clock_outlined, size: 18, color: Theme.of(context).colorScheme.primary.withOpacity(0.7)),
                       contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
@@ -190,12 +191,12 @@ class _SignupScreenState extends State<SignupScreen> {
                                 showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    title: const Text('Signup Failed'),
+                                    title: Text(AppLocalizations.of(context)!.signupFailed),
                                     content: Text(error),
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.pop(context),
-                                        child: const Text('OK'),
+                                        child: Text(AppLocalizations.of(context)!.ok),
                                       ),
                                     ],
                                   ),
@@ -205,7 +206,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           },
                       child: authProvider.isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('Create Account'),
+                          : Text(AppLocalizations.of(context)!.createAccount),
                     ),
                   const SizedBox(height: 24),
                   Center(
@@ -220,13 +221,13 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       child: RichText(
                         text: TextSpan(
-                          text: 'Already have an account? ',
+                          text: "${AppLocalizations.of(context)!.alreadyHaveAccount} ",
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                               ),
                           children: [
                             TextSpan(
-                              text: 'Sign In',
+                              text: AppLocalizations.of(context)!.signIn,
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.primary,
                                 fontWeight: FontWeight.bold,

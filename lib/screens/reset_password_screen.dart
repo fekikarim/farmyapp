@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../utils/validators.dart';
 import '../theme/app_theme.dart';
@@ -78,7 +79,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   Future<void> _submit(AuthProvider authProvider) async {
     if (_code.length < 6) {
-      setState(() => _errorMessage = 'Please enter all 6 digits');
+      setState(() => _errorMessage = AppLocalizations.of(context)!.pleaseEnterAll6Digits);
       return;
     }
     if (!_formKey.currentState!.validate()) return;
@@ -92,7 +93,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     if (error == null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Password reset successfully! Please log in.'),
+          content: Text(AppLocalizations.of(context)!.passwordResetSuccess),
           backgroundColor: Colors.green,
         ),
       );
@@ -132,9 +133,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    Text('Reset Password', style: Theme.of(context).textTheme.headlineMedium),
+                    Text(AppLocalizations.of(context)!.resetPasswordTitle, style: Theme.of(context).textTheme.headlineMedium),
                     const SizedBox(height: 16),
-                    Text('Resetting password for ${widget.email}', style: Theme.of(context).textTheme.bodyMedium),
+                    Text(AppLocalizations.of(context)!.resettingPasswordFor(widget.email), style: Theme.of(context).textTheme.bodyMedium),
                     const SizedBox(height: 48),
                     
                     // Code input (Reused from VerifyScreen)
@@ -188,7 +189,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       textInputAction: TextInputAction.next,
                       style: const TextStyle(fontSize: 14),
                       decoration: InputDecoration(
-                        labelText: 'New Password',
+                        labelText: AppLocalizations.of(context)!.newPassword,
                         labelStyle: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5)),
                         prefixIcon: Icon(Icons.lock_outline_rounded, size: 18, color: Theme.of(context).colorScheme.primary.withOpacity(0.7)),
                         contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
@@ -228,7 +229,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       textInputAction: TextInputAction.done,
                       style: const TextStyle(fontSize: 14),
                       decoration: InputDecoration(
-                        labelText: 'Confirm New Password',
+                        labelText: AppLocalizations.of(context)!.confirmNewPassword,
                         labelStyle: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5)),
                         prefixIcon: Icon(Icons.lock_clock_outlined, size: 18, color: Theme.of(context).colorScheme.primary.withOpacity(0.7)),
                         contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
@@ -264,7 +265,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       onPressed: authProvider.isLoading ? null : () => _submit(authProvider),
                       child: authProvider.isLoading
                           ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                          : const Text('Reset Password'),
+                          : Text(AppLocalizations.of(context)!.resetPasswordTitle),
                     ),
                     const SizedBox(height: 40),
                   ],

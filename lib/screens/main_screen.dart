@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 
 // Customer Screens
@@ -71,22 +72,22 @@ class _MainScreenState extends State<MainScreen> {
         BottomNavigationBarItem(
           icon: Icon(Icons.home_outlined),
           activeIcon: Icon(Icons.home),
-          label: 'Home',
+          label: AppLocalizations.of(context)!.home,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.storefront_outlined),
           activeIcon: Icon(Icons.storefront),
-          label: 'Marketplace',
+          label: AppLocalizations.of(context)!.marketplace,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.subscriptions_outlined),
           activeIcon: Icon(Icons.subscriptions),
-          label: 'Subscriptions',
+          label: AppLocalizations.of(context)!.subscriptions,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings_outlined),
           activeIcon: Icon(Icons.settings),
-          label: 'Settings',
+          label: AppLocalizations.of(context)!.settings,
         ),
       ];
     } else if (role == 'farmer') {
@@ -101,27 +102,27 @@ class _MainScreenState extends State<MainScreen> {
         BottomNavigationBarItem(
           icon: Icon(Icons.analytics_outlined),
           activeIcon: Icon(Icons.analytics),
-          label: 'Analytics',
+          label: AppLocalizations.of(context)!.analytics,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.landscape_outlined),
           activeIcon: Icon(Icons.landscape),
-          label: 'Land',
+          label: AppLocalizations.of(context)!.land,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.inventory_2_outlined),
           activeIcon: Icon(Icons.inventory_2),
-          label: 'Products',
+          label: AppLocalizations.of(context)!.products,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.agriculture_outlined),
           activeIcon: Icon(Icons.agriculture),
-          label: 'My Farms',
+          label: AppLocalizations.of(context)!.myFarms,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings_outlined),
           activeIcon: Icon(Icons.settings),
-          label: 'Settings',
+          label: AppLocalizations.of(context)!.settings,
         ),
       ];
     } else if (role == 'investor') {
@@ -136,27 +137,27 @@ class _MainScreenState extends State<MainScreen> {
         BottomNavigationBarItem(
           icon: Icon(Icons.explore_outlined),
           activeIcon: Icon(Icons.explore),
-          label: 'Explore',
+          label: AppLocalizations.of(context)!.explore,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.monetization_on_outlined),
           activeIcon: Icon(Icons.monetization_on),
-          label: 'Investments',
+          label: AppLocalizations.of(context)!.investments,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.inventory_2_outlined), // Changed icon
           activeIcon: Icon(Icons.inventory_2),
-          label: 'Products', // Changed label
+          label: AppLocalizations.of(context)!.products, // Changed label
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_balance_wallet_outlined),
           activeIcon: Icon(Icons.account_balance_wallet),
-          label: 'Revenue',
+          label: AppLocalizations.of(context)!.revenue,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings_outlined),
           activeIcon: Icon(Icons.settings),
-          label: 'Settings',
+          label: AppLocalizations.of(context)!.settings,
         ),
       ];
     } else if (role == 'worker') {
@@ -165,12 +166,12 @@ class _MainScreenState extends State<MainScreen> {
         BottomNavigationBarItem(
           icon: Icon(Icons.assignment_outlined),
           activeIcon: Icon(Icons.assignment),
-          label: 'Tasks',
+          label: AppLocalizations.of(context)!.tasks,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings_outlined),
           activeIcon: Icon(Icons.settings),
-          label: 'Settings',
+          label: AppLocalizations.of(context)!.settings,
         ),
       ];
     } else {
@@ -180,7 +181,7 @@ class _MainScreenState extends State<MainScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Unknown role: ${user.role}'),
+              Text(AppLocalizations.of(context)!.unknownRole(user.role)),
               const SizedBox(height: 20),
               ElevatedButton.icon(
                 onPressed: () async {
@@ -192,7 +193,7 @@ class _MainScreenState extends State<MainScreen> {
                   }
                 },
                 icon: const Icon(Icons.logout),
-                label: const Text('Logout'),
+                label: Text(AppLocalizations.of(context)!.logout),
               ),
             ],
           ),
@@ -217,8 +218,8 @@ class _MainScreenState extends State<MainScreen> {
               child: FloatingActionButton(
                 heroTag: 'agent_fab',
                 tooltip: role == 'investor'
-                    ? 'Open investment assistant'
-                    : 'Open AI assistant',
+                    ? AppLocalizations.of(context)!.openInvestmentAssistant
+                    : AppLocalizations.of(context)!.openAiAssistant,
                 onPressed: () {
                   if (role == 'investor') {
                     Navigator.push(
@@ -258,9 +259,9 @@ class _MainScreenState extends State<MainScreen> {
                 );
               },
               icon: const Icon(Icons.assignment, color: Colors.black),
-              label: const Text(
-                'My Worker Tasks',
-                style: TextStyle(
+              label: Text(
+                AppLocalizations.of(context)!.myWorkerTasks,
+                style: const TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                 ),

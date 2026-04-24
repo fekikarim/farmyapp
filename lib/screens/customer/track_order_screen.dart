@@ -72,7 +72,7 @@ class _TrackOrderScreenState extends State<TrackOrderScreen>
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Track Order'),
+        title: Text(AppLocalizations.of(context)!.trackOrder),
         centerTitle: false,
         titleTextStyle: theme.textTheme.headlineMedium?.copyWith(
           fontWeight: FontWeight.w800,
@@ -98,7 +98,7 @@ class _TrackOrderScreenState extends State<TrackOrderScreen>
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Live',
+                      AppLocalizations.of(context)!.live,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.primary,
                         fontWeight: FontWeight.w600,
@@ -216,7 +216,7 @@ class _TrackOrderScreenState extends State<TrackOrderScreen>
             ),
             const SizedBox(height: 24),
             Text(
-              'Unable to load tracking',
+              AppLocalizations.of(context)!.unableToLoadTracking,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -233,7 +233,7 @@ class _TrackOrderScreenState extends State<TrackOrderScreen>
             ElevatedButton.icon(
               onPressed: () => _deliveryProvider.fetchByOrderId(widget.orderId),
               icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context)!.retry),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
@@ -262,14 +262,14 @@ class _TrackOrderScreenState extends State<TrackOrderScreen>
           ),
           const SizedBox(height: 16),
           Text(
-            'No tracking information',
+            AppLocalizations.of(context)!.noTrackingInformation,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Delivery tracking will appear\nonce your order is processed.',
+            AppLocalizations.of(context)!.deliveryTrackingEmptyHint,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.5),
@@ -318,7 +318,7 @@ class _TrackOrderScreenState extends State<TrackOrderScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Order Delivered!',
+                    AppLocalizations.of(context)!.orderDelivered,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: Colors.green.shade800,
@@ -326,7 +326,7 @@ class _TrackOrderScreenState extends State<TrackOrderScreen>
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Your order has been successfully delivered. Thank you for your purchase!',
+                    AppLocalizations.of(context)!.orderDeliveredSuccess,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: Colors.green.shade700,
                       fontSize: 12,
@@ -397,7 +397,7 @@ class _LiveBadgeState extends State<_LiveBadge>
               ),
               const SizedBox(width: 5),
               Text(
-                'Updating',
+                AppLocalizations.of(context)!.updating,
                 style: TextStyle(
                   color: Colors.green.shade700,
                   fontSize: 11,

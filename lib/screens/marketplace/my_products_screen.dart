@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../providers/product_provider.dart';
 import '../../providers/subscription_provider.dart';
@@ -27,17 +28,17 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Product'),
-        content: Text('Are you sure you want to delete ${product.title}?'),
+        title: Text(AppLocalizations.of(context)!.deleteProduct),
+        content: Text(AppLocalizations.of(context)!.deleteProductConfirmation(product.title)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(AppLocalizations.of(context)!.delete),
           ),
         ],
       ),
@@ -53,7 +54,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            success ? 'Product deleted' : 'Failed to delete product',
+            success ? AppLocalizations.of(context)!.productDeleted : AppLocalizations.of(context)!.failedToDeleteProduct,
           ),
         ),
       );
@@ -68,7 +69,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Products'),
+        title: Text(AppLocalizations.of(context)!.myProducts),
         actions: [
           IconButton(
             icon: const Icon(Icons.auto_awesome, color: Colors.green),
@@ -78,7 +79,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => InvestmentAgentScreen(
-                    initialMessage: "Analyse my current product inventory. Are these good products to hold or should I focus on something else based on the market?",
+                    initialMessage: AppLocalizations.of(context)!.analyzeInventoryPrompt,
                     initialContext: {
                       'inventory': products.myProducts.map((p) => {
                         'title': p.title,
@@ -91,7 +92,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                 ),
               );
             },
-            tooltip: 'Analyze Inventory',
+            tooltip: AppLocalizations.of(context)!.analyzeInventory,
           ),
         ],
       ),
@@ -148,10 +149,10 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                             child: SubscriptionLimitBar(
                               limitKey: 'product_limit',
                               currentCount: productProvider.myProducts.length,
-                              label: 'Product Listings Used',
+                              label: AppLocalizations.of(context)!.productListingsUsed,
                               icon: Icons.inventory_2_outlined,
                               accentColor: Colors.green,
-                              upgradePlanName: 'Farmer Pro',
+                              upgradePlanName: AppLocalizations.of(context)!.upgradePlanName,
                             ),
                           );
                         }
@@ -178,9 +179,9 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
               color: Colors.red.shade300,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Oops! Something went wrong',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              AppLocalizations.of(context)!.oopsSomethingWentWrong,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
@@ -193,7 +194,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
               onPressed: () =>
                   context.read<ProductProvider>().fetchMyProducts(),
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context)!.retry),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
@@ -223,18 +224,18 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                 color: Colors.grey.shade300,
               ),
               const SizedBox(height: 16),
-              const Text(
-                'No products found',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.noProductsFound,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: Colors.grey,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Add your first product to see it here!',
-                style: TextStyle(color: Colors.blueGrey),
+              Text(
+                AppLocalizations.of(context)!.addProductFirst,
+                style: const TextStyle(color: Colors.blueGrey),
               ),
             ],
           ),
@@ -305,7 +306,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Image unavailable',
+                                    AppLocalizations.of(context)!.imageUnavailable,
                                     style: TextStyle(
                                       color: theme.disabledColor,
                                       fontSize: 12,
@@ -378,7 +379,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                       ),
                     ),
                     Text(
-                      '${product.price} Credits',
+                      '${product.price} ${AppLocalizations.of(context)!.credits}',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
@@ -389,7 +390,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${product.quantity} ${product.unit} available',
+                  '${product.quantity} ${product.unit} ${AppLocalizations.of(context)!.available}',
                   style: TextStyle(
                     color: theme.textTheme.bodySmall?.color,
                     fontSize: 14,
@@ -401,7 +402,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                     Expanded(
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.edit_rounded, size: 18),
-                        label: const Text('Edit'),
+                        label: Text(AppLocalizations.of(context)!.edit),
                         onPressed: () async {
                           await Navigator.push(
                             context,
@@ -475,7 +476,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              'Product Limit Reached',
+              AppLocalizations.of(context)!.productLimitReached,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: isDark ? Colors.white : Colors.black87,
@@ -485,7 +486,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
             ),
             const SizedBox(height: 10),
             Text(
-              "You've used all product slots on your $planName plan. Upgrade to Farmer Pro or Investor Plus to list more products!",
+              AppLocalizations.of(context)!.productLimitMessage(planName),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: isDark ? Colors.white60 : Colors.black54,
@@ -509,9 +510,9 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
-                  'VIEW PLANS',
-                  style: TextStyle(
+                child: Text(
+                  AppLocalizations.of(context)!.viewPlans,
+                  style: const TextStyle(
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.1,
                   ),
@@ -522,7 +523,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
             TextButton(
               onPressed: () => Navigator.pop(ctx),
               child: Text(
-                'Maybe Later',
+                AppLocalizations.of(context)!.maybeLater,
                 style: TextStyle(
                   color: isDark ? Colors.white38 : Colors.black38,
                 ),

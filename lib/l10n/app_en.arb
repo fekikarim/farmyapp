@@ -1,0 +1,1275 @@
+{
+  "@@locale": "en",
+  "becomeAWorker": "Become a Worker",
+  "joinTheWorkforce": "Join the Workforce",
+  "joinWorkforceDescription": "Create your professional profile and\nstart earning on nearby farms today.",
+  "selectYourSkills": "Select Your Skills",
+  "aboutYou": "About You",
+  "aboutYouHint": "Tell farmers about your experience...",
+  "hourlyRateTnd": "Hourly Rate (TND)",
+  "hourlyRateHint": "e.g. 15.00",
+  "aiVerificationComingSoon": "AI Verification Coming Soon",
+  "aiVerificationDescription": "Automated identity & skill verification will speed up your approval.",
+  "createWorkerProfile": "Create Worker Profile",
+  "selectAtLeastOneSkill": "Please select at least one skill",
+  "workerProfileCreated": "🎉 Worker profile created! Pending verification.",
+  "failedToCreateProfile": "Failed to create profile",
+  "enterValidRate": "Enter a valid rate",
+  "watering": "Watering",
+  "harvesting": "Harvesting",
+  "planting": "Planting",
+  "animalCare": "Animal Care",
+  "machineOperation": "Machine Operation",
+  "soilManagement": "Soil Management",
+  "structureInstallation": "Structure Installation",
+  "qualityInspection": "Quality Inspection",
+  "cropMonitoring": "Crop Monitoring",
+  "pestControl": "Pest Control",
+  "viewManageLandInvestments": "View and manage your land investments",
+  "enableGameEdgePanel": "Enable Game Edge Panel",
+  "accessFarmView": "Access your farm view from anywhere",
+  "tasksProofs": "Tasks & Proofs",
+  "aiProofRequests": "AI Proof Requests",
+  "viewManageProofRequests": "View and manage your AI proof requests",
+  "freeTier": "Free Tier",
+  "upgradePremium": "Upgrade to Premium",
+  "freeForever": "Free Forever",
+  "validUntil": "Valid until {date}",
+  "@validUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "editLandDetails": "Edit Land Details",
+  "deleteLand": "Delete Land",
+  "deleteLandTitle": "Delete Land?",
+  "deleteLandConfirmation": "Are you sure you want to delete \"{name}\"?",
+  "@deleteLandConfirmation": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteLandActionWarning": "This action cannot be undone. All associated data will be permanently removed.",
+  "landDeletedSuccess": "Land deleted successfully",
+  "delete": "DELETE",
+  "comingSoon": "Coming Soon",
+  "featureOptimizedDescription": "The \"{feature}\" module is currently being optimized for personal farming management.",
+  "@featureOptimizedDescription": {
+    "placeholders": {
+      "feature": {
+        "type": "String"
+      }
+    }
+  },
+  "stayTunedSpatialTracking": "Stay tuned for advanced spatial asset tracking!",
+  "gotIt": "GOT IT",
+  "live": "LIVE",
+  "failedToSyncBackend": "Failed to sync with backend",
+  "externalProperty": "EXTERNAL PROPERTY",
+  "notYours": "NOT YOURS",
+  "dismiss": "DISMISS",
+  "myLands": "My Lands",
+  "landDataSyncSuccess": "✨ Land Data Synchronized Successfully!",
+  "limitReached": "Limit Reached",
+  "newListing": "New Listing",
+  "landLimitReachedTitle": "Land Limit Reached",
+  "landLimitReachedDescription": "You've used all land slots on your {planName} plan. Upgrade to Farmer Pro to unlock unlimited lands!",
+  "@landLimitReachedDescription": {
+    "placeholders": {
+      "planName": {
+        "type": "String"
+      }
+    }
+  },
+  "landSlotsUsed": "Land Slots Used",
+  "synchronizingBoundaries": "SYNCHRONIZING BOUNDARIES",
+  "fetchingSpatialData": "Fetching precise spatial data...",
+  "syncInterrupted": "Sync Interrupted",
+  "tryToResync": "Try to Re-sync",
+  "noDescriptionProvided": "No description provided for this land.",
+  "area": "Area",
+  "rentals": "Rentals",
+  "earnings": "Earnings",
+  "safety": "Safety",
+  "workforce": "Workforce",
+  "active": "ACTIVE",
+  "rented": "RENTED",
+  "available": "AVAILABLE",
+  "owner": "Owner: {id}",
+  "@owner": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "myBasket": "My Basket",
+  "clear": "Clear",
+  "yourBasketIsEmpty": "Your basket is empty",
+  "browseMarketplaceDescription": "Browse the marketplace and add\nsome fresh products!",
+  "browseProducts": "Browse Products",
+  "subtotal": "Subtotal",
+  "tva": "TVA (19%)",
+  "total": "Total",
+  "balanceWithCredits": "Balance: {balance} Credits",
+  "@balanceWithCredits": {
+    "placeholders": {
+      "balance": {
+        "type": "String"
+      }
+    }
+  },
+  "checkoutWithItems": "Checkout ({count} items)",
+  "@checkoutWithItems": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insufficientFunds": "Insufficient Funds",
+  "insufficientFundsDescription": "Your balance is {balance} Credits, but the total is {total} TND.\n\nPlease top up your wallet.",
+  "@insufficientFundsDescription": {
+    "placeholders": {
+      "balance": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmPurchase": "Confirm Purchase",
+  "itemsCount": "{count} item(s)",
+  "@itemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "includingTva": "(including 19% TVA: {tax} TND)",
+  "@includingTva": {
+    "placeholders": {
+      "tax": {
+        "type": "String"
+      }
+    }
+  },
+  "confirm": "Confirm",
+  "orderPlaced": "Order Placed!",
+  "itemsPurchasedSuccess": "{count} item(s) purchased successfully.",
+  "@itemsPurchasedSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trackOrder": "Track Order",
+  "viewMyOrders": "View My Orders",
+  "backToMarketplace": "Back to Marketplace",
+  "checkoutResultFeedback": "{successCount} purchased, {failCount} failed. Failed items remain in basket.",
+  "@checkoutResultFeedback": {
+    "placeholders": {
+      "successCount": {
+        "type": "int"
+      },
+      "failCount": {
+        "type": "int"
+      }
+    }
+  },
+  "clearBasketTitle": "Clear Basket?",
+  "clearBasketDescription": "This will remove all items from your basket.",
+  "clearAll": "Clear All",
+  "twoFactorAuthentication": "Two-Factor Authentication",
+  "verificationRequired": "Verification Required",
+  "enter2faCode": "Enter the 6-digit code from your authenticator app to continue.",
+  "verify": "Verify",
+  "goodMorning": "Good Morning",
+  "goodAfternoon": "Good Afternoon",
+  "goodEvening": "Good Evening",
+  "user": "User",
+  "customerAccount": "Customer Account",
+  "dailyInspiration": "Daily Inspiration",
+  "workerPlus": "Worker Plus",
+  "workerPlusDescription": "Boost your profile, get priority matching, and instant withdrawals.",
+  "farmboxSubscription": "FarmBox Subscription",
+  "farmboxDescription": "Get fresh, locally grown vegetables delivered to your doorstep weekly!",
+  "upgradeWithPrice": "Upgrade {price}",
+  "@upgradeWithPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "quote1": "The future of agriculture is in your hands.",
+  "quote2": "Support local, eat fresh, live healthy.",
+  "quote3": "Connecting you to the roots of your food.",
+  "quote4": "Every investment in nature yields the best interest.",
+  "quote5": "Small choices make a big impact on our planet.",
+  "quote6": "Fresh from the farm, straight to your table.",
+  "quote7": "Empowering farmers, feeding the world.",
+  "quote8": "Sustainability is not a goal, it's a lifestyle.",
+  "totalEarningsWallet": "Total Earnings (Wallet)",
+  "totalSalesValue": "Total Sales Value",
+  "itemsSold": "{count} Items Sold",
+  "@itemsSold": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "advancedAnalytics": "Advanced Analytics",
+  "premium": "PREMIUM",
+  "unlockDeepInsights": "Unlock Deep Insights",
+  "unlockDeepInsightsDescription": "Get AI-powered crop forecasting, detailed soil health history, and advanced ROI projections.",
+  "productionStrategy": "Production Strategy",
+  "productionStrategyDescription": "Get a deep analysis of your current production overhead, potential yield, and profit-maximization strategies powered by AI.",
+  "consultProductionGuru": "Consult Production Guru",
+  "upgradeToPlan": "Upgrade to {planName}",
+  "@upgradeToPlan": {
+    "placeholders": {
+      "planName": {
+        "type": "String"
+      }
+    }
+  },
+  "farmyUser": "Farmy User",
+  "latestSubmittedProof": "Latest Submitted Proof",
+  "free": "FREE",
+  "pro": "PRO",
+  "enabled": "ENABLED",
+  "off": "OFF",
+  "confirmPurchase": "Confirm Purchase",
+  "buyProductConfirmation": "Do you want to buy {title} for {price} credits?",
+  "@buyProductConfirmation": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "price": {
+        "type": "double"
+      }
+    }
+  },
+  "buy": "Buy",
+  "creditsCount": "Credits: {count}",
+  "@creditsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "priceCountCredits": "{price} Credits",
+  "@priceCountCredits": {
+    "placeholders": {
+      "price": {
+        "type": "double"
+      }
+    }
+  },
+  "buyNow": "Buy Now",
+  "pleaseSelectProductType": "Please select a product type",
+  "productUpdated": "Product updated!",
+  "productListedSuccessfully": "Product listed successfully!",
+  "failedToUpdateProduct": "Failed to update product.",
+  "failedToListProduct": "Failed to list product.",
+  "editProduct": "Edit Product",
+  "addProduct": "Add Product",
+  "tapToAddImage": "Tap to add image",
+  "title": "Title",
+  "pleaseEnterTitle": "Please enter a title",
+  "productType": "Product Type",
+  "description": "Description",
+  "priceCredits": "Price (Credits)",
+  "quantity": "Quantity",
+  "unitHint": "Unit (e.g., kg, liter, piece)",
+  "pleaseEnterUnit": "Please enter a unit",
+  "updateProduct": "Update Product",
+  "listProduct": "List Product",
+  "noCamerasFound": "No cameras found on this device.",
+  "flipIdInstruction": "Great! Now flip your ID over",
+  "selfieInstruction": "Perfect! Now let's take a selfie",
+  "uploadingDocuments": "Uploading documents...",
+  "kycSuccess": "Success! You are now a {role}!",
+  "@kycSuccess": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "scanFrontId": "Scan Front of ID",
+  "scanBackId": "Scan Back of ID",
+  "takeSelfie": "Take a Selfie",
+  "positionIdHint": "Position your ID within the frame",
+  "flipIdHint": "Flip your ID and scan the back",
+  "lookAtCameraHint": "Look directly at the camera with eyes open",
+  "verifying": "Verifying...",
+  "tryAgain": "Try Again",
+  "accountBanned": "Account Banned",
+  "bannedDescription": "Your account has been suspended due to specific violations. Please contact support if you believe this is a mistake.",
+  "logout": "Logout",
+  "noInternetConnection": "No Internet Connection",
+  "noInternetDescription": "We could not connect to the server. Please check your internet connection and try again.",
+  "retry": "Retry",
+  "askFarmingQuestion": "Ask your farming question...",
+  "sendMessage": "Send message",
+  "voiceInput": "Voice input",
+  "rename": "Rename",
+  "delete": "Delete",
+  "startANewConversation": "Start a new conversation",
+  "createChatDescription": "Create a chat to ask for practical farming guidance.",
+  "askAnythingAboutFarm": "Ask anything about your farm",
+  "aiAssistantDescription": "Planting times, crop health, fertilizers, and practical guidance with automatic language detection.",
+  "noChatStateTitle": "Welcome to Farmy AI",
+  "noChatStateDescription": "Start a new conversation to get expert advice on your agriculture.",
+  "disableVoiceInput": "Disable voice input",
+  "aiAssistant": "AI Assistant",
+  "muteVoiceOutput": "Mute voice output",
+  "enableVoiceOutput": "Enable voice output",
+  "moreActions": "More actions",
+  "syncBackend": "Sync backend",
+  "newChat": "New chat",
+  "closeAssistant": "Close assistant",
+  "syncingWithBackend": "Syncing with backend...",
+  "backendDisconnected": "Backend disconnected. Reconnecting automatically...",
+  "offlineModeCached": "Offline mode: cached answers will be used when available.",
+  "noConversationsYet": "No conversations yet.",
+  "conversations": "Conversations",
+  "renameChat": "Rename chat",
+  "deleteChat": "Delete chat",
+  "chatTitle": "Chat title",
+  "updateYourMessage": "Update your message",
+  "resend": "Resend",
+  "save": "Save",
+  "deleteChatConfirmation": "Delete \"{title}\" permanently?",
+  "@deleteChatConfirmation": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "responseCopied": "Response copied to clipboard.",
+  "voiceInputNotAvailable": "Voice input is not available on this device.",
+  "unableToStartVoiceInput": "Unable to start voice input. Please check permissions.",
+  "voiceOutputMuted": "Voice output is muted. Unmute to read this message.",
+  "messageNoReadableText": "This message has no readable text.",
+  "unableToPlayVoiceOutput": "Unable to play voice output now.",
+  "couldNotSendMessage": "Could not send your message. Please try again.",
+  "upgradeRequired": "Upgrade required to access this feature.",
+  "upgrade": "Upgrade",
+  "editAndResend": "Edit and resend",
+  "copy": "Copy",
+  "readAloud": "Read aloud",
+  "cached": "Cached",
+  "verifyEmailTitle": "Verify Your Email",
+  "verificationCodeSentTo": "We sent a 6-digit verification code to\n{email}.",
+  "@verificationCodeSentTo": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyAccount": "Verify Account",
+  "resendNewCode": "Resend New Code",
+  "newVerificationCodeSent": "New verification code sent!",
+  "failedToSendCode": "Failed to send code. Try again.",
+  "yourEmail": "your email",
+  "resetPasswordTitle": "Reset Password",
+  "resettingPasswordFor": "Resetting password for {email}",
+  "@resettingPasswordFor": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "newPassword": "New Password",
+  "confirmNewPassword": "Confirm New Password",
+  "pleaseEnterAll6Digits": "Please enter all 6 digits",
+  "passwordResetSuccess": "Password reset successfully! Please log in.",
+  "forgotPasswordTitle": "Forgot Password?",
+  "forgotPasswordSubtitle": "Enter your email address and we will send you a 6-digit code to reset your password.",
+  "emailAddress": "Email Address",
+  "sendResetCode": "Send Reset Code",
+  "backToLogin": "Back to Login",
+  "welcomeCustomerTitle": "Welcome to Farmy!",
+  "welcomeCustomerSubtitle": "Support local farmers and enjoy fresh, sustainable products directly from the source.",
+  "welcomeWorkerTitle": "Join the Workforce",
+  "welcomeWorkerSubtitle": "Connect with modern farms and start your productive journey in sustainable agriculture.",
+  "welcomeFarmerTitle": "Empowering Farmers",
+  "welcomeFarmerSubtitle": "Your journey to digital farm management starts here. Let's grow your business together!",
+  "welcomeInvestorTitle": "Invest in the Future",
+  "welcomeInvestorSubtitle": "Explore sustainable opportunities and grow your green agricultural portfolio with us.",
+  "skip": "Skip",
+  "finish": "Finish",
+  "continueText": "Continue",
+  "freeTier": "Free Tier",
+  "language": "Language",
+  "english": "English",
+  "french": "French",
+  "spanish": "Spanish",
+  "selectLanguage": "Select Language",
+  "accountInformation": "Account Information",
+  "verified": "Verified",
+  "unverified": "Unverified",
+  "subscription": "Subscription",
+  "upgradePremium": "Upgrade for premium features",
+  "freeForever": "No expiration · Free forever",
+  "validUntil": "Valid until {date}",
+  "@validUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "payments": "Payments",
+  "walletCards": "Wallet & Cards",
+  "manageCredits": "Manage credits and payment methods",
+  "hederaRegistry": "Hedera Registry",
+  "viewBlockchainRecords": "View your on-chain blockchain records",
+  "general": "General",
+  "viewRecentActivity": "View your recent activity and updates",
+  "security": "Security",
+  "editProfile": "Edit Profile",
+  "changePassword": "Change Password",
+  "disable2fa": "Disable 2FA",
+  "enable2fa": "Enable 2FA",
+  "strongSecurityActive": "Strong security active",
+  "addExtraSecurity": "Add an extra layer of security",
+  "orders": "Orders",
+  "trackManagePurchases": "Track and manage your purchases",
+  "verification": "Verification",
+  "becomeFarmer": "Become a Farmer",
+  "startSellingProduce": "Start selling your produce",
+  "becomeInvestor": "Become an Investor",
+  "investSustainableFarming": "Invest in sustainable farming",
+  "worker": "Worker",
+  "becomeWorker": "Become a Worker",
+  "offerSkillsFarms": "Offer your skills on farms",
+  "workerDashboard": "Worker Dashboard",
+  "viewAssignmentsTasks": "View your assignments & tasks",
+  "gameFeatures": "Game Features",
+  "enableGameEdgePanel": "Enable Game Edge Panel",
+  "accessFarmView": "Access the 2.5D farm view",
+  "tasksProofs": "Tasks & Proofs",
+  "aiProofRequests": "AI Proof Requests",
+  "viewManageProofRequests": "View and manage proof requests",
+  "appearance": "Appearance",
+  "darkMode": "Dark Mode",
+  "aboutUs": "About Us - Farmy Team",
+  "comingSoon": "Coming Soon",
+  "featureUnderDevelopment": "This feature is currently under development.",
+  "home": "Home",
+  "marketplace": "Marketplace",
+  "subscriptions": "Subscriptions",
+  "settings": "Settings",
+  "analytics": "Analytics",
+  "land": "Land",
+  "products": "Products",
+  "myFarms": "My Farms",
+  "explore": "Explore",
+  "investments": "Investments",
+  "revenue": "Revenue",
+  "tasks": "Tasks",
+  "logout": "Logout",
+  "openInvestmentAssistant": "Open investment assistant",
+  "openAiAssistant": "Open AI assistant",
+  "myWorkerTasks": "My Worker Tasks",
+  "unknownRole": "Unknown role: {role}",
+  "@unknownRole": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "appName": "Farmy",
+  "unknown": "Unknown",
+  "somethingWentWrong": "Something went wrong",
+  "revenueTitle": "Revenue",
+  "cancel": "Cancel",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "login": "Login",
+  "signup": "Sign Up",
+  "email": "Email",
+  "password": "Password",
+  "forgotPassword": "Forgot Password?",
+  "dontHaveAccount": "Don't have an account?",
+  "alreadyHaveAccount": "Already have an account?",
+  "welcomeBack": "Welcome Back",
+  "welcomeToFarmy": "Welcome to Farmy",
+  "signInToFarmyAccount": "Sign in to your Farmy account",
+  "startJourneyWithFarmy": "Start your journey with Farmy today",
+  "createAccount": "Create Account",
+  "fullName": "Full Name",
+  "confirmPassword": "Confirm Password",
+  "signingIn": "Signing in...",
+  "signingUp": "Signing up...",
+  "error": "Error",
+  "success": "Success",
+  "orContinueWith": "OR CONTINUE WITH",
+  "loginFailed": "Login Failed",
+  "signupFailed": "Signup Failed",
+  "signIn": "Sign In",
+  "ok": "OK",
+  "myProducts": "My Products",
+  "deleteProduct": "Delete Product",
+  "deleteProductConfirmation": "Are you sure you want to delete {title}?",
+  "@deleteProductConfirmation": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "productDeleted": "Product deleted",
+  "failedToDeleteProduct": "Failed to delete product",
+  "analyzeInventory": "Analyze Inventory",
+  "noProductsFound": "No products found",
+  "addProductFirst": "Add your first product to see it here!",
+  "edit": "Edit",
+  "credits": "Credits",
+  "available": "available",
+  "productLimitReached": "Product Limit Reached",
+  "viewPlans": "VIEW PLANS",
+  "maybeLater": "Maybe Later",
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "retry": "Retry",
+  "productListingsUsed": "Product Listings Used",
+  "upgradePlanName": "Farmer Pro",
+  "analyzeInventoryPrompt": "Analyse my current product inventory. Are these good products to hold or should I focus on something else based on the market?",
+  "imageUnavailable": "Image unavailable",
+  "productLimitMessage": "You've used all product slots on your {planName} plan. Upgrade to Farmer Pro or Investor Plus to list more products!",
+  "@productLimitMessage": {
+    "placeholders": {
+      "planName": {
+        "type": "String"
+      }
+    }
+  },
+  "workerMarketplace": "Worker Marketplace",
+  "searchWorkers": "Search workers...",
+  "noVerifiedWorkersFound": "No verified workers found",
+  "tasksCount": "{count} tasks",
+  "@tasksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "perHour": "/hour",
+  "workforceLandName": "Workforce — {landName}",
+  "@workforceLandName": {
+    "placeholders": {
+      "landName": {
+        "type": "String"
+      }
+    }
+  },
+  "addWorker": "Add Worker",
+  "inviteExistingWorker": "Invite Existing Worker",
+  "searchWorkerMarketplace": "Search the worker marketplace",
+  "openJobRequest": "Open Job Request",
+  "soon": "Soon",
+  "totalLabel": "Total",
+  "activeLabel": "Active",
+  "suspendedLabel": "Suspended",
+  "monthlyCost": "Monthly Cost",
+  "productivity": "Productivity",
+  "totalSuffix": "{count} total",
+  "@totalSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noWorkersYet": "No workers yet",
+  "addWorkersMarketplaceHint": "Tap the + button to add workers from the marketplace",
+  "unknownWorker": "Unknown Worker",
+  "tndMo": "TND/mo",
+  "workersSyncIssue": "Workers sync issue",
+  "invitationsSyncIssue": "Invitations sync issue",
+  "pendingInvitations": "Pending Invitations",
+  "waitingForWorkerResponse": "Waiting for worker response",
+  "invitationDecisions": "Invitation Decisions",
+  "workersAcceptedDeclinedInvites": "Workers who accepted or declined your invites",
+  "aiAutoAssignTasks": "🤖 AI Auto-Assign Tasks",
+  "gpsVerifiedWorkProof": "📍 GPS-verified Work Proof",
+  "iotSensorDashboard": "🌡️ IoT Sensor Dashboard",
+  "smartPayrollIntegration": "💰 Smart Payroll Integration",
+  "freshProductsFarmers": "Fresh products from local farmers",
+  "myOrders": "My Orders",
+  "searchProducts": "Search products...",
+  "all": "All",
+  "noProductsFoundMarketplace": "No products found",
+  "noProductsAvailableMarketplace": "No products available",
+  "adjustSearchFilters": "Try adjusting your search or filters",
+  "checkBackLaterFreshProducts": "Check back later for fresh products",
+  "outOfStock": "OUT OF STOCK",
+  "inBasket": "In basket",
+  "availableCount": "{count} {unit} available",
+  "@availableCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "subtotalLabel": "Subtotal: {price} TND",
+  "@subtotalLabel": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "seller": "Seller",
+  "farmer": "Farmer",
+  "verifiedSeller": "Verified Seller",
+  "updateBasket": "Update Basket",
+  "addToBasket": "Add to Basket",
+  "qtySetTo": "{title} — qty set to {qty}",
+  "@qtySetTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "qty": {
+        "type": "int"
+      }
+    }
+  },
+  "addedToBasket": "{title} added to basket",
+  "@addedToBasket": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "noOrdersYet": "No orders yet",
+  "orderHistoryEmptyHint": "Your order history will appear here\nafter your first purchase.",
+  "order": "Order",
+  "farmyPremium": "Farmy Premium",
+  "currentPlanLabel": "Current: {name}",
+  "@currentPlanLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "monthly": "Monthly",
+  "yearlySave": "Yearly (Save 33%)",
+  "failedToLoadSubscriptions": "Failed to load subscriptions",
+  "failedToLoadWorkerProfile": "Failed to load worker profile",
+  "currentPlan": "Current Plan",
+  "upgradeToYearly": "Upgrade to Yearly",
+  "switchToMonthly": "Switch to Monthly",
+  "downgradeToFree": "Downgrade to Free",
+  "getStarted": "Get Started",
+  "activeOnCycle": "Active on {cycle}",
+  "@activeOnCycle": {
+    "placeholders": {
+      "cycle": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDowngrade": "Confirm Downgrade",
+  "downgradeWarning": "Are you sure you want to downgrade to {name}? You will lose your premium features and active perks associated with your current plan.",
+  "@downgradeWarning": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "selectPaymentMethod": "Select Payment Method",
+  "totalWithCycle": "Total: ${price} · {cycle}",
+  "@totalWithCycle": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "cycle": {
+        "type": "String"
+      }
+    }
+  },
+  "payWithCredits": "Pay with Farmy Credits",
+  "loadingBalance": "Loading balance...",
+  "balanceValue": "Balance: ${amount}",
+  "@balanceValue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payWithStripe": "Pay with Card (Stripe)",
+  "secureCreditCardPayment": "Secure credit card payment",
+  "unableToLoadTracking": "Unable to load tracking",
+  "noTrackingInformation": "No tracking information",
+  "deliveryTrackingEmptyHint": "Delivery tracking will appear\nonce your order is processed.",
+  "orderDelivered": "Order Delivered!",
+  "orderDeliveredSuccess": "Your order has been successfully delivered. Thank you for your purchase!",
+  "updating": "Updating",
+  "profileSyncIssue": "Profile sync issue",
+  "assignedLandsUnavailable": "Assigned lands unavailable",
+  "tasksUnavailable": "Tasks unavailable",
+  "invitationsUnavailable": "Invitations unavailable",
+  "contractsUnavailable": "Contracts unavailable",
+  "proofsUnavailable": "Proofs unavailable",
+  "viewAllHistory": "View All History",
+  "noLandAssignmentsYet": "No land assignments yet",
+  "landAssignmentsEmptyHint": "You'll see your assigned lands here",
+  "noTasksAssigned": "No tasks assigned",
+  "tasksEmptyHint": "Tasks will appear here when assigned",
+  "notifications": "Notifications",
+  "realtimeNotificationsSoon": "Real-time task notifications coming soon",
+  "verifiedWorker": "Verified Worker",
+  "pendingVerification": "Pending Verification",
+  "invitationAcceptedSuccess": "Invitation accepted successfully.",
+  "invitationDeclinedSuccess": "Invitation declined successfully.",
+  "unableToProcessInvitation": "Unable to process invitation response.",
+  "landBoundary": "Land Boundary",
+  "landInformation": "Land Information",
+  "noDescriptionAvailable": "No description available",
+  "grid": "Grid",
+  "assignmentRole": "Assignment Role",
+  "salaryLabel": "Salary",
+  "salaryValue": "${amount} / month",
+  "@salaryValue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "assignmentStatus": "Assignment Status",
+  "farmerProfileUnavailable": "Farmer profile is unavailable right now.",
+  "unableToOpenFarmerProfile": "Unable to open farmer profile. Please retry.",
+  "invitationApproved": "Invitation Approved",
+  "invitationPending": "Invitation Pending",
+  "invitationDeclined": "Invitation Declined",
+  "invitationExpired": "Invitation Expired",
+  "assigned": "Assigned",
+  "acceptThisOfferQuestion": "Accept this offer?",
+  "acceptOfferConfirmation": "You are about to accept the offer of ${amount} {type}. This will establish a legal contract.",
+  "@acceptOfferConfirmation": {
+    "placeholders": {
+      "amount": { "type": "String" },
+      "type": { "type": "String" }
+    }
+  },
+  "contractApproved": "Contract approved! Waiting for investor payment.",
+  "failedToAccept": "Failed to accept offer.",
+  "declineThisOfferQuestion": "Decline this offer?",
+  "declineOfferConfirmation": "Are you sure you want to decline the offer from {name}?",
+  "@declineOfferConfirmation": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "theInvestor": "the investor",
+  "contractDeclined": "Contract offer declined.",
+  "failedToDecline": "Failed to decline offer.",
+  "pleaseEnterAMessage": "Please enter a message",
+  "pleaseEnterValidSalary": "Please enter a valid salary amount",
+  "counterOfferSent": "Counter-offer sent successfully!",
+  "failedToSendCounterOffer": "Failed to send counter-offer.",
+  "messageCannotBeEmpty": "Message cannot be empty",
+  "messageUpdated": "Message updated successfully",
+  "failedToEditMessage": "Failed to update message",
+  "withdrawMessageQuestion": "Withdraw this message?",
+  "withdrawMessageConfirmation": "This will permanently remove your last negotiation message.",
+  "withdraw": "Withdraw",
+  "messageWithdrawn": "Message withdrawn",
+  "failedToWithdrawMessage": "Failed to withdraw message",
+  "investorAcceptOfferConfirmation": "You are about to accept {name}'s counter-offer of ${amount} {type}. Once accepted, you must pay the first month's salary to activate the contract.",
+  "@investorAcceptOfferConfirmation": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "amount": { "type": "String" },
+      "type": { "type": "String" }
+    }
+  },
+  "theWorker": "the worker",
+  "offerAcceptedProceedToPayment": "Offer accepted! Please proceed to payment to activate the contract.",
+  "declineNegotiationQuestion": "Decline negotiation?",
+  "declineNegotiationConfirmation": "Are you sure you want to decline further negotiations with {name}?",
+  "@declineNegotiationConfirmation": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "thisWorker": "this worker",
+  "negotiationDeclined": "Negotiation declined and closed.",
+  "failedToCreatePayment": "Failed to create payment intent.",
+  "contractActivated": "Contract activated successfully!",
+  "invalidPaymentData": "Received invalid payment data from server.",
+  "paymentSubmittedHint": "Payment submitted. The contract will be activated once confirmed.",
+  "paymentCancelled": "Payment was cancelled.",
+  "contractForWorker": "Contract for {name}",
+  "@contractForWorker": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "negotiationDeclinedBanner": "Negotiation Declined",
+  "contractTerminatedBanner": "Contract Terminated",
+  "contractExpiredBanner": "Contract Expired",
+  "contractIsStatus": "This contract is {status}",
+  "@contractIsStatus": {
+    "placeholders": {
+      "status": { "type": "String" }
+    }
+  },
+  "noMessagesYet": "No messages yet",
+  "startNegotiationHint": "Start the negotiation by sending a message.",
+  "systemOfferAccepted": "Offer accepted. Proceeding to payment.",
+  "systemOfferDeclined": "Offer declined. This negotiation has been cancelled.",
+  "you": "You",
+  "otherParty": "Other party",
+  "proposedSalaryAmount": "Proposed Salary: ${amount}",
+  "@proposedSalaryAmount": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "editingYourMessage": "Editing your message",
+  "editYourMessageHint": "Edit your message...",
+  "salaryOptional": "Salary (optional)",
+  "justNow": "just now",
+  "minutesAgo": "{count}m ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "hoursAgo": "{count}h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "negotiateTerms": "Negotiate Terms",
+  "salaryAmount": "Salary Amount",
+  "addAMessageHint": "Add a message...",
+  "counter": "Counter",
+  "counterOffer": "Counter-offer",
+  "payAmountToActivate": "Pay ${amount} to Activate",
+  "@payAmountToActivate": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "hiringPending": "Hiring Pending",
+  "negotiating": "Negotiating",
+  "awaitingPayment": "Awaiting Payment",
+  "negotiate": "Negotiate",
+  "perTask": "per task",
+  "squareMeters": "{value} m²",
+  "@squareMeters": {
+    "placeholders": {
+      "value": { "type": "String" }
+    }
+  },
+  "amountPrefix": "${amount}",
+  "@amountPrefix": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "terminatedLabel": "Terminated",
+  "hourlyLabel": "per hour",
+  "accept": "Accept",
+  "decline": "Decline",
+  "contract": "Contract",
+  "paymentFailed": "Payment failed: {error}",
+  "@paymentFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "farmerInfoSyncedFromAssignment": "Information synced from assignment",
+  "tapToViewProfile": "Tap to view profile",
+  "invitationApproved": "Invitation Approved",
+  "invitationPending": "Invitation Pending",
+  "invitationDeclined": "Invitation Declined",
+  "invitationExpired": "Invitation Expired",
+  "assigned": "Assigned",
+  "landBoundary": "Land Boundary",
+  "landInformation": "Land Information",
+  "noDescriptionAvailable": "No description available",
+  "grid": "Grid",
+  "area": "Area",
+  "assignmentRole": "Assignment Role",
+  "assignmentStatus": "Assignment Status",
+  "salaryPerMonth": "${amount} / month",
+  "@salaryPerMonth": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "revenueTitle": "Revenue",
+  "revenueAnalysisPrompt": "Analyze my revenue sources and suggest ways to maximize my profits based on current market trends.",
+  "analyzeRevenueTooltip": "Analyze Revenue",
+  "totalDetailsRevenue": "Total Details Revenue",
+  "creditsLabel": "Credits",
+  "productSales": "Product Sales",
+  "itemsSold": "Items Sold",
+  "unitsLabel": "Units",
+  "investmentRevenue": "Investment Revenue",
+  "viewInvestmentBreakdown": "View detailed breakdown in Investments",
+  "portfolioInsights": "Portfolio Insights",
+  "premiumLabel": "PREMIUM",
+  "unlockPortfolioMaster": "Unlock Portfolio Master",
+  "premiumPortfolioDesc": "Get real-time ROI tracking, automated dividend reports, and AI-powered investment advice.",
+  "investorPlus": "Investor Plus",
+  "portfolioAnalyticsLoading": "Portfolio Analytics Loading...",
+  "upgradeToPlan": "Upgrade to {planName}",
+  "@upgradeToPlan": {
+    "placeholders": {
+      "planName": { "type": "String" }
+    }
+  },
+  "passwordChangedSuccess": "Password changed successfully",
+  "changePasswordTitle": "Change Password",
+  "createNewPassword": "Create a new password",
+  "passwordPolicyHint": "Your new password must be different from previous used passwords.",
+  "currentPassword": "Current Password",
+  "enterCurrentPasswordError": "Please enter your current password",
+  "newPassword": "New Password",
+  "confirmNewPassword": "Confirm New Password",
+  "updatePassword": "Update Password",
+  "profileSyncFailed": "Failed to sync profile: {error}",
+  "@profileSyncFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "unsavedChangesTitle": "Unsaved Changes",
+  "unsavedChangesDesc": "You have unsaved changes. Do you want to discard them?",
+  "discard": "Discard",
+  "waitUsernameCheck": "Please wait for username availability check",
+  "correctErrorsInForm": "Please correct the errors in the form",
+  "usernameTaken": "This username is already taken",
+  "profileUpdatedSuccess": "Profile updated successfully!",
+  "changeProfilePicture": "Change Profile Picture",
+  "chooseFromGallery": "Choose from Gallery",
+  "takeAPhoto": "Take a Photo",
+  "profilePictureUpdated": "Profile picture updated!",
+  "uploadFailed": "Upload failed: {error}",
+  "@uploadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "editProfileTitle": "Edit Profile",
+  "identityTab": "Identity",
+  "trustTab": "Trust",
+  "rolePrivacyTab": "Role & Privacy",
+  "saveChangesTooltip": "Save Changes",
+  "profileCompleteness": "Profile Completeness",
+  "fullName": "Full Name",
+  "nameRequired": "Name is required",
+  "nameTooShort": "Name is too short",
+  "onlyLettersAllowed": "Only letters and spaces allowed",
+  "usernameLabel": "Username",
+  "publicUniqueHandle": "Public unique handle",
+  "usernameRequired": "Username is required",
+  "tooShortMin3": "Too short (min 3)",
+  "usernameFormatError": "Use lowercase, numbers, dots, underscores",
+  "phoneNumber": "Phone Number",
+  "invalidPhoneFormat": "Invalid phone format",
+  "countryLabel": "Country",
+  "cityLabel": "City",
+  "headlineLabel": "Headline",
+  "headlineHint": "A short description of what you do",
+  "aboutMe": "About Me",
+  "portfolioLinks": "Portfolio & Links",
+  "linkedinProfile": "LinkedIn Profile",
+  "linkedinUrlError": "Enter a valid LinkedIn URL or handle",
+  "personalWebsite": "Personal Website",
+  "websiteUrlError": "Enter a valid website URL",
+  "farmerDetailsTitle": "Farmer Details",
+  "businessFarmName": "Business/Farm Name",
+  "investorDetailsTitle": "Investor Details",
+  "expectedBudgetRange": "Expected Budget Range",
+  "budgetRangeHint": "e.g. $10,000 - $50,000",
+  "privacyControls": "Privacy Controls",
+  "discoverableMarketplace": "Discoverable in Marketplace",
+  "discoverableSubtitle": "Let others find and view your profile",
+  "showContactInfoLabel": "Show Contact Info",
+  "showContactInfoSubtitle": "Make phone and email visible to connections",
+  "failedInitiate2FA": "Failed to initiate 2FA setup",
+  "twoFAEnabledSuccess": "2FA enabled successfully",
+  "twoFADisabledSuccess": "2FA disabled successfully",
+  "codeCopied": "Code copied to clipboard",
+  "disable2FA": "Disable 2FA",
+  "enable2FA": "Enable 2FA",
+  "secureYourAccount": "Secure Your Account",
+  "twoFADesc": "Two-factor authentication adds an extra layer of security to your account. To log in, you will need to provide a 6-digit code from your authenticator app.",
+  "startSetup": "Start Setup",
+  "linkYourAppStep": "Step 1: Link your app",
+  "scanQRCodeDesc": "Scan this QR code with your Authenticator App (Google Authenticator, Authy, etc.)",
+  "enterCodeManually": "Or enter this code manually:",
+  "copyToClipboardTooltip": "Copy to clipboard",
+  "confirmEnablementStep": "Step 2: Confirm Enablement",
+  "enter6DigitCodeConfirm": "Enter the 6-digit code from your app to confirm:",
+  "backButton": "Back",
+  "enter6DigitCodeDisable": "Enter the 6-digit code from your authenticator app to disable two-factor authentication.",
+  "allNotificationsMarkedRead": "All notifications marked as read",
+  "failedToDeleteNotification": "Failed to delete notification",
+  "notificationsTitle": "Notifications",
+  "markAllAsReadTooltip": "Mark all as read",
+  "noNotificationsYet": "No notifications yet",
+  "premiumAccess": "Premium Access",
+  "chooseYourPlan": "Choose Your Plan",
+  "subscriptionHeadline": "Select a plan to unlock the full Farmy experience.\nOne subscription opens every door.",
+  "monthly": "Monthly",
+  "yearly": "Yearly",
+  "alwaysFree": "Always Free",
+  "freeLabel": "Free",
+  "monthlySuffix": "/mo",
+  "yearlySuffix": "/yr",
+  "savingsLabel": "Was {oldPrice}/yr — save {savings}",
+  "@savingsLabel": {
+    "placeholders": {
+      "oldPrice": { "type": "String" },
+      "savings": { "type": "String" }
+    }
+  },
+  "continueWithFree": "Continue with Free",
+  "getPlan": "Get {planName}",
+  "@getPlan": {
+    "placeholders": {
+      "planName": { "type": "String" }
+    }
+  },
+  "selectPaymentMethod": "Select Payment Method",
+  "paymentSummary": "{price} · {cycle} · {planName}",
+  "@paymentSummary": {
+    "placeholders": {
+      "price": { "type": "String" },
+      "cycle": { "type": "String" },
+      "planName": { "type": "String" }
+    }
+  },
+  "payWithCredits": "Pay with Farmy Credits",
+  "loadingBalance": "Loading balance...",
+  "balanceStatusSuccess": "Balance: {amount} ✓",
+  "@balanceStatusSuccess": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "balanceStatusInsufficient": "Balance: {amount} — Insufficient",
+  "@balanceStatusInsufficient": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "payWithCardStripe": "Pay with Card (Stripe)",
+  "secureCardPaymentDesc": "Secure credit / debit card payment",
+  "failedLoadPlans": "Failed to load plans",
+  "noPlansAvailable": "No plans available",
+  "contactSupport": "Please contact support.",
+  "invalidPaymentData": "Invalid payment data received from server. Please try again.",
+  "paymentCancelled": "Payment was cancelled.",
+  "paymentFailed": "Payment could not be completed.",
+  "paymentPendingVerifying": "Payment submitted. We are verifying it in the background.",
+  "paymentProcessingSync": "Payment is still processing. Your subscription will sync automatically.",
+  "paymentStatusDelay": "Payment status check is delayed. We will keep syncing in the background.",
+  "paymentError": "Payment Error: {error}",
+  "@paymentError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "deliveriesTitle": "Deliveries",
+  "ordersTitle": "Orders",
+  "totalCount": "{total} total",
+  "@totalCount": {
+    "placeholders": {
+      "total": { "type": "String" }
+    }
+  },
+  "totalOrdersLabel": "Total Orders",
+  "activeLabel": "Active",
+  "deliveredLabel": "Delivered",
+  "noDeliveriesYet": "No deliveries yet",
+  "noDeliveriesDesc": "Deliveries for your products will\nappear here when customers order.",
+  "manageDeliveryTitle": "Manage Delivery",
+  "deliveryNotFound": "Delivery not found",
+  "deliveryTimeline": "Delivery Timeline",
+  "updateStatus": "Update Status",
+  "etaLabel": "ETA: {time}",
+  "@etaLabel": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "orderDetails": "Order Details",
+  "productLabel": "Product",
+  "quantityLabel": "Quantity",
+  "totalLabel": "Total",
+  "orderIdLabel": "Order ID",
+  "customerLabel": "Customer",
+  "deliveryInfo": "Delivery Info",
+  "addressLabel": "Address",
+  "createdLabel": "Created",
+  "startedLabel": "Started",
+  "cancelDeliveryQuestion": "Cancel Delivery?",
+  "updateToStatusQuestion": "Update to {status}?",
+  "@updateToStatusQuestion": {
+    "placeholders": {
+      "status": { "type": "String" }
+    }
+  },
+  "cancelNotifyCustomer": "This will cancel the delivery and notify the customer.",
+  "advanceNotifyCustomer": "This will advance the delivery to \"{status}\" and notify the customer.",
+  "@advanceNotifyCustomer": {
+    "placeholders": {
+      "status": { "type": "String" }
+    }
+  },
+  "cancellationReasonHint": "Reason for cancellation...",
+  "addNoteHint": "Add a note (optional)...",
+  "confirmUpdate": "Confirm",
+  "cancelDeliveryAction": "Cancel Delivery",
+  "statusUpdatedTo": "Status updated to {status}",
+  "@statusUpdatedTo": {
+    "placeholders": {
+      "status": { "type": "String" }
+    }
+  },
+  "failedUpdateStatus": "Failed to update status",
+  "moveToStatus": "Move to {status}",
+  "@moveToStatus": {
+    "placeholders": {
+      "status": { "type": "String" }
+    }
+  },
+  "successfullyDelivered": "Successfully Delivered",
+  "deliveryCancelled": "Delivery Cancelled",
+  "completedOn": "Completed on {date}",
+  "@completedOn": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "dateTimeAt": "{date} at {time}",
+  "@dateTimeAt": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "cardAddedSuccess": "Card added successfully",
+  "failedAddCard": "Failed to add card",
+  "addCreditsTitle": "Add Credits",
+  "selectAmount": "Select Amount",
+  "customAmountLabel": "Custom Amount",
+  "maxAmountError": "Maximum amount is $999,999.99",
+  "payAmount": "Pay ${amount}",
+  "@payAmount": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "enterAmount": "Enter Amount",
+  "successfullyAddedCredits": "Successfully added ${amount}",
+  "@successfullyAddedCredits": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "priceTnd": "{price} TND",
+  "@priceTnd": {
+    "placeholders": {
+      "price": { "type": "String" }
+    }
+  },
+  "failedAddCredits": "Failed to add credits",
+  "walletPaymentsTitle": "Wallet & Payments",
+  "currentBalance": "Current Balance",
+  "paymentMethods": "Payment Methods",
+  "addNewCard": "Add New Card",
+  "expiresLabel": "Expires {expiry}",
+  "@expiresLabel": {
+    "placeholders": {
+      "expiry": { "type": "String" }
+    }
+  },
+  "failedLoadTasks": "Failed to load tasks",
+  "errorFetchingTasks": "Error fetching your tasks",
+  "taskCompletedSuccess": "Task completed! You are now available.",
+  "failedCompleteTask": "Failed to complete task",
+  "errorWithPrefix": "Error: {error}",
+  "@errorWithPrefix": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "myTasksTitle": "My Tasks",
+  "noPendingTasks": "No pending tasks!",
+  "availableForAssignments": "You are available for new assignments.",
+  "taskLabel": "Task",
+  "unknownCaps": "UNKNOWN",
+  "minsSuffix": "mins",
+  "markAsComplete": "Mark as Complete",
+  "productionGuruTitle": "Production Guru",
+  "sessionHistoryTooltip": "Session History",
+  "newSessionTooltip": "New Session",
+  "askGuruHint": "Ask your guru...",
+  "harvestChroniclesTitle": "Harvest Chronicles",
+  "noHistoryYet": "No history yet",
+  "farmAnalysisDefault": "Farm Analysis",
+  "creditsLabel": "Credits",
+  "assetsLabel": "Assets",
+  "failedReachAnalyst": "Failed to reach AI Strategy Analyst.",
+  "strategicPortfolioAnalystTitle": "Strategic Portfolio Analyst",
+  "investmentStrategyChroniclesTitle": "Investment Strategy Chronicles",
+  "strategySessionDefault": "Strategy Session",
+  "welcomeStrategicAnalysis": "Welcome to Strategic Analysis",
+  "investmentAgentWelcomeDesc": "Tell me your budget and risk preference, or ask about current market and weather trends.",
+  "consultedLiveData": "Consulted Live Data:",
+  "marketLabel": "Market",
+  "weatherLabel": "Weather",
+  "suggestedRealEstate": "Suggested Real Estate:",
+  "unknownFarm": "Unknown Farm",
+  "tndPerMeter": "TND/m",
+  "enterPreferencesHint": "Enter preferences or ask analysis...",
+  "laborMarketLabel": "LABOR MARKET",
+  "specificationsLabel": "Specifications:",
+  "priceLabel": "Price",
+  "rateLabel": "Rate",
+  "ratingLabel": "Rating",
+  "closeButton": "Close"
+}

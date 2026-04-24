@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/validators.dart';
@@ -127,13 +128,13 @@ class _VerifyScreenState extends State<VerifyScreen> {
                     ),
                     const SizedBox(height: 40),
                     Text(
-                      'Verify Your Email',
+                      AppLocalizations.of(context)!.verifyEmailTitle,
                       style: Theme.of(context).textTheme.headlineMedium,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'We sent a 6-digit verification code to\n${user?.email ?? "your email"}.',
+                      AppLocalizations.of(context)!.verificationCodeSentTo(user?.email ?? AppLocalizations.of(context)!.yourEmail),
                       style: Theme.of(
                         context,
                       ).textTheme.bodyMedium?.copyWith(height: 1.5),
@@ -233,7 +234,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                               ),
                             )
                           : const Text(
-                              'Verify Account',
+                              AppLocalizations.of(context)!.verifyAccount,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -253,8 +254,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
                                     SnackBar(
                                       content: Text(
                                         success
-                                            ? 'New verification code sent!'
-                                            : 'Failed to send code. Try again.',
+                                            ? AppLocalizations.of(context)!.newVerificationCodeSent
+                                            : AppLocalizations.of(context)!.failedToSendCode,
                                       ),
                                       backgroundColor: success
                                           ? Colors.green
@@ -271,7 +272,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                           splashFactory: NoSplash.splashFactory,
                         ),
                         child: const Text(
-                          'Resend New Code',
+                          AppLocalizations.of(context)!.resendNewCode,
                           style: TextStyle(color: AppTheme.primaryColor),
                         ),
                       ),
@@ -294,7 +295,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                           splashFactory: NoSplash.splashFactory,
                         ),
                         child: Text(
-                          'Back to Login',
+                          AppLocalizations.of(context)!.backToLogin,
                           style: TextStyle(
                             color: (isDark ? Colors.white : Colors.black)
                                 .withOpacity(0.7),

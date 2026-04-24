@@ -134,7 +134,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                           onTap: () =>
                               ProfilePreviewSheet.show(context, profile.userId),
                           child: Text(
-                            profile.userName ?? 'Worker',
+                            profile.userName ?? AppLocalizations.of(context)!.worker,
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
@@ -172,7 +172,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          skill,
+                          _translateSkill(context, skill),
                           style: TextStyle(
                             fontSize: 10,
                             color: isDark
@@ -203,7 +203,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '${profile.completedTasks} tasks',
+                        AppLocalizations.of(context)!.tasksCount(profile.completedTasks),
                         style: TextStyle(
                           fontSize: 12,
                           color: isDark
@@ -221,7 +221,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '${profile.hourlyRate.toStringAsFixed(0)} TND',
+                  AppLocalizations.of(context)!.amountTND(profile.hourlyRate.toStringAsFixed(0)),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
@@ -231,7 +231,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                   ),
                 ),
                 Text(
-                  '/hour',
+                  AppLocalizations.of(context)!.perHour,
                   style: TextStyle(
                     fontSize: 11,
                     color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
@@ -253,7 +253,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
     return Scaffold(
       backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Worker Marketplace'),
+        title: Text(AppLocalizations.of(context)!.workerMarketplace),
         backgroundColor: Colors.grey.shade800,
         elevation: 0,
       ),
@@ -265,7 +265,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search workers...',
+                hintText: AppLocalizations.of(context)!.searchWorkers,
                 hintStyle: TextStyle(
                   color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
                 ),
@@ -326,7 +326,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                         ),
                       ),
                       child: Text(
-                        skill,
+                        skill == 'All' ? AppLocalizations.of(context)!.all : _translateSkill(context, skill),
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -359,7 +359,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'No verified workers found',
+                          AppLocalizations.of(context)!.noVerifiedWorkersFound,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.grey.shade500,
@@ -384,5 +384,21 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
         ],
       ),
     );
+  }
+
+  String _translateSkill(BuildContext context, String skill) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (skill.toLowerCase()) {
+      case 'watering': return l10n.watering;
+      case 'harvesting': return l10n.harvesting;
+      case 'planting': return l10n.planting;
+      case 'animal care':
+      case 'animal_care': return l10n.animalCare;
+      case 'machine operation':
+      case 'machine_operation': return l10n.machineOperation;
+      case 'soil management':
+      case 'soil_management': return l10n.soilManagement;
+      default: return skill;
+    }
   }
 }

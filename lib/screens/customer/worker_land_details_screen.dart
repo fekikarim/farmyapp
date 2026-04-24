@@ -52,8 +52,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
         final errorText = e.toString();
         if (errorText.contains('SocketException') ||
             errorText.contains('Failed host lookup')) {
-          _error =
-              'No internet connection. Please check your network and try again.';
+          _error = AppLocalizations.of(context)!.noInternetConnection;
         } else {
           _error = errorText
               .replaceAll('Exception: ', '')
@@ -81,7 +80,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Farmer profile is unavailable right now.'),
+          content: Text(AppLocalizations.of(context)!.farmerProfileUnavailable),
           backgroundColor: Colors.orange.shade700,
         ),
       );
@@ -94,7 +93,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Unable to open farmer profile. Please retry.'),
+          content: Text(AppLocalizations.of(context)!.unableToOpenFarmerProfile),
           backgroundColor: Colors.red.shade700,
         ),
       );
@@ -110,7 +109,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
       return Scaffold(
         backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
         appBar: AppBar(
-          title: const Text('Land Details'),
+          title: Text(AppLocalizations.of(context)!.landDetails),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
@@ -122,7 +121,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
       return Scaffold(
         backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
         appBar: AppBar(
-          title: const Text('Land Details'),
+          title: Text(AppLocalizations.of(context)!.landDetails),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
@@ -145,7 +144,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                 FilledButton.icon(
                   onPressed: _refreshAll,
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Retry'),
+                  label: Text(AppLocalizations.of(context)!.retry),
                 ),
               ],
             ),
@@ -170,7 +169,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
         contract?.investorName ??
         invitation?.farmerName ??
         widget.assignment.assignerName ??
-        'Farmer';
+        AppLocalizations.of(context)!.farmer;
     final farmerEmail =
         land?.ownerEmail ?? contract?.investorEmail ?? invitation?.farmerEmail;
     final farmerPicture = land?.ownerProfilePicture;
@@ -189,13 +188,13 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
         contract?.statusLabel ??
         (invitation != null
             ? (invitation.isApproved
-                  ? 'Invitation Approved'
+                  ? AppLocalizations.of(context)!.invitationApproved
                   : invitation.isPending
-                  ? 'Invitation Pending'
+                  ? AppLocalizations.of(context)!.invitationPending
                   : invitation.isDeclined
-                  ? 'Invitation Declined'
-                  : 'Invitation Expired')
-            : 'Assigned');
+                  ? AppLocalizations.of(context)!.invitationDeclined
+                  : AppLocalizations.of(context)!.invitationExpired)
+            : AppLocalizations.of(context)!.assigned);
 
     final boundaries = land?.boundaries;
     final center = _resolveCenter(boundaries);
@@ -203,7 +202,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
     return Scaffold(
       backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
       appBar: AppBar(
-        title: Text(land?.name ?? widget.assignment.landName ?? 'Land Details'),
+        title: Text(land?.name ?? widget.assignment.landName ?? AppLocalizations.of(context)!.landDetails),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -259,7 +258,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                     ),
                     TextButton(
                       onPressed: _refreshAll,
-                      child: const Text('Retry'),
+                      child: Text(AppLocalizations.of(context)!.retry),
                     ),
                   ],
                 ),
@@ -385,8 +384,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      farmerEmail ??
-                          'Farmer information synced from assignment',
+                          AppLocalizations.of(context)!.farmerInfoSyncedFromAssignment,
                       style: TextStyle(
                         fontSize: 12,
                         color: isDark
@@ -398,7 +396,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Tap to view profile',
+                      AppLocalizations.of(context)!.tapToViewProfile,
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -423,7 +421,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      relationStatus,
+                      _translateContractStatus(context, relationStatus),
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
@@ -462,14 +460,14 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
         spacing: 12,
         runSpacing: 12,
         children: [
-          _chip(Icons.work_outline, role.toUpperCase(), isDark),
+          _chip(Icons.work_outline, _translateRole(context, role).toUpperCase(), isDark),
           _chip(
             Icons.payments_outlined,
-            '\$${salary.toStringAsFixed(0)}/mo',
+            AppLocalizations.of(context)!.amountPerMonth(salary.toStringAsFixed(0)),
             isDark,
           ),
-          _chip(Icons.bolt_outlined, status.toUpperCase(), isDark),
-          _chip(Icons.link, relationStatus.toUpperCase(), isDark),
+          _chip(Icons.bolt_outlined, _translateAssignmentStatus(context, status).toUpperCase(), isDark),
+          _chip(Icons.link, _translateContractStatus(context, relationStatus).toUpperCase(), isDark),
         ],
       ),
     );
@@ -548,7 +546,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Text(
-                'Land Boundary',
+                AppLocalizations.of(context)!.landBoundary,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
@@ -577,7 +575,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Land Information',
+            AppLocalizations.of(context)!.landInformation,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -585,27 +583,27 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          _detailRow('Name', land?.name ?? assignment.landName ?? '-'),
+          _detailRow(AppLocalizations.of(context)!.name, land?.name ?? assignment.landName ?? '-'),
           _detailRow(
-            'Description',
-            land?.description ?? 'No description available',
+            AppLocalizations.of(context)!.description,
+            land?.description ?? AppLocalizations.of(context)!.noDescriptionAvailable,
           ),
           _detailRow(
-            'Grid',
+            AppLocalizations.of(context)!.grid,
             land != null ? '${land.gridWidth} x ${land.gridHeight}' : '-',
           ),
           _detailRow(
-            'Area',
+            AppLocalizations.of(context)!.area,
             land != null
-                ? '${(land.gridWidth * land.gridHeight).toInt()} m²'
+                ? AppLocalizations.of(context)!.squareMeters('${(land.gridWidth * land.gridHeight).toInt()}')
                 : '-',
           ),
-          _detailRow('Assignment Role', assignment.role),
+          _detailRow(AppLocalizations.of(context)!.assignmentRole, _translateRole(context, assignment.role)),
           _detailRow(
-            'Salary',
-            '\$${assignment.salary.toStringAsFixed(0)} / month',
+            AppLocalizations.of(context)!.salary,
+            AppLocalizations.of(context)!.salaryPerMonth(assignment.salary.toStringAsFixed(0)),
           ),
-          _detailRow('Assignment Status', assignment.status),
+          _detailRow(AppLocalizations.of(context)!.assignmentStatus, _translateAssignmentStatus(context, assignment.status)),
         ],
       ),
     );
@@ -637,5 +635,42 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
         ],
       ),
     );
+  }
+
+  String _translateRole(BuildContext context, String role) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (role.toLowerCase()) {
+      case 'worker': return l10n.worker;
+      case 'supervisor': return l10n.supervisor;
+      case 'manager': return l10n.manager;
+      default: return role;
+    }
+  }
+
+  String _translateAssignmentStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toLowerCase()) {
+      case 'active': return l10n.activeLabel;
+      case 'pending': return l10n.pendingLabel;
+      case 'inactive': return l10n.inactiveLabel;
+      default: return status;
+    }
+  }
+
+  String _translateContractStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toLowerCase()) {
+      case 'active': return l10n.activeLabel;
+      case 'suspended': return l10n.suspendedLabel;
+      case 'terminated': return l10n.terminatedLabel;
+      case 'hiring_pending': return l10n.hiringPending;
+      case 'negotiation_pending': return l10n.negotiating;
+      case 'payment_pending': return l10n.awaitingPayment;
+      case 'invitation approved': return l10n.invitationApproved;
+      case 'invitation pending': return l10n.invitationPending;
+      case 'invitation declined': return l10n.invitationDeclined;
+      case 'invitation expired': return l10n.invitationExpired;
+      default: return status;
+    }
   }
 }
