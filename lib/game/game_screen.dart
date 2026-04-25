@@ -36,7 +36,7 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   Map<String, dynamic>? _gridData;
   bool _isLoading = true;
-  String _loadingMessage = 'Initializing...';
+  String? _loadingMessage;
   double? _loadingProgress;
 
   // Animation for Floating Menu
@@ -111,7 +111,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _initializeApp() async {
-    _updateLoading('Fetching farm data...', 0.1);
+    _updateLoading(AppLocalizations.of(context)!.fetchingFarmData, 0.1);
 
     try {
       final landProvider = context.read<LandProvider>();
@@ -124,10 +124,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
           : null;
 
       final gridData = await LandGridService.fetchLandGrid(widget.land.id);
-      _updateLoading('Preparing land geometry...', 0.4);
+      _updateLoading(AppLocalizations.of(context)!.preparingLandGeometry, 0.4);
 
       await _precacheGridAssets(gridData);
-      _updateLoading('Finalizing world...', 0.8);
+      _updateLoading(AppLocalizations.of(context)!.finalizingWorld, 0.8);
 
       await baseAssetsFuture;
       if (rentalsFuture != null) {
@@ -170,7 +170,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _loadingMessage = 'Failed to load farm.';
+          _loadingMessage = AppLocalizations.of(context)!.failedToLoadFarm;
         });
       }
     }
@@ -180,7 +180,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     final matrix = gridData['matrix'];
     if (matrix is! List) return;
 
-    _updateLoading('Warming up nearby assets...', 0.6);
+    _updateLoading(AppLocalizations.of(context)!.warmingUpAssets, 0.6);
     final allPaths = _collectGridWarmupPaths(matrix);
     if (allPaths.isEmpty) return;
 
@@ -553,11 +553,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         ? Colors.blue
         : Colors.orange;
 
-    final String categoryLabel = category
-        .replaceAll('_', ' ')
-        .split(' ')
-        .map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : w)
-        .join(' ');
+    final String categoryLabel = _translateCategory(context, category).toUpperCase();
 
     showModalBottomSheet(
       context: context,
@@ -677,7 +673,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                             ),
                             const SizedBox(width: 5),
                             Text(
-                              status,
+                              _translateStatus(context, status).toUpperCase(),
                               style: TextStyle(
                                 color: statusColor,
                                 fontSize: 12,
@@ -708,12 +704,12 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                     spacing: 10,
                     runSpacing: 8,
                     children: [
-                      _statChip(Icons.grid_3x3, 'Position', '($x, $y)'),
-                      _statChip(Icons.aspect_ratio, 'Size', '${fw}×$fh tiles'),
+                      _statChip(Icons.grid_3x3, AppLocalizations.of(context)!.position, '($x, $y)'),
+                      _statChip(Icons.aspect_ratio, AppLocalizations.of(context)!.size, '${fw}×$fh ${AppLocalizations.of(context)!.tiles}'),
                       if (variant?['base_price'] != null)
                         _statChip(
                           Icons.monetization_on_outlined,
-                          'Base price',
+                          AppLocalizations.of(context)!.basePrice,
                           '${variant!['base_price']}',
                         ),
                       // Render any extra attributes from the variant
@@ -1094,7 +1090,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
           const SizedBox(height: 16),
 
           Text(
-            _loadingMessage,
+            _loadingMessage ?? '',
             style: TextStyle(
               color: Colors.white.withOpacity(0.7),
               fontSize: 14,
@@ -1377,5 +1373,37 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       DeviceOrientation.portraitDown,
     ]);
     super.dispose();
+  }
+  String _translateCategory(BuildContext context, String category) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (category.toLowerCase()) {
+      case 'animal':
+        return l10n.animal;
+      case 'vegetation':
+        return l10n.vegetation;
+      case 'tree':
+        return l10n.tree;
+      case 'structure':
+        return l10n.structure;
+      case 'machine':
+        return l10n.machine;
+      default:
+        return category;
+    }
+  }
+
+  String _translateStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toLowerCase()) {
+      case 'active':
+      case 'idle':
+        return l10n.activeUpper;
+      case 'working':
+        return l10n.workingUpper;
+      case 'busy':
+        return l10n.busyUpper;
+      default:
+        return status;
+    }
   }
 }

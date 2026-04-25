@@ -215,7 +215,7 @@ class _ShopOverlayState extends State<ShopOverlay>
           letterSpacing: 1,
         ),
         tabs: AssetCategory.values
-            .map((cat) => Tab(text: cat.name.toUpperCase()))
+            .map((cat) => Tab(text: _translateCategory(context, cat).toUpperCase()))
             .toList(),
       ),
     );
@@ -857,6 +857,21 @@ class _ShopOverlayState extends State<ShopOverlay>
           backgroundColor: Colors.redAccent,
         ),
       );
+    }
+  }
+  String _translateCategory(BuildContext context, AssetCategory category) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (category) {
+      case AssetCategory.animal:
+        return l10n.animal;
+      case AssetCategory.vegetation:
+        return l10n.vegetation;
+      case AssetCategory.tree:
+        return l10n.tree;
+      case AssetCategory.structure:
+        return l10n.structure;
+      case AssetCategory.machine:
+        return l10n.machine;
     }
   }
 }

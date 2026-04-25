@@ -214,7 +214,7 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
                       ),
                     _buildStat(
                       AppLocalizations.of(context)!.roleLabel,
-                      _user?.role.toUpperCase() ?? 'USER',
+                      _getRoleLabel(context, _user?.role ?? 'user').toUpperCase(),
                       Icons.badge,
                     ),
                   ],
@@ -423,5 +423,22 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
         ),
       ),
     );
+  }
+  String _getRoleLabel(BuildContext context, String role) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (role.toLowerCase()) {
+      case 'customer':
+        return l10n.customerLabel;
+      case 'farmer':
+        return l10n.farmer;
+      case 'investor':
+        return l10n.investor;
+      case 'worker':
+        return l10n.worker;
+      case 'admin':
+        return 'Admin';
+      default:
+        return role;
+    }
   }
 }

@@ -75,7 +75,7 @@ class _InvestorInventoryScreenState extends State<InvestorInventoryScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  request['asset_category']?.toString().toUpperCase() ?? AppLocalizations.of(context)!.itemUpper,
+                                  _translateCategory(context, request['asset_category']?.toString() ?? '').toUpperCase(),
                                   style: const TextStyle(
                                     color: Colors.greenAccent,
                                     fontSize: 10,
@@ -112,5 +112,22 @@ class _InvestorInventoryScreenState extends State<InvestorInventoryScreen> {
                   },
                 ),
     );
+  }
+  String _translateCategory(BuildContext context, String category) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (category.toLowerCase()) {
+      case 'animal':
+        return l10n.animal;
+      case 'vegetation':
+        return l10n.vegetation;
+      case 'tree':
+        return l10n.tree;
+      case 'structure':
+        return l10n.structure;
+      case 'machine':
+        return l10n.machine;
+      default:
+        return category.isEmpty ? l10n.itemUpper : category;
+    }
   }
 }

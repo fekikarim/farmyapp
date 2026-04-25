@@ -1,1062 +1,22 @@
 {
   "@@locale": "es",
-  "appName": "Farmy",
-  "unknown": "Desconocido",
-  "somethingWentWrong": "Algo salió mal",
-  "revenueTitle": "Ingresos",
-  "cancel": "Cancelar",
-  "becomeAWorker": "Convertirse en trabajador",
-  "joinTheWorkforce": "Unirse a la fuerza laboral",
-  "joinWorkforceDescription": "Crea tu perfil profesional y\ncomienza a ganar dinero en granjas cercanas hoy mismo.",
-  "selectYourSkills": "Selecciona tus habilidades",
-  "aboutYou": "Sobre ti",
-  "aboutYouHint": "Cuéntale a los agricultores sobre tu experiencia...",
-  "hourlyRateTnd": "Tarifa por hora (TND)",
-  "hourlyRateHint": "ej. 15.00",
-  "aiVerificationComingSoon": "Verificación por IA próximamente",
-  "aiVerificationDescription": "La verificación automatizada de identidad y habilidades acelerará tu aprobación.",
-  "createWorkerProfile": "Crear perfil de trabajador",
-  "selectAtLeastOneSkill": "Por favor, selecciona al menos una habilidad",
-  "workerProfileCreated": "¡🎉 Perfil de trabajador creado! Pendiente de verificación.",
-  "failedToCreateProfile": "Error al crear el perfil",
-  "enterValidRate": "Ingresa una tarifa válida",
-  "watering": "Riego",
-  "harvesting": "Cosecha",
-  "planting": "Plantación",
-  "animalCare": "Cuidado de animales",
-  "machineOperation": "Operación de maquinaria",
-  "soilManagement": "Gestión del suelo",
-  "structureInstallation": "Instalación de estructuras",
-  "qualityInspection": "Inspección de calidad",
-  "cropMonitoring": "Monitoreo de cultivos",
-  "pestControl": "Control de plagas",
-  "viewManageLandInvestments": "Ver y gestionar sus inversiones en tierras",
-  "enableGameEdgePanel": "Activar panel lateral del juego",
-  "accessFarmView": "Acceder a la vista de la granja en 2.5D",
-  "tasksProofs": "Tareas y pruebas",
-  "aiProofRequests": "Solicitudes de prueba de IA",
-  "viewManageProofRequests": "Ver y gestionar solicitudes de prueba",
-  "freeTier": "Nivel gratuito",
-  "upgradePremium": "Actualiza para funciones premium",
-  "freeForever": "Sin vencimiento · Gratis para siempre",
-  "validUntil": "Válido hasta el {date}",
-  "editLandDetails": "Editar detalles de la tierra",
-  "deleteLand": "Eliminar tierra",
-  "deleteLandTitle": "¿Eliminar tierra?",
-  "deleteLandConfirmation": "¿Estás seguro de que deseas eliminar \"{name}\"?",
-  "deleteLandActionWarning": "Esta acción no se puede deshacer. Todos los datos asociados se eliminarán permanentemente.",
-  "landDeletedSuccess": "Tierra eliminada con éxito",
-  "delete": "Eliminar",
-  "comingSoon": "Próximamente",
-  "featureOptimizedDescription": "El módulo \"{feature}\" se está optimizando actualmente para la gestión agrícola personal.",
-  "stayTunedSpatialTracking": "¡Manténgase atento al seguimiento avanzado de activos espaciales!",
-  "gotIt": "ENTENDIDO",
-  "live": "EN VIVO",
-  "failedToSyncBackend": "Error al sincronizar con el backend",
-  "externalProperty": "PROPIEDAD EXTERNA",
-  "notYours": "NO ES TUYA",
-  "dismiss": "DESCARTAR",
-  "myLands": "Mis tierras",
-  "landDataSyncSuccess": "¡✨ Datos de tierra sincronizados con éxito!",
-  "limitReached": "Límite alcanzado",
-  "newListing": "Nueva publicación",
-  "landLimitReachedTitle": "Límite de tierras alcanzado",
-  "landLimitReachedDescription": "Has usado todos los espacios de tierra en tu plan {planName}. ¡Actualiza a Farmer Pro para desbloquear tierras ilimitadas!",
-  "landSlotsUsed": "Espacios de tierra usados",
-  "synchronizingBoundaries": "SINCRONIZANDO LÍMITES",
-  "fetchingSpatialData": "Obteniendo datos espaciales precisos...",
-  "syncInterrupted": "Sincronización interrumpida",
-  "tryToResync": "Intentar resincronizar",
-  "noDescriptionProvided": "No se proporcionó descripción para esta tierra.",
-  "area": "Área",
-  "rentals": "Alquileres",
-  "earnings": "Ganancias",
-  "safety": "Seguridad",
-  "workforce": "Fuerza laboral",
-  "active": "ACTIVO",
-  "rented": "ALQUILADO",
-  "available": "disponible",
-  "owner": "Propietario: {id}",
-  "myBasket": "Mi cesta",
-  "clear": "Limpiar",
-  "yourBasketIsEmpty": "Tu cesta está vacía",
-  "browseMarketplaceDescription": "¡Explora el mercado y añade\nalgunos productos frescos!",
-  "browseProducts": "Explorar productos",
-  "subtotal": "Subtotal",
-  "tva": "IVA (19%)",
-  "total": "Total",
-  "balanceWithCredits": "Saldo: {balance} Créditos",
-  "checkoutWithItems": "Pagar ({count} artículos)",
-  "insufficientFunds": "Fondos insuficientes",
-  "insufficientFundsDescription": "Tu saldo es de {balance} Créditos, pero el total es de {total} TND.\n\nPor favor, recarga tu billetera.",
-  "confirmPurchase": "Confirmar compra",
-  "itemsCount": "{count} artículo(s)",
-  "includingTva": "(incluyendo 19% IVA: {tax} TND)",
-  "confirm": "Confirmar",
-  "orderPlaced": "¡Pedido realizado!",
-  "itemsPurchasedSuccess": "{count} artículo(s) comprado(s) con éxito.",
-  "trackOrder": "Seguir pedido",
-  "viewMyOrders": "Ver mis pedidos",
-  "backToMarketplace": "Volver al mercado",
-  "checkoutResultFeedback": "{successCount} comprados, {failCount} fallidos. Los artículos fallidos permanecen en la cesta.",
-  "clearBasketTitle": "¿Vaciar cesta?",
-  "clearBasketDescription": "Esto eliminará todos los artículos de tu cesta.",
-  "clearAll": "Vaciar todo",
-  "twoFactorAuthentication": "Autenticación de dos factores",
-  "verificationRequired": "Verificación requerida",
-  "enter2faCode": "Ingresa el código de 6 dígitos de tu aplicación de autenticación para continuar.",
-  "verify": "Verificar",
-  "goodMorning": "Buenos días",
-  "goodAfternoon": "Buenas tardes",
-  "goodEvening": "Buenas noches",
-  "user": "Usuario",
-  "customerAccount": "Cuenta de cliente",
-  "dailyInspiration": "Inspiración diaria",
-  "workerPlus": "Worker Plus",
-  "workerPlusDescription": "Impulsa tu perfil, obtén coincidencias prioritarias y retiros instantáneos.",
-  "farmboxSubscription": "Suscripción FarmBox",
-  "farmboxDescription": "¡Recibe verduras frescas cultivadas localmente en tu puerta semanalmente!",
-  "upgradeWithPrice": "Actualizar {price}",
-  "quote1": "El futuro de la agricultura está en tus manos.",
-  "quote2": "Apoya lo local, come fresco, vive sano.",
-  "quote3": "Conectándote con las raíces de tu comida.",
-  "quote4": "Cada inversión en la naturaleza rinde el mejor interés.",
-  "quote5": "Pequeñas elecciones tienen un gran impacto en nuestro planeta.",
-  "quote6": "Fresco de la granja, directo a tu mesa.",
-  "quote7": "Empoderando a los agricultores, alimentando al mundo.",
-  "quote8": "La sostenibilidad no es una meta, es un estilo de vida.",
-  "totalEarningsWallet": "Ganancias totales (Billetera)",
-  "totalSalesValue": "Valor total de ventas",
-  "itemsSold": "Artículos vendidos",
-  "advancedAnalytics": "Análisis avanzado",
-  "premium": "PREMIUM",
-  "unlockDeepInsights": "Desbloquea información profunda",
-  "unlockDeepInsightsDescription": "Obtén pronósticos de cultivos impulsados por IA, historial detallado de la salud del suelo y proyecciones de ROI avanzadas.",
-  "productionStrategy": "Estrategia de producción",
-  "productionStrategyDescription": "Obtén un análisis profundo de tus costos de producción, rendimiento potencial y estrategias de maximización de ganancias impulsadas por IA.",
-  "consultProductionGuru": "Consultar al gurú de producción",
-  "upgradeToPlan": "Actualizar a {planName}",
-  "farmyUser": "Usuario de Farmy",
-  "latestSubmittedProof": "Última prueba enviada",
-  "free": "GRATIS",
-  "pro": "PRO",
-  "enabled": "ACTIVADO",
-  "off": "DESACTIVADO",
-  "buyProductConfirmation": "¿Quieres comprar {title} por {price} créditos?",
-  "buy": "Comprar",
-  "creditsCount": "Créditos: {count}",
-  "priceCountCredits": "{price} Créditos",
-  "buyNow": "Comprar ahora",
-  "pleaseSelectProductType": "Por favor selecciona un tipo de producto",
-  "productUpdated": "¡Producto actualizado!",
-  "productListedSuccessfully": "¡Producto listado con éxito!",
-  "failedToUpdateProduct": "Error al actualizar el producto.",
-  "failedToListProduct": "Error al listar el producto.",
-  "editProduct": "Editar producto",
-  "addProduct": "Añadir producto",
-  "tapToAddImage": "Toca para añadir imagen",
-  "title": "Título",
-  "pleaseEnterTitle": "Por favor ingresa un título",
-  "productType": "Tipo de producto",
-  "description": "Descripción",
-  "priceCredits": "Precio (Créditos)",
-  "quantity": "Cantidad",
-  "unitHint": "Unidad (ej: kg, litro, pieza)",
-  "pleaseEnterUnit": "Por favor ingresa una unidad",
-  "updateProduct": "Actualizar producto",
-  "listProduct": "Listar producto",
-  "noCamerasFound": "No se encontraron cámaras en este dispositivo.",
-  "flipIdInstruction": "¡Genial! Ahora voltea tu identificación",
-  "selfieInstruction": "¡Perfecto! Ahora tomemos una selfie",
-  "uploadingDocuments": "Subiendo documentos...",
-  "kycSuccess": "¡Éxito! ¡Ahora eres un {role}!",
-  "scanFrontId": "Escanear el frente de la ID",
-  "scanBackId": "Escanear el dorso de la ID",
-  "takeSelfie": "Tomar una selfie",
-  "positionIdHint": "Coloca tu identificación dentro del marco",
-  "flipIdHint": "Voltea tu identificación y escanea el dorso",
-  "lookAtCameraHint": "Mira directamente a la cámara con los ojos abiertos",
-  "verifying": "Verificando...",
-  "tryAgain": "Intentar de nuevo",
-  "accountBanned": "Cuenta baneada",
-  "bannedDescription": "Tu cuenta ha sido suspendida debido a violaciones específicas. Por favor, contacta con el soporte si crees que esto es un error.",
-  "logout": "Cerrar sesión",
-  "noInternetConnection": "Sin conexión a Internet",
-  "noInternetDescription": "No pudimos conectarnos al servidor. Por favor, verifica tu conexión a Internet e inténtalo de nuevo.",
-  "retry": "Reintentar",
-  "askFarmingQuestion": "Haz tu pregunta agrícola...",
-  "sendMessage": "Enviar mensaje",
-  "voiceInput": "Entrada de voz",
-  "rename": "Renombrar",
-  "startANewConversation": "Iniciar una nueva conversación",
-  "createChatDescription": "Crea un chat para pedir orientación agrícola práctica.",
-  "askAnythingAboutFarm": "Pregunta cualquier cosa sobre tu granja",
-  "aiAssistantDescription": "Tiempos de siembra, salud de los cultivos, fertilizantes y orientación práctica con detección automática de idioma.",
-  "noChatStateTitle": "Bienvenido a Farmy AI",
-  "noChatStateDescription": "Inicia una nueva conversación para obtener asesoramiento experto sobre tu agricultura.",
-  "disableVoiceInput": "Desactivar entrada de voz",
-  "aiAssistant": "Asistente de IA",
-  "muteVoiceOutput": "Silenciar salida de voz",
-  "enableVoiceOutput": "Activar salida de voz",
-  "moreActions": "Más acciones",
-  "syncBackend": "Sincronizar backend",
-  "newChat": "Nuevo chat",
-  "closeAssistant": "Cerrar asistente",
-  "syncingWithBackend": "Sincronizando con el backend...",
-  "backendDisconnected": "Backend desconectado. Reconectando automáticamente...",
-  "offlineModeCached": "Modo fuera de línea: se usarán respuestas en caché cuando estén disponibles.",
-  "noConversationsYet": "Aún no hay conversaciones.",
-  "conversations": "Conversaciones",
-  "renameChat": "Renombrar chat",
-  "deleteChat": "Eliminar chat",
-  "chatTitle": "Título del chat",
-  "updateYourMessage": "Actualiza tu mensaje",
-  "resend": "Reenviar",
-  "save": "Guardar",
-  "deleteChatConfirmation": "¿Eliminar \"{title}\" permanentemente?",
-  "responseCopied": "Respuesta copiada al portapapeles.",
-  "voiceInputNotAvailable": "La entrada de voz no está disponible en este dispositivo.",
-  "unableToStartVoiceInput": "No se pudo iniciar la entrada de voz. Por favor verifica los permisos.",
-  "voiceOutputMuted": "La salida de voz está silenciada. Desactiva el silencio para leer este mensaje.",
-  "messageNoReadableText": "Este mensaje no tiene texto legible.",
-  "unableToPlayVoiceOutput": "No se pudo reproducir la salida de voz ahora.",
-  "couldNotSendMessage": "No se pudo enviar tu mensaje. Por favor inténtalo de nuevo.",
-  "upgradeRequired": "Actualización requerida",
-  "upgrade": "Actualizar",
-  "editAndResend": "Editar y reenviar",
-  "copy": "Copiar",
-  "readAloud": "Leer en voz alta",
-  "cached": "En caché",
-  "verifyEmailTitle": "Verifica tu correo electrónico",
-  "verificationCodeSentTo": "Enviamos un código de verificación de 6 dígitos a\n{email}.",
-  "verifyAccount": "Verificar cuenta",
-  "resendNewCode": "Reenviar código nuevo",
-  "newVerificationCodeSent": "¡Nuevo código de verificación enviado!",
-  "failedToSendCode": "Error al enviar el código. Inténtalo de nuevo.",
-  "yourEmail": "tu correo electrónico",
-  "resetPasswordTitle": "Restablecer contraseña",
-  "resettingPasswordFor": "Restableciendo contraseña para {email}",
-  "newPassword": "Nueva contraseña",
-  "confirmNewPassword": "Confirmar nueva contraseña",
-  "pleaseEnterAll6Digits": "Por favor ingresa los 6 dígitos",
-  "passwordResetSuccess": "¡Contraseña restablecida con éxito! Por favor inicia sesión.",
-  "forgotPasswordTitle": "¿Olvidaste tu contraseña?",
-  "forgotPasswordSubtitle": "Ingresa tu dirección de correo electrónico y te enviaremos un código de 6 dígitos para restablecer tu contraseña.",
-  "emailAddress": "Dirección de correo electrónico",
-  "sendResetCode": "Enviar código de restablecimiento",
-  "backToLogin": "Volver al inicio de sesión",
-  "welcomeCustomerTitle": "¡Bienvenido a Farmy!",
-  "welcomeCustomerSubtitle": "Apoya a los agricultores locales y disfruta de productos frescos y sostenibles directamente de la fuente.",
-  "welcomeWorkerTitle": "Únete a la fuerza laboral",
-  "welcomeWorkerSubtitle": "Conéctate con granjas modernas y comienza tu viaje productivo en la agricultura sostenible.",
-  "welcomeFarmerTitle": "Empoderando a los agricultores",
-  "welcomeFarmerSubtitle": "Tu viaje hacia la gestión agrícola digital comienza aquí. ¡Hagamos crecer tu negocio juntos!",
-  "welcomeInvestorTitle": "Invierte en el futuro",
-  "welcomeInvestorSubtitle": "Explora oportunidades sostenibles y haz crecer tu cartera agrícola verde con nosotros.",
-  "skip": "Saltar",
-  "finish": "Finalizar",
-  "continueText": "Continuar",
-  "language": "Idioma",
-  "english": "Inglés",
-  "french": "Francés",
-  "spanish": "Español",
-  "selectLanguage": "Seleccionar idioma",
-  "accountInformation": "Información de la cuenta",
-  "verified": "Verificado",
-  "unverified": "No verificado",
-  "subscription": "Suscripción",
-  "payments": "Pagos",
-  "walletCards": "Cartera y tarjetas",
-  "manageCredits": "Gestionar créditos y métodos de pago",
-  "hederaRegistry": "Registro Hedera",
-  "viewBlockchainRecords": "Ver tus registros en la cadena de bloques",
-  "general": "General",
-  "viewRecentActivity": "Ver tu actividad reciente y actualizaciones",
-  "security": "Seguridad",
-  "editProfile": "Editar perfil",
-  "changePassword": "Cambiar contraseña",
-  "disable2fa": "Desactivar 2FA",
-  "enable2fa": "Activar 2FA",
-  "strongSecurityActive": "Seguridad sólida activa",
-  "addExtraSecurity": "Añadir una capa extra de seguridad",
-  "orders": "Pedidos",
-  "trackManagePurchases": "Seguimiento y gestión de tus compras",
-  "verification": "Verificación",
-  "becomeFarmer": "Convertirse en agricultor",
-  "startSellingProduce": "Comienza a vender tus productos",
-  "becomeInvestor": "Convertirse en inversor",
-  "investSustainableFarming": "Invertir en agricultura sostenible",
-  "worker": "Trabajador",
-  "becomeWorker": "Convertirse en trabajador",
-  "offerSkillsFarms": "Ofrece tus habilidades en granjas",
-  "workerDashboard": "Tablero del trabajador",
-  "viewAssignmentsTasks": "Ver tus asignaciones y tareas",
-  "gameFeatures": "Funciones del juego",
-  "appearance": "Apariencia",
-  "darkMode": "Modo oscuro",
-  "aboutUs": "Sobre nosotros - Equipo Farmy",
-  "featureUnderDevelopment": "Esta función está actualmente en desarrollo.",
-  "home": "Inicio",
-  "marketplace": "Mercado",
-  "subscriptions": "Suscripciones",
-  "settings": "Ajustes",
-  "analytics": "Análisis",
-  "land": "Tierra",
-  "products": "Productos",
-  "myFarms": "Mis granjas",
-  "explore": "Explorar",
-  "investments": "Inversiones",
-  "revenue": "Ingresos",
-  "tasks": "Tareas",
-  "openInvestmentAssistant": "Abrir asistente de inversión",
-  "openAiAssistant": "Abrir asistente de IA",
-  "myWorkerTasks": "Mis tareas de trabajador",
-  "unknownRole": "Rol desconocido: {role}",
-  "appTitle": "Farmy",
-  "login": "Iniciar sesión",
-  "signup": "Registrarse",
-  "email": "Correo electrónico",
-  "password": "Contraseña",
-  "forgotPassword": "¿Olvidaste tu contraseña?",
-  "dontHaveAccount": "¿No tienes una cuenta?",
-  "alreadyHaveAccount": "¿Ya tienes una cuenta?",
-  "welcomeBack": "Bienvenido de nuevo",
-  "welcomeToFarmy": "Bienvenido a Farmy",
-  "signInToFarmyAccount": "Inicia sesión en tu cuenta de Farmy",
-  "startJourneyWithFarmy": "Comienza tu viaje con Farmy hoy",
-  "createAccount": "Crear cuenta",
-  "fullName": "Nombre completo",
-  "confirmPassword": "Confirmar contraseña",
-  "signingIn": "Iniciando sesión...",
-  "signingUp": "Registrándose...",
-  "error": "Error",
-  "success": "Éxito",
-  "orContinueWith": "O CONTINUAR CON",
-  "loginFailed": "Error de inicio de sesión",
-  "signupFailed": "Error de registro",
-  "signIn": "Iniciar sesión",
-  "ok": "Aceptar",
-  "myProducts": "Mis productos",
-  "deleteProduct": "Eliminar producto",
-  "deleteProductConfirmation": "¿Estás seguro de que deseas eliminar {title}?",
-  "productDeleted": "Producto eliminado",
-  "failedToDeleteProduct": "Error al eliminar el producto",
-  "analyzeInventory": "Analizar inventario",
-  "noProductsFound": "No se encontraron productos",
-  "addProductFirst": "¡Añade tu primer producto para verlo aquí!",
-  "edit": "Editar",
-  "credits": "Créditos",
-  "productLimitReached": "Límite de productos alcanzado",
-  "viewPlans": "Ver planes",
-  "maybeLater": "Más tarde",
-  "oopsSomethingWentWrong": "¡Ups! Algo salió mal",
-  "productListingsUsed": "Listados de productos usados",
-  "upgradePlanName": "Farmer Pro",
-  "analyzeInventoryPrompt": "Analiza mi inventario de productos actual. ¿Son estos buenos productos para mantener o debería centrarme en otra cosa según el mercado?",
-  "imageUnavailable": "Imagen no disponible",
-  "productLimitMessage": "Has usado todos los espacios de productos en tu plan {planName}. ¡Actualiza a Farmer Pro o Investor Plus para listar más productos!",
-  "workerMarketplace": "Mercado de Trabajadores",
-  "searchWorkers": "Buscar trabajadores...",
-  "noVerifiedWorkersFound": "No se encontraron trabajadores verificados",
-  "tasksCount": "{count} tareas",
-  "perHour": "/hora",
-  "workforceLandName": "Mano de obra — {landName}",
-  "addWorker": "Añadir Trabajador",
-  "inviteExistingWorker": "Inviter Trabajador Existente",
-  "searchWorkerMarketplace": "Buscar en el mercado de trabajadores",
-  "openJobRequest": "Abrir Solicitud de Trabajo",
-  "soon": "Pronto",
-  "totalLabel": "Total",
-  "activeLabel": "Activo",
-  "suspendedLabel": "Suspendido",
-  "monthlyCost": "Costo Mensuel",
-  "productivity": "Productividad",
-  "totalSuffix": "{count} en total",
-  "noWorkersYet": "Aún no hay trabajadores",
-  "addWorkersMarketplaceHint": "Toca el botón + para añadir trabajadores del mercado",
-  "unknownWorker": "Trabajador Desconocido",
-  "tndMo": "TND/mes",
-  "workersSyncIssue": "Problema de sincronización de trabajadores",
-  "invitationsSyncIssue": "Problema de sincronización de invitaciones",
-  "pendingInvitations": "Invitaciones Pendientes",
-  "waitingForWorkerResponse": "Esperando respuesta del trabajador",
-  "invitationDecisions": "Decisiones de Invitación",
-  "workersAcceptedDeclinedInvites": "Trabajadores que aceptaron o rechazaron sus invitaciones",
-  "aiAutoAssignTasks": "🤖 Asignación Automática de Tareas por IA",
-  "gpsVerifiedWorkProof": "📍 Prueba de Trabajo Verificada por GPS",
-  "iotSensorDashboard": "🌡️ Panel de Control de Sensores IoT",
-  "smartPayrollIntegration": "💰 Integración de Nómina Inteligente",
-  "freshProductsFarmers": "Productos frescos de agricultores locales",
-  "myOrders": "Mis Pedidos",
-  "searchProducts": "Buscar productos...",
-  "all": "Todos",
-  "noProductsFoundMarketplace": "No se encontraron productos",
-  "noProductsAvailableMarketplace": "No hay productos disponibles",
-  "adjustSearchFilters": "Intenta ajustar tu búsqueda o filtros",
-  "checkBackLaterFreshProducts": "Vuelve más tarde para ver productos frescos",
-  "outOfStock": "SIN STOCK",
-  "inBasket": "En la cesta",
-  "availableCount": "{count} {unit} disponible(s)",
-  "subtotalLabel": "Subtotal: {price} TND",
-  "seller": "Vendedor",
-  "farmer": "Agricultor",
-  "verifiedSeller": "Vendedor Verificado",
-  "updateBasket": "Actualizar Cesta",
-  "addToBasket": "Añadir al carrito",
-  "qtySetTo": "{title} — cantidad ajustada a {qty}",
-  "addedToBasket": "{title} añadido al carrito",
-  "noOrdersYet": "Aún no hay pedidos",
-  "orderHistoryEmptyHint": "Tu historial de pedidos aparecerá aquí\ndespués de tu primera compra.",
-  "order": "Pedido",
-  "farmyPremium": "Farmy Premium",
-  "currentPlanLabel": "Actual: {name}",
-  "monthly": "Mensual",
-  "yearlySave": "Anual (Ahorra un 33%)",
-  "failedToLoadSubscriptions": "Error al cargar suscripciones",
-  "failedToLoadWorkerProfile": "Error al cargar perfil de trabajador",
-  "currentPlan": "Plan Actual",
-  "upgradeToYearly": "Pasar a Anual",
-  "switchToMonthly": "Pasar a Mensual",
-  "downgradeToFree": "Bajar a Gratuito",
-  "getStarted": "Comenzar",
-  "activeOnCycle": "Activo en {cycle}",
-  "confirmDowngrade": "Confirmar Cambio a Plan Inferior",
-  "downgradeWarning": "¿Estás seguro de que quieres bajar a {name}? Perderás tus funciones premium y las ventajas activas asociadas a tu plan actual.",
-  "selectPaymentMethod": "Seleccionar método de pago",
-  "totalWithCycle": "Total: {price} $ · {cycle}",
-  "payWithCredits": "Pagar con créditos Farmy",
-  "loadingBalance": "Cargando saldo...",
-  "balanceValue": "Saldo: {amount} $",
-  "payWithStripe": "Pagar con Tarjeta (Stripe)",
-  "secureCreditCardPayment": "Pago seguro con tarjeta de crédito",
-  "unableToLoadTracking": "No se pudo cargar el seguimiento",
-  "noTrackingInformation": "No hay información de seguimiento",
-  "deliveryTrackingEmptyHint": "El seguimiento del envío aparecerá\nuna vez que se procese su pedido.",
-  "orderDelivered": "¡Pedido Entregado!",
-  "orderDeliveredSuccess": "Su pedido ha sido entregado con éxito. ¡Gracias por su compra!",
-  "updating": "Actualizando",
-  "profileSyncIssue": "Problema de sincronización de perfil",
-  "assignedLandsUnavailable": "Tierras asignadas no disponibles",
-  "tasksUnavailable": "Tareas no disponibles",
-  "invitationsUnavailable": "Invitaciones no disponibles",
-  "contractsUnavailable": "Contratos no disponibles",
-  "proofsUnavailable": "Pruebas no disponibles",
-  "viewAllHistory": "Ver Todo el Historial",
-  "noLandAssignmentsYet": "No hay asignaciones de tierra todavía",
-  "landAssignmentsEmptyHint": "Verás tus tierras asignadas aquí",
-  "noTasksAssigned": "No hay tareas asignadas",
-  "tasksEmptyHint": "Las tareas aparecerán aquí cuando sean asignadas",
-  "notifications": "Notificaciones",
-  "realtimeNotificationsSoon": "Notificaciones de tareas en tiempo real próximamente",
-  "verifiedWorker": "Trabajador Verificado",
-  "pendingVerification": "Verificación Pendiente",
-  "invitationAcceptedSuccess": "Invitación aceptada con éxito.",
-  "invitationDeclinedSuccess": "Invitación rechazada con éxito.",
-  "unableToProcessInvitation": "No se pudo procesar la respuesta a la invitación.",
-  "landBoundary": "Límite del terreno",
-  "landInformation": "Información del terreno",
-  "noDescriptionAvailable": "No hay descripción disponible",
-  "grid": "Cuadrícula",
-  "assignmentRole": "Rol de asignación",
-  "salaryLabel": "Salario",
-  "salaryValue": "{amount} $ / mes",
-  "assignmentStatus": "Estado de asignación",
-  "farmerProfileUnavailable": "El perfil del agricultor no está disponible ahora mismo.",
-  "unableToOpenFarmerProfile": "No se pudo abrir el perfil del agricultor. Por favor, reinténtalo.",
-  "invitationApproved": "Invitación Aprobada",
-  "invitationPending": "Invitación Pendiente",
-  "invitationDeclined": "Invitación Rechazada",
-  "invitationExpired": "Invitación Expirada",
-  "assigned": "Asignado",
-  "acceptThisOfferQuestion": "¿Aceptar esta oferta?",
-  "acceptOfferConfirmation": "Estás a punto de aceptar la oferta de ${amount} {type}. Esto establecerá un contrato legal.",
-  "contractApproved": "¡Contrato aprobado! Esperando el pago del inversor.",
-  "failedToAccept": "Error al aceptar la oferta.",
-  "declineThisOfferQuestion": "¿Rechazar esta oferta?",
-  "declineOfferConfirmation": "¿Estás seguro de que deseas rechazar la oferta de {name}?",
-  "theInvestor": "el inversor",
-  "contractDeclined": "Oferta de contrato rechazada.",
-  "failedToDecline": "Error al rechazar la oferta.",
-  "pleaseEnterAMessage": "Por favor ingresa un mensaje",
-  "pleaseEnterValidSalary": "Por favor ingresa un monto de salario válido",
-  "counterOfferSent": "¡Contraoferta enviada con éxito!",
-  "failedToSendCounterOffer": "Error al enviar la contraoferta.",
-  "messageCannotBeEmpty": "El mensaje no puede estar vacío",
-  "messageUpdated": "Mensaje actualizado con éxito",
-  "failedToEditMessage": "Error al actualizar el mensaje",
-  "withdrawMessageQuestion": "¿Retirar este mensaje?",
-  "withdrawMessageConfirmation": "Esto eliminará permanentemente tu último mensaje de negociación.",
-  "withdraw": "Retirar",
-  "messageWithdrawn": "Mensaje retirado",
-  "failedToWithdrawMessage": "Error al retirar el mensaje",
-  "investorAcceptOfferConfirmation": "Estás a punto de aceptar la contraoferta de {name} de ${amount} {type}. Una vez aceptada, deberás pagar el primer mes de salario para activar el contrato.",
-  "theWorker": "el trabajador",
-  "offerAcceptedProceedToPayment": "¡Oferta aceptada! Por favor procede al pago para activar el contrato.",
-  "declineNegotiationQuestion": "¿Rechazar negociación?",
-  "declineNegotiationConfirmation": "¿Estás seguro de que deseas rechazar más negociaciones con {name}?",
-  "thisWorker": "este trabajador",
-  "negotiationDeclined": "Negociación rechazada y cerrada.",
-  "failedToCreatePayment": "Error al crear el intento de pago.",
-  "contractActivated": "¡Contrato activado con éxito!",
-  "invalidPaymentData": "Datos de pago inválidos recibidos del servidor. Por favor, inténtelo de nuevo.",
-  "paymentSubmittedHint": "Pago enviado. El contrato se activará una vez confirmado.",
-  "paymentCancelled": "El pago fue cancelado.",
-  "contractForWorker": "Contrato para {name}",
-  "negotiationDeclinedBanner": "Negociación Rechazada",
-  "contractTerminatedBanner": "Contrato Terminado",
-  "contractExpiredBanner": "Contrato Expirado",
-  "contractIsStatus": "Este contrato está {status}",
-  "noMessagesYet": "Aún no hay mensajes",
-  "startNegotiationHint": "Inicia la negociación enviando un mensaje.",
-  "systemOfferAccepted": "Oferta aceptada. Procediendo al pago.",
-  "systemOfferDeclined": "Oferta rechazada. Esta negociación ha sido cancelada.",
-  "you": "Tú",
-  "otherParty": "Otra parte",
-  "proposedSalaryAmount": "Salario propuesto: ${amount}",
-  "editingYourMessage": "Editando tu mensaje",
-  "editYourMessageHint": "Edita tu mensaje...",
-  "salaryOptional": "Salario (opcional)",
-  "justNow": "Ahora mismo",
-  "minutesAgo": "hace {mins} min",
-  "hoursAgo": "hace {hours}h",
-  "negotiateTerms": "Negociar términos",
-  "salaryAmount": "Monto del salario",
-  "addAMessageHint": "Añadir un mensaje...",
-  "counter": "Contraoferta",
-  "counterOffer": "Contraoferta",
-  "payAmountToActivate": "Pagar ${amount} para activar",
-  "hiringPending": "Contratación Pendiente",
-  "negotiating": "Negociando",
-  "awaitingPayment": "Esperando Pago",
-  "negotiate": "Negociar",
-  "perTask": "por tarea",
-  "squareMeters": "{value} m²",
-  "amountPrefix": "${amount}",
-  "terminatedLabel": "Terminado",
-  "hourlyLabel": "por hora",
-  "accept": "Aceptar",
-  "decline": "Rechazar",
-  "contract": "Contrato",
-  "paymentFailedCancelled": "Pago fallido o cancelado.",
-  "farmerInfoSyncedFromAssignment": "Información sincronizada de la asignación",
-  "tapToViewProfile": "Toca para ver el perfil",
-  "salaryPerMonth": "${amount} / mes",
-  "revenueAnalysisPrompt": "Analice mis fuentes de ingresos y sugiera formas de maximizar mis ganancias basadas en las tendencias actuales del mercado.",
-  "analyzeRevenueTooltip": "Analizar ingresos",
-  "totalDetailsRevenue": "Ingresos detallados totales",
-  "creditsLabel": "Créditos",
-  "productSales": "Ventas de productos",
-  "unitsLabel": "Unidades",
-  "investmentRevenue": "Ingresos de inversión",
-  "viewInvestmentBreakdown": "Ver desglose detallado en Inversiones",
-  "portfolioInsights": "Información de la cartera",
-  "premiumLabel": "PREMIUM",
-  "unlockPortfolioMaster": "Desbloquear Portfolio Master",
-  "premiumPortfolioDesc": "Obtenga seguimiento de ROI en tiempo real, informes de dividendos automatizados y consejos de inversión impulsados por IA.",
-  "investorPlus": "Inversor Plus",
-  "portfolioAnalyticsLoading": "Cargando análisis de cartera...",
-  "passwordChangedSuccess": "Contraseña cambiada con éxito",
-  "changePasswordTitle": "Cambiar contraseña",
-  "createNewPassword": "Crear una nueva contraseña",
-  "passwordPolicyHint": "Su nueva contraseña debe ser diferente de las contraseñas anteriores utilizadas.",
-  "currentPassword": "Contraseña actual",
-  "enterCurrentPasswordError": "Por favor ingrese su contraseña actual",
-  "updatePassword": "Actualizar contraseña",
-  "profileSyncFailed": "Error al sincronizar el perfil: {error}",
-  "unsavedChangesTitle": "Cambios sin guardar",
-  "unsavedChangesDesc": "Tienes cambios sin guardar. ¿Quieres descartarlos?",
-  "discard": "Descartar",
-  "waitUsernameCheck": "Por favor espere la verificación de disponibilidad del nombre de usuario",
-  "correctErrorsInForm": "Por favor corrija los errores en el formulario",
-  "usernameTaken": "Este nombre de usuario ya está ocupado",
-  "profileUpdatedSuccess": "¡Perfil actualizado con éxito!",
-  "changeProfilePicture": "Cambiar foto de perfil",
-  "chooseFromGallery": "Elegir de la galería",
-  "takeAPhoto": "Tomar una foto",
-  "profilePictureUpdated": "¡Foto de perfil actualizada!",
-  "uploadFailed": "Error al cargar: {error}",
-  "editProfileTitle": "Editar perfil",
-  "identityTab": "Identidad",
-  "trustTab": "Confianza",
-  "rolePrivacyTab": "Rol y privacidad",
-  "saveChangesTooltip": "Guardar cambios",
-  "profileCompleteness": "Integridad del perfil",
-  "nameRequired": "El nombre es obligatorio",
-  "nameTooShort": "El nombre es demasiado corto",
-  "onlyLettersAllowed": "Solo se permiten letras y espacios",
-  "usernameLabel": "Nombre de usuario",
-  "publicUniqueHandle": "Identificador único público",
-  "usernameRequired": "El nombre de usuario es obligatorio",
-  "tooShortMin3": "Demasiado corto (mín. 3)",
-  "usernameFormatError": "Usa minúsculas, números, puntos, guiones bajos",
-  "phoneNumber": "Número de teléfono",
-  "invalidPhoneFormat": "Formato de teléfono inválido",
-  "countryLabel": "País",
-  "cityLabel": "Ciudad",
-  "headlineLabel": "Titular",
-  "headlineHint": "Una breve descripción de lo que haces",
-  "aboutMe": "Acerca de mí",
-  "portfolioLinks": "Portafolio y enlaces",
-  "linkedinProfile": "Perfil de LinkedIn",
-  "linkedinUrlError": "Ingrese una URL o identificador de LinkedIn válido",
-  "personalWebsite": "Sitio web personal",
-  "websiteUrlError": "Ingrese una URL de sitio web válida",
-  "farmerDetailsTitle": "Detalles del agricultor",
-  "businessFarmName": "Nombre de la empresa/granja",
-  "investorDetailsTitle": "Detalles del inversor",
-  "expectedBudgetRange": "Rango de presupuesto esperado",
-  "budgetRangeHint": "ej: $10,000 - $50,000",
-  "privacyControls": "Controles de privacidad",
-  "discoverableMarketplace": "Descubrible en el mercado",
-  "discoverableSubtitle": "Permitir que otros encuentren y vean tu perfil",
-  "showContactInfoLabel": "Mostrar información de contacto",
-  "showContactInfoSubtitle": "Hacer visibles el teléfono y el correo electrónico para las conexiones",
-  "failedInitiate2FA": "Error al iniciar la configuración de 2FA",
-  "twoFAEnabledSuccess": "2FA habilitado con éxito",
-  "twoFADisabledSuccess": "2FA deshabilitado con éxito",
-  "codeCopied": "Código copiado al portapapeles",
-  "disable2FA": "Deshabilitar 2FA",
-  "enable2FA": "Habilitar 2FA",
-  "secureYourAccount": "Proteja su cuenta",
-  "twoFADesc": "La autenticación de dos factores agrega una capa adicional de seguridad a su cuenta. Para iniciar sesión, deberá proporcionar un código de 6 dígitos de su aplicación de autenticación.",
-  "startSetup": "Iniciar configuración",
-  "linkYourAppStep": "Paso 1: Vincule su aplicación",
-  "scanQRCodeDesc": "Escanee este código QR con su aplicación de autenticación (Google Authenticator, Authy, etc.)",
-  "enterCodeManually": "O ingrese este código manualmente:",
-  "copyToClipboardTooltip": "Copiar al portapapeles",
-  "confirmEnablementStep": "Paso 2: Confirmar habilitación",
-  "enter6DigitCodeConfirm": "Ingrese el código de 6 dígitos de su aplicación para confirmar:",
-  "backButton": "Volver",
-  "enter6DigitCodeDisable": "Ingrese el código de 6 dígitos de su aplicación de autenticación para deshabilitar la autenticación de dos factores.",
-  "allNotificationsMarkedRead": "Todas las notificaciones marcadas como leídas",
-  "failedToDeleteNotification": "Error al eliminar la notificación",
-  "notificationsTitle": "Notifications",
-  "markAllAsReadTooltip": "Marcar todo como leído",
-  "noNotificationsYet": "No hay notificaciones todavía",
-  "premiumAccess": "Acceso Premium",
-  "chooseYourPlan": "Elige tu plan",
-  "subscriptionHeadline": "Selecciona un plan para desbloquear la experiencia completa de Farmy.\nUna suscripción abre todas las puertas.",
-  "yearly": "Anual",
-  "alwaysFree": "Siempre gratis",
-  "freeLabel": "Gratis",
-  "monthlySuffix": "/mes",
-  "yearlySuffix": "/año",
-  "savingsLabel": "Antes {oldPrice}/año — ahorra {savings}",
-  "continueWithFree": "Continuar con el gratuito",
-  "getPlan": "Obtener {planName}",
-  "paymentSummary": "{price} · {cycle} · {planName}",
-  "balanceStatusSuccess": "Saldo: {amount} ✓",
-  "balanceStatusInsufficient": "Saldo: {amount} — Insuficiente",
-  "payWithCardStripe": "Pagar con tarjeta (Stripe)",
-  "secureCardPaymentDesc": "Pago seguro con tarjeta de crédito / débito",
-  "failedLoadPlans": "Error al cargar los planes",
-  "noPlansAvailable": "No hay planes disponibles",
-  "contactSupport": "Por favor, contacte con soporte.",
-  "paymentPendingVerifying": "Pago enviado. Lo estamos verificando en segundo plano.",
-  "paymentProcessingSync": "El pago aún se está procesando. Su suscripción se sincronizará automáticamente.",
-  "paymentStatusDelay": "La verificación del estado del pago se ha retrasado. Seguiremos sincronizando en segundo plano.",
-  "paymentError": "Error de pago: {error}",
-  "deliveriesTitle": "Entregas",
-  "ordersTitle": "Pedidos",
-  "totalCount": "{total} en total",
-  "totalOrdersLabel": "Total de pedidos",
-  "deliveredLabel": "Entregado",
-  "noDeliveriesYet": "No hay entregas todavía",
-  "noDeliveriesDesc": "Las entregas de sus productos\naparecerán aquí cuando los clientes realicen pedidos.",
-  "manageDeliveryTitle": "Gestionar entrega",
-  "deliveryNotFound": "Entrega no encontrada",
-  "deliveryTimeline": "Cronología de entrega",
-  "updateStatus": "Actualizar estado",
-  "etaLabel": "ETA: {time}",
-  "orderDetails": "Detalles del pedido",
-  "productLabel": "Producto",
-  "quantityLabel": "Cantidad",
-  "orderIdLabel": "ID del pedido",
-  "customerLabel": "Cliente",
-  "deliveryInfo": "Información de entrega",
-  "addressLabel": "Dirección",
-  "createdLabel": "Creado",
-  "startedLabel": "Iniciado",
-  "cancelDeliveryQuestion": "¿Cancelar entrega?",
-  "updateToStatusQuestion": "¿Pasar a {status}?",
-  "cancelNotifyCustomer": "Esto cancelará la entrega y notificará al cliente.",
-  "advanceNotifyCustomer": "Esto avanzará la entrega a \"{status}\" y notificará al cliente.",
-  "cancellationReasonHint": "Motivo de la cancelación...",
-  "addNoteHint": "Añadir una nota (opcional)...",
-  "confirmUpdate": "Confirmar",
-  "cancelDeliveryAction": "Cancelar entrega",
-  "statusUpdatedTo": "Estado actualizado a {status}",
-  "failedUpdateStatus": "Error al actualizar el estado",
-  "moveToStatus": "Pasar a {status}",
-  "successfullyDelivered": "Entregado con éxito",
-  "deliveryCancelled": "Entrega cancelada",
-  "completedOn": "Completado el {date}",
-  "dateTimeAt": "{date} a las {time}",
-  "cardAddedSuccess": "Tarjeta añadida con éxito",
-  "failedAddCard": "Error al añadir la tarjeta",
-  "addCreditsTitle": "Añadir créditos",
-  "selectAmount": "Seleccionar cantidad",
-  "customAmountLabel": "Cantidad personalizada",
-  "maxAmountError": "La cantidad máxima es $999,999.99",
-  "payAmount": "PAGAR ${amount}",
-  "enterAmount": "INGRESAR MONTO",
-  "successfullyAddedCredits": "Añadido con éxito {amount} $",
-  "failedAddCredits": "Error al añadir créditos",
-  "priceTnd": "{price} TND",
-  "walletPaymentsTitle": "Billetera y pagos",
-  "currentBalance": "Saldo actual",
-  "paymentMethods": "Métodos de pago",
-  "addNewCard": "Añadir nueva tarjeta",
-  "expiresLabel": "Expira el {expiry}",
-  "failedLoadTasks": "Error al cargar las tareas",
-  "errorFetchingTasks": "Error al obtener sus tareas",
-  "taskCompletedSuccess": "¡Tarea completada! Ahora estás disponible.",
-  "failedCompleteTask": "Error al completar la tarea",
-  "errorWithPrefix": "Error: {error}",
-  "myTasksTitle": "Mis tareas",
-  "noPendingTasks": "¡No hay tareas pendientes!",
-  "availableForAssignments": "Estás disponible para nuevas asignaciones.",
-  "taskLabel": "Tarea",
-  "unknownCaps": "DESCONOCIDO",
-  "minsSuffix": "mins",
-  "markAsComplete": "Marcar como completa",
-  "productionGuruTitle": "Gurú de producción",
-  "sessionHistoryTooltip": "Historial de sesiones",
-  "newSessionTooltip": "Nueva sesión",
-  "askGuruHint": "Pregunta a tu gurú...",
-  "harvestChroniclesTitle": "Crónicas de la cosecha",
-  "noHistoryYet": "Aún no hay historial",
-  "farmAnalysisDefault": "Análisis de la granja",
-  "assetsLabel": "Activos",
-  "failedReachAnalyst": "Error al contactar al analista de estrategia de IA.",
-  "strategicPortfolioAnalystTitle": "Analista de cartera estratégica",
-  "investmentStrategyChroniclesTitle": "Crónicas de estrategia de inversión",
-  "strategySessionDefault": "Sesión de estrategia",
-  "welcomeStrategicAnalysis": "Bienvenido al análisis estratégico",
-  "investmentAgentWelcomeDesc": "Dime tu presupuesto y preferencia de riesgo, o pregunta sobre el mercado actual y las tendencias meteorológicas.",
-  "consultedLiveData": "Datos en vivo consultados:",
-  "marketLabel": "Mercado",
-  "weatherLabel": "Clima",
-  "suggestedRealEstate": "Bienes raíces sugeridos:",
-  "unknownFarm": "Granja desconocida",
-  "tndPerMeter": "TND/m",
-  "enterPreferencesHint": "Introduce preferencias o pide un análisis...",
-  "laborMarketLabel": "MERCADO LABORAL",
-  "specificationsLabel": "Especificaciones:",
-  "priceLabel": "Precio",
-  "rateLabel": "Tarifa",
-  "ratingLabel": "Calificación",
-  "closeButton": "Cerrar",
-  "estimatedDelivery": "Entrega estimada",
-  "deliveryAddress": "Dirección de entrega",
-  "sellerLabel": "Vendedor",
-  "cancellationReasonLabel": "Motivo de cancelación",
-  "orderSummary": "Resumen del pedido",
-  "arrivingSoon": "Llegando pronto",
-  "etaMinutes": "~{mins} min",
-  "etaHours": "~{hours}h {mins}min",
-  "driverNearby": "¡Conductor cerca!",
-  "onTheWay": "En camino",
-  "youLabel": "Tú",
-  "filterAll": "Todos",
-  "filterNew": "Nuevo",
-  "filterConfirmed": "Confirmado",
-  "filterPreparing": "Preparando",
-  "filterInTransit": "En tránsito",
-  "filterDelivered": "Entregado",
-  "filterCancelled": "Cancelado",
-  "unknownCustomer": "Cliente desconocido",
-  "orderLabel": "Pedido",
-  "manageButton": "Gestionar",
-  "unavailable": "No disponible",
-  "addMore": "Añadir más",
-  "qtyUpdatedTo": "{title} — cantidad actualizada a {qty}",
-  "maximumStockReached": "Stock máximo alcanzado",
-  "pricePerUnit": "{price} TND / {unit}",
-  "premiumFeatureTitle": "Función Premium",
-  "premiumFeatureDesc": "Actualiza tu suscripción para desbloquear esta función.",
-  "upgradeNow": "Actualizar ahora",
-  "upgradeRequiredDesc": "Esta función ({featureKey}) está disponible en un plan premium. Actualiza tu suscripción para desbloquearla.",
-  "laterButton": "Después",
-  "myLandsTitle": "Mis Tierras",
-  "noLandsFound": "No se encontraron tierras",
-  "noLandsRented": "Todavía no has alquilado ninguna tierra.",
-  "landActive": "Activo",
-  "landInactive": "Inactivo",
-  "landsRented": "Tierras Alquiladas",
-  "completenessLabel": "Completitud",
-  "roleLabel": "Rol",
-  "aboutLabel": "Acerca de",
-  "directLinksLabel": "Enlaces directos",
-  "websiteLabel": "Sitio web",
-  "farmyMemberSince": "Miembro de la comunidad Farmy desde {date}",
-  "privacyRestricted": "Acceso restringido",
-  "profileNotFound": "Perfil no encontrado o privado",
-  "profileLoadError": "No se pudo cargar el perfil. Verifica tu conexión.",
-  "retryButton": "Reintentar",
-  "upgradeForUnlimited": "Actualizar{plan} para acceso ilimitado",
-  "tapToViewPlans": "Toca para ver los planes →",
-  "assignTaskTitle": "Asignar tarea",
-  "workersAvailable": "{count} Disponibles",
-  "noTasksDefined": "No hay tareas definidas para este elemento.",
-  "noAvailableWorkers": "¡No hay trabajadores disponibles!",
-  "taskAssigned": "¡Tarea asignada!",
-  "assignButton": "Asignar",
-  "myTasksOnLand": "Mis tareas en esta tierra",
-  "noPendingTasksHere": "¡No hay tareas pendientes aquí!",
-  "availableForAssignment": "Estás disponible para asignaciones.",
-  "taskCompleted": "¡Tarea completada! Ahora estás disponible.",
-  "markCompleteButton": "Marcar como completada",
-  "errorFetchingYourTasks": "Error al obtener tus tareas",
-  "closeTip": "Cerrar",
-  "farmyStore": "TIENDA FARMY",
-  "nothingFoundHere": "Nada encontrado aquí",
-  "shopBack": "VOLVER",
-  "shopVariants": "VARIANTES",
-  "shopBuy": "COMPRAR",
-  "mustRentLand": "Debes alquilar una tierra para comprar artículos.",
-  "selectLand": "Seleccionar tierra",
-  "unknownLand": "Tierra desconocida",
-  "purchaseRequestSent": "¡Solicitud enviada! Transacción registrada en Hedera.",
-  "purchaseFailed": "Compra fallida. ¿Créditos insuficientes?",
-  "topUpCredits": "RECARGAR CRÉDITOS",
-  "customAmount": "Monto personalizado",
-  "maximumAmount": "El monto máximo es ${max}",
-  "creditsAdded": "¡Se agregaron ${amount} exitosamente!",
-  "myInventory": "MI INVENTARIO",
-  "allLands": "Todas las tierras",
-  "unknownLandFallback": "Desconocido",
-  "tabAll": "TODO",
-  "tabPending": "PENDIENTE",
-  "tabApproved": "APROBADO",
-  "tabRejected": "RECHAZADO",
-  "noItemsFound": "No se encontraron artículos {status}",
-  "placedBadge": "COLOCADO",
-  "itemActions": "Acciones del artículo",
-  "alreadyPlaced": "Ya colocado",
-  "addToLand": "Agregar a la tierra",
-  "wrongLand": "Tierra incorrecta",
-  "alreadyPlacedSubtitle": "Este artículo ya está en el mapa.",
-  "wrongLandSubtitle": "Este artículo pertenece a otra tierra.",
-  "buyMore": "Comprar más",
-  "failedToLoadData": "No se pudieron cargar los datos. Por favor, intenta de nuevo.",
-  "failedToLoadInventory": "No se pudo cargar el inventario. Por favor, intenta de nuevo.",
-  "comingSoonTitle": "Próximamente",
-  "comingSoonDesc": "¡Esta función está en desarrollo. Pronto podrás colocar artículos en tu tierra!",
-  "okButton": "Aceptar",
-  "gotItButton": "Entendido",
-  "placingItem": "Colocando artículo...",
-  "itemPlacedSuccess": "¡Artículo colocado exitosamente!",
-  "placingLabel": "Colocando: {name}",
-  "loadingFootprint": "Cargando huella...",
-  "sizeLabel": "Tamaño: {w}x{h}",
-  "confirmButton": "Confirmar",
-  "cancelButton": "Cancelar",
-  "failedToLoadFarm": "No se pudo cargar la granja",
-  "goBackButton": "Volver",
-  "menuWorkforce": "Mano de obra",
-  "menuMyTasks": "Mis tareas",
-  "menuAiAdvisor": "Asesor IA",
-  "menuInventory": "Inventario",
-  "menuShop": "Tienda",
-  "menuExitGame": "Salir del juego",
-  "mapTooltipInfo": "Info",
-  "mapTooltipMove": "Mover",
-  "mapTooltipTasks": "Tareas",
-  "placementFailed": "Error al colocar: {error}",
-  "placementFailedGeneric": "No se pudo colocar el artículo. Intenta en otro lugar.",
-  "daysAgo": "hace {count}d",
-  "@daysAgo": {
+  "@acceptOfferConfirmation": {
     "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
-  "couldNotOpenHashScan": "No se pudo abrir HashScan",
-  "@minutesAgo": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
-  "@hoursAgo": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
-  "setMonthlySalary": "Establecer salario mensual",
-  "assign": "Asignar",
-  "tasksLabelShort": "Tareas",
-  "assignToLand": "Asignar al terreno",
-  "invitationSentTo": "Invitación enviada a {worker}",
-  "@invitationSentTo": {
-    "placeholders": {
-      "worker": {
-        "type": "String"
-      }
-    }
-  },
-  "failedToSendInvitation": "Error al enviar la invitación",
-  "inviteWorker": "Invitar trabajador",
-  "inviteWorkerMessage": "Invitar a {worker} a {landName}",
-  "@inviteWorkerMessage": {
-    "placeholders": {
-      "worker": {
+      "amount": {
         "type": "String"
       },
-      "landName": {
+      "type": {
         "type": "String"
       }
     }
   },
-  "optionalMessageHint": "Mensaje opcional...",
-  "sendInvite": "Enviar invitación",
-  "workerAssignedToLand": "{worker} asignado a {landName}",
-  "@workerAssignedToLand": {
+  "@activeOnCycle": {
     "placeholders": {
-      "worker": {
-        "type": "String"
-      },
-      "landName": {
+      "cycle": {
         "type": "String"
       }
     }
   },
-  "failedToAssignWorker": "Error al asignar trabajador",
-  "directMessagingDescription": "Descripción de mensajería directa",
-  "readReviewsDescription": "Descripción de leer reseñas",
-  "messageWorker": "Contactar trabajador",
-  "viewReviews": "Ver reseñas",
-  "inviteToLand": "Invitar al terreno",
-  "amountPerHour": "${amount}/h",
-  "@amountPerHour": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "onTimeLabel": "A tiempo",
-  "disputesLabel": "Disputas",
-  "skills": "Habilidades",
-  "about": "Acerca de",
-  "performance": "Rendimiento",
-  "performanceGraphComingSoon": "Gráfico de rendimiento próximamente",
-  "manager": "Gerente",
-  "pendingLabel": "Pendiente",
-  "inactiveLabel": "Inactivo",
-  "name": "Nombre",
-  "salary": "Salario",
-  "supervisor": "Supervisor",
-  "landDetails": "Detalles del terreno",
-  "amountPerMonth": "${amount}/mes",
-  "@amountPerMonth": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "hourly": "Por hora",
-  "listingPublished": "Anuncio publicado",
-  "listingPublishedHint": "Tu anuncio ahora es visible públicamente.",
-  "continueLabelUpper": "CONTINUAR",
-  "failedToLoadProofs": "Error al cargar las pruebas",
-  "aiVerifyingProof": "La IA está verificando tu prueba...",
-  "proofVerifiedSuccessfully": "¡Prueba verificada con éxito!",
-  "noProofRequestsFound": "No se encontraron solicitudes de prueba",
-  "fromLabel": "De: {name}",
-  "@fromLabel": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "investor": "Inversor",
-  "squareMeters": "{count} m²",
-  "@squareMeters": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "toLabel": "A: {name}",
-  "@toLabel": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "mustSubmitBefore": "Debe enviar antes de {date}",
-  "@mustSubmitBefore": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "aiNotes": "Notas de IA: {notes}",
-  "@aiNotes": {
-    "placeholders": {
-      "notes": {
-        "type": "String"
-      }
-    }
-  },
-  "submitPhotoProof": "Enviar prueba fotográfica",
-  "createNewTask": "Crear nueva tarea",
-  "taskTitle": "Título de la tarea",
-  "taskTitleHint": "ej., Regar los tomates",
-  "descriptionOptional": "Descripción (Opcional)",
-  "taskType": "Tipo de tarea",
-  "rewardLabel": "Recompensa",
-  "rewardAmountTnd": "{amount} TND",
-  "@rewardAmountTnd": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "timeLabel": "Tiempo",
-  "minutesCount": "{count} min",
-  "@minutesCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "hoursCount": "{count} h",
-  "@hoursCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "createTask": "Crear tarea",
-  "pleaseEnterTaskTitle": "Por favor ingresa un título",
-  "taskCreated": "¡Tarea creada con éxito!",
-  "tasksForLand": "Tareas para {landName}",
-  "@tasksForLand": {
-    "placeholders": {
-      "landName": {
-        "type": "String"
-      }
-    }
-  },
-  "open": "Abierto",
-  "done": "Hecho",
-  "noTasksHere": "No hay tareas aquí",
-  "activeTasksCount": "{count} tareas activas",
   "@activeTasksCount": {
     "placeholders": {
       "count": {
@@ -1064,67 +24,65 @@
       }
     }
   },
-  "activeTasksLabel": "Tareas activas",
-  "farmerPro": "Farmer Pro",
-  "assignedTo": "Asignado a {name}",
-  "@assignedTo": {
+  "@addedToBasket": {
     "placeholders": {
-      "name": {
+      "title": {
         "type": "String"
       }
     }
   },
-  "taskLimitReached": "Límite de tareas alcanzado",
-  "taskLimitReachedMessage": "Solo puedes tener {count} tareas activas en el plan gratuito.",
-  "@taskLimitReachedMessage": {
+  "@advanceNotifyCustomer": {
     "placeholders": {
-      "count": {
+      "status": {
         "type": "String"
       }
     }
   },
-  "water": "Regar",
-  "harvest": "Cosechar",
-  "feed": "Alimentar",
-  "install": "Instalar",
-  "maintenance": "Mantenimiento",
-  "inProgress": "En progreso",
-  "completed": "Completado",
-  "paymentFailedGeneric": "El pago no pudo ser completado.",
-  "paymentFailedWithError": "Pago fallido: {error}",
-  "@paymentFailedWithError": {
+  "@aiLandInvestmentHint": {
     "placeholders": {
-      "error": {
+      "param": {
         "type": "String"
       }
     }
   },
-  "proofRequestedHint": "Se ha enviado una solicitud de prueba al trabajador.",
-  "requestAIProof": "Solicitar prueba de IA",
-  "noProofsRequestedUpper": "SIN PRUEBAS SOLICITADAS",
-  "requestProofHint": "Pide al trabajador que envíe pruebas fotográficas de su trabajo.",
-  "removeWorker": "Eliminar trabajador",
-  "remove": "Eliminar",
-  "workerRemovedSuccessfully": "Trabajador eliminado con éxito",
-  "failedToRemoveWorker": "Error al eliminar al trabajador",
-  "systemErrorUpper": "ERROR DEL SISTEMA",
-  "retryConnectionUpper": "REINTENTAR CONEXIÓN",
-  "myInvestments": "Mis inversiones",
-  "rentalConfirmed": "Alquiler confirmado",
-  "rentalConfirmedDescription": "Su alquiler ha sido confirmado y el equipo será entregado pronto.",
-  "goToDashboardUpper": "IR AL PANEL",
-  "manageCards": "Gestionar tarjetas",
-  "cardAddedSuccessfully": "Tarjeta añadida con éxito",
-  "cancelledOrFailedToAddCard": "Cancelado o error al añadir la tarjeta.",
-  "allocatingSpatialResources": "Asignando recursos espaciales...",
-  "paymentFailedTryAgain": "El pago falló. Por favor, inténtelo de nuevo.",
-  "paymentIssueHint": "Hubo un problema al procesar su pago.",
-  "payNowUpper": "PAGAR AHORA",
-  "pleaseSelectPaymentMethod": "Por favor, seleccione un método de pago",
-  "securingRental": "Asegurando el alquiler...",
-  "agreeToTermsAndPrivacy": "Acepto los términos y la política de privacidad",
-  "totalAmount": "Cantidad total",
-  "amountTND": "{amount} TND",
+  "@aiNotes": {
+    "placeholders": {
+      "notes": {
+        "type": "String"
+      }
+    }
+  },
+  "@amountPerHour": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@amountPerMonth": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@amountPerType": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "@amountPrefix": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "@amountTND": {
     "placeholders": {
       "amount": {
@@ -1132,32 +90,26 @@
       }
     }
   },
-  "duration": "Duración",
-  "nMonths": "{count} meses",
-  "@nMonths": {
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "@assignedTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@availableCount": {
     "placeholders": {
       "count": {
+        "type": "int"
+      },
+      "unit": {
         "type": "String"
       }
     }
   },
-  "totalProject": "Proyecto Total",
-  "walletCredits": "Créditos de la cartera",
-  "availableInstantPayment": "Disponible para pago instantáneo",
-  "monthlyRent": "Renta Mensual",
-  "defaultMethod": "Predeterminado",
-  "savedCard": "Tarjeta guardada",
-  "changeAction": "Cambiar",
-  "insufficientCredits": "Créditos insuficientes: {amount} disponible",
-  "@insufficientCredits": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "addPaymentMethod": "Agregar método de pago",
-  "balanceAmount": "Saldo: {amount} TND",
   "@balanceAmount": {
     "placeholders": {
       "amount": {
@@ -1165,60 +117,249 @@
       }
     }
   },
-  "startingFrom": "A partir de",
-  "monthAbbreviation": "mes",
-  "monthsAbbreviation": "{count} meses",
-  "@monthsAbbreviation": {
+  "@balanceStatusInsufficient": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@balanceStatusSuccess": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@balanceValue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@balanceWithCredits": {
+    "placeholders": {
+      "balance": {
+        "type": "String"
+      }
+    }
+  },
+  "@buyProductConfirmation": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "price": {
+        "type": "double"
+      }
+    }
+  },
+  "@checkoutResultFeedback": {
+    "placeholders": {
+      "successCount": {
+        "type": "int"
+      },
+      "failCount": {
+        "type": "int"
+      }
+    }
+  },
+  "@checkoutWithItems": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@completedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@contractForWorker": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@contractIsStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "@creditsAdded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@creditsCount": {
     "placeholders": {
       "count": {
         "type": "String"
       }
     }
   },
-  "paymentSecurity": "Pago seguro procesado por Stripe.",
-  "availableUpper": "DISPONIBLE",
-  "organicPlotGrid": "Parcela orgánica (cuadrícula {w}x{h})",
-  "@organicPlotGrid": {
+  "@currentPlanLabel": {
     "placeholders": {
-      "w": {
-        "type": "int"
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@dateTimeAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
       },
-      "h": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "@daysLeft": {
+    "placeholders": {
+      "count": {
         "type": "int"
       }
     }
   },
-  "checkout": "Pago",
-  "leaseStartDate": "Fecha de inicio del contrato",
-  "rentalDuration": "Duración del alquiler",
-  "failedToLoadRecords": "Error al cargar los registros.",
-  "noBlockchainRecordsYet": "Aún no hay registros de Blockchain",
-  "makePurchaseImmutableRecordsHint": "Realiza una compra para ver registros inmutables aquí.",
-  "pendingUpper": "PENDIENTE",
-  "rejectedUpper": "RECHAZADO",
-  "fetchingBlockchainRecords": "Obteniendo registros de la cadena de bloques...",
-  "transactionIdCopied": "ID de transacción copiado al portapapeles",
-  "paidUpper": "PAGADO",
-  "approvedUpper": "APROBADO",
-  "rentalsLabel": "Alquileres",
-  "purchasesLabel": "Compras",
-  "hederaConsensusServiceUpper": "SERVICIO DE CONSENSO DE HEDERA",
-  "proofSubmittedVerified": "Prueba enviada y verificada con éxito.",
-  "hederaRegistryUpper": "REGISTRO HEDERA",
-  "immutableOnChainRecords": "Registros inmutables en cadena",
-  "captureSubmit": "Capturar y Enviar",
-  "uploadingImage": "Subiendo imagen...",
-  "pleaseWaitAFewMoments": "Por favor, espere unos momentos...",
-  "orSelectAnItem": "O seleccione un artículo",
-  "itemIdUpper": "ID DEL ARTÍCULO",
-  "@itemIdUpper": {
+  "@declineNegotiationConfirmation": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@declineOfferConfirmation": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@deleteChatConfirmation": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@deleteLandConfirmation": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@deleteProductConfirmation": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@downgradeWarning": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@endsDate": {
     "placeholders": {
       "param": {
         "type": "String"
       }
     }
   },
-  "gridPlots": "{w}x{h} parcelas",
+  "@errorWithPrefix": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@etaHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "mins": {
+        "type": "String"
+      }
+    }
+  },
+  "@etaLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@etaMinutes": {
+    "placeholders": {
+      "mins": {
+        "type": "String"
+      }
+    }
+  },
+  "@expiresLabel": {
+    "placeholders": {
+      "expiry": {
+        "type": "String"
+      }
+    }
+  },
+  "@farmerWithColon": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "@farmyMemberSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@featureOptimizedDescription": {
+    "placeholders": {
+      "feature": {
+        "type": "String"
+      }
+    }
+  },
+  "@fromLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@getPlan": {
+    "placeholders": {
+      "planName": {
+        "type": "String"
+      }
+    }
+  },
   "@gridPlots": {
     "placeholders": {
       "w": {
@@ -1229,49 +370,27 @@
       }
     }
   },
-  "hireUpper": "CONTRATAR",
-  "size": "Tamaño",
-  "ownerLabel": "Propietario",
-  "draw": "Dibujar",
-  "unknownItem": "Artículo desconocido",
-  "moveAll": "Mover todo",
-  "plotNumber": "Nº de parcela",
-  "@plotNumber": {
+  "@hireWorkerUpper": {
     "placeholders": {
       "param": {
         "type": "String"
       }
     }
   },
-  "optimalSolarExposure": "Exposición solar óptima",
-  "cancelUpper": "CANCELAR",
-  "failedToRejectRequest": "Error al rechazar la solicitud",
-  "hireWorkersUpper": "CONTRATAR TRABAJADORES",
-  "invalidGeometryAlert": "Alerta de geometría inválida",
-  "activeTasks": "Tareas activas",
-  "perTaskUpper": "POR TAREA",
-  "analyzePortfolio": "Analizar cartera",
-  "noPendingRequests": "No hay solicitudes pendientes",
-  "heightAuto": "Altura auto",
-  "rentAmountMonthly": "Alquiler mensual: {param}",
-  "@rentAmountMonthly": {
+  "@hoursAgo": {
     "placeholders": {
-      "param": {
+      "hours": {
         "type": "String"
       }
     }
   },
-  "totalCapitalInvested": "Capital total invertido",
-  "currentLand": "Tierra actual",
-  "descriptionTooShort": "Descripción demasiado corta",
-  "landName": "Nombre de la tierra",
-  "alreadyRentedUpper": "YA ALQUILADO",
-  "requestRejectedRefunded": "Solicitud rechazada y reembolsada",
-  "rejectionReasonPrompt": "Por favor, indique el motivo del rechazo",
-  "negotiationsUpper": "NEGOCIACIONES",
-  "noWorkersFoundUpper": "NO SE ENCONTRARON TRABAJADORES",
-  "unknownInvestor": "Inversor desconocido",
-  "hoursLeft": "{count} horas restantes",
+  "@hoursCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "@hoursLeft": {
     "placeholders": {
       "count": {
@@ -1279,38 +398,282 @@
       }
     }
   },
-  "rentalSlotsUsage": "Uso de espacios de alquiler",
-  "selectAtLeast3Points": "Seleccione al menos 3 puntos",
-  "activeLabelUpper": "ACTIVO",
-  "salaryAmountType": "{amount} / {type}",
-  "@salaryAmountType": {
-    "placeholders": {
-      "amount": {
-        "type": "int"
-      },
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "expiringSoon": "Expira pronto",
-  "checkBackLaterOpportunities": "Vuelva más tarde para ver nuevas oportunidades",
-  "inactive": "Inactivo",
-  "endDateUpper": "FECHA DE FIN",
-  "farmerWithColon": "Agricultor: {param}",
-  "@farmerWithColon": {
+  "@idLabel": {
     "placeholders": {
       "param": {
         "type": "String"
       }
     }
   },
-  "farmingActivity": "Actividad agrícola",
-  "noActiveFarmingActivities": "No hay actividades agrícolas activas",
-  "boundaries": "Límites",
-  "noInvestmentsYet": "Aún no hay inversiones",
-  "activeStatusUpper": "ESTADO ACTIVO",
-  "plotsCount": "{w}x{h} parcelas",
+  "@includingTva": {
+    "placeholders": {
+      "tax": {
+        "type": "String"
+      }
+    }
+  },
+  "@insufficientCredits": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@insufficientFundsDescription": {
+    "placeholders": {
+      "balance": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "@investorAcceptOfferConfirmation": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "@invitationFrom": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "@invitationSentTo": {
+    "placeholders": {
+      "worker": {
+        "type": "String"
+      }
+    }
+  },
+  "@inviteWorkerMessage": {
+    "placeholders": {
+      "worker": {
+        "type": "String"
+      },
+      "landName": {
+        "type": "String"
+      }
+    }
+  },
+  "@itemIdUpper": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "@itemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@itemsPurchasedSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@itemsSold": {
+    "description": "Label for the number of items sold"
+  },
+  "@kycSuccess": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "@landLimitReachedDescription": {
+    "placeholders": {
+      "planName": {
+        "type": "String"
+      }
+    }
+  },
+  "@landPlotNumber": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "@landWithColon": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "@maximumAmount": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "@minutesAgo": {
+    "placeholders": {
+      "mins": {
+        "type": "String"
+      }
+    }
+  },
+  "@minutesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@minutesLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@monthsAbbreviation": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "@moveToStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "@mustSubmitBefore": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@nItemsSold": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@nMonths": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "@nTasksUpper": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@noItemsFoundStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "@organicPlotGrid": {
+    "placeholders": {
+      "w": {
+        "type": "int"
+      },
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "@owner": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "@payAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@payAmountToActivate": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@paymentError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@paymentFailedWithError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@paymentSummary": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "cycle": {
+        "type": "String"
+      },
+      "planName": {
+        "type": "String"
+      }
+    }
+  },
+  "@placementFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@placingLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@plotNumber": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
   "@plotsCount": {
     "placeholders": {
       "w": {
@@ -1321,131 +684,6 @@
       }
     }
   },
-  "noPendingRequestsHint": "No tienes solicitudes pendientes en este momento.",
-  "requestedDateUpper": "FECHA SOLICITADA: {param}",
-  "@requestedDateUpper": {
-    "placeholders": {
-      "param": {
-        "type": "String"
-      }
-    }
-  },
-  "priceCannotBeEmpty": "El precio no puede estar vacío",
-  "rentedUpper": "ALQUILADO",
-  "rentalLimitReached": "Límite de alquiler alcanzado",
-  "invitationUpdates": "Actualizaciones de invitaciones",
-  "priceStartingFrom": "Precio desde",
-  "locationHighlights": "Lo más destacado de la ubicación",
-  "amount": "Monto",
-  "publishingFailed": "Error al publicar",
-  "securedWaterAccess": "Acceso seguro al agua",
-  "monthlyRentPriceTND": "Precio de alquiler mensual (TND)",
-  "geometryVerified": "Geometría verificada",
-  "landWithColon": "Tierra: {param}",
-  "@landWithColon": {
-    "placeholders": {
-      "param": {
-        "type": "String"
-      }
-    }
-  },
-  "cannotPublishInvalidGeometry": "No se puede publicar con una geometría inválida",
-  "retryUpper": "REINTENTAR",
-  "imageProofRequiredToApprove": "Se requiere prueba de imagen para aprobar",
-  "sendProposalUpper": "ENVIAR PROPUESTA",
-  "min": "min",
-  "pricePerMonth": "Precio por mes",
-  "noActiveWorkersUpper": "NO HAY TRABAJADORES ACTIVOS",
-  "reasonTooShort": "El motivo es demasiado corto",
-  "viewDetails": "Ver detalles",
-  "proofsUpper": "PRUEBAS",
-  "noActiveNegotiationsUpper": "NO HAY NEGOCIACIONES ACTIVAS",
-  "plantCrops": "Plantar cultivos",
-  "readyForActivityHint": "Listo para la actividad",
-  "irrigated": "Irrigado",
-  "tryAdjustingFilters": "Intente ajustar los filtros",
-  "occupiedUpper": "OCUPADO",
-  "generalFarmingActivity": "Actividad agrícola general",
-  "endsDate": "Finaliza el: {param}",
-  "@endsDate": {
-    "placeholders": {
-      "param": {
-        "type": "String"
-      }
-    }
-  },
-  "daysLeft": "{count} días restantes",
-  "@daysLeft": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "hireActivateWorkersHint": "Contratar y activar trabajadores",
-  "manageWorkers": "Gestionar trabajadores",
-  "onTime": "A tiempo",
-  "removeWorkerConfirmation": "¿Eliminar al trabajador {param}?",
-  "@removeWorkerConfirmation": {
-    "placeholders": {
-      "param": {
-        "type": "String"
-      }
-    }
-  },
-  "assignedLands": "Tierras asignadas",
-  "limitReachedUpper": "LÍMITE ALCANZADO",
-  "proofHistory": "Historial de pruebas",
-  "farmerInvitations": "Invitaciones de agricultores",
-  "workforceUpper": "FUERZA LABORAL",
-  "descriptionRequired": "Descripción requerida",
-  "priceGreaterThanZero": "El precio debe ser mayor que cero",
-  "saveChanges": "Guardar cambios",
-  "proofRequestQuestion": "Pregunta de solicitud de prueba",
-  "rentalSlotsUsed": "Espacios de alquiler utilizados",
-  "activeLands": "Tierras activas",
-  "widthAuto": "Ancho auto",
-  "spatialDimensions": "Dimensiones espaciales",
-  "idLabel": "ID: {param}",
-  "@idLabel": {
-    "placeholders": {
-      "param": {
-        "type": "String"
-      }
-    }
-  },
-  "rentalExpires": "El alquiler vence el: {param}",
-  "@rentalExpires": {
-    "placeholders": {
-      "param": {
-        "type": "String"
-      }
-    }
-  },
-  "proofSubmissionHint": "Envío de prueba: {param}",
-  "@proofSubmissionHint": {
-    "placeholders": {
-      "param": {
-        "type": "String"
-      }
-    }
-  },
-  "landPlotNumber": "Nº de parcela: {param}",
-  "@landPlotNumber": {
-    "placeholders": {
-      "param": {
-        "type": "String"
-      }
-    }
-  },
-  "availableUpper": "DISPONIBLE",
-  "soldUpper": "VENDIDO",
-  "hiddenUpper": "OCULTO",
-  "messageOptionalUpper": "MENSAJE (OPCIONAL)",
-  "roiEst": "ROI estimado",
-  "paymentRequiredToActivate": "Pago requerido para activar",
-  "invalidNumericAmount": "Monto numérico inválido",
-  "pointsDefined": "{count} puntos definidos",
   "@pointsDefined": {
     "placeholders": {
       "count": {
@@ -1453,32 +691,251 @@
       }
     }
   },
-  "nItemsSold": "{count} artículos vendidos",
-  "@nItemsSold": {
+  "@priceCountCredits": {
+    "placeholders": {
+      "price": {
+        "type": "double"
+      }
+    }
+  },
+  "@pricePerUnit": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "@priceTnd": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "@productLimitMessage": {
+    "placeholders": {
+      "planName": {
+        "type": "String"
+      }
+    }
+  },
+  "@profileSyncFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@proofSubmissionHint": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "@proposedSalaryAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@qtySetTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "qty": {
+        "type": "int"
+      }
+    }
+  },
+  "@qtyUpdatedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "@removeWorkerConfirmation": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "@rentAmountMonthly": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "@rentalExpires": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "@requestedDateUpper": {
+    "placeholders": {
+      "param": {
+        "type": "String"
+      }
+    }
+  },
+  "@resettingPasswordFor": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "@rewardAmountTnd": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@salaryAmountType": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "@salaryPerMonth": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@salaryValue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@savingsLabel": {
+    "placeholders": {
+      "oldPrice": {
+        "type": "String"
+      },
+      "savings": {
+        "type": "String"
+      }
+    }
+  },
+  "@sizeLabel": {
+    "placeholders": {
+      "w": {
+        "type": "String"
+      },
+      "h": {
+        "type": "String"
+      }
+    }
+  },
+  "@squareMeters": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "noItemsFound": "No se encontraron artículos",
-  "noItemsFoundStatus": "No se encontraron artículos {status}",
-  "@noItemsFoundStatus": {
+  "@statusUpdatedTo": {
     "placeholders": {
       "status": {
         "type": "String"
       }
     }
   },
-  "itemVerification": "[itemVerification]",
-  "invalidGeometryHint": "Se detectó una geometría inválida",
-  "declinedUpper": "RECHAZADO",
-  "connectionError": "Error de conexión",
-  "startByListingPlot": "Comience por listar una parcela",
-  "propertyDetails": "Detalles de la propiedad",
-  "invalidGeometry": "Géometría inválida",
-  "failedToLoadRequests": "Error al cargar las solicitudes",
-  "untilDate": "hasta {param}",
+  "@subtotalLabel": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "@successfullyAddedCredits": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@taskLimitReachedMessage": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "@tasksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@tasksForLand": {
+    "placeholders": {
+      "landName": {
+        "type": "String"
+      }
+    }
+  },
+  "@toLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@totalCount": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "@totalSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@totalWithCycle": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "cycle": {
+        "type": "String"
+      }
+    }
+  },
+  "@unknownRole": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
   "@untilDate": {
     "placeholders": {
       "param": {
@@ -1486,86 +943,6 @@
       }
     }
   },
-  "drawInstructions": "Toque en el mapa para dibujar los límites",
-  "na": "N/A",
-  "noTasksAssignedHint": "Aún no hay tareas asignadas",
-  "cannotPublishBoundaryConflicts": "No se puede publicar: se detectaron conflictos de límites",
-  "farmingActivities": "Actividades agrícolas",
-  "listNewLand": "Listar nueva tierra",
-  "noApprovedWorkersUpper": "NO HAY TRABAJADORES APROBADOS",
-  "expiredUpper": "EXPIRADO",
-  "conflictDetected": "Conflicto detectado",
-  "rejectRequest": "Rechazar solicitud",
-  "boundaryConflictAlert": "Alerta de conflicto de límites",
-  "requestProof": "Solicitar prueba",
-  "perHourUpper": "POR HORA",
-  "exploreLands": "Explorar tierras",
-  "premiumFarmlandUpper": "TIERRA AGRÍCOLA PREMIUM",
-  "newProposal": "Nueva propuesta",
-  "suspendedUpper": "SUSPENDIDO",
-  "aiPortfolioAnalysisHint": "Análisis de cartera IA",
-  "defineOnMap": "Definir en el mapa",
-  "itemUpper": "ARTÍCULO",
-  "amountPerType": "{amount} / {type}",
-  "@amountPerType": {
-    "placeholders": {
-      "param": {
-        "type": "String"
-      }
-    }
-  },
-  "landDescriptionHint": "Describa su tierra...",
-  "autoFromBoundary": "Auto desde el límite",
-  "tryAgainUpper": "REINTENTAR",
-  "landNameRequired": "El nombre de la tierra es obligatorio",
-  "activeUpper": "ACTIVO",
-  "hiringProposals": "Propuestas de contratación",
-  "confirmReject": "Confirmar rechazo",
-  "movePoint": "Mover punto",
-  "priceExceedsLimit": "El precio excede el límite",
-  "egSalaryHint": "ej. 15,00",
-  "hireWorkerUpper": "CONTRATAR A {param}",
-  "@hireWorkerUpper": {
-    "placeholders": {
-      "param": {
-        "type": "String"
-      }
-    }
-  },
-  "hiringProposalSent": "Propuesta de contratación enviada",
-  "entireLand": "Tierra entera",
-  "acceptedUpper": "ACEPTADO",
-  "fundsReleasedAfterVerification": "Fondos liberados después de la verificación",
-  "enterRejectionReason": "Ingrese el motivo del rechazo",
-  "proofRequests": "Solicitudes de prueba",
-  "enableVoiceInput": "Activar entrada de voz",
-  "salaryAmountTNDUpper": "MONTO DEL SALARIO (TND)",
-  "unableToRetrieveLandDetails": "No se pudieron obtener los detalles de la tierra",
-  "hourlyUpper": "POR HORA",
-  "aiLandInvestmentHint": "Sugerencia de inversión de IA: {param}",
-  "@aiLandInvestmentHint": {
-    "placeholders": {
-      "param": {
-        "type": "String"
-      }
-    }
-  },
-  "askAiAnalyst": "Preguntar al analista de IA",
-  "monthlyUpper": "MENSUAL",
-  "activeContracts": "Contratos activos",
-  "workerRespondedReviewCounterOffer": "El trabajador respondió, revise la contraoferta",
-  "unlockUnlimitedSlotsInvestorPlus": "Desbloquee espacios ilimitados con Investor+",
-  "escrowBalance": "Saldo de depósito en garantía",
-  "pleaseEnterAName": "Por favor, ingrese un nombre",
-  "raiseLivestock": "Criar ganado",
-  "noLandAssignments": "No hay asignaciones de tierra",
-  "aiVerifyUpper": "VERIFICAR POR IA",
-  "requestExpired": "Solicitud expirada",
-  "rejectUpper": "RECHAZAR",
-  "landUpdatedSuccess": "Tierra actualizada con éxito",
-  "realTimeTaskNotificationsSoon": "Notificaciones de tareas en tiempo real pronto",
-  "approveUpper": "APROBAR",
-  "untilDateUpper": "HASTA {param}",
   "@untilDateUpper": {
     "placeholders": {
       "param": {
@@ -1573,56 +950,1318 @@
       }
     }
   },
-  "overlapsExistingLand": "Se superpone con tierra existente",
-  "itemRequests": "Solicitudes de artículos",
-  "startDateUpper": "FECHA DE INICIO",
-  "generalLandProof": "Prueba general de la tierra",
-  "landNameTooShort": "Nombre de la tierra demasiado corto",
-  "verifiedUpper": "VERIFICADO",
-  "minutesLeft": "{count} minutos restantes",
-  "@minutesLeft": {
+  "@updateToStatusQuestion": {
     "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "tapToDrawBoundaries": "Toque para dibujar límites",
-  "directRoadAccess": "Acceso directo por carretera",
-  "invitationFrom": "Invitación de {param}",
-  "@invitationFrom": {
-    "placeholders": {
-      "param": {
+      "status": {
         "type": "String"
       }
     }
   },
-  "failedToLoadContracts": "Error al cargar los contratos",
-  "verificationFailed": "Error de verificación",
-  "perimeterNotSet": "Perímetro no definido",
-  "requestApprovedItemPlaced": "Solicitud aprobada, artículo colocado",
-  "inviteWorkersMarketplaceHint": "Invitar trabajadores del mercado",
-  "landNameHint": "ej. Granja Valle Soleado",
-  "publishListing": "Publicar anuncio",
-  "hireApprovedWorkerNegotiationHint": "Contratar trabajador aprobado para iniciar negociación",
-  "request": "Solicitud",
-  "counterOfferUpper": "CONTRAOFERTA",
-  "proposedUpper": "PROPUESTO",
-  "verificationSuccessful": "Verificación exitosa",
-  "rentLandToStartUpper": "ALQUILAR TIERRA PARA EMPEZAR",
-  "expiredLabel": "Expirado",
-  "salaryTypeUpper": "TIPO DE SALARIO",
-  "pleaseEnterRejectionReason": "Por favor, ingrese el motivo del rechazo",
-  "negotiatingUpper": "NEGOCIANDO",
-  "rentNowUpper": "ALQUILAR AHORA",
-  "nTasksUpper": "{count} TAREAS",
-  "@nTasksUpper": {
+  "@upgradeForUnlimited": {
     "placeholders": {
-      "count": {
-        "type": "int"
+      "plan": {
+        "type": "String"
       }
     }
   },
+  "@upgradeRequiredDesc": {
+    "placeholders": {
+      "featureKey": {
+        "type": "String"
+      }
+    }
+  },
+  "@upgradeToPlan": {
+    "placeholders": {
+      "planName": {
+        "type": "String"
+      }
+    }
+  },
+  "@upgradeWithPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "@uploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@validUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@verificationCodeSentTo": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "@workerAssignedToLand": {
+    "placeholders": {
+      "worker": {
+        "type": "String"
+      },
+      "landName": {
+        "type": "String"
+      }
+    }
+  },
+  "@workersAvailable": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "@workforceLandName": {
+    "placeholders": {
+      "landName": {
+        "type": "String"
+      }
+    }
+  },
+  "about": "Acerca de",
+  "aboutLabel": "Acerca de",
+  "aboutMe": "Acerca de mí",
+  "aboutUs": "Sobre nosotros - Equipo Farmy",
+  "aboutYou": "Sobre ti",
+  "aboutYouHint": "Cuéntale a los agricultores sobre tu experiencia...",
+  "accept": "Aceptar",
+  "acceptOfferConfirmation": "Estás a punto de aceptar la oferta de ${amount} {type}. Esto establecerá un contrato legal.",
+  "acceptThisOfferQuestion": "¿Aceptar esta oferta?",
+  "acceptedUpper": "ACEPTADO",
+  "accessFarmView": "Acceder a la vista de la granja en 2.5D",
+  "accountBanned": "Cuenta baneada",
+  "accountInformation": "Información de la cuenta",
+  "active": "ACTIVO",
+  "activeContracts": "Contratos activos",
+  "activeLabel": "Activo",
+  "activeLabelUpper": "ACTIVO",
+  "activeLands": "Tierras activas",
+  "activeOnCycle": "Activo en {cycle}",
+  "activeStatusUpper": "ESTADO ACTIVO",
+  "activeTasks": "Tareas activas",
+  "activeTasksCount": "{count} tareas activas",
+  "activeTasksLabel": "Tareas activas",
+  "activeUpper": "ACTIVO",
+  "addAMessageHint": "Añadir un mensaje...",
+  "addCreditsTitle": "Añadir créditos",
+  "addExtraSecurity": "Añadir una capa extra de seguridad",
+  "addMore": "Añadir más",
+  "addNewCard": "Añadir nueva tarjeta",
+  "addNoteHint": "Añadir una nota (opcional)...",
+  "addPaymentMethod": "Agregar método de pago",
+  "addProduct": "Añadir producto",
+  "addProductFirst": "¡Añade tu primer producto para verlo aquí!",
+  "addToBasket": "Añadir al carrito",
+  "addToLand": "Agregar a la tierra",
+  "addWorker": "Añadir Trabajador",
+  "addWorkersMarketplaceHint": "Toca el botón + para añadir trabajadores del mercado",
+  "addedToBasket": "{title} añadido al carrito",
+  "addressLabel": "Dirección",
+  "adjustSearchFilters": "Intenta ajustar tu búsqueda o filtros",
+  "advanceNotifyCustomer": "Esto avanzará la entrega a \"{status}\" y notificará al cliente.",
+  "advancedAnalytics": "Análisis avanzado",
+  "agreeToTermsAndPrivacy": "Acepto los términos y la política de privacidad",
+  "aiAssistant": "Asistente de IA",
+  "aiAssistantDescription": "Tiempos de siembra, salud de los cultivos, fertilizantes y orientación práctica con detección automática de idioma.",
+  "aiAutoAssignTasks": "🤖 Asignación Automática de Tareas por IA",
+  "aiLandInvestmentHint": "Sugerencia de inversión de IA: {param}",
+  "aiNotes": "Notas de IA: {notes}",
+  "aiPortfolioAnalysisHint": "Análisis de cartera IA",
+  "aiProofRequests": "Solicitudes de prueba de IA",
+  "aiVerificationComingSoon": "Verificación por IA próximamente",
+  "aiVerificationDescription": "La verificación automatizada de identidad y habilidades acelerará tu aprobación.",
+  "aiVerifyUpper": "VERIFICAR POR IA",
+  "aiVerifyingProof": "La IA está verificando tu prueba...",
+  "all": "Todos",
+  "allLands": "Todas las tierras",
+  "allNotificationsMarkedRead": "Todas las notificaciones marcadas como leídas",
+  "allocatingSpatialResources": "Asignando recursos espaciales...",
+  "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+  "alreadyPlaced": "Ya colocado",
+  "alreadyPlacedSubtitle": "Este artículo ya está en el mapa.",
+  "alreadyRentedUpper": "YA ALQUILADO",
+  "alwaysFree": "Siempre gratis",
+  "amount": "Monto",
+  "amountPerHour": "${amount}/h",
+  "amountPerMonth": "${amount}/mes",
+  "amountPerType": "{amount} / {type}",
+  "amountPrefix": "${amount}",
+  "amountTND": "{amount} TND",
+  "analytics": "Análisis",
+  "analyzeInventory": "Analizar inventario",
+  "analyzeInventoryPrompt": "Analiza mi inventario de productos actual. ¿Son estos buenos productos para mantener o debería centrarme en otra cosa según el mercado?",
+  "analyzePortfolio": "Analizar cartera",
+  "analyzeRevenueTooltip": "Analizar ingresos",
+  "animal": "Animal",
+  "animalCare": "Cuidado de animales",
+  "appName": "Farmy",
+  "appearance": "Apariencia",
+  "approveUpper": "APROBAR",
+  "approvedUpper": "APROBADO",
+  "area": "Área",
+  "arrivingSoon": "Llegando pronto",
+  "askAiAnalyst": "Preguntar al analista de IA",
+  "askAnythingAboutFarm": "Pregunta cualquier cosa sobre tu granja",
+  "askFarmingQuestion": "Haz tu pregunta agrícola...",
+  "askGuruHint": "Pregunta a tu gurú...",
+  "assetsLabel": "Activos",
+  "assign": "Asignar",
+  "assignButton": "Asignar",
+  "assignTaskTitle": "Asignar tarea",
+  "assignToLand": "Asignar al terreno",
+  "assigned": "Asignado",
+  "assignedLands": "Tierras asignadas",
+  "assignedLandsUnavailable": "Tierras asignadas no disponibles",
+  "assignedTo": "Asignado a {name}",
+  "assignmentRole": "Rol de asignación",
+  "assignmentStatus": "Estado de asignación",
+  "autoFromBoundary": "Auto desde el límite",
+  "available": "disponible",
+  "availableCount": "{count} {unit} disponible(s)",
+  "availableForAssignment": "Estás disponible para asignaciones.",
+  "availableForAssignments": "Estás disponible para nuevas asignaciones.",
+  "availableInstantPayment": "Disponible para pago instantáneo",
+  "availableUpper": "DISPONIBLE",
+  "awaitingPayment": "Esperando Pago",
+  "backButton": "Volver",
+  "backToLogin": "Volver al inicio de sesión",
+  "backToMarketplace": "Volver al mercado",
+  "backendDisconnected": "Backend desconectado. Reconectando automáticamente...",
+  "balanceAmount": "Saldo: {amount} TND",
+  "balanceStatusInsufficient": "Saldo: {amount} — Insuficiente",
+  "balanceStatusSuccess": "Saldo: {amount} ✓",
+  "balanceValue": "Saldo: {amount} $",
+  "balanceWithCredits": "Saldo: {balance} Créditos",
+  "bannedDescription": "Tu cuenta ha sido suspendida debido a violaciones específicas. Por favor, contacta con el soporte si crees que esto es un error.",
+  "basePrice": "Precio base",
+  "becomeAWorker": "Convertirse en trabajador",
+  "becomeFarmer": "Convertirse en agricultor",
+  "becomeInvestor": "Convertirse en inversor",
+  "becomeWorker": "Convertirse en trabajador",
+  "boundaries": "Límites",
+  "boundaryConflictAlert": "Alerta de conflicto de límites",
+  "browseMarketplaceDescription": "¡Explora el mercado y añade\nalgunos productos frescos!",
+  "browseProducts": "Explorar productos",
+  "budgetRangeHint": "ej: $10,000 - $50,000",
+  "businessFarmName": "Nombre de la empresa/granja",
+  "busyUpper": "OCUPADO",
+  "buy": "Comprar",
+  "buyMore": "Comprar más",
+  "buyNow": "Comprar ahora",
+  "buyProductConfirmation": "¿Quieres comprar {title} por {price} créditos?",
+  "cached": "En caché",
+  "cancel": "Cancelar",
+  "cancelButton": "Cancelar",
+  "cancelDeliveryAction": "Cancelar entrega",
+  "cancelDeliveryQuestion": "¿Cancelar entrega?",
+  "cancelNotifyCustomer": "Esto cancelará la entrega y notificará al cliente.",
+  "cancelUpper": "CANCELAR",
+  "cancellationReasonHint": "Motivo de la cancelación...",
+  "cancellationReasonLabel": "Motivo de cancelación",
+  "cancelledOrFailedToAddCard": "Cancelado o error al añadir la tarjeta.",
+  "cancelledUpper": "CANCELADO",
+  "cannotPublishBoundaryConflicts": "No se puede publicar: se detectaron conflictos de límites",
+  "cannotPublishInvalidGeometry": "No se puede publicar con una geometría inválida",
+  "captureSubmit": "Capturar y Enviar",
+  "cardAddedSuccess": "Tarjeta añadida con éxito",
+  "cardAddedSuccessfully": "Tarjeta añadida con éxito",
+  "changeAction": "Cambiar",
+  "changePassword": "Cambiar contraseña",
+  "changePasswordTitle": "Cambiar contraseña",
+  "changeProfilePicture": "Cambiar foto de perfil",
+  "chatTitle": "Título del chat",
+  "checkBackLaterFreshProducts": "Vuelve más tarde para ver productos frescos",
+  "checkBackLaterOpportunities": "Vuelva más tarde para ver nuevas oportunidades",
+  "checkout": "Pago",
+  "checkoutResultFeedback": "{successCount} comprados, {failCount} fallidos. Los artículos fallidos permanecen en la cesta.",
+  "checkoutWithItems": "Pagar ({count} artículos)",
+  "chooseFromGallery": "Elegir de la galería",
+  "chooseYourPlan": "Elige tu plan",
+  "cityLabel": "Ciudad",
+  "clear": "Limpiar",
+  "clearAll": "Vaciar todo",
+  "clearBasketDescription": "Esto eliminará todos los artículos de tu cesta.",
+  "clearBasketTitle": "¿Vaciar cesta?",
+  "closeAssistant": "Cerrar asistente",
+  "closeButton": "Cerrar",
+  "closeTip": "Cerrar",
+  "codeCopied": "Código copiado al portapapeles",
+  "comingSoon": "Próximamente",
+  "comingSoonDesc": "¡Esta función está en desarrollo. Pronto podrás colocar artículos en tu tierra!",
+  "comingSoonTitle": "Próximamente",
+  "completed": "Completado",
+  "completedOn": "Completado el {date}",
+  "completenessLabel": "Completitud",
+  "confirm": "Confirmar",
+  "confirmButton": "Confirmar",
+  "confirmDowngrade": "Confirmar Cambio a Plan Inferior",
+  "confirmEnablementStep": "Paso 2: Confirmar habilitación",
+  "confirmNewPassword": "Confirmar nueva contraseña",
+  "confirmPassword": "Confirmar contraseña",
+  "confirmPurchase": "Confirmar compra",
+  "confirmReject": "Confirmar rechazo",
+  "confirmUpdate": "Confirmar",
+  "conflictDetected": "Conflicto detectado",
+  "connectionError": "Error de conexión",
+  "consultProductionGuru": "Consultar al gurú de producción",
+  "consultedLiveData": "Datos en vivo consultados:",
+  "contactSupport": "Por favor, contacte con soporte.",
+  "continueLabelUpper": "CONTINUAR",
+  "continueText": "Continuar",
+  "continueWithFree": "Continuar con el gratuito",
+  "contract": "Contrato",
+  "contractActivated": "¡Contrato activado con éxito!",
+  "contractApproved": "¡Contrato aprobado! Esperando el pago del inversor.",
+  "contractDeclined": "Oferta de contrato rechazada.",
+  "contractExpiredBanner": "Contrato Expirado",
+  "contractForWorker": "Contrato para {name}",
+  "contractIsStatus": "Este contrato está {status}",
+  "contractTerminatedBanner": "Contrato Terminado",
+  "contractsUnavailable": "Contratos no disponibles",
+  "conversations": "Conversaciones",
+  "copy": "Copiar",
+  "copyToClipboardTooltip": "Copiar al portapapeles",
+  "correctErrorsInForm": "Por favor corrija los errores en el formulario",
+  "couldNotOpenHashScan": "No se pudo abrir HashScan",
+  "couldNotSendMessage": "No se pudo enviar tu mensaje. Por favor inténtalo de nuevo.",
+  "counter": "Contraoferta",
+  "counterOffer": "Contraoferta",
+  "counterOfferSent": "¡Contraoferta enviada con éxito!",
+  "counterOfferUpper": "CONTRAOFERTA",
+  "countryLabel": "País",
+  "createAccount": "Crear cuenta",
+  "createChatDescription": "Crea un chat para pedir orientación agrícola práctica.",
+  "createNewPassword": "Crear una nueva contraseña",
+  "createNewTask": "Crear nueva tarea",
+  "createTask": "Crear tarea",
+  "createWorkerProfile": "Crear perfil de trabajador",
+  "createdLabel": "Creado",
+  "credits": "Créditos",
+  "creditsAdded": "¡Se agregaron ${amount} exitosamente!",
+  "creditsCount": "Créditos: {count}",
+  "creditsLabel": "Créditos",
+  "cropMonitoring": "Monitoreo de cultivos",
+  "currentBalance": "Saldo actual",
+  "currentLand": "Tierra actual",
+  "currentPassword": "Contraseña actual",
+  "currentPlan": "Plan Actual",
+  "currentPlanLabel": "Actual: {name}",
+  "customAmount": "Monto personalizado",
+  "customAmountLabel": "Cantidad personalizada",
+  "customerAccount": "Cuenta de cliente",
+  "customerLabel": "Cliente",
+  "dailyInspiration": "Inspiración diaria",
+  "darkMode": "Modo oscuro",
+  "dateTimeAt": "{date} a las {time}",
+  "daysAgo": "hace {count}d",
+  "daysLeft": "{count} días restantes",
+  "decline": "Rechazar",
+  "declineNegotiationConfirmation": "¿Estás seguro de que deseas rechazar más negociaciones con {name}?",
+  "declineNegotiationQuestion": "¿Rechazar negociación?",
+  "declineOfferConfirmation": "¿Estás seguro de que deseas rechazar la oferta de {name}?",
+  "declineThisOfferQuestion": "¿Rechazar esta oferta?",
+  "declinedUpper": "RECHAZADO",
+  "defaultMethod": "Predeterminado",
+  "defineOnMap": "Definir en el mapa",
+  "delete": "Eliminar",
+  "deleteChat": "Eliminar chat",
+  "deleteChatConfirmation": "¿Eliminar \"{title}\" permanentemente?",
+  "deleteLand": "Eliminar tierra",
+  "deleteLandActionWarning": "Esta acción no se puede deshacer. Todos los datos asociados se eliminarán permanentemente.",
+  "deleteLandConfirmation": "¿Estás seguro de que deseas eliminar \"{name}\"?",
+  "deleteLandTitle": "¿Eliminar tierra?",
+  "deleteProduct": "Eliminar producto",
+  "deleteProductConfirmation": "¿Estás seguro de que deseas eliminar {title}?",
+  "deliveredLabel": "Entregado",
+  "deliveriesTitle": "Entregas",
+  "deliveryAddress": "Dirección de entrega",
+  "deliveryCancelled": "Entrega cancelada",
+  "deliveryInfo": "Información de entrega",
+  "deliveryNotFound": "Entrega no encontrada",
+  "deliveryTimeline": "Cronología de entrega",
+  "deliveryTrackingEmptyHint": "El seguimiento del envío aparecerá\nuna vez que se procese su pedido.",
+  "description": "Descripción",
+  "descriptionOptional": "Descripción (Opcional)",
+  "descriptionRequired": "Descripción requerida",
+  "descriptionTooShort": "Descripción demasiado corta",
+  "directLinksLabel": "Enlaces directos",
+  "directMessagingDescription": "Descripción de mensajería directa",
+  "directRoadAccess": "Acceso directo por carretera",
+  "disable2FA": "Deshabilitar 2FA",
+  "disable2fa": "Desactivar 2FA",
+  "disableVoiceInput": "Desactivar entrada de voz",
+  "discard": "Descartar",
+  "discoverableMarketplace": "Descubrible en el mercado",
+  "discoverableSubtitle": "Permitir que otros encuentren y vean tu perfil",
+  "dismiss": "DESCARTAR",
+  "disputesLabel": "Disputas",
+  "done": "Hecho",
+  "dontHaveAccount": "¿No tienes una cuenta?",
+  "downgradeToFree": "Bajar a Gratuito",
+  "downgradeWarning": "¿Estás seguro de que quieres bajar a {name}? Perderás tus funciones premium y las ventajas activas asociadas a tu plan actual.",
+  "draw": "Dibujar",
+  "drawInstructions": "Toque en el mapa para dibujar los límites",
+  "driverNearby": "¡Conductor cerca!",
+  "duration": "Duración",
+  "earnings": "Ganancias",
+  "edit": "Editar",
+  "editAndResend": "Editar y reenviar",
+  "editLandDetails": "Editar detalles de la tierra",
+  "editProduct": "Editar producto",
+  "editProfile": "Editar perfil",
+  "editProfileTitle": "Editar perfil",
+  "editYourMessageHint": "Edita tu mensaje...",
+  "editingYourMessage": "Editando tu mensaje",
+  "egSalaryHint": "ej. 15,00",
+  "email": "Correo electrónico",
+  "emailAddress": "Dirección de correo electrónico",
+  "enable2FA": "Habilitar 2FA",
+  "enable2fa": "Activar 2FA",
+  "enableGameEdgePanel": "Activar panel lateral del juego",
+  "enableVoiceInput": "Activar entrada de voz",
+  "enableVoiceOutput": "Activar salida de voz",
+  "enabled": "ACTIVADO",
+  "endDateUpper": "FECHA DE FIN",
+  "endsDate": "Finaliza el: {param}",
+  "english": "Inglés",
+  "enter2faCode": "Ingresa el código de 6 dígitos de tu aplicación de autenticación para continuar.",
+  "enter6DigitCodeConfirm": "Ingrese el código de 6 dígitos de su aplicación para confirmar:",
+  "enter6DigitCodeDisable": "Ingrese el código de 6 dígitos de su aplicación de autenticación para deshabilitar la autenticación de dos factores.",
+  "enterAmount": "INGRESAR MONTO",
+  "enterCodeManually": "O ingrese este código manualmente:",
+  "enterCurrentPasswordError": "Por favor ingrese su contraseña actual",
+  "enterPreferencesHint": "Introduce preferencias o pide un análisis...",
+  "enterRejectionReason": "Ingrese el motivo del rechazo",
+  "enterValidRate": "Ingresa una tarifa válida",
+  "entireLand": "Tierra entera",
+  "error": "Error",
+  "errorFetchingTasks": "Error al obtener sus tareas",
+  "errorFetchingYourTasks": "Error al obtener tus tareas",
+  "errorWithPrefix": "Error: {error}",
+  "escrowBalance": "Saldo de depósito en garantía",
+  "estimatedDelivery": "Entrega estimada",
+  "etaHours": "~{hours}h {mins}min",
+  "etaLabel": "ETA: {time}",
+  "etaMinutes": "~{mins} min",
+  "expectedBudgetRange": "Rango de presupuesto esperado",
+  "expiredLabel": "Expirado",
+  "expiredUpper": "EXPIRADO",
+  "expiresLabel": "Expira el {expiry}",
+  "expiringSoon": "Expira pronto",
+  "explore": "Explorar",
+  "exploreLands": "Explorar tierras",
+  "externalProperty": "PROPIEDAD EXTERNA",
+  "failedAddCard": "Error al añadir la tarjeta",
+  "failedAddCredits": "Error al añadir créditos",
+  "failedCompleteTask": "Error al completar la tarea",
+  "failedInitiate2FA": "Error al iniciar la configuración de 2FA",
+  "failedLoadPlans": "Error al cargar los planes",
+  "failedLoadTasks": "Error al cargar las tareas",
+  "failedReachAnalyst": "Error al contactar al analista de estrategia de IA.",
+  "failedToAccept": "Error al aceptar la oferta.",
+  "failedToAssignWorker": "Error al asignar trabajador",
+  "failedToCreatePayment": "Error al crear el intento de pago.",
+  "failedToCreateProfile": "Error al crear el perfil",
+  "failedToDecline": "Error al rechazar la oferta.",
+  "failedToDeleteNotification": "Error al eliminar la notificación",
+  "failedToDeleteProduct": "Error al eliminar el producto",
+  "failedToEditMessage": "Error al actualizar el mensaje",
+  "failedToListProduct": "Error al listar el producto.",
+  "failedToLoadContracts": "Error al cargar los contratos",
+  "failedToLoadData": "No se pudieron cargar los datos. Por favor, intenta de nuevo.",
+  "failedToLoadFarm": "No se pudo cargar la granja",
+  "failedToLoadInventory": "No se pudo cargar el inventario. Por favor, intenta de nuevo.",
+  "failedToLoadProofs": "Error al cargar las pruebas",
+  "failedToLoadRecords": "Error al cargar los registros.",
+  "failedToLoadRequests": "Error al cargar las solicitudes",
+  "failedToLoadSubscriptions": "Error al cargar suscripciones",
+  "failedToLoadWorkerProfile": "Error al cargar perfil de trabajador",
+  "failedToRejectRequest": "Error al rechazar la solicitud",
+  "failedToRemoveWorker": "Error al eliminar al trabajador",
+  "failedToSendCode": "Error al enviar el código. Inténtalo de nuevo.",
+  "failedToSendCounterOffer": "Error al enviar la contraoferta.",
+  "failedToSendInvitation": "Error al enviar la invitación",
+  "failedToSyncBackend": "Error al sincronizar con el backend",
+  "failedToUpdateProduct": "Error al actualizar el producto.",
+  "failedToWithdrawMessage": "Error al retirar el mensaje",
+  "failedUpdateStatus": "Error al actualizar el estado",
+  "failedUpper": "FALLIDO",
+  "farmAnalysisDefault": "Análisis de la granja",
+  "farmboxDescription": "¡Recibe verduras frescas cultivadas localmente en tu puerta semanalmente!",
+  "farmboxSubscription": "Suscripción FarmBox",
+  "farmer": "Agricultor",
+  "farmerDetailsTitle": "Detalles del agricultor",
+  "farmerInfoSyncedFromAssignment": "Información sincronizada de la asignación",
+  "farmerInvitations": "Invitaciones de agricultores",
+  "farmerPro": "Farmer Pro",
+  "farmerProfileUnavailable": "El perfil del agricultor no está disponible ahora mismo.",
+  "farmerWithColon": "Agricultor: {param}",
+  "farmingActivities": "Actividades agrícolas",
+  "farmingActivity": "Actividad agrícola",
+  "farmyMemberSince": "Miembro de la comunidad Farmy desde {date}",
+  "farmyPremium": "Farmy Premium",
+  "farmyStore": "TIENDA FARMY",
+  "farmyUser": "Usuario de Farmy",
+  "featureOptimizedDescription": "El módulo \"{feature}\" se está optimizando actualmente para la gestión agrícola personal.",
+  "featureUnderDevelopment": "Esta función está actualmente en desarrollo.",
+  "feed": "Alimentar",
+  "fetchingBlockchainRecords": "Obteniendo registros de la cadena de bloques...",
+  "fetchingFarmData": "Obteniendo datos de la granja...",
+  "fetchingSpatialData": "Obteniendo datos espaciales precisos...",
+  "filterAll": "Todos",
+  "filterCancelled": "Cancelado",
+  "filterConfirmed": "Confirmado",
+  "filterDelivered": "Entregado",
+  "filterInTransit": "En tránsito",
+  "filterNew": "Nuevo",
+  "filterPreparing": "Preparando",
+  "finalizingWorld": "Finalizando el mundo...",
+  "finish": "Finalizar",
+  "flipIdHint": "Voltea tu identificación y escanea el dorso",
+  "flipIdInstruction": "¡Genial! Ahora voltea tu identificación",
+  "forgotPassword": "¿Olvidaste tu contraseña?",
+  "forgotPasswordSubtitle": "Ingresa tu dirección de correo electrónico y te enviaremos un código de 6 dígitos para restablecer tu contraseña.",
+  "forgotPasswordTitle": "¿Olvidaste tu contraseña?",
+  "free": "GRATIS",
+  "freeForever": "Sin vencimiento · Gratis para siempre",
+  "freeLabel": "Gratis",
+  "freeTier": "Nivel gratuito",
+  "french": "Francés",
+  "freshProductsFarmers": "Productos frescos de agricultores locales",
+  "fromLabel": "De: {name}",
+  "fullName": "Nombre completo",
+  "fundsReleasedAfterVerification": "Fondos liberados después de la verificación",
+  "gameFeatures": "Funciones del juego",
+  "general": "General",
+  "generalFarmingActivity": "Actividad agrícola general",
+  "generalLandProof": "Prueba general de la tierra",
+  "geometryVerified": "Geometría verificada",
+  "getPlan": "Obtener {planName}",
+  "getStarted": "Comenzar",
+  "goBackButton": "Volver",
+  "goToDashboardUpper": "IR AL PANEL",
+  "goodAfternoon": "Buenas tardes",
+  "goodEvening": "Buenas noches",
+  "goodMorning": "Buenos días",
+  "gotIt": "ENTENDIDO",
+  "gotItButton": "Entendido",
+  "gpsVerifiedWorkProof": "📍 Prueba de Trabajo Verificada por GPS",
+  "grid": "Cuadrícula",
+  "gridPlots": "{w}x{h} parcelas",
+  "harvest": "Cosechar",
+  "harvestChroniclesTitle": "Crónicas de la cosecha",
+  "harvesting": "Cosecha",
+  "headlineHint": "Una breve descripción de lo que haces",
+  "headlineLabel": "Titular",
+  "hederaConsensusServiceUpper": "SERVICIO DE CONSENSO DE HEDERA",
+  "hederaRegistry": "Registro Hedera",
+  "hederaRegistryUpper": "REGISTRO HEDERA",
+  "heightAuto": "Altura auto",
+  "hiddenUpper": "OCULTO",
+  "hireActivateWorkersHint": "Contratar y activar trabajadores",
+  "hireApprovedWorkerNegotiationHint": "Contratar trabajador aprobado para iniciar negociación",
+  "hireUpper": "CONTRATAR",
+  "hireWorkerUpper": "CONTRATAR A {param}",
+  "hireWorkersUpper": "CONTRATAR TRABAJADORES",
+  "hiringPending": "Contratación Pendiente",
+  "hiringProposalSent": "Propuesta de contratación enviada",
+  "hiringProposals": "Propuestas de contratación",
+  "home": "Inicio",
+  "hourly": "Por hora",
+  "hourlyLabel": "por hora",
+  "hourlyRateHint": "ej. 15.00",
+  "hourlyRateTnd": "Tarifa por hora (TND)",
+  "hourlyUpper": "POR HORA",
+  "hoursAgo": "hace {hours}h",
+  "hoursCount": "{count} h",
+  "hoursLeft": "{count} horas restantes",
+  "idLabel": "ID: {param}",
+  "identityTab": "Identidad",
+  "imageProofRequiredToApprove": "Se requiere prueba de imagen para aprobar",
+  "imageUnavailable": "Imagen no disponible",
+  "immutableOnChainRecords": "Registros inmutables en cadena",
+  "inBasket": "En la cesta",
+  "inProgress": "En progreso",
+  "inactive": "Inactivo",
+  "inactiveLabel": "Inactivo",
+  "includingTva": "(incluyendo 19% IVA: {tax} TND)",
+  "install": "Instalar",
+  "insufficientCredits": "Créditos insuficientes: {amount} disponible",
+  "insufficientFunds": "Fondos insuficientes",
+  "insufficientFundsDescription": "Tu saldo es de {balance} Créditos, pero el total es de {total} TND.\n\nPor favor, recarga tu billetera.",
+  "invalidGeometry": "Géometría inválida",
+  "invalidGeometryAlert": "Alerta de geometría inválida",
+  "invalidGeometryHint": "Se detectó una geometría inválida",
+  "invalidNumericAmount": "Monto numérico inválido",
+  "invalidPaymentData": "Datos de pago inválidos recibidos del servidor. Por favor, inténtelo de nuevo.",
+  "invalidPhoneFormat": "Formato de teléfono inválido",
+  "investSustainableFarming": "Invertir en agricultura sostenible",
+  "investmentAgentWelcomeDesc": "Dime tu presupuesto y preferencia de riesgo, o pregunta sobre el mercado actual y las tendencias meteorológicas.",
+  "investmentRevenue": "Ingresos de inversión",
+  "investmentStrategyChroniclesTitle": "Crónicas de estrategia de inversión",
+  "investments": "Inversiones",
+  "investor": "Inversor",
+  "investorAcceptOfferConfirmation": "Estás a punto de aceptar la contraoferta de {name} de ${amount} {type}. Una vez aceptada, deberás pagar el primer mes de salario para activar el contrato.",
+  "investorDetailsTitle": "Detalles del inversor",
+  "investorPlus": "Inversor Plus",
+  "invitationAcceptedSuccess": "Invitación aceptada con éxito.",
+  "invitationApproved": "Invitación Aprobada",
+  "invitationDecisions": "Decisiones de Invitación",
+  "invitationDeclined": "Invitación Rechazada",
+  "invitationDeclinedSuccess": "Invitación rechazada con éxito.",
+  "invitationExpired": "Invitación Expirada",
+  "invitationFrom": "Invitación de {param}",
+  "invitationPending": "Invitación Pendiente",
+  "invitationSentTo": "Invitación enviada a {worker}",
+  "invitationUpdates": "Actualizaciones de invitaciones",
+  "invitationsSyncIssue": "Problema de sincronización de invitaciones",
+  "invitationsUnavailable": "Invitaciones no disponibles",
+  "inviteExistingWorker": "Inviter Trabajador Existente",
+  "inviteToLand": "Invitar al terreno",
+  "inviteWorker": "Invitar trabajador",
+  "inviteWorkerMessage": "Invitar a {worker} a {landName}",
+  "inviteWorkersMarketplaceHint": "Invitar trabajadores del mercado",
+  "iotSensorDashboard": "🌡️ Panel de Control de Sensores IoT",
+  "irrigated": "Irrigado",
+  "itemActions": "Acciones del artículo",
+  "itemIdUpper": "ID DEL ARTÍCULO",
+  "itemPlacedSuccess": "¡Artículo colocado exitosamente!",
+  "itemRequests": "Solicitudes de artículos",
+  "itemUpper": "ARTÍCULO",
+  "itemVerification": "[itemVerification]",
+  "itemsCount": "{count} artículo(s)",
+  "itemsPurchasedSuccess": "{count} artículo(s) comprado(s) con éxito.",
+  "itemsSold": "Artículos vendidos",
+  "joinTheWorkforce": "Unirse a la fuerza laboral",
+  "joinWorkforceDescription": "Crea tu perfil profesional y\ncomienza a ganar dinero en granjas cercanas hoy mismo.",
+  "justNow": "Ahora mismo",
+  "kycSuccess": "¡Éxito! ¡Ahora eres un {role}!",
+  "laborMarketLabel": "MERCADO LABORAL",
+  "land": "Tierra",
+  "landActive": "Activo",
+  "landAssignmentsEmptyHint": "Verás tus tierras asignadas aquí",
+  "landBoundary": "Límite del terreno",
+  "landDataSyncSuccess": "¡✨ Datos de tierra sincronizados con éxito!",
+  "landDeletedSuccess": "Tierra eliminada con éxito",
+  "landDescriptionHint": "Describa su tierra...",
+  "landDetails": "Detalles del terreno",
+  "landInactive": "Inactivo",
+  "landInformation": "Información del terreno",
+  "landLimitReachedDescription": "Has usado todos los espacios de tierra en tu plan {planName}. ¡Actualiza a Farmer Pro para desbloquear tierras ilimitadas!",
+  "landLimitReachedTitle": "Límite de tierras alcanzado",
+  "landName": "Nombre de la tierra",
+  "landNameHint": "ej. Granja Valle Soleado",
+  "landNameRequired": "El nombre de la tierra es obligatorio",
+  "landNameTooShort": "Nombre de la tierra demasiado corto",
+  "landPlotNumber": "Nº de parcela: {param}",
+  "landSlotsUsed": "Espacios de tierra usados",
+  "landUpdatedSuccess": "Tierra actualizada con éxito",
+  "landWithColon": "Tierra: {param}",
+  "landsRented": "Tierras Alquiladas",
+  "language": "Idioma",
+  "laterButton": "Después",
+  "latestSubmittedProof": "Última prueba enviada",
+  "leaseStartDate": "Fecha de inicio del contrato",
+  "limitReached": "Límite alcanzado",
+  "limitReachedUpper": "LÍMITE ALCANZADO",
+  "linkYourAppStep": "Paso 1: Vincule su aplicación",
+  "linkedinProfile": "Perfil de LinkedIn",
+  "linkedinUrlError": "Ingrese una URL o identificador de LinkedIn válido",
+  "listNewLand": "Listar nueva tierra",
+  "listProduct": "Listar producto",
+  "listingPublished": "Anuncio publicado",
+  "listingPublishedHint": "Tu anuncio ahora es visible públicamente.",
+  "live": "EN VIVO",
+  "loadingBalance": "Cargando saldo...",
+  "loadingFootprint": "Cargando huella...",
+  "locationHighlights": "Lo más destacado de la ubicación",
+  "login": "Iniciar sesión",
+  "loginFailed": "Error de inicio de sesión",
+  "logout": "Cerrar sesión",
+  "lookAtCameraHint": "Mira directamente a la cámara con los ojos abiertos",
+  "machine": "máquina",
+  "machineOperation": "Operación de maquinaria",
+  "maintenance": "Mantenimiento",
+  "makePurchaseImmutableRecordsHint": "Realiza una compra para ver registros inmutables aquí.",
+  "manageButton": "Gestionar",
+  "manageCards": "Gestionar tarjetas",
+  "manageCredits": "Gestionar créditos y métodos de pago",
+  "manageDeliveryTitle": "Gestionar entrega",
+  "manageWorkers": "Gestionar trabajadores",
+  "manager": "Gerente",
+  "mapTooltipInfo": "Info",
+  "mapTooltipMove": "Mover",
+  "mapTooltipTasks": "Tareas",
+  "markAllAsReadTooltip": "Marcar todo como leído",
+  "markAsComplete": "Marcar como completa",
+  "markCompleteButton": "Marcar como completada",
+  "marketLabel": "Mercado",
+  "marketplace": "Mercado",
+  "maxAmountError": "La cantidad máxima es $999,999.99",
+  "maximumAmount": "El monto máximo es ${max}",
+  "maximumStockReached": "Stock máximo alcanzado",
+  "maybeLater": "Más tarde",
+  "menuAiAdvisor": "Asesor IA",
+  "menuExitGame": "Salir del juego",
+  "menuInventory": "Inventario",
+  "menuMyTasks": "Mis tareas",
+  "menuShop": "Tienda",
+  "menuWorkforce": "Mano de obra",
+  "messageCannotBeEmpty": "El mensaje no puede estar vacío",
+  "messageNoReadableText": "Este mensaje no tiene texto legible.",
+  "messageOptionalUpper": "MENSAJE (OPCIONAL)",
+  "messageUpdated": "Mensaje actualizado con éxito",
+  "messageWithdrawn": "Mensaje retirado",
+  "messageWorker": "Contactar trabajador",
+  "min": "min",
+  "minsSuffix": "mins",
+  "minutesAgo": "hace {mins} min",
+  "minutesCount": "{count} min",
+  "minutesLeft": "{count} minutos restantes",
+  "monthAbbreviation": "mes",
+  "monthly": "Mensual",
+  "monthlyCost": "Costo Mensuel",
+  "monthlyRent": "Renta Mensual",
+  "monthlyRentPriceTND": "Precio de alquiler mensual (TND)",
+  "monthlySuffix": "/mes",
+  "monthlyUpper": "MENSUAL",
+  "monthsAbbreviation": "{count} meses",
+  "moreActions": "Más acciones",
+  "moveAll": "Mover todo",
+  "movePoint": "Mover punto",
+  "moveToStatus": "Pasar a {status}",
+  "mustRentLand": "Debes alquilar una tierra para comprar artículos.",
+  "mustSubmitBefore": "Debe enviar antes de {date}",
+  "muteVoiceOutput": "Silenciar salida de voz",
+  "myBasket": "Mi cesta",
+  "myFarms": "Mis granjas",
+  "myInventory": "MI INVENTARIO",
+  "myInvestments": "Mis inversiones",
+  "myLands": "Mis tierras",
+  "myLandsTitle": "Mis Tierras",
+  "myOrders": "Mis Pedidos",
+  "myProducts": "Mis productos",
+  "myTasksOnLand": "Mis tareas en esta tierra",
+  "myTasksTitle": "Mis tareas",
+  "myWorkerTasks": "Mis tareas de trabajador",
+  "nItemsSold": "{count} artículos vendidos",
+  "nMonths": "{count} meses",
+  "nTasksUpper": "{count} TAREAS",
+  "na": "N/A",
+  "name": "Nombre",
+  "nameRequired": "El nombre es obligatorio",
+  "nameTooShort": "El nombre es demasiado corto",
+  "negotiate": "Negociar",
+  "negotiateTerms": "Negociar términos",
+  "negotiating": "Negociando",
+  "negotiatingUpper": "NEGOCIANDO",
+  "negotiationDeclined": "Negociación rechazada y cerrada.",
+  "negotiationDeclinedBanner": "Negociación Rechazada",
+  "negotiationsUpper": "NEGOCIACIONES",
+  "newChat": "Nuevo chat",
+  "newListing": "Nueva publicación",
+  "newPassword": "Nueva contraseña",
+  "newProposal": "Nueva propuesta",
+  "newSessionTooltip": "Nueva sesión",
+  "newVerificationCodeSent": "¡Nuevo código de verificación enviado!",
+  "noActiveFarmingActivities": "No hay actividades agrícolas activas",
+  "noActiveNegotiationsUpper": "NO HAY NEGOCIACIONES ACTIVAS",
+  "noActiveWorkersUpper": "NO HAY TRABAJADORES ACTIVOS",
+  "noApprovedWorkersUpper": "NO HAY TRABAJADORES APROBADOS",
+  "noAvailableWorkers": "¡No hay trabajadores disponibles!",
+  "noBlockchainRecordsYet": "Aún no hay registros de Blockchain",
+  "noCamerasFound": "No se encontraron cámaras en este dispositivo.",
+  "noChatStateDescription": "Inicia una nueva conversación para obtener asesoramiento experto sobre tu agricultura.",
+  "noChatStateTitle": "Bienvenido a Farmy AI",
+  "noConversationsYet": "Aún no hay conversaciones.",
+  "noDeliveriesDesc": "Las entregas de sus productos\naparecerán aquí cuando los clientes realicen pedidos.",
+  "noDeliveriesYet": "No hay entregas todavía",
+  "noDescriptionAvailable": "No hay descripción disponible",
+  "noDescriptionProvided": "No se proporcionó descripción para esta tierra.",
+  "noHistoryYet": "Aún no hay historial",
+  "noInternetConnection": "Sin conexión a Internet",
+  "noInternetDescription": "No pudimos conectarnos al servidor. Por favor, verifica tu conexión a Internet e inténtalo de nuevo.",
+  "noInvestmentsYet": "Aún no hay inversiones",
+  "noItemsFound": "No se encontraron artículos",
+  "noItemsFoundStatus": "No se encontraron artículos {status}",
+  "noLandAssignments": "No hay asignaciones de tierra",
+  "noLandAssignmentsHint": "Aún no hay asignaciones de tierra",
+  "noLandAssignmentsYet": "No hay asignaciones de tierra todavía",
+  "noLandsFound": "No se encontraron tierras",
+  "noLandsRented": "Todavía no has alquilado ninguna tierra.",
+  "noMessagesYet": "Aún no hay mensajes",
+  "noNotificationsYet": "No hay notificaciones todavía",
+  "noOrdersYet": "Aún no hay pedidos",
+  "noPendingRequests": "No hay solicitudes pendientes",
+  "noPendingRequestsHint": "No tienes solicitudes pendientes en este momento.",
+  "noPendingTasks": "¡No hay tareas pendientes!",
+  "noPendingTasksHere": "¡No hay tareas pendientes aquí!",
+  "noPlansAvailable": "No hay planes disponibles",
+  "noProductsAvailableMarketplace": "No hay productos disponibles",
+  "noProductsFound": "No se encontraron productos",
+  "noProductsFoundMarketplace": "No se encontraron productos",
+  "noProofRequestsFound": "No se encontraron solicitudes de prueba",
+  "noProofsRequestedUpper": "SIN PRUEBAS SOLICITADAS",
   "noSpecialSkillsUpper": "SIN HABILIDADES ESPECIALES",
-  "noLandAssignmentsHint": "Aún no hay asignaciones de tierra"
+  "noTasksAssigned": "No hay tareas asignadas",
+  "noTasksAssignedHint": "Aún no hay tareas asignadas",
+  "noTasksDefined": "No hay tareas definidas para este elemento.",
+  "noTasksHere": "No hay tareas aquí",
+  "noTrackingInformation": "No hay información de seguimiento",
+  "noVerifiedWorkersFound": "No se encontraron trabajadores verificados",
+  "noWorkersFoundUpper": "NO SE ENCONTRARON TRABAJADORES",
+  "noWorkersYet": "Aún no hay trabajadores",
+  "notYours": "NO ES TUYA",
+  "nothingFoundHere": "Nada encontrado aquí",
+  "notifications": "Notificaciones",
+  "notificationsTitle": "Notifications",
+  "occupiedUpper": "OCUPADO",
+  "off": "DESACTIVADO",
+  "offerAcceptedProceedToPayment": "¡Oferta aceptada! Por favor procede al pago para activar el contrato.",
+  "offerSkillsFarms": "Ofrece tus habilidades en granjas",
+  "offlineModeCached": "Modo fuera de línea: se usarán respuestas en caché cuando estén disponibles.",
+  "ok": "Aceptar",
+  "okButton": "Aceptar",
+  "onTheWay": "En camino",
+  "onTime": "A tiempo",
+  "onTimeLabel": "A tiempo",
+  "onlyLettersAllowed": "Solo se permiten letras y espacios",
+  "oopsSomethingWentWrong": "¡Ups! Algo salió mal",
+  "open": "Abierto",
+  "openAiAssistant": "Abrir asistente de IA",
+  "openInvestmentAssistant": "Abrir asistente de inversión",
+  "openJobRequest": "Abrir Solicitud de Trabajo",
+  "optimalSolarExposure": "Exposición solar óptima",
+  "optionalMessageHint": "Mensaje opcional...",
+  "orContinueWith": "O CONTINUAR CON",
+  "orSelectAnItem": "O seleccione un artículo",
+  "order": "Pedido",
+  "orderDelivered": "¡Pedido Entregado!",
+  "orderDeliveredSuccess": "Su pedido ha sido entregado con éxito. ¡Gracias por su compra!",
+  "orderDetails": "Detalles del pedido",
+  "orderHistoryEmptyHint": "Tu historial de pedidos aparecerá aquí\ndespués de tu primera compra.",
+  "orderIdLabel": "ID del pedido",
+  "orderLabel": "Pedido",
+  "orderPlaced": "¡Pedido realizado!",
+  "orderSummary": "Resumen del pedido",
+  "orders": "Pedidos",
+  "ordersTitle": "Pedidos",
+  "organicPlotGrid": "Parcela orgánica (cuadrícula {w}x{h})",
+  "otherParty": "Otra parte",
+  "outOfStock": "SIN STOCK",
+  "overlapsExistingLand": "Se superpone con tierra existente",
+  "owner": "Propietario: {id}",
+  "ownerLabel": "Propietario",
+  "paidUpper": "PAGADO",
+  "password": "Contraseña",
+  "passwordChangedSuccess": "Contraseña cambiada con éxito",
+  "passwordPolicyHint": "Su nueva contraseña debe ser diferente de las contraseñas anteriores utilizadas.",
+  "passwordResetSuccess": "¡Contraseña restablecida con éxito! Por favor inicia sesión.",
+  "payAmount": "PAGAR ${amount}",
+  "payAmountToActivate": "Pagar ${amount} para activar",
+  "payNowUpper": "PAGAR AHORA",
+  "payWithCardStripe": "Pagar con tarjeta (Stripe)",
+  "payWithCredits": "Pagar con créditos Farmy",
+  "payWithStripe": "Pagar con Tarjeta (Stripe)",
+  "paymentCancelled": "El pago fue cancelado.",
+  "paymentError": "Error de pago: {error}",
+  "paymentFailedCancelled": "Pago fallido o cancelado.",
+  "paymentFailedGeneric": "El pago no pudo ser completado.",
+  "paymentFailedTryAgain": "El pago falló. Por favor, inténtelo de nuevo.",
+  "paymentFailedWithError": "Pago fallido: {error}",
+  "paymentIssueHint": "Hubo un problema al procesar su pago.",
+  "paymentMethods": "Métodos de pago",
+  "paymentPendingVerifying": "Pago enviado. Lo estamos verificando en segundo plano.",
+  "paymentProcessingSync": "El pago aún se está procesando. Su suscripción se sincronizará automáticamente.",
+  "paymentRequiredToActivate": "Pago requerido para activar",
+  "paymentSecurity": "Pago seguro procesado por Stripe.",
+  "paymentStatusDelay": "La verificación del estado del pago se ha retrasado. Seguiremos sincronizando en segundo plano.",
+  "paymentSubmittedHint": "Pago enviado. El contrato se activará una vez confirmado.",
+  "paymentSummary": "{price} · {cycle} · {planName}",
+  "payments": "Pagos",
+  "pendingInvitations": "Invitaciones Pendientes",
+  "pendingLabel": "Pendiente",
+  "pendingUpper": "PENDIENTE",
+  "pendingVerification": "Verificación Pendiente",
+  "perHour": "/hora",
+  "perHourUpper": "POR HORA",
+  "perTask": "por tarea",
+  "perTaskUpper": "POR TAREA",
+  "performance": "Rendimiento",
+  "performanceGraphComingSoon": "Gráfico de rendimiento próximamente",
+  "perimeterNotSet": "Perímetro no definido",
+  "personalWebsite": "Sitio web personal",
+  "pestControl": "Control de plagas",
+  "phoneNumber": "Número de teléfono",
+  "placedBadge": "COLOCADO",
+  "placementFailed": "Error al colocar: {error}",
+  "placementFailedGeneric": "No se pudo colocar el artículo. Intenta en otro lugar.",
+  "placingItem": "Colocando artículo...",
+  "placingLabel": "Colocando: {name}",
+  "plantCrops": "Plantar cultivos",
+  "planting": "Plantación",
+  "pleaseEnterAMessage": "Por favor ingresa un mensaje",
+  "pleaseEnterAName": "Por favor, ingrese un nombre",
+  "pleaseEnterAll6Digits": "Por favor ingresa los 6 dígitos",
+  "pleaseEnterRejectionReason": "Por favor, ingrese el motivo del rechazo",
+  "pleaseEnterTaskTitle": "Por favor ingresa un título",
+  "pleaseEnterTitle": "Por favor ingresa un título",
+  "pleaseEnterUnit": "Por favor ingresa una unidad",
+  "pleaseEnterValidSalary": "Por favor ingresa un monto de salario válido",
+  "pleaseSelectPaymentMethod": "Por favor, seleccione un método de pago",
+  "pleaseSelectProductType": "Por favor selecciona un tipo de producto",
+  "pleaseWaitAFewMoments": "Por favor, espere unos momentos...",
+  "plotNumber": "Nº de parcela",
+  "plotsCount": "{w}x{h} parcelas",
+  "pointsDefined": "{count} puntos definidos",
+  "portfolioAnalyticsLoading": "Cargando análisis de cartera...",
+  "portfolioInsights": "Información de la cartera",
+  "portfolioLinks": "Portafolio y enlaces",
+  "position": "Posición",
+  "positionIdHint": "Coloca tu identificación dentro del marco",
+  "premium": "PREMIUM",
+  "premiumAccess": "Acceso Premium",
+  "premiumFarmlandUpper": "TIERRA AGRÍCOLA PREMIUM",
+  "premiumFeatureDesc": "Actualiza tu suscripción para desbloquear esta función.",
+  "premiumFeatureTitle": "Función Premium",
+  "premiumLabel": "PREMIUM",
+  "premiumPortfolioDesc": "Obtenga seguimiento de ROI en tiempo real, informes de dividendos automatizados y consejos de inversión impulsados por IA.",
+  "preparingLandGeometry": "Preparando la geometría del terreno...",
+  "priceCannotBeEmpty": "El precio no puede estar vacío",
+  "priceCountCredits": "{price} Créditos",
+  "priceCredits": "Precio (Créditos)",
+  "priceExceedsLimit": "El precio excede el límite",
+  "priceGreaterThanZero": "El precio debe ser mayor que cero",
+  "priceLabel": "Precio",
+  "pricePerMonth": "Precio por mes",
+  "pricePerUnit": "{price} TND / {unit}",
+  "priceStartingFrom": "Precio desde",
+  "priceTnd": "{price} TND",
+  "privacyControls": "Controles de privacidad",
+  "privacyRestricted": "Acceso restringido",
+  "pro": "PRO",
+  "productDeleted": "Producto eliminado",
+  "productLabel": "Producto",
+  "productLimitMessage": "Has usado todos los espacios de productos en tu plan {planName}. ¡Actualiza a Farmer Pro o Investor Plus para listar más productos!",
+  "productLimitReached": "Límite de productos alcanzado",
+  "productListedSuccessfully": "¡Producto listado con éxito!",
+  "productListingsUsed": "Listados de productos usados",
+  "productSales": "Ventas de productos",
+  "productType": "Tipo de producto",
+  "productUpdated": "¡Producto actualizado!",
+  "productionGuruTitle": "Gurú de producción",
+  "productionStrategy": "Estrategia de producción",
+  "productionStrategyDescription": "Obtén un análisis profundo de tus costos de producción, rendimiento potencial y estrategias de maximización de ganancias impulsadas por IA.",
+  "productivity": "Productividad",
+  "products": "Productos",
+  "profileCompleteness": "Integridad del perfil",
+  "profileLoadError": "No se pudo cargar el perfil. Verifica tu conexión.",
+  "profileNotFound": "Perfil no encontrado o privado",
+  "profilePictureUpdated": "¡Foto de perfil actualizada!",
+  "profileSyncFailed": "Error al sincronizar el perfil: {error}",
+  "profileSyncIssue": "Problema de sincronización de perfil",
+  "profileUpdatedSuccess": "¡Perfil actualizado con éxito!",
+  "proofHistory": "Historial de pruebas",
+  "proofRequestQuestion": "Pregunta de solicitud de prueba",
+  "proofRequestedHint": "Se ha enviado una solicitud de prueba al trabajador.",
+  "proofRequests": "Solicitudes de prueba",
+  "proofSubmissionHint": "Envío de prueba: {param}",
+  "proofSubmittedVerified": "Prueba enviada y verificada con éxito.",
+  "proofVerifiedSuccessfully": "¡Prueba verificada con éxito!",
+  "proofsUnavailable": "Pruebas no disponibles",
+  "proofsUpper": "PRUEBAS",
+  "propertyDetails": "Detalles de la propiedad",
+  "proposedSalaryAmount": "Salario propuesto: ${amount}",
+  "proposedUpper": "PROPUESTO",
+  "publicUniqueHandle": "Identificador único público",
+  "publishListing": "Publicar anuncio",
+  "publishingFailed": "Error al publicar",
+  "purchaseFailed": "Compra fallida. ¿Créditos insuficientes?",
+  "purchaseRequestSent": "¡Solicitud enviada! Transacción registrada en Hedera.",
+  "purchasesLabel": "Compras",
+  "qtySetTo": "{title} — cantidad ajustada a {qty}",
+  "qtyUpdatedTo": "{title} — cantidad actualizada a {qty}",
+  "qualityInspection": "Inspección de calidad",
+  "quantity": "Cantidad",
+  "quantityLabel": "Cantidad",
+  "quote1": "El futuro de la agricultura está en tus manos.",
+  "quote2": "Apoya lo local, come fresco, vive sano.",
+  "quote3": "Conectándote con las raíces de tu comida.",
+  "quote4": "Cada inversión en la naturaleza rinde el mejor interés.",
+  "quote5": "Pequeñas elecciones tienen un gran impacto en nuestro planeta.",
+  "quote6": "Fresco de la granja, directo a tu mesa.",
+  "quote7": "Empoderando a los agricultores, alimentando al mundo.",
+  "quote8": "La sostenibilidad no es una meta, es un estilo de vida.",
+  "raiseLivestock": "Criar ganado",
+  "rateLabel": "Tarifa",
+  "ratingLabel": "Calificación",
+  "readAloud": "Leer en voz alta",
+  "readReviewsDescription": "Descripción de leer reseñas",
+  "readyForActivityHint": "Listo para la actividad",
+  "realTimeTaskNotificationsSoon": "Notificaciones de tareas en tiempo real pronto",
+  "realtimeNotificationsSoon": "Notificaciones de tareas en tiempo real próximamente",
+  "reasonTooShort": "El motivo es demasiado corto",
+  "rejectRequest": "Rechazar solicitud",
+  "rejectUpper": "RECHAZAR",
+  "rejectedUpper": "RECHAZADO",
+  "rejectionReasonPrompt": "Por favor, indique el motivo del rechazo",
+  "remove": "Eliminar",
+  "removeWorker": "Eliminar trabajador",
+  "removeWorkerConfirmation": "¿Eliminar al trabajador {param}?",
+  "rename": "Renombrar",
+  "renameChat": "Renombrar chat",
+  "rentAmountMonthly": "Alquiler mensual: {param}",
+  "rentLandToStartUpper": "ALQUILAR TIERRA PARA EMPEZAR",
+  "rentNowUpper": "ALQUILAR AHORA",
+  "rentalConfirmed": "Alquiler confirmado",
+  "rentalConfirmedDescription": "Su alquiler ha sido confirmado y el equipo será entregado pronto.",
+  "rentalDuration": "Duración del alquiler",
+  "rentalExpires": "El alquiler vence el: {param}",
+  "rentalLimitReached": "Límite de alquiler alcanzado",
+  "rentalSlotsUsage": "Uso de espacios de alquiler",
+  "rentalSlotsUsed": "Espacios de alquiler utilizados",
+  "rentals": "Alquileres",
+  "rentalsLabel": "Alquileres",
+  "rented": "ALQUILADO",
+  "rentedUpper": "ALQUILADO",
+  "request": "Solicitud",
+  "requestAIProof": "Solicitar prueba de IA",
+  "requestApprovedItemPlaced": "Solicitud aprobada, artículo colocado",
+  "requestExpired": "Solicitud expirada",
+  "requestProof": "Solicitar prueba",
+  "requestProofHint": "Pide al trabajador que envíe pruebas fotográficas de su trabajo.",
+  "requestRejectedRefunded": "Solicitud rechazada y reembolsada",
+  "requestedDateUpper": "FECHA SOLICITADA: {param}",
+  "resend": "Reenviar",
+  "resendNewCode": "Reenviar código nuevo",
+  "resetPasswordTitle": "Restablecer contraseña",
+  "resettingPasswordFor": "Restableciendo contraseña para {email}",
+  "responseCopied": "Respuesta copiada al portapapeles.",
+  "retry": "Reintentar",
+  "retryButton": "Reintentar",
+  "retryConnectionUpper": "REINTENTAR CONEXIÓN",
+  "retryUpper": "REINTENTAR",
+  "revenue": "Ingresos",
+  "revenueAnalysisPrompt": "Analice mis fuentes de ingresos y sugiera formas de maximizar mis ganancias basadas en las tendencias actuales del mercado.",
+  "revenueTitle": "Ingresos",
+  "rewardAmountTnd": "{amount} TND",
+  "rewardLabel": "Recompensa",
+  "roiEst": "ROI estimado",
+  "roleLabel": "Rol",
+  "rolePrivacyTab": "Rol y privacidad",
+  "safety": "Seguridad",
+  "salary": "Salario",
+  "salaryAmount": "Monto del salario",
+  "salaryAmountTNDUpper": "MONTO DEL SALARIO (TND)",
+  "salaryAmountType": "{amount} / {type}",
+  "salaryLabel": "Salario",
+  "salaryOptional": "Salario (opcional)",
+  "salaryPerMonth": "${amount} / mes",
+  "salaryTypeUpper": "TIPO DE SALARIO",
+  "salaryValue": "{amount} $ / mes",
+  "save": "Guardar",
+  "saveChanges": "Guardar cambios",
+  "saveChangesTooltip": "Guardar cambios",
+  "savedCard": "Tarjeta guardada",
+  "savingsLabel": "Antes {oldPrice}/año — ahorra {savings}",
+  "scanBackId": "Escanear el dorso de la ID",
+  "scanFrontId": "Escanear el frente de la ID",
+  "scanQRCodeDesc": "Escanee este código QR con su aplicación de autenticación (Google Authenticator, Authy, etc.)",
+  "searchProducts": "Buscar productos...",
+  "searchWorkerMarketplace": "Buscar en el mercado de trabajadores",
+  "searchWorkers": "Buscar trabajadores...",
+  "secureCardPaymentDesc": "Pago seguro con tarjeta de crédito / débito",
+  "secureCreditCardPayment": "Pago seguro con tarjeta de crédito",
+  "secureYourAccount": "Proteja su cuenta",
+  "securedWaterAccess": "Acceso seguro al agua",
+  "securingRental": "Asegurando el alquiler...",
+  "security": "Seguridad",
+  "selectAmount": "Seleccionar cantidad",
+  "selectAtLeast3Points": "Seleccione al menos 3 puntos",
+  "selectAtLeastOneSkill": "Por favor, selecciona al menos una habilidad",
+  "selectLand": "Seleccionar tierra",
+  "selectLanguage": "Seleccionar idioma",
+  "selectPaymentMethod": "Seleccionar método de pago",
+  "selectYourSkills": "Selecciona tus habilidades",
+  "selfieInstruction": "¡Perfecto! Ahora tomemos una selfie",
+  "seller": "Vendedor",
+  "sellerLabel": "Vendedor",
+  "sendInvite": "Enviar invitación",
+  "sendMessage": "Enviar mensaje",
+  "sendProposalUpper": "ENVIAR PROPUESTA",
+  "sendResetCode": "Enviar código de restablecimiento",
+  "sessionHistoryTooltip": "Historial de sesiones",
+  "setMonthlySalary": "Establecer salario mensual",
+  "settings": "Ajustes",
+  "shopBack": "VOLVER",
+  "shopBuy": "COMPRAR",
+  "shopVariants": "VARIANTES",
+  "showContactInfoLabel": "Mostrar información de contacto",
+  "showContactInfoSubtitle": "Hacer visibles el teléfono y el correo electrónico para las conexiones",
+  "signIn": "Iniciar sesión",
+  "signInToFarmyAccount": "Inicia sesión en tu cuenta de Farmy",
+  "signingIn": "Iniciando sesión...",
+  "signingUp": "Registrándose...",
+  "signup": "Registrarse",
+  "signupFailed": "Error de registro",
+  "size": "Tamaño",
+  "sizeLabel": "Tamaño: {w}x{h}",
+  "skills": "Habilidades",
+  "skip": "Saltar",
+  "smartPayrollIntegration": "💰 Integración de Nómina Inteligente",
+  "soilManagement": "Gestión del suelo",
+  "soldUpper": "VENDIDO",
+  "somethingWentWrong": "Algo salió mal",
+  "soon": "Pronto",
+  "spanish": "Español",
+  "spatialDimensions": "Dimensiones espaciales",
+  "specificationsLabel": "Especificaciones:",
+  "squareMeters": "{count} m²",
+  "startANewConversation": "Iniciar una nueva conversación",
+  "startByListingPlot": "Comience por listar una parcela",
+  "startDateUpper": "FECHA DE INICIO",
+  "startJourneyWithFarmy": "Comienza tu viaje con Farmy hoy",
+  "startNegotiationHint": "Inicia la negociación enviando un mensaje.",
+  "startSellingProduce": "Comienza a vender tus productos",
+  "startSetup": "Iniciar configuración",
+  "startedLabel": "Iniciado",
+  "startingFrom": "A partir de",
+  "statusUpdatedTo": "Estado actualizado a {status}",
+  "stayTunedSpatialTracking": "¡Manténgase atento al seguimiento avanzado de activos espaciales!",
+  "strategicPortfolioAnalystTitle": "Analista de cartera estratégica",
+  "strategySessionDefault": "Sesión de estrategia",
+  "strongSecurityActive": "Seguridad sólida activa",
+  "structure": "estructura",
+  "structureInstallation": "Instalación de estructuras",
+  "submitPhotoProof": "Enviar prueba fotográfica",
+  "subscription": "Suscripción",
+  "subscriptionHeadline": "Selecciona un plan para desbloquear la experiencia completa de Farmy.\nUna suscripción abre todas las puertas.",
+  "subscriptions": "Suscripciones",
+  "subtotal": "Subtotal",
+  "subtotalLabel": "Subtotal: {price} TND",
+  "success": "Éxito",
+  "successfullyAddedCredits": "Añadido con éxito {amount} $",
+  "successfullyDelivered": "Entregado con éxito",
+  "suggestedRealEstate": "Bienes raíces sugeridos:",
+  "supervisor": "Supervisor",
+  "suspendedLabel": "Suspendido",
+  "suspendedUpper": "SUSPENDIDO",
+  "switchToMonthly": "Pasar a Mensual",
+  "syncBackend": "Sincronizar backend",
+  "syncInterrupted": "Sincronización interrumpida",
+  "synchronizingBoundaries": "SINCRONIZANDO LÍMITES",
+  "syncingWithBackend": "Sincronizando con el backend...",
+  "systemErrorUpper": "ERROR DEL SISTEMA",
+  "systemOfferAccepted": "Oferta aceptada. Procediendo al pago.",
+  "systemOfferDeclined": "Oferta rechazada. Esta negociación ha sido cancelada.",
+  "tabAll": "TODO",
+  "tabApproved": "APROBADO",
+  "tabPending": "PENDIENTE",
+  "tabRejected": "RECHAZADO",
+  "takeAPhoto": "Tomar una foto",
+  "takeSelfie": "Tomar una selfie",
+  "tapToAddImage": "Toca para añadir imagen",
+  "tapToDrawBoundaries": "Toque para dibujar límites",
+  "tapToViewPlans": "Toca para ver los planes →",
+  "tapToViewProfile": "Toca para ver el perfil",
+  "taskAssigned": "¡Tarea asignada!",
+  "taskCompleted": "¡Tarea completada! Ahora estás disponible.",
+  "taskCompletedSuccess": "¡Tarea completada! Ahora estás disponible.",
+  "taskCreated": "¡Tarea creada con éxito!",
+  "taskLabel": "Tarea",
+  "taskLimitReached": "Límite de tareas alcanzado",
+  "taskLimitReachedMessage": "Solo puedes tener {count} tareas activas en el plan gratuito.",
+  "taskTitle": "Título de la tarea",
+  "taskTitleHint": "ej., Regar los tomates",
+  "taskType": "Tipo de tarea",
+  "tasks": "Tareas",
+  "tasksCount": "{count} tareas",
+  "tasksEmptyHint": "Las tareas aparecerán aquí cuando sean asignadas",
+  "tasksForLand": "Tareas para {landName}",
+  "tasksLabelShort": "Tareas",
+  "tasksProofs": "Tareas y pruebas",
+  "tasksUnavailable": "Tareas no disponibles",
+  "terminatedLabel": "Terminado",
+  "theInvestor": "el inversor",
+  "theWorker": "el trabajador",
+  "thisWorker": "este trabajador",
+  "tiles": "baldosas",
+  "timeLabel": "Tiempo",
+  "title": "Título",
+  "tndMo": "TND/mes",
+  "tndPerMeter": "TND/m",
+  "toLabel": "A: {name}",
+  "tooShortMin3": "Demasiado corto (mín. 3)",
+  "topUpCredits": "RECARGAR CRÉDITOS",
+  "total": "Total",
+  "totalAmount": "Cantidad total",
+  "totalCapitalInvested": "Capital total invertido",
+  "totalCount": "{total} en total",
+  "totalDetailsRevenue": "Ingresos detallados totales",
+  "totalEarningsWallet": "Ganancias totales (Billetera)",
+  "totalLabel": "Total",
+  "totalOrdersLabel": "Total de pedidos",
+  "totalProject": "Proyecto Total",
+  "totalSalesValue": "Valor total de ventas",
+  "totalSuffix": "{count} en total",
+  "totalWithCycle": "Total: {price} $ · {cycle}",
+  "trackManagePurchases": "Seguimiento y gestión de tus compras",
+  "trackOrder": "Seguir pedido",
+  "transactionIdCopied": "ID de transacción copiado al portapapeles",
+  "tree": "árbol",
+  "trustTab": "Confianza",
+  "tryAdjustingFilters": "Intente ajustar los filtros",
+  "tryAgain": "Intentar de nuevo",
+  "tryAgainUpper": "REINTENTAR",
+  "tryToResync": "Intentar resincronizar",
+  "tva": "IVA (19%)",
+  "twoFADesc": "La autenticación de dos factores agrega una capa adicional de seguridad a su cuenta. Para iniciar sesión, deberá proporcionar un código de 6 dígitos de su aplicación de autenticación.",
+  "twoFADisabledSuccess": "2FA deshabilitado con éxito",
+  "twoFAEnabledSuccess": "2FA habilitado con éxito",
+  "twoFactorAuthentication": "Autenticación de dos factores",
+  "unableToLoadTracking": "No se pudo cargar el seguimiento",
+  "unableToOpenFarmerProfile": "No se pudo abrir el perfil del agricultor. Por favor, reinténtalo.",
+  "unableToPlayVoiceOutput": "No se pudo reproducir la salida de voz ahora.",
+  "unableToProcessInvitation": "No se pudo procesar la respuesta a la invitación.",
+  "unableToRetrieveLandDetails": "No se pudieron obtener los detalles de la tierra",
+  "unableToStartVoiceInput": "No se pudo iniciar la entrada de voz. Por favor verifica los permisos.",
+  "unavailable": "No disponible",
+  "unitHint": "Unidad (ej: kg, litro, pieza)",
+  "unitsLabel": "Unidades",
+  "unknown": "Desconocido",
+  "unknownCaps": "DESCONOCIDO",
+  "unknownCustomer": "Cliente desconocido",
+  "unknownFarm": "Granja desconocida",
+  "unknownInvestor": "Inversor desconocido",
+  "unknownItem": "Artículo desconocido",
+  "unknownLand": "Tierra desconocida",
+  "unknownLandFallback": "Desconocido",
+  "unknownRole": "Rol desconocido: {role}",
+  "unknownWorker": "Trabajador Desconocido",
+  "unlockDeepInsights": "Desbloquea información profunda",
+  "unlockDeepInsightsDescription": "Obtén pronósticos de cultivos impulsados por IA, historial detallado de la salud del suelo y proyecciones de ROI avanzadas.",
+  "unlockPortfolioMaster": "Desbloquear Portfolio Master",
+  "unlockUnlimitedSlotsInvestorPlus": "Desbloquee espacios ilimitados con Investor+",
+  "unsavedChangesDesc": "Tienes cambios sin guardar. ¿Quieres descartarlos?",
+  "unsavedChangesTitle": "Cambios sin guardar",
+  "untilDate": "hasta {param}",
+  "untilDateUpper": "HASTA {param}",
+  "unverified": "No verificado",
+  "updateBasket": "Actualizar Cesta",
+  "updatePassword": "Actualizar contraseña",
+  "updateProduct": "Actualizar producto",
+  "updateStatus": "Actualizar estado",
+  "updateToStatusQuestion": "¿Pasar a {status}?",
+  "updateYourMessage": "Actualiza tu mensaje",
+  "updating": "Actualizando",
+  "upgrade": "Actualizar",
+  "upgradeForUnlimited": "Actualizar{plan} para acceso ilimitado",
+  "upgradeNow": "Actualizar ahora",
+  "upgradePlanName": "Farmer Pro",
+  "upgradePremium": "Actualiza para funciones premium",
+  "upgradeRequired": "Actualización requerida",
+  "upgradeRequiredDesc": "Esta función ({featureKey}) está disponible en un plan premium. Actualiza tu suscripción para desbloquearla.",
+  "upgradeToPlan": "Actualizar a {planName}",
+  "upgradeToYearly": "Pasar a Anual",
+  "upgradeWithPrice": "Actualizar {price}",
+  "uploadFailed": "Error al cargar: {error}",
+  "uploadingDocuments": "Subiendo documentos...",
+  "uploadingImage": "Subiendo imagen...",
+  "user": "Usuario",
+  "usernameFormatError": "Usa minúsculas, números, puntos, guiones bajos",
+  "usernameLabel": "Nombre de usuario",
+  "usernameRequired": "El nombre de usuario es obligatorio",
+  "usernameTaken": "Este nombre de usuario ya está ocupado",
+  "validUntil": "Válido hasta el {date}",
+  "vegetation": "vegetación",
+  "verification": "Verificación",
+  "verificationCodeSentTo": "Enviamos un código de verificación de 6 dígitos a\n{email}.",
+  "verificationFailed": "Error de verificación",
+  "verificationRequired": "Verificación requerida",
+  "verificationSuccessful": "Verificación exitosa",
+  "verified": "Verificado",
+  "verifiedSeller": "Vendedor Verificado",
+  "verifiedUpper": "VERIFICADO",
+  "verifiedWorker": "Trabajador Verificado",
+  "verify": "Verificar",
+  "verifyAccount": "Verificar cuenta",
+  "verifyEmailTitle": "Verifica tu correo electrónico",
+  "verifying": "Verificando...",
+  "viewAllHistory": "Ver Todo el Historial",
+  "viewAssignmentsTasks": "Ver tus asignaciones y tareas",
+  "viewBlockchainRecords": "Ver tus registros en la cadena de bloques",
+  "viewDetails": "Ver detalles",
+  "viewInvestmentBreakdown": "Ver desglose detallado en Inversiones",
+  "viewManageLandInvestments": "Ver y gestionar sus inversiones en tierras",
+  "viewManageProofRequests": "Ver y gestionar solicitudes de prueba",
+  "viewMyOrders": "Ver mis pedidos",
+  "viewPlans": "Ver planes",
+  "viewRecentActivity": "Ver tu actividad reciente y actualizaciones",
+  "viewReviews": "Ver reseñas",
+  "voiceInput": "Entrada de voz",
+  "voiceInputNotAvailable": "La entrada de voz no está disponible en este dispositivo.",
+  "voiceOutputMuted": "La salida de voz está silenciada. Desactiva el silencio para leer este mensaje.",
+  "waitUsernameCheck": "Por favor espere la verificación de disponibilidad del nombre de usuario",
+  "waitingForWorkerResponse": "Esperando respuesta del trabajador",
+  "walletCards": "Cartera y tarjetas",
+  "walletCredits": "Créditos de la cartera",
+  "walletPaymentsTitle": "Billetera y pagos",
+  "warmingUpAssets": "Calentando activos cercanos...",
+  "water": "Regar",
+  "watering": "Riego",
+  "weatherLabel": "Clima",
+  "websiteLabel": "Sitio web",
+  "websiteUrlError": "Ingrese una URL de sitio web válida",
+  "welcomeBack": "Bienvenido de nuevo",
+  "welcomeCustomerSubtitle": "Apoya a los agricultores locales y disfruta de productos frescos y sostenibles directamente de la fuente.",
+  "welcomeCustomerTitle": "¡Bienvenido a Farmy!",
+  "welcomeFarmerSubtitle": "Tu viaje hacia la gestión agrícola digital comienza aquí. ¡Hagamos crecer tu negocio juntos!",
+  "welcomeFarmerTitle": "Empoderando a los agricultores",
+  "welcomeInvestorSubtitle": "Explora oportunidades sostenibles y haz crecer tu cartera agrícola verde con nosotros.",
+  "welcomeInvestorTitle": "Invierte en el futuro",
+  "welcomeStrategicAnalysis": "Bienvenido al análisis estratégico",
+  "welcomeToFarmy": "Bienvenido a Farmy",
+  "welcomeWorkerSubtitle": "Conéctate con granjas modernas y comienza tu viaje productivo en la agricultura sostenible.",
+  "welcomeWorkerTitle": "Únete a la fuerza laboral",
+  "widthAuto": "Ancho auto",
+  "withdraw": "Retirar",
+  "withdrawMessageConfirmation": "Esto eliminará permanentemente tu último mensaje de negociación.",
+  "withdrawMessageQuestion": "¿Retirar este mensaje?",
+  "worker": "Trabajador",
+  "workerAssignedToLand": "{worker} asignado a {landName}",
+  "workerDashboard": "Tablero del trabajador",
+  "workerMarketplace": "Mercado de Trabajadores",
+  "workerPlus": "Worker Plus",
+  "workerPlusDescription": "Impulsa tu perfil, obtén coincidencias prioritarias y retiros instantáneos.",
+  "workerProfileCreated": "¡🎉 Perfil de trabajador creado! Pendiente de verificación.",
+  "workerRemovedSuccessfully": "Trabajador eliminado con éxito",
+  "workerRespondedReviewCounterOffer": "El trabajador respondió, revise la contraoferta",
+  "workersAcceptedDeclinedInvites": "Trabajadores que aceptaron o rechazaron sus invitaciones",
+  "workersAvailable": "{count} Disponibles",
+  "workersSyncIssue": "Problema de sincronización de trabajadores",
+  "workforce": "Fuerza laboral",
+  "workforceLandName": "Mano de obra — {landName}",
+  "workforceUpper": "FUERZA LABORAL",
+  "workingUpper": "TRABAJANDO",
+  "wrongLand": "Tierra incorrecta",
+  "wrongLandSubtitle": "Este artículo pertenece a otra tierra.",
+  "yearly": "Anual",
+  "yearlySave": "Anual (Ahorra un 33%)",
+  "yearlySuffix": "/año",
+  "you": "Tú",
+  "youLabel": "Tú",
+  "yourBasketIsEmpty": "Tu cesta está vacía",
+  "yourEmail": "tu correo electrónico"
 }

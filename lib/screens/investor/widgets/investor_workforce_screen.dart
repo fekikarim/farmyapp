@@ -839,7 +839,9 @@ class _ApprovedWorkersTab extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                w.skills.first.toUpperCase(),
+                                w.skills.isEmpty 
+                                  ? AppLocalizations.of(context)!.noSpecialSkillsUpper
+                                  : _translateSkill(context, w.skills.first).toUpperCase(),
                                 style: const TextStyle(
                                   fontSize: 9,
                                   fontWeight: FontWeight.bold,
@@ -1025,7 +1027,7 @@ class _NegotiationCard extends StatelessWidget {
         break;
       default:
         statusColor = Colors.white54;
-        statusText = contract.statusLabel.toUpperCase();
+        statusText = _translateContractStatus(context, contract.status).toUpperCase();
     }
 
     return Container(
@@ -1985,7 +1987,7 @@ class _ProofsTab extends StatelessWidget {
                         border: Border.all(color: color.withOpacity(0.3)),
                       ),
                       child: Text(
-                        p.statusLabel.toUpperCase(),
+                        _translateProofStatus(context, p.status).toUpperCase(),
                         style: TextStyle(
                           fontSize: 9,
                           fontWeight: FontWeight.w900,
@@ -2341,6 +2343,89 @@ String _translateSalaryTypeLabel(BuildContext context, String label) {
     case 'hourly': return l10n.hourly;
     case 'per task':
     case 'per_task': return l10n.perTask;
-    default: return label;
+    default:
+      return label;
+    }
   }
-}
+
+  String _translateSkill(BuildContext context, String skill) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (skill.toLowerCase()) {
+      case 'watering':
+        return l10n.watering;
+      case 'harvesting':
+        return l10n.harvesting;
+      case 'planting':
+        return l10n.planting;
+      case 'animal care':
+      case 'animalcare':
+        return l10n.animalCare;
+      case 'machine operation':
+      case 'machineoperation':
+        return l10n.machineOperation;
+      case 'soil management':
+      case 'soilmanagement':
+        return l10n.soilManagement;
+      case 'structure installation':
+      case 'structureinstallation':
+        return l10n.structureInstallation;
+      case 'quality inspection':
+      case 'qualityinspection':
+        return l10n.qualityInspection;
+      case 'crop monitoring':
+      case 'cropmonitoring':
+        return l10n.cropMonitoring;
+      case 'pest control':
+      case 'pestcontrol':
+        return l10n.pestControl;
+      default:
+        return skill;
+    }
+  }
+
+  String _translateContractStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toLowerCase()) {
+      case 'active':
+        return l10n.activeUpper;
+      case 'pending':
+      case 'hiring_pending':
+        return l10n.pendingUpper;
+      case 'negotiating':
+      case 'negotiation_pending':
+        return l10n.negotiatingUpper;
+      case 'counter-offer':
+      case 'negotiation_countered':
+        return l10n.counterOfferUpper;
+      case 'declined':
+      case 'hiring_declined':
+        return l10n.declinedUpper;
+      case 'awaiting payment':
+      case 'payment_pending':
+        return l10n.pendingUpper;
+      case 'suspended':
+        return l10n.suspendedUpper;
+      case 'expired':
+        return l10n.expiredUpper;
+      default:
+        return status;
+    }
+  }
+
+  String _translateProofStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return l10n.pendingUpper;
+      case 'verified':
+      case 'approved':
+        return l10n.verifiedUpper;
+      case 'rejected':
+        return l10n.rejectedUpper;
+      case 'expired':
+        return l10n.expiredUpper;
+      default:
+        return status;
+    }
+  }
+

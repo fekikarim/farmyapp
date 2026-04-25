@@ -219,7 +219,7 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  (task['action'] as String? ?? 'task').toUpperCase(),
+                  _translateAction(context, task['action'] as String? ?? 'task').toUpperCase(),
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
                 const SizedBox(height: 2),
@@ -345,5 +345,39 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
         ),
       ),
     );
+  }
+  String _translateAction(BuildContext context, String action) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (action.toLowerCase()) {
+      case 'watering':
+        return l10n.watering;
+      case 'harvesting':
+        return l10n.harvesting;
+      case 'planting':
+        return l10n.planting;
+      case 'animal care':
+      case 'animalcare':
+        return l10n.animalCare;
+      case 'machine operation':
+      case 'machineoperation':
+        return l10n.machineOperation;
+      case 'soil management':
+      case 'soilmanagement':
+        return l10n.soilManagement;
+      case 'structure installation':
+      case 'structureinstallation':
+        return l10n.structureInstallation;
+      case 'quality inspection':
+      case 'qualityinspection':
+        return l10n.qualityInspection;
+      case 'crop monitoring':
+      case 'cropmonitoring':
+        return l10n.cropMonitoring;
+      case 'pest control':
+      case 'pestcontrol':
+        return l10n.pestControl;
+      default:
+        return action;
+    }
   }
 }

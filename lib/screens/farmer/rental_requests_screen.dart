@@ -48,6 +48,23 @@ class _FarmerRentalRequestsScreenState
       }
     }
   }
+  String _translateCategory(BuildContext context, String category) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (category.toLowerCase()) {
+      case 'animal':
+        return l10n.animal;
+      case 'vegetation':
+        return l10n.vegetation;
+      case 'tree':
+        return l10n.tree;
+      case 'structure':
+        return l10n.structure;
+      case 'machine':
+        return l10n.machine;
+      default:
+        return category.isEmpty ? l10n.itemUpper : category;
+    }
+  }
 
   Future<void> _handleApprove(String id) async {
     final ImagePicker picker = ImagePicker();
@@ -746,7 +763,7 @@ class _FarmerRentalRequestsScreenState
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            assetCategory.toString().toUpperCase(),
+                            _translateCategory(context, assetCategory.toString()).toUpperCase(),
                             style: TextStyle(
                               color: Colors.orange.shade600,
                               fontSize: 10,
@@ -1268,5 +1285,22 @@ class _LocalAssetImageState extends State<_LocalAssetImage>
         ),
       ],
     );
+  }
+  String _translateCategory(BuildContext context, String category) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (category.toLowerCase()) {
+      case 'animal':
+        return l10n.animal;
+      case 'vegetation':
+        return l10n.vegetation;
+      case 'tree':
+        return l10n.tree;
+      case 'structure':
+        return l10n.structure;
+      case 'machine':
+        return l10n.machine;
+      default:
+        return category.isEmpty ? l10n.itemUpper : category;
+    }
   }
 }

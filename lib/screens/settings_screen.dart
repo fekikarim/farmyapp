@@ -109,7 +109,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
-                              user.role.toUpperCase(),
+                              _getRoleLabel(context, user.role).toUpperCase(),
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: theme.colorScheme.primary,
                                 fontWeight: FontWeight.bold,
@@ -876,5 +876,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _formatDate(DateTime? date) {
     if (date == null) return 'N/A';
     return '${date.day}/${date.month}/${date.year}';
+  }
+
+  String _getRoleLabel(BuildContext context, String role) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (role.toLowerCase()) {
+      case 'customer':
+        return l10n.customerLabel;
+      case 'farmer':
+        return l10n.farmer;
+      case 'investor':
+        return l10n.investor;
+      case 'worker':
+        return l10n.worker;
+      case 'admin':
+        return 'Admin'; // Usually not translated or add to ARB
+      default:
+        return role;
+    }
   }
 }

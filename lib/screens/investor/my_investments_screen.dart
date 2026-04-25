@@ -142,13 +142,11 @@ class _InvestorMyInvestmentsScreenState
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            rental.paymentStatus.name.toUpperCase() == 'PAID' ? AppLocalizations.of(context)!.paidUpper :
-                            rental.paymentStatus.name.toUpperCase() == 'PENDING' ? AppLocalizations.of(context)!.pendingUpper :
-                            rental.paymentStatus.name.toUpperCase(),
-                            style: TextStyle(
-                              color: rental.paymentStatus.name == 'paid'
-                                  ? Colors.green
-                                  : Colors.orange,
+                                  _translatePaymentStatus(context, rental.paymentStatus.name).toUpperCase(),
+                                style: TextStyle(
+                                  color: rental.paymentStatus.name == 'paid'
+                                      ? Colors.green
+                                      : (rental.paymentStatus.name == 'pending' ? Colors.orange : Colors.red),
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
@@ -267,5 +265,20 @@ class _InvestorMyInvestmentsScreenState
         ),
       ],
     );
+  }
+  String _translatePaymentStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toLowerCase()) {
+      case 'paid':
+        return l10n.paidUpper;
+      case 'pending':
+        return l10n.pendingUpper;
+      case 'failed':
+        return l10n.failedUpper;
+      case 'cancelled':
+        return l10n.cancelledUpper;
+      default:
+        return status;
+    }
   }
 }

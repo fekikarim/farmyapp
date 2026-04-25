@@ -327,12 +327,12 @@ class _InventoryOverlayState extends State<InventoryOverlay>
         final item = filteredItems[index];
         final land = item['land'] ?? {};
         final details = item['details'] ?? {};
-        final status = (item['status'] ?? 'PENDING').toString().toUpperCase();
+        final rawStatus = (item['status'] ?? 'PENDING').toString().toUpperCase();
         final bool isPlaced = item['placed_item'] != null;
 
         return GestureDetector(
           onTap: () {
-            if (status == 'APPROVED') {
+            if (rawStatus == 'APPROVED') {
               _showItemActions(context, item);
             }
           },
@@ -348,10 +348,10 @@ class _InventoryOverlayState extends State<InventoryOverlay>
               ),
               borderRadius: BorderRadius.circular(16), // More formal radius
               border: Border.all(
-                color: status == 'APPROVED'
+                color: rawStatus == 'APPROVED'
                     ? const Color(0xFF4ADE80).withOpacity(0.5)
                     : Colors.white.withOpacity(0.08),
-                width: status == 'APPROVED' ? 1.5 : 1,
+                width: rawStatus == 'APPROVED' ? 1.5 : 1,
               ),
               boxShadow: [
                 BoxShadow(
@@ -388,7 +388,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                       Positioned(
                         top: 10,
                         right: 10,
-                        child: _buildStatusBadge(status),
+                        child: _buildStatusBadge(context, rawStatus),
                       ),
                       // Hedera verification badge
                       if (item['hedera_transaction_id'] != null)
@@ -444,10 +444,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              (details['name'] ??
-                                      item['asset_category'] ??
-                                      'Item')
-                                  .toString()
+                              _translateCategory(context, (details['name'] ?? item['asset_category'] ?? 'Item').toString())
                                   .toUpperCase(),
                               style: const TextStyle(
                                 color: Color(0xFF4ADE80), // Green-400
@@ -540,23 +537,28 @@ class _InventoryOverlayState extends State<InventoryOverlay>
         .join(' ');
   }
 
-  Widget _buildStatusBadge(String status) {
+  Widget _buildStatusBadge(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
     Color color;
     IconData icon;
+    String label;
 
     switch (status) {
       case 'APPROVED':
         color = const Color(0xFF4ADE80); // Green-400
         icon = Icons.check_circle_rounded;
+        label = l10n.approvedUpper;
         break;
       case 'REJECTED':
         color = const Color(0xFFF87171); // Red-400
         icon = Icons.cancel_rounded;
+        label = l10n.rejectedUpper;
         break;
       case 'PENDING':
       default:
         color = const Color(0xFFFBBF24); // Amber-400
         icon = Icons.hourglass_top_rounded;
+        label = l10n.pendingUpper;
         break;
     }
 
@@ -577,7 +579,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
               Icon(icon, size: 10, color: color),
               const SizedBox(width: 4),
               Text(
-                status,
+                label,
                 style: TextStyle(
                   color: color,
                   fontSize: 9,
@@ -895,9 +897,27 @@ class _InventoryOverlayState extends State<InventoryOverlay>
             onPressed: () => Navigator.pop(context),
             child: Text(AppLocalizations.of(context)!.okButton, style: const TextStyle(color: Color(0xFF4ADE80))),
           ),
-        ],
+        ),
       ),
     );
+  }
+
+  String _translateCategory(BuildContext context, String category) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (category.toLowerCase()) {
+      case 'animal':
+        return l10n.animal;
+      case 'vegetation':
+        return l10n.vegetation;
+      case 'tree':
+        return l10n.tree;
+      case 'structure':
+        return l10n.structure;
+      case 'machine':
+        return l10n.machine;
+      default:
+        return category;
+    }
   }
 }
 

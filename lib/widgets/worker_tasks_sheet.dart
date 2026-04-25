@@ -225,7 +225,7 @@ class _WorkerTasksSheetContentState extends State<_WorkerTasksSheetContent> {
                                             border: Border.all(color: isCompleted ? Colors.greenAccent : Colors.amberAccent),
                                           ),
                                           child: Text(
-                                            task['status']?.toUpperCase() ?? 'UNKNOWN',
+                                            _translateStatus(context, task['status']?.toString() ?? 'unknown').toUpperCase(),
                                             style: TextStyle(color: isCompleted ? Colors.greenAccent : Colors.amberAccent, fontSize: 10, fontWeight: FontWeight.bold),
                                           ),
                                         ),
@@ -281,5 +281,21 @@ class _WorkerTasksSheetContentState extends State<_WorkerTasksSheetContent> {
         ),
       ],
     );
+  }
+  String _translateStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toLowerCase()) {
+      case 'completed':
+      case 'verified':
+      case 'approved':
+        return l10n.verifiedUpper;
+      case 'pending':
+        return l10n.pendingUpper;
+      case 'rejected':
+      case 'failed':
+        return l10n.rejectedUpper;
+      default:
+        return status;
+    }
   }
 }

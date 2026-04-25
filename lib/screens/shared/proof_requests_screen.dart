@@ -120,7 +120,7 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
           Icon(icon, size: 16, color: color),
           const SizedBox(width: 8),
           Text(
-            status.toUpperCase(),
+            _translateStatus(context, status).toUpperCase(),
             style: TextStyle(
               color: color,
               fontWeight: FontWeight.bold,
@@ -247,5 +247,22 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
                    },
                  ),
     );
+  }
+  String _translateStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toLowerCase()) {
+      case 'verified':
+      case 'approved':
+        return l10n.verifiedUpper;
+      case 'rejected':
+      case 'failed':
+        return l10n.rejectedUpper;
+      case 'expired':
+        return l10n.expiredUpper;
+      case 'pending':
+        return l10n.pendingUpper;
+      default:
+        return status;
+    }
   }
 }

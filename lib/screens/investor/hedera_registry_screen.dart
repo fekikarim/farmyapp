@@ -511,11 +511,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
         border: Border.all(color: color.withOpacity(0.4)),
       ),
       child: Text(
-        status.toUpperCase() == 'PAID' ? AppLocalizations.of(context)!.paidUpper :
-        status.toUpperCase() == 'APPROVED' ? AppLocalizations.of(context)!.approvedUpper :
-        status.toUpperCase() == 'PENDING' ? AppLocalizations.of(context)!.pendingUpper :
-        status.toUpperCase() == 'REJECTED' ? AppLocalizations.of(context)!.rejectedUpper :
-        status.toUpperCase(),
+        _translateStatus(context, status).toUpperCase(),
         style: TextStyle(color: color, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5),
       ),
     );
@@ -636,6 +632,23 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
           SnackBar(content: Text(AppLocalizations.of(context)!.couldNotOpenHashScan)),
         );
       }
+    }
+  }
+  String _translateStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toLowerCase()) {
+      case 'paid':
+        return l10n.paidUpper;
+      case 'approved':
+      case 'verified':
+        return l10n.approvedUpper;
+      case 'pending':
+        return l10n.pendingUpper;
+      case 'rejected':
+      case 'failed':
+        return l10n.rejectedUpper;
+      default:
+        return status;
     }
   }
 }
