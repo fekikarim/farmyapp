@@ -1209,8 +1209,8 @@
   "captureSubmit": "Capturar y Enviar",
   "uploadingImage": "Subiendo imagen...",
   "pleaseWaitAFewMoments": "Por favor, espere unos momentos...",
-  "orSelectAnItem": "[orSelectAnItem]",
-  "itemIdUpper": "[itemIdUpper]",
+  "orSelectAnItem": "O seleccione un artículo",
+  "itemIdUpper": "ID DEL ARTÍCULO",
   "@itemIdUpper": {
     "placeholders": {
       "param": {
@@ -1229,13 +1229,13 @@
       }
     }
   },
-  "hireUpper": "[hireUpper]",
-  "size": "[size]",
-  "ownerLabel": "[ownerLabel]",
-  "draw": "[draw]",
-  "unknownItem": "[unknownItem]",
-  "moveAll": "[moveAll]",
-  "plotNumber": "[plotNumber]",
+  "hireUpper": "CONTRATAR",
+  "size": "Tamaño",
+  "ownerLabel": "Propietario",
+  "draw": "Dibujar",
+  "unknownItem": "Artículo desconocido",
+  "moveAll": "Mover todo",
+  "plotNumber": "Nº de parcela",
   "@plotNumber": {
     "placeholders": {
       "param": {
@@ -1243,17 +1243,17 @@
       }
     }
   },
-  "optimalSolarExposure": "[optimalSolarExposure]",
-  "cancelUpper": "[cancelUpper]",
-  "failedToRejectRequest": "[failedToRejectRequest]",
-  "hireWorkersUpper": "[hireWorkersUpper]",
-  "invalidGeometryAlert": "[invalidGeometryAlert]",
-  "activeTasks": "[activeTasks]",
-  "perTaskUpper": "[perTaskUpper]",
-  "analyzePortfolio": "[analyzePortfolio]",
-  "noPendingRequests": "[noPendingRequests]",
-  "heightAuto": "[heightAuto]",
-  "rentAmountMonthly": "[rentAmountMonthly]",
+  "optimalSolarExposure": "Exposición solar óptima",
+  "cancelUpper": "CANCELAR",
+  "failedToRejectRequest": "Error al rechazar la solicitud",
+  "hireWorkersUpper": "CONTRATAR TRABAJADORES",
+  "invalidGeometryAlert": "Alerta de geometría inválida",
+  "activeTasks": "Tareas activas",
+  "perTaskUpper": "POR TAREA",
+  "analyzePortfolio": "Analizar cartera",
+  "noPendingRequests": "No hay solicitudes pendientes",
+  "heightAuto": "Altura auto",
+  "rentAmountMonthly": "Alquiler mensual: {param}",
   "@rentAmountMonthly": {
     "placeholders": {
       "param": {
@@ -1261,27 +1261,27 @@
       }
     }
   },
-  "totalCapitalInvested": "[totalCapitalInvested]",
-  "currentLand": "[currentLand]",
-  "descriptionTooShort": "[descriptionTooShort]",
-  "landName": "[landName]",
-  "alreadyRentedUpper": "[alreadyRentedUpper]",
-  "requestRejectedRefunded": "[requestRejectedRefunded]",
-  "rejectionReasonPrompt": "[rejectionReasonPrompt]",
-  "negotiationsUpper": "[negotiationsUpper]",
-  "noWorkersFoundUpper": "[noWorkersFoundUpper]",
-  "unknownInvestor": "[unknownInvestor]",
-  "hoursLeft": "[hoursLeft]",
+  "totalCapitalInvested": "Capital total invertido",
+  "currentLand": "Tierra actual",
+  "descriptionTooShort": "Descripción demasiado corta",
+  "landName": "Nombre de la tierra",
+  "alreadyRentedUpper": "YA ALQUILADO",
+  "requestRejectedRefunded": "Solicitud rechazada y reembolsada",
+  "rejectionReasonPrompt": "Por favor, indique el motivo del rechazo",
+  "negotiationsUpper": "NEGOCIACIONES",
+  "noWorkersFoundUpper": "NO SE ENCONTRARON TRABAJADORES",
+  "unknownInvestor": "Inversor desconocido",
+  "hoursLeft": "{count} horas restantes",
   "@hoursLeft": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "count": {
+        "type": "int"
       }
     }
   },
-  "rentalSlotsUsage": "[rentalSlotsUsage]",
-  "selectAtLeast3Points": "[selectAtLeast3Points]",
-  "activeLabelUpper": "[activeLabelUpper]",
+  "rentalSlotsUsage": "Uso de espacios de alquiler",
+  "selectAtLeast3Points": "Seleccione al menos 3 puntos",
+  "activeLabelUpper": "ACTIVO",
   "salaryAmountType": "{amount} / {type}",
   "@salaryAmountType": {
     "placeholders": {
@@ -1293,11 +1293,11 @@
       }
     }
   },
-  "expiringSoon": "[expiringSoon]",
-  "checkBackLaterOpportunities": "[checkBackLaterOpportunities]",
-  "inactive": "[inactive]",
-  "endDateUpper": "[endDateUpper]",
-  "farmerWithColon": "[farmerWithColon]",
+  "expiringSoon": "Expira pronto",
+  "checkBackLaterOpportunities": "Vuelva más tarde para ver nuevas oportunidades",
+  "inactive": "Inactivo",
+  "endDateUpper": "FECHA DE FIN",
+  "farmerWithColon": "Agricultor: {param}",
   "@farmerWithColon": {
     "placeholders": {
       "param": {
@@ -1305,21 +1305,24 @@
       }
     }
   },
-  "farmingActivity": "[farmingActivity]",
-  "noActiveFarmingActivities": "[noActiveFarmingActivities]",
-  "boundaries": "[boundaries]",
-  "noInvestmentsYet": "[noInvestmentsYet]",
-  "activeStatusUpper": "[activeStatusUpper]",
-  "plotsCount": "[plotsCount]",
+  "farmingActivity": "Actividad agrícola",
+  "noActiveFarmingActivities": "No hay actividades agrícolas activas",
+  "boundaries": "Límites",
+  "noInvestmentsYet": "Aún no hay inversiones",
+  "activeStatusUpper": "ESTADO ACTIVO",
+  "plotsCount": "{w}x{h} parcelas",
   "@plotsCount": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "w": {
+        "type": "int"
+      },
+      "h": {
+        "type": "int"
       }
     }
   },
-  "noPendingRequestsHint": "[noPendingRequestsHint]",
-  "requestedDateUpper": "[requestedDateUpper]",
+  "noPendingRequestsHint": "No tienes solicitudes pendientes en este momento.",
+  "requestedDateUpper": "FECHA SOLICITADA: {param}",
   "@requestedDateUpper": {
     "placeholders": {
       "param": {
@@ -1327,18 +1330,18 @@
       }
     }
   },
-  "priceCannotBeEmpty": "[priceCannotBeEmpty]",
-  "rentedUpper": "[rentedUpper]",
-  "rentalLimitReached": "[rentalLimitReached]",
-  "invitationUpdates": "[invitationUpdates]",
-  "priceStartingFrom": "[priceStartingFrom]",
-  "locationHighlights": "[locationHighlights]",
-  "amount": "[amount]",
-  "publishingFailed": "[publishingFailed]",
-  "securedWaterAccess": "[securedWaterAccess]",
-  "monthlyRentPriceTND": "[monthlyRentPriceTND]",
-  "geometryVerified": "[geometryVerified]",
-  "landWithColon": "[landWithColon]",
+  "priceCannotBeEmpty": "El precio no puede estar vacío",
+  "rentedUpper": "ALQUILADO",
+  "rentalLimitReached": "Límite de alquiler alcanzado",
+  "invitationUpdates": "Actualizaciones de invitaciones",
+  "priceStartingFrom": "Precio desde",
+  "locationHighlights": "Lo más destacado de la ubicación",
+  "amount": "Monto",
+  "publishingFailed": "Error al publicar",
+  "securedWaterAccess": "Acceso seguro al agua",
+  "monthlyRentPriceTND": "Precio de alquiler mensual (TND)",
+  "geometryVerified": "Geometría verificada",
+  "landWithColon": "Tierra: {param}",
   "@landWithColon": {
     "placeholders": {
       "param": {
@@ -1346,24 +1349,24 @@
       }
     }
   },
-  "cannotPublishInvalidGeometry": "[cannotPublishInvalidGeometry]",
-  "retryUpper": "[retryUpper]",
-  "imageProofRequiredToApprove": "[imageProofRequiredToApprove]",
-  "sendProposalUpper": "[sendProposalUpper]",
-  "min": "[min]",
-  "pricePerMonth": "[pricePerMonth]",
-  "noActiveWorkersUpper": "[noActiveWorkersUpper]",
-  "reasonTooShort": "[reasonTooShort]",
-  "viewDetails": "[viewDetails]",
-  "proofsUpper": "[proofsUpper]",
-  "noActiveNegotiationsUpper": "[noActiveNegotiationsUpper]",
-  "plantCrops": "[plantCrops]",
-  "readyForActivityHint": "[readyForActivityHint]",
-  "irrigated": "[irrigated]",
-  "tryAdjustingFilters": "[tryAdjustingFilters]",
-  "occupiedUpper": "[occupiedUpper]",
-  "generalFarmingActivity": "[generalFarmingActivity]",
-  "endsDate": "[endsDate]",
+  "cannotPublishInvalidGeometry": "No se puede publicar con una geometría inválida",
+  "retryUpper": "REINTENTAR",
+  "imageProofRequiredToApprove": "Se requiere prueba de imagen para aprobar",
+  "sendProposalUpper": "ENVIAR PROPUESTA",
+  "min": "min",
+  "pricePerMonth": "Precio por mes",
+  "noActiveWorkersUpper": "NO HAY TRABAJADORES ACTIVOS",
+  "reasonTooShort": "El motivo es demasiado corto",
+  "viewDetails": "Ver detalles",
+  "proofsUpper": "PRUEBAS",
+  "noActiveNegotiationsUpper": "NO HAY NEGOCIACIONES ACTIVAS",
+  "plantCrops": "Plantar cultivos",
+  "readyForActivityHint": "Listo para la actividad",
+  "irrigated": "Irrigado",
+  "tryAdjustingFilters": "Intente ajustar los filtros",
+  "occupiedUpper": "OCUPADO",
+  "generalFarmingActivity": "Actividad agrícola general",
+  "endsDate": "Finaliza el: {param}",
   "@endsDate": {
     "placeholders": {
       "param": {
@@ -1371,18 +1374,18 @@
       }
     }
   },
-  "daysLeft": "[daysLeft]",
+  "daysLeft": "{count} días restantes",
   "@daysLeft": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "count": {
+        "type": "int"
       }
     }
   },
-  "hireActivateWorkersHint": "[hireActivateWorkersHint]",
-  "manageWorkers": "[manageWorkers]",
-  "onTime": "[onTime]",
-  "removeWorkerConfirmation": "[removeWorkerConfirmation]",
+  "hireActivateWorkersHint": "Contratar y activar trabajadores",
+  "manageWorkers": "Gestionar trabajadores",
+  "onTime": "A tiempo",
+  "removeWorkerConfirmation": "¿Eliminar al trabajador {param}?",
   "@removeWorkerConfirmation": {
     "placeholders": {
       "param": {
@@ -1390,20 +1393,20 @@
       }
     }
   },
-  "assignedLands": "[assignedLands]",
-  "limitReachedUpper": "[limitReachedUpper]",
-  "proofHistory": "[proofHistory]",
-  "farmerInvitations": "[farmerInvitations]",
-  "workforceUpper": "[workforceUpper]",
-  "descriptionRequired": "[descriptionRequired]",
-  "priceGreaterThanZero": "[priceGreaterThanZero]",
-  "saveChanges": "[saveChanges]",
-  "proofRequestQuestion": "[proofRequestQuestion]",
-  "rentalSlotsUsed": "[rentalSlotsUsed]",
-  "activeLands": "[activeLands]",
-  "widthAuto": "[widthAuto]",
-  "spatialDimensions": "[spatialDimensions]",
-  "idLabel": "[idLabel]",
+  "assignedLands": "Tierras asignadas",
+  "limitReachedUpper": "LÍMITE ALCANZADO",
+  "proofHistory": "Historial de pruebas",
+  "farmerInvitations": "Invitaciones de agricultores",
+  "workforceUpper": "FUERZA LABORAL",
+  "descriptionRequired": "Descripción requerida",
+  "priceGreaterThanZero": "El precio debe ser mayor que cero",
+  "saveChanges": "Guardar cambios",
+  "proofRequestQuestion": "Pregunta de solicitud de prueba",
+  "rentalSlotsUsed": "Espacios de alquiler utilizados",
+  "activeLands": "Tierras activas",
+  "widthAuto": "Ancho auto",
+  "spatialDimensions": "Dimensiones espaciales",
+  "idLabel": "ID: {param}",
   "@idLabel": {
     "placeholders": {
       "param": {
@@ -1411,7 +1414,7 @@
       }
     }
   },
-  "rentalExpires": "[rentalExpires]",
+  "rentalExpires": "El alquiler vence el: {param}",
   "@rentalExpires": {
     "placeholders": {
       "param": {
@@ -1419,7 +1422,7 @@
       }
     }
   },
-  "proofSubmissionHint": "[proofSubmissionHint]",
+  "proofSubmissionHint": "Envío de prueba: {param}",
   "@proofSubmissionHint": {
     "placeholders": {
       "param": {
@@ -1427,7 +1430,7 @@
       }
     }
   },
-  "landPlotNumber": "[landPlotNumber]",
+  "landPlotNumber": "Nº de parcela: {param}",
   "@landPlotNumber": {
     "placeholders": {
       "param": {
@@ -1435,10 +1438,10 @@
       }
     }
   },
-  "messageOptionalUpper": "[messageOptionalUpper]",
-  "roiEst": "[roiEst]",
-  "paymentRequiredToActivate": "[paymentRequiredToActivate]",
-  "invalidNumericAmount": "[invalidNumericAmount]",
+  "messageOptionalUpper": "MENSAJE (OPCIONAL)",
+  "roiEst": "ROI estimado",
+  "paymentRequiredToActivate": "Pago requerido para activar",
+  "invalidNumericAmount": "Monto numérico inválido",
   "pointsDefined": "{count} puntos definidos",
   "@pointsDefined": {
     "placeholders": {
@@ -1465,14 +1468,14 @@
     }
   },
   "itemVerification": "[itemVerification]",
-  "invalidGeometryHint": "[invalidGeometryHint]",
-  "declinedUpper": "[declinedUpper]",
-  "connectionError": "[connectionError]",
-  "startByListingPlot": "[startByListingPlot]",
-  "propertyDetails": "[propertyDetails]",
-  "invalidGeometry": "[invalidGeometry]",
-  "failedToLoadRequests": "[failedToLoadRequests]",
-  "untilDate": "[untilDate]",
+  "invalidGeometryHint": "Se detectó una geometría inválida",
+  "declinedUpper": "RECHAZADO",
+  "connectionError": "Error de conexión",
+  "startByListingPlot": "Comience por listar una parcela",
+  "propertyDetails": "Detalles de la propiedad",
+  "invalidGeometry": "Géometría inválida",
+  "failedToLoadRequests": "Error al cargar las solicitudes",
+  "untilDate": "hasta {param}",
   "@untilDate": {
     "placeholders": {
       "param": {
@@ -1480,27 +1483,27 @@
       }
     }
   },
-  "drawInstructions": "[drawInstructions]",
-  "na": "[na]",
-  "noTasksAssignedHint": "[noTasksAssignedHint]",
-  "cannotPublishBoundaryConflicts": "[cannotPublishBoundaryConflicts]",
-  "farmingActivities": "[farmingActivities]",
-  "listNewLand": "[listNewLand]",
-  "noApprovedWorkersUpper": "[noApprovedWorkersUpper]",
-  "expiredUpper": "[expiredUpper]",
-  "conflictDetected": "[conflictDetected]",
-  "rejectRequest": "[rejectRequest]",
-  "boundaryConflictAlert": "[boundaryConflictAlert]",
-  "requestProof": "[requestProof]",
-  "perHourUpper": "[perHourUpper]",
-  "exploreLands": "[exploreLands]",
-  "premiumFarmlandUpper": "[premiumFarmlandUpper]",
-  "newProposal": "[newProposal]",
-  "suspendedUpper": "[suspendedUpper]",
-  "aiPortfolioAnalysisHint": "[aiPortfolioAnalysisHint]",
-  "defineOnMap": "[defineOnMap]",
-  "itemUpper": "[itemUpper]",
-  "amountPerType": "[amountPerType]",
+  "drawInstructions": "Toque en el mapa para dibujar los límites",
+  "na": "N/A",
+  "noTasksAssignedHint": "Aún no hay tareas asignadas",
+  "cannotPublishBoundaryConflicts": "No se puede publicar: se detectaron conflictos de límites",
+  "farmingActivities": "Actividades agrícolas",
+  "listNewLand": "Listar nueva tierra",
+  "noApprovedWorkersUpper": "NO HAY TRABAJADORES APROBADOS",
+  "expiredUpper": "EXPIRADO",
+  "conflictDetected": "Conflicto detectado",
+  "rejectRequest": "Rechazar solicitud",
+  "boundaryConflictAlert": "Alerta de conflicto de límites",
+  "requestProof": "Solicitar prueba",
+  "perHourUpper": "POR HORA",
+  "exploreLands": "Explorar tierras",
+  "premiumFarmlandUpper": "TIERRA AGRÍCOLA PREMIUM",
+  "newProposal": "Nueva propuesta",
+  "suspendedUpper": "SUSPENDIDO",
+  "aiPortfolioAnalysisHint": "Análisis de cartera IA",
+  "defineOnMap": "Definir en el mapa",
+  "itemUpper": "ARTÍCULO",
+  "amountPerType": "{amount} / {type}",
   "@amountPerType": {
     "placeholders": {
       "param": {
@@ -1508,17 +1511,17 @@
       }
     }
   },
-  "landDescriptionHint": "[landDescriptionHint]",
-  "autoFromBoundary": "[autoFromBoundary]",
-  "tryAgainUpper": "[tryAgainUpper]",
-  "landNameRequired": "[landNameRequired]",
-  "activeUpper": "[activeUpper]",
-  "hiringProposals": "[hiringProposals]",
-  "confirmReject": "[confirmReject]",
-  "movePoint": "[movePoint]",
-  "priceExceedsLimit": "[priceExceedsLimit]",
-  "egSalaryHint": "[egSalaryHint]",
-  "hireWorkerUpper": "[hireWorkerUpper]",
+  "landDescriptionHint": "Describa su tierra...",
+  "autoFromBoundary": "Auto desde el límite",
+  "tryAgainUpper": "REINTENTAR",
+  "landNameRequired": "El nombre de la tierra es obligatorio",
+  "activeUpper": "ACTIVO",
+  "hiringProposals": "Propuestas de contratación",
+  "confirmReject": "Confirmar rechazo",
+  "movePoint": "Mover punto",
+  "priceExceedsLimit": "El precio excede el límite",
+  "egSalaryHint": "ej. 15,00",
+  "hireWorkerUpper": "CONTRATAR A {param}",
   "@hireWorkerUpper": {
     "placeholders": {
       "param": {
@@ -1526,17 +1529,17 @@
       }
     }
   },
-  "hiringProposalSent": "[hiringProposalSent]",
-  "entireLand": "[entireLand]",
-  "acceptedUpper": "[acceptedUpper]",
-  "fundsReleasedAfterVerification": "[fundsReleasedAfterVerification]",
-  "enterRejectionReason": "[enterRejectionReason]",
-  "proofRequests": "[proofRequests]",
-  "enableVoiceInput": "[enableVoiceInput]",
-  "salaryAmountTNDUpper": "[salaryAmountTNDUpper]",
-  "unableToRetrieveLandDetails": "[unableToRetrieveLandDetails]",
-  "hourlyUpper": "[hourlyUpper]",
-  "aiLandInvestmentHint": "[aiLandInvestmentHint]",
+  "hiringProposalSent": "Propuesta de contratación enviada",
+  "entireLand": "Tierra entera",
+  "acceptedUpper": "ACEPTADO",
+  "fundsReleasedAfterVerification": "Fondos liberados después de la verificación",
+  "enterRejectionReason": "Ingrese el motivo del rechazo",
+  "proofRequests": "Solicitudes de prueba",
+  "enableVoiceInput": "Activar entrada de voz",
+  "salaryAmountTNDUpper": "MONTO DEL SALARIO (TND)",
+  "unableToRetrieveLandDetails": "No se pudieron obtener los detalles de la tierra",
+  "hourlyUpper": "POR HORA",
+  "aiLandInvestmentHint": "Sugerencia de inversión de IA: {param}",
   "@aiLandInvestmentHint": {
     "placeholders": {
       "param": {
@@ -1544,22 +1547,22 @@
       }
     }
   },
-  "askAiAnalyst": "[askAiAnalyst]",
-  "monthlyUpper": "[monthlyUpper]",
-  "activeContracts": "[activeContracts]",
-  "workerRespondedReviewCounterOffer": "[workerRespondedReviewCounterOffer]",
-  "unlockUnlimitedSlotsInvestorPlus": "[unlockUnlimitedSlotsInvestorPlus]",
-  "escrowBalance": "[escrowBalance]",
-  "pleaseEnterAName": "[pleaseEnterAName]",
-  "raiseLivestock": "[raiseLivestock]",
-  "noLandAssignments": "[noLandAssignments]",
-  "aiVerifyUpper": "[aiVerifyUpper]",
-  "requestExpired": "[requestExpired]",
-  "rejectUpper": "[rejectUpper]",
-  "landUpdatedSuccess": "[landUpdatedSuccess]",
-  "realTimeTaskNotificationsSoon": "[realTimeTaskNotificationsSoon]",
-  "approveUpper": "[approveUpper]",
-  "untilDateUpper": "[untilDateUpper]",
+  "askAiAnalyst": "Preguntar al analista de IA",
+  "monthlyUpper": "MENSUAL",
+  "activeContracts": "Contratos activos",
+  "workerRespondedReviewCounterOffer": "El trabajador respondió, revise la contraoferta",
+  "unlockUnlimitedSlotsInvestorPlus": "Desbloquee espacios ilimitados con Investor+",
+  "escrowBalance": "Saldo de depósito en garantía",
+  "pleaseEnterAName": "Por favor, ingrese un nombre",
+  "raiseLivestock": "Criar ganado",
+  "noLandAssignments": "No hay asignaciones de tierra",
+  "aiVerifyUpper": "VERIFICAR POR IA",
+  "requestExpired": "Solicitud expirada",
+  "rejectUpper": "RECHAZAR",
+  "landUpdatedSuccess": "Tierra actualizada con éxito",
+  "realTimeTaskNotificationsSoon": "Notificaciones de tareas en tiempo real pronto",
+  "approveUpper": "APROBAR",
+  "untilDateUpper": "HASTA {param}",
   "@untilDateUpper": {
     "placeholders": {
       "param": {
@@ -1567,23 +1570,23 @@
       }
     }
   },
-  "overlapsExistingLand": "[overlapsExistingLand]",
-  "itemRequests": "[itemRequests]",
-  "startDateUpper": "[startDateUpper]",
-  "generalLandProof": "[generalLandProof]",
-  "landNameTooShort": "[landNameTooShort]",
-  "verifiedUpper": "[verifiedUpper]",
-  "minutesLeft": "[minutesLeft]",
+  "overlapsExistingLand": "Se superpone con tierra existente",
+  "itemRequests": "Solicitudes de artículos",
+  "startDateUpper": "FECHA DE INICIO",
+  "generalLandProof": "Prueba general de la tierra",
+  "landNameTooShort": "Nombre de la tierra demasiado corto",
+  "verifiedUpper": "VERIFICADO",
+  "minutesLeft": "{count} minutos restantes",
   "@minutesLeft": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "count": {
+        "type": "int"
       }
     }
   },
-  "tapToDrawBoundaries": "[tapToDrawBoundaries]",
-  "directRoadAccess": "[directRoadAccess]",
-  "invitationFrom": "[invitationFrom]",
+  "tapToDrawBoundaries": "Toque para dibujar límites",
+  "directRoadAccess": "Acceso directo por carretera",
+  "invitationFrom": "Invitación de {param}",
   "@invitationFrom": {
     "placeholders": {
       "param": {
@@ -1591,24 +1594,24 @@
       }
     }
   },
-  "failedToLoadContracts": "[failedToLoadContracts]",
-  "verificationFailed": "[verificationFailed]",
-  "perimeterNotSet": "[perimeterNotSet]",
-  "requestApprovedItemPlaced": "[requestApprovedItemPlaced]",
-  "inviteWorkersMarketplaceHint": "[inviteWorkersMarketplaceHint]",
-  "landNameHint": "[landNameHint]",
-  "publishListing": "[publishListing]",
-  "hireApprovedWorkerNegotiationHint": "[hireApprovedWorkerNegotiationHint]",
-  "request": "[request]",
-  "counterOfferUpper": "[counterOfferUpper]",
-  "proposedUpper": "[proposedUpper]",
-  "verificationSuccessful": "[verificationSuccessful]",
-  "rentLandToStartUpper": "[rentLandToStartUpper]",
-  "expiredLabel": "[expiredLabel]",
-  "salaryTypeUpper": "[salaryTypeUpper]",
-  "pleaseEnterRejectionReason": "[pleaseEnterRejectionReason]",
-  "negotiatingUpper": "[negotiatingUpper]",
-  "rentNowUpper": "[rentNowUpper]",
+  "failedToLoadContracts": "Error al cargar los contratos",
+  "verificationFailed": "Error de verificación",
+  "perimeterNotSet": "Perímetro no definido",
+  "requestApprovedItemPlaced": "Solicitud aprobada, artículo colocado",
+  "inviteWorkersMarketplaceHint": "Invitar trabajadores del mercado",
+  "landNameHint": "ej. Granja Valle Soleado",
+  "publishListing": "Publicar anuncio",
+  "hireApprovedWorkerNegotiationHint": "Contratar trabajador aprobado para iniciar negociación",
+  "request": "Solicitud",
+  "counterOfferUpper": "CONTRAOFERTA",
+  "proposedUpper": "PROPUESTO",
+  "verificationSuccessful": "Verificación exitosa",
+  "rentLandToStartUpper": "ALQUILAR TIERRA PARA EMPEZAR",
+  "expiredLabel": "Expirado",
+  "salaryTypeUpper": "TIPO DE SALARIO",
+  "pleaseEnterRejectionReason": "Por favor, ingrese el motivo del rechazo",
+  "negotiatingUpper": "NEGOCIANDO",
+  "rentNowUpper": "ALQUILAR AHORA",
   "nTasksUpper": "{count} TAREAS",
   "@nTasksUpper": {
     "placeholders": {
@@ -1617,6 +1620,6 @@
       }
     }
   },
-  "noSpecialSkillsUpper": "[noSpecialSkillsUpper]",
-  "noLandAssignmentsHint": "[noLandAssignmentsHint]"
+  "noSpecialSkillsUpper": "SIN HABILIDADES ESPECIALES",
+  "noLandAssignmentsHint": "Aún no hay asignaciones de tierra"
 }

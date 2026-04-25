@@ -3410,11 +3410,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pleaseWaitAFewMoments => 'Veuillez patienter quelques instants...';
 
   @override
-  String get orSelectAnItem => '[orSelectAnItem]';
+  String get orSelectAnItem => 'Ou sélectionnez un article';
 
   @override
   String itemIdUpper(String param) {
-    return '[itemIdUpper]';
+    return 'ID DE L\'ARTICLE';
   }
 
   @override
@@ -3423,106 +3423,106 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get hireUpper => '[hireUpper]';
+  String get hireUpper => 'EMBAUCHER';
 
   @override
-  String get size => '[size]';
+  String get size => 'Taille';
 
   @override
-  String get ownerLabel => '[ownerLabel]';
+  String get ownerLabel => 'Propriétaire';
 
   @override
-  String get draw => '[draw]';
+  String get draw => 'Dessiner';
 
   @override
-  String get unknownItem => '[unknownItem]';
+  String get unknownItem => 'Article inconnu';
 
   @override
-  String get moveAll => '[moveAll]';
+  String get moveAll => 'Tout déplacer';
 
   @override
   String plotNumber(String param) {
-    return '[plotNumber]';
+    return 'N° de parcelle';
   }
 
   @override
-  String get optimalSolarExposure => '[optimalSolarExposure]';
+  String get optimalSolarExposure => 'Exposition solaire optimale';
 
   @override
-  String get cancelUpper => '[cancelUpper]';
+  String get cancelUpper => 'ANNULER';
 
   @override
-  String get failedToRejectRequest => '[failedToRejectRequest]';
+  String get failedToRejectRequest => 'Échec du rejet de la demande';
 
   @override
-  String get hireWorkersUpper => '[hireWorkersUpper]';
+  String get hireWorkersUpper => 'EMBAUCHER DES TRAVAILLEURS';
 
   @override
-  String get invalidGeometryAlert => '[invalidGeometryAlert]';
+  String get invalidGeometryAlert => 'Alerte de géométrie invalide';
 
   @override
-  String get activeTasks => '[activeTasks]';
+  String get activeTasks => 'Tâches actives';
 
   @override
-  String get perTaskUpper => '[perTaskUpper]';
+  String get perTaskUpper => 'PAR TÂCHE';
 
   @override
-  String get analyzePortfolio => '[analyzePortfolio]';
+  String get analyzePortfolio => 'Analyser le portefeuille';
 
   @override
-  String get noPendingRequests => '[noPendingRequests]';
+  String get noPendingRequests => 'Aucune demande en attente';
 
   @override
-  String get heightAuto => '[heightAuto]';
+  String get heightAuto => 'Hauteur auto';
 
   @override
   String rentAmountMonthly(String param) {
-    return '[rentAmountMonthly]';
+    return 'Loyer mensuel : $param';
   }
 
   @override
-  String get totalCapitalInvested => '[totalCapitalInvested]';
+  String get totalCapitalInvested => 'Capital total investi';
 
   @override
-  String get currentLand => '[currentLand]';
+  String get currentLand => 'Terre actuelle';
 
   @override
-  String get descriptionTooShort => '[descriptionTooShort]';
+  String get descriptionTooShort => 'Description trop courte';
 
   @override
-  String get landName => '[landName]';
+  String get landName => 'Nom de la terre';
 
   @override
-  String get alreadyRentedUpper => '[alreadyRentedUpper]';
+  String get alreadyRentedUpper => 'DÉJÀ LOUÉ';
 
   @override
-  String get requestRejectedRefunded => '[requestRejectedRefunded]';
+  String get requestRejectedRefunded => 'Demande rejetée et remboursée';
 
   @override
-  String get rejectionReasonPrompt => '[rejectionReasonPrompt]';
+  String get rejectionReasonPrompt => 'Veuillez indiquer le motif du rejet';
 
   @override
-  String get negotiationsUpper => '[negotiationsUpper]';
+  String get negotiationsUpper => 'NÉGOCIATIONS';
 
   @override
-  String get noWorkersFoundUpper => '[noWorkersFoundUpper]';
+  String get noWorkersFoundUpper => 'AUCUN TRAVAILLEUR TROUVÉ';
 
   @override
-  String get unknownInvestor => '[unknownInvestor]';
+  String get unknownInvestor => 'Investisseur inconnu';
 
   @override
   String hoursLeft(int count) {
-    return '[hoursLeft]';
+    return '$count heures restantes';
   }
 
   @override
-  String get rentalSlotsUsage => '[rentalSlotsUsage]';
+  String get rentalSlotsUsage => 'Utilisation des emplacements';
 
   @override
-  String get selectAtLeast3Points => '[selectAtLeast3Points]';
+  String get selectAtLeast3Points => 'Sélectionnez au moins 3 points';
 
   @override
-  String get activeLabelUpper => '[activeLabelUpper]';
+  String get activeLabelUpper => 'ACTIF';
 
   @override
   String salaryAmountType(int amount, String type) {
@@ -3530,233 +3530,237 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get expiringSoon => '[expiringSoon]';
+  String get expiringSoon => 'Expire bientôt';
 
   @override
-  String get checkBackLaterOpportunities => '[checkBackLaterOpportunities]';
+  String get checkBackLaterOpportunities =>
+      'Revenez plus tard pour de nouvelles opportunités';
 
   @override
-  String get inactive => '[inactive]';
+  String get inactive => 'Inactif';
 
   @override
-  String get endDateUpper => '[endDateUpper]';
+  String get endDateUpper => 'DATE DE FIN';
 
   @override
   String farmerWithColon(String param) {
-    return '[farmerWithColon]';
+    return 'Agriculteur : $param';
   }
 
   @override
-  String get farmingActivity => '[farmingActivity]';
+  String get farmingActivity => 'Activité agricole';
 
   @override
-  String get noActiveFarmingActivities => '[noActiveFarmingActivities]';
+  String get noActiveFarmingActivities => 'Aucune activité agricole active';
 
   @override
-  String get boundaries => '[boundaries]';
+  String get boundaries => 'Limites';
 
   @override
-  String get noInvestmentsYet => '[noInvestmentsYet]';
+  String get noInvestmentsYet => 'Aucun investissement pour le moment';
 
   @override
-  String get activeStatusUpper => '[activeStatusUpper]';
+  String get activeStatusUpper => 'STATUT ACTIF';
 
   @override
   String plotsCount(int w, int h) {
-    return '[plotsCount]';
+    return '${w}x$h parcelles';
   }
 
   @override
-  String get noPendingRequestsHint => '[noPendingRequestsHint]';
+  String get noPendingRequestsHint =>
+      'Vous n\'avez aucune demande en attente pour le moment.';
 
   @override
   String requestedDateUpper(String param) {
-    return '[requestedDateUpper]';
+    return 'DATE DEMANDÉE : $param';
   }
 
   @override
-  String get priceCannotBeEmpty => '[priceCannotBeEmpty]';
+  String get priceCannotBeEmpty => 'Le prix ne peut pas être vide';
 
   @override
-  String get rentedUpper => '[rentedUpper]';
+  String get rentedUpper => 'LOUÉ';
 
   @override
-  String get rentalLimitReached => '[rentalLimitReached]';
+  String get rentalLimitReached => 'Limite de location atteinte';
 
   @override
-  String get invitationUpdates => '[invitationUpdates]';
+  String get invitationUpdates => 'Mises à jour des invitations';
 
   @override
-  String get priceStartingFrom => '[priceStartingFrom]';
+  String get priceStartingFrom => 'Prix à partir de';
 
   @override
-  String get locationHighlights => '[locationHighlights]';
+  String get locationHighlights => 'Points forts de l\'emplacement';
 
   @override
-  String get amount => '[amount]';
+  String get amount => 'Montant';
 
   @override
-  String get publishingFailed => '[publishingFailed]';
+  String get publishingFailed => 'Échec de la publication';
 
   @override
-  String get securedWaterAccess => '[securedWaterAccess]';
+  String get securedWaterAccess => 'Accès sécurisé à l\'eau';
 
   @override
-  String get monthlyRentPriceTND => '[monthlyRentPriceTND]';
+  String get monthlyRentPriceTND => 'Loyer mensuel (TND)';
 
   @override
-  String get geometryVerified => '[geometryVerified]';
+  String get geometryVerified => 'Géométrie vérifiée';
 
   @override
   String landWithColon(String param) {
-    return '[landWithColon]';
+    return 'Terre : $param';
   }
 
   @override
-  String get cannotPublishInvalidGeometry => '[cannotPublishInvalidGeometry]';
+  String get cannotPublishInvalidGeometry =>
+      'Impossible de publier avec une géométrie invalide';
 
   @override
-  String get retryUpper => '[retryUpper]';
+  String get retryUpper => 'RÉESSAYER';
 
   @override
-  String get imageProofRequiredToApprove => '[imageProofRequiredToApprove]';
+  String get imageProofRequiredToApprove =>
+      'Preuve en image requise pour approuver';
 
   @override
-  String get sendProposalUpper => '[sendProposalUpper]';
+  String get sendProposalUpper => 'ENVOYER LA PROPOSITION';
 
   @override
-  String get min => '[min]';
+  String get min => 'min';
 
   @override
-  String get pricePerMonth => '[pricePerMonth]';
+  String get pricePerMonth => 'Prix par mois';
 
   @override
-  String get noActiveWorkersUpper => '[noActiveWorkersUpper]';
+  String get noActiveWorkersUpper => 'AUCUN TRAVAILLEUR ACTIF';
 
   @override
-  String get reasonTooShort => '[reasonTooShort]';
+  String get reasonTooShort => 'Le motif est trop court';
 
   @override
-  String get viewDetails => '[viewDetails]';
+  String get viewDetails => 'Voir les détails';
 
   @override
-  String get proofsUpper => '[proofsUpper]';
+  String get proofsUpper => 'PREUVES';
 
   @override
-  String get noActiveNegotiationsUpper => '[noActiveNegotiationsUpper]';
+  String get noActiveNegotiationsUpper => 'AUCUNE NÉGOCIATION ACTIVE';
 
   @override
-  String get plantCrops => '[plantCrops]';
+  String get plantCrops => 'Planter des cultures';
 
   @override
-  String get readyForActivityHint => '[readyForActivityHint]';
+  String get readyForActivityHint => 'Prêt pour l\'activité';
 
   @override
-  String get irrigated => '[irrigated]';
+  String get irrigated => 'Irrigué';
 
   @override
-  String get tryAdjustingFilters => '[tryAdjustingFilters]';
+  String get tryAdjustingFilters => 'Essayez d\'ajuster les filtres';
 
   @override
-  String get occupiedUpper => '[occupiedUpper]';
+  String get occupiedUpper => 'OCCUPÉ';
 
   @override
-  String get generalFarmingActivity => '[generalFarmingActivity]';
+  String get generalFarmingActivity => 'Activité agricole générale';
 
   @override
   String endsDate(String param) {
-    return '[endsDate]';
+    return 'Se termine le : $param';
   }
 
   @override
   String daysLeft(int count) {
-    return '[daysLeft]';
+    return '$count jours restants';
   }
 
   @override
-  String get hireActivateWorkersHint => '[hireActivateWorkersHint]';
+  String get hireActivateWorkersHint => 'Embaucher et activer des travailleurs';
 
   @override
-  String get manageWorkers => '[manageWorkers]';
+  String get manageWorkers => 'Gérer les travailleurs';
 
   @override
-  String get onTime => '[onTime]';
+  String get onTime => 'À l\'heure';
 
   @override
   String removeWorkerConfirmation(String param) {
-    return '[removeWorkerConfirmation]';
+    return 'Supprimer le travailleur $param ?';
   }
 
   @override
-  String get assignedLands => '[assignedLands]';
+  String get assignedLands => 'Terres assignées';
 
   @override
-  String get limitReachedUpper => '[limitReachedUpper]';
+  String get limitReachedUpper => 'LIMITE ATTEINTE';
 
   @override
-  String get proofHistory => '[proofHistory]';
+  String get proofHistory => 'Historique des preuves';
 
   @override
-  String get farmerInvitations => '[farmerInvitations]';
+  String get farmerInvitations => 'Invitations d\'agriculteurs';
 
   @override
-  String get workforceUpper => '[workforceUpper]';
+  String get workforceUpper => 'MAIN-D\'ŒUVRE';
 
   @override
-  String get descriptionRequired => '[descriptionRequired]';
+  String get descriptionRequired => 'Description requise';
 
   @override
-  String get priceGreaterThanZero => '[priceGreaterThanZero]';
+  String get priceGreaterThanZero => 'Le prix doit être supérieur à zéro';
 
   @override
-  String get saveChanges => '[saveChanges]';
+  String get saveChanges => 'Enregistrer les modifications';
 
   @override
-  String get proofRequestQuestion => '[proofRequestQuestion]';
+  String get proofRequestQuestion => 'Question de demande de preuve';
 
   @override
-  String get rentalSlotsUsed => '[rentalSlotsUsed]';
+  String get rentalSlotsUsed => 'Emplacements de location utilisés';
 
   @override
-  String get activeLands => '[activeLands]';
+  String get activeLands => 'Terres actives';
 
   @override
-  String get widthAuto => '[widthAuto]';
+  String get widthAuto => 'Largeur auto';
 
   @override
-  String get spatialDimensions => '[spatialDimensions]';
+  String get spatialDimensions => 'Dimensions spatiales';
 
   @override
   String idLabel(String param) {
-    return '[idLabel]';
+    return 'ID : $param';
   }
 
   @override
   String rentalExpires(String param) {
-    return '[rentalExpires]';
+    return 'La location expire le : $param';
   }
 
   @override
   String proofSubmissionHint(String param) {
-    return '[proofSubmissionHint]';
+    return 'Soumission de preuve : $param';
   }
 
   @override
   String landPlotNumber(String param) {
-    return '[landPlotNumber]';
+    return 'N° de parcelle : $param';
   }
 
   @override
-  String get messageOptionalUpper => '[messageOptionalUpper]';
+  String get messageOptionalUpper => 'MESSAGE (OPTIONNEL)';
 
   @override
-  String get roiEst => '[roiEst]';
+  String get roiEst => 'ROI estimé';
 
   @override
-  String get paymentRequiredToActivate => '[paymentRequiredToActivate]';
+  String get paymentRequiredToActivate => 'Paiement requis pour activer';
 
   @override
-  String get invalidNumericAmount => '[invalidNumericAmount]';
+  String get invalidNumericAmount => 'Montant numérique invalide';
 
   @override
   String pointsDefined(int count) {
@@ -3772,312 +3776,317 @@ class AppLocalizationsFr extends AppLocalizations {
   String get itemVerification => '[itemVerification]';
 
   @override
-  String get invalidGeometryHint => '[invalidGeometryHint]';
+  String get invalidGeometryHint => 'Géométrie invalide détectée';
 
   @override
-  String get declinedUpper => '[declinedUpper]';
+  String get declinedUpper => 'REFUSÉ';
 
   @override
-  String get connectionError => '[connectionError]';
+  String get connectionError => 'Erreur de connexion';
 
   @override
-  String get startByListingPlot => '[startByListingPlot]';
+  String get startByListingPlot => 'Commencez par lister une parcelle';
 
   @override
-  String get propertyDetails => '[propertyDetails]';
+  String get propertyDetails => 'Détails de la propriété';
 
   @override
-  String get invalidGeometry => '[invalidGeometry]';
+  String get invalidGeometry => 'Géométrie invalide';
 
   @override
-  String get failedToLoadRequests => '[failedToLoadRequests]';
+  String get failedToLoadRequests => 'Échec du chargement des demandes';
 
   @override
   String untilDate(String param) {
-    return '[untilDate]';
+    return 'jusqu\'au $param';
   }
 
   @override
-  String get drawInstructions => '[drawInstructions]';
+  String get drawInstructions =>
+      'Appuyez sur la carte pour dessiner les limites';
 
   @override
-  String get na => '[na]';
+  String get na => 'N/A';
 
   @override
-  String get noTasksAssignedHint => '[noTasksAssignedHint]';
+  String get noTasksAssignedHint => 'Aucune tâche assignée pour le moment';
 
   @override
   String get cannotPublishBoundaryConflicts =>
-      '[cannotPublishBoundaryConflicts]';
+      'Impossible de publier : conflits de limites détectés';
 
   @override
-  String get farmingActivities => '[farmingActivities]';
+  String get farmingActivities => 'Activités agricoles';
 
   @override
-  String get listNewLand => '[listNewLand]';
+  String get listNewLand => 'Lister une nouvelle terre';
 
   @override
-  String get noApprovedWorkersUpper => '[noApprovedWorkersUpper]';
+  String get noApprovedWorkersUpper => 'AUCUN TRAVAILLEUR APPROUVÉ';
 
   @override
-  String get expiredUpper => '[expiredUpper]';
+  String get expiredUpper => 'EXPIRÉ';
 
   @override
-  String get conflictDetected => '[conflictDetected]';
+  String get conflictDetected => 'Conflit détecté';
 
   @override
-  String get rejectRequest => '[rejectRequest]';
+  String get rejectRequest => 'Rejeter la demande';
 
   @override
-  String get boundaryConflictAlert => '[boundaryConflictAlert]';
+  String get boundaryConflictAlert => 'Alerte de conflit de limites';
 
   @override
-  String get requestProof => '[requestProof]';
+  String get requestProof => 'Demander une preuve';
 
   @override
-  String get perHourUpper => '[perHourUpper]';
+  String get perHourUpper => 'PAR HEURE';
 
   @override
-  String get exploreLands => '[exploreLands]';
+  String get exploreLands => 'Explorer les terres';
 
   @override
-  String get premiumFarmlandUpper => '[premiumFarmlandUpper]';
+  String get premiumFarmlandUpper => 'TERRE AGRICOLE PREMIUM';
 
   @override
-  String get newProposal => '[newProposal]';
+  String get newProposal => 'Nouvelle proposition';
 
   @override
-  String get suspendedUpper => '[suspendedUpper]';
+  String get suspendedUpper => 'SUSPENDU';
 
   @override
-  String get aiPortfolioAnalysisHint => '[aiPortfolioAnalysisHint]';
+  String get aiPortfolioAnalysisHint => 'Analyse de portefeuille IA';
 
   @override
-  String get defineOnMap => '[defineOnMap]';
+  String get defineOnMap => 'Définir sur la carte';
 
   @override
-  String get itemUpper => '[itemUpper]';
+  String get itemUpper => 'ARTICLE';
 
   @override
   String amountPerType(String amount, String type) {
-    return '[amountPerType]';
+    return '$amount / $type';
   }
 
   @override
-  String get landDescriptionHint => '[landDescriptionHint]';
+  String get landDescriptionHint => 'Décrivez votre terre...';
 
   @override
-  String get autoFromBoundary => '[autoFromBoundary]';
+  String get autoFromBoundary => 'Auto à partir des limites';
 
   @override
-  String get tryAgainUpper => '[tryAgainUpper]';
+  String get tryAgainUpper => 'RÉESSAYER';
 
   @override
-  String get landNameRequired => '[landNameRequired]';
+  String get landNameRequired => 'Le nom de la terre est requis';
 
   @override
-  String get activeUpper => '[activeUpper]';
+  String get activeUpper => 'ACTIF';
 
   @override
-  String get hiringProposals => '[hiringProposals]';
+  String get hiringProposals => 'Propositions d\'embauche';
 
   @override
-  String get confirmReject => '[confirmReject]';
+  String get confirmReject => 'Confirmer le rejet';
 
   @override
-  String get movePoint => '[movePoint]';
+  String get movePoint => 'Déplacer le point';
 
   @override
-  String get priceExceedsLimit => '[priceExceedsLimit]';
+  String get priceExceedsLimit => 'Le prix dépasse la limite';
 
   @override
-  String get egSalaryHint => '[egSalaryHint]';
+  String get egSalaryHint => 'ex: 15,00';
 
   @override
   String hireWorkerUpper(String param) {
-    return '[hireWorkerUpper]';
+    return 'EMBAUCHER $param';
   }
 
   @override
-  String get hiringProposalSent => '[hiringProposalSent]';
+  String get hiringProposalSent => 'Proposition d\'embauche envoyée';
 
   @override
-  String get entireLand => '[entireLand]';
+  String get entireLand => 'Terre entière';
 
   @override
-  String get acceptedUpper => '[acceptedUpper]';
+  String get acceptedUpper => 'ACCEPTÉ';
 
   @override
   String get fundsReleasedAfterVerification =>
-      '[fundsReleasedAfterVerification]';
+      'Fonds libérés après vérification';
 
   @override
-  String get enterRejectionReason => '[enterRejectionReason]';
+  String get enterRejectionReason => 'Saisir le motif du rejet';
 
   @override
-  String get proofRequests => '[proofRequests]';
+  String get proofRequests => 'Demandes de preuves';
 
   @override
-  String get enableVoiceInput => '[enableVoiceInput]';
+  String get enableVoiceInput => 'Activer la saisie vocale';
 
   @override
-  String get salaryAmountTNDUpper => '[salaryAmountTNDUpper]';
+  String get salaryAmountTNDUpper => 'MONTANT DU SALAIRE (TND)';
 
   @override
-  String get unableToRetrieveLandDetails => '[unableToRetrieveLandDetails]';
+  String get unableToRetrieveLandDetails =>
+      'Impossible de récupérer les détails de la terre';
 
   @override
-  String get hourlyUpper => '[hourlyUpper]';
+  String get hourlyUpper => 'HORAIRE';
 
   @override
   String aiLandInvestmentHint(String param) {
-    return '[aiLandInvestmentHint]';
+    return 'Conseil d\'investissement IA : $param';
   }
 
   @override
-  String get askAiAnalyst => '[askAiAnalyst]';
+  String get askAiAnalyst => 'Demander à l\'analyste IA';
 
   @override
-  String get monthlyUpper => '[monthlyUpper]';
+  String get monthlyUpper => 'MENSUEL';
 
   @override
-  String get activeContracts => '[activeContracts]';
+  String get activeContracts => 'Contrats actifs';
 
   @override
   String get workerRespondedReviewCounterOffer =>
-      '[workerRespondedReviewCounterOffer]';
+      'Le travailleur a répondu, examinez la contre-offre';
 
   @override
   String get unlockUnlimitedSlotsInvestorPlus =>
-      '[unlockUnlimitedSlotsInvestorPlus]';
+      'Débloquez des emplacements illimités avec Investor+';
 
   @override
-  String get escrowBalance => '[escrowBalance]';
+  String get escrowBalance => 'Solde du séquestre';
 
   @override
-  String get pleaseEnterAName => '[pleaseEnterAName]';
+  String get pleaseEnterAName => 'Veuillez saisir un nom';
 
   @override
-  String get raiseLivestock => '[raiseLivestock]';
+  String get raiseLivestock => 'Élever du bétail';
 
   @override
-  String get noLandAssignments => '[noLandAssignments]';
+  String get noLandAssignments => 'Aucune assignation de terre';
 
   @override
-  String get aiVerifyUpper => '[aiVerifyUpper]';
+  String get aiVerifyUpper => 'VÉRIFIER PAR IA';
 
   @override
-  String get requestExpired => '[requestExpired]';
+  String get requestExpired => 'Demande expirée';
 
   @override
-  String get rejectUpper => '[rejectUpper]';
+  String get rejectUpper => 'REJETER';
 
   @override
-  String get landUpdatedSuccess => '[landUpdatedSuccess]';
+  String get landUpdatedSuccess => 'Terre mise à jour avec succès';
 
   @override
-  String get realTimeTaskNotificationsSoon => '[realTimeTaskNotificationsSoon]';
+  String get realTimeTaskNotificationsSoon =>
+      'Notifications de tâches en temps réel bientôt';
 
   @override
-  String get approveUpper => '[approveUpper]';
+  String get approveUpper => 'APPROUVER';
 
   @override
   String untilDateUpper(String param) {
-    return '[untilDateUpper]';
+    return 'JUSQU\'AU $param';
   }
 
   @override
-  String get overlapsExistingLand => '[overlapsExistingLand]';
+  String get overlapsExistingLand => 'Chevauche une terre existante';
 
   @override
-  String get itemRequests => '[itemRequests]';
+  String get itemRequests => 'Demandes d\'articles';
 
   @override
-  String get startDateUpper => '[startDateUpper]';
+  String get startDateUpper => 'DATE DE DÉBUT';
 
   @override
-  String get generalLandProof => '[generalLandProof]';
+  String get generalLandProof => 'Preuve générale de la terre';
 
   @override
-  String get landNameTooShort => '[landNameTooShort]';
+  String get landNameTooShort => 'Nom de la terre trop court';
 
   @override
-  String get verifiedUpper => '[verifiedUpper]';
+  String get verifiedUpper => 'VÉRIFIÉ';
 
   @override
   String minutesLeft(int count) {
-    return '[minutesLeft]';
+    return '$count minutes restantes';
   }
 
   @override
-  String get tapToDrawBoundaries => '[tapToDrawBoundaries]';
+  String get tapToDrawBoundaries => 'Appuyez pour dessiner les limites';
 
   @override
-  String get directRoadAccess => '[directRoadAccess]';
+  String get directRoadAccess => 'Accès routier direct';
 
   @override
   String invitationFrom(String param) {
-    return '[invitationFrom]';
+    return 'Invitation de $param';
   }
 
   @override
-  String get failedToLoadContracts => '[failedToLoadContracts]';
+  String get failedToLoadContracts => 'Échec du chargement des contrats';
 
   @override
-  String get verificationFailed => '[verificationFailed]';
+  String get verificationFailed => 'Échec de la vérification';
 
   @override
-  String get perimeterNotSet => '[perimeterNotSet]';
+  String get perimeterNotSet => 'Périmètre non défini';
 
   @override
-  String get requestApprovedItemPlaced => '[requestApprovedItemPlaced]';
+  String get requestApprovedItemPlaced => 'Demande approuvée, article placé';
 
   @override
-  String get inviteWorkersMarketplaceHint => '[inviteWorkersMarketplaceHint]';
+  String get inviteWorkersMarketplaceHint =>
+      'Inviter des travailleurs du marketplace';
 
   @override
-  String get landNameHint => '[landNameHint]';
+  String get landNameHint => 'ex : Ferme de la Vallée Ensoleillée';
 
   @override
-  String get publishListing => '[publishListing]';
+  String get publishListing => 'Publier l\'annonce';
 
   @override
   String get hireApprovedWorkerNegotiationHint =>
-      '[hireApprovedWorkerNegotiationHint]';
+      'Embaucher un travailleur approuvé pour commencer la négociation';
 
   @override
-  String get request => '[request]';
+  String get request => 'Demande';
 
   @override
-  String get counterOfferUpper => '[counterOfferUpper]';
+  String get counterOfferUpper => 'CONTRE-OFFRE';
 
   @override
-  String get proposedUpper => '[proposedUpper]';
+  String get proposedUpper => 'PROPOSÉ';
 
   @override
-  String get verificationSuccessful => '[verificationSuccessful]';
+  String get verificationSuccessful => 'Vérification réussie';
 
   @override
-  String get rentLandToStartUpper => '[rentLandToStartUpper]';
+  String get rentLandToStartUpper => 'LOUER UNE TERRE POUR COMMENCER';
 
   @override
-  String get expiredLabel => '[expiredLabel]';
+  String get expiredLabel => 'Expiré';
 
   @override
-  String get salaryTypeUpper => '[salaryTypeUpper]';
+  String get salaryTypeUpper => 'TYPE DE SALAIRE';
 
   @override
-  String get pleaseEnterRejectionReason => '[pleaseEnterRejectionReason]';
+  String get pleaseEnterRejectionReason => 'Veuillez saisir le motif du rejet';
 
   @override
-  String get negotiatingUpper => '[negotiatingUpper]';
+  String get negotiatingUpper => 'EN NÉGOCIATION';
 
   @override
-  String get rentNowUpper => '[rentNowUpper]';
+  String get rentNowUpper => 'LOUER MAINTENANT';
 
   @override
-  String get noSpecialSkillsUpper => '[noSpecialSkillsUpper]';
+  String get noSpecialSkillsUpper => 'AUCUNE COMPÉTENCE SPÉCIALE';
 
   @override
-  String get noLandAssignmentsHint => '[noLandAssignmentsHint]';
+  String get noLandAssignmentsHint =>
+      'Aucune assignation de terre pour le moment';
 }
