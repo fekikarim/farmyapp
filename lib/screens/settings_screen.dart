@@ -45,6 +45,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     final gameProvider = Provider.of<GameProvider>(context);
     final workerProvider = Provider.of<WorkerProvider>(context);
+    final localeProvider = Provider.of<LocaleProvider>(context);
     final user = authProvider.user;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -631,31 +632,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ],
                 ),
-                child: SwitchListTile(
-                  secondary: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(10),
+                child: Column(
+                  children: [
+                    SwitchListTile(
+                      secondary: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          isDark
+                              ? Icons.dark_mode_outlined
+                              : Icons.light_mode_outlined,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                      title: Text(
+                        AppLocalizations.of(context)!.darkMode,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      value: isDark,
+                      onChanged: (value) {
+                        themeProvider.toggleTheme(value);
+                      },
+                      activeColor: theme.colorScheme.primary,
                     ),
-                    child: Icon(
-                      isDark
-                          ? Icons.dark_mode_outlined
-                          : Icons.light_mode_outlined,
-                      color: theme.colorScheme.primary,
+                    const Divider(height: 1, indent: 16, endIndent: 16),
+                    _buildSettingsTile(
+                      context,
+                      icon: Icons.language_outlined,
+                      title: AppLocalizations.of(context)!.language,
+                      subtitle: _getLanguageName(
+                        localeProvider.locale?.languageCode ?? 'en',
+                      ),
+                      onTap: () => _showLanguageDialog(context),
+                      useContainer: false, // I'll add this parameter to avoid nested containers
                     ),
-                  ),
-                  title: Text(
-                    AppLocalizations.of(context)!.darkMode,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  value: isDark,
-                  onChanged: (value) {
-                    themeProvider.toggleTheme(value);
-                  },
-                  activeColor: theme.colorScheme.primary,
+                  ],
                 ),
               ),
 
@@ -729,8 +745,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
     String? subtitle,
     Widget? trailing,
     required VoidCallback onTap,
+    bool useContainer = true,
   }) {
     final theme = Theme.of(context);
+    final content = ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, color: theme.colorScheme.primary),
+      ),
+      title: Text(
+        title,
+        style: theme.textTheme.bodyLarge?.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      subtitle: subtitle != null
+          ? Text(
+              subtitle,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.5),
+              ),
+            )
+          : null,
+      trailing:
+          trailing ??
+          Icon(
+            Icons.arrow_forward_ios_rounded,
+            size: 16,
+            color: theme.colorScheme.onSurface.withOpacity(0.4),
+          ),
+      onTap: onTap,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+    );
+
+    if (!useContainer) return content;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -744,40 +798,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ],
       ),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, color: theme.colorScheme.primary),
-        ),
-        title: Text(
-          title,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        subtitle: subtitle != null
-            ? Text(
-                subtitle,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.5),
-                ),
-              )
-            : null,
-        trailing:
-            trailing ??
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 16,
-              color: theme.colorScheme.onSurface.withOpacity(0.4),
-            ),
-        onTap: onTap,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      ),
+      child: content,
     );
   }
 
