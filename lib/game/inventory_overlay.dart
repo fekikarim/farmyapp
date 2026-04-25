@@ -897,7 +897,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
             onPressed: () => Navigator.pop(context),
             child: Text(AppLocalizations.of(context)!.okButton, style: const TextStyle(color: Color(0xFF4ADE80))),
           ),
-        ),
+        ],
       ),
     );
   }
