@@ -1,5 +1,6 @@
 {
   "@@locale": "es",
+  "appName": "Farmy",
   "unknown": "Desconocido",
   "somethingWentWrong": "Algo salió mal",
   "revenueTitle": "Ingresos",

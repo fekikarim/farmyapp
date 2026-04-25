@@ -1,5 +1,6 @@
 {
   "@@locale": "fr",
+  "appName": "Farmy",
   "unknown": "Inconnu",
   "somethingWentWrong": "Quelque chose s'est mal passé",
   "revenueTitle": "Revenus",
