@@ -3751,6 +3751,12 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get soldUpper => 'VENDU';
+
+  @override
+  String get hiddenUpper => 'MASQUÉ';
+
+  @override
   String get messageOptionalUpper => 'MESSAGE (OPTIONNEL)';
 
   @override

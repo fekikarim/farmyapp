@@ -1438,6 +1438,9 @@
       }
     }
   },
+  "availableUpper": "DISPONIBLE",
+  "soldUpper": "VENDU",
+  "hiddenUpper": "MASQUÉ",
   "messageOptionalUpper": "MESSAGE (OPTIONNEL)",
   "roiEst": "ROI estimé",
   "paymentRequiredToActivate": "Paiement requis pour activer",

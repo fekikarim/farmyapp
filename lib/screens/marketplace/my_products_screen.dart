@@ -344,7 +344,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          product.status.name.toUpperCase(),
+                          _getStatusLabel(context, product.status),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
@@ -533,5 +533,18 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
         ),
       ),
     );
+  }
+  String _getStatusLabel(BuildContext context, ProductStatus status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status) {
+      case ProductStatus.available:
+        return l10n.availableUpper;
+      case ProductStatus.sold:
+        return l10n.soldUpper;
+      case ProductStatus.hidden:
+        return l10n.hiddenUpper;
+      default:
+        return status.name.toUpperCase();
+    }
   }
 }

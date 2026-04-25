@@ -2077,6 +2077,9 @@
       }
     }
   },
+  "availableUpper": "AVAILABLE",
+  "soldUpper": "SOLD",
+  "hiddenUpper": "HIDDEN",
   "messageOptionalUpper": "MESSAGE (OPTIONAL)",
   "roiEst": "Estimated ROI",
   "paymentRequiredToActivate": "Payment required to activate",

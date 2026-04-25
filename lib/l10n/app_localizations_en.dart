@@ -3687,6 +3687,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get soldUpper => 'SOLD';
+
+  @override
+  String get hiddenUpper => 'HIDDEN';
+
+  @override
   String get messageOptionalUpper => 'MESSAGE (OPTIONAL)';
 
   @override

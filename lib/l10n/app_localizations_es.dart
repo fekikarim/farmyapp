@@ -3728,6 +3728,12 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get soldUpper => 'VENDIDO';
+
+  @override
+  String get hiddenUpper => 'OCULTO';
+
+  @override
   String get messageOptionalUpper => 'MENSAJE (OPCIONAL)';
 
   @override

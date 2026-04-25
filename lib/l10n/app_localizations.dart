@@ -6776,6 +6776,18 @@ abstract class AppLocalizations {
   /// **'Land Plot #: {param}'**
   String landPlotNumber(String param);
 
+  /// No description provided for @soldUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'SOLD'**
+  String get soldUpper;
+
+  /// No description provided for @hiddenUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'HIDDEN'**
+  String get hiddenUpper;
+
   /// No description provided for @messageOptionalUpper.
   ///
   /// In en, this message translates to:
