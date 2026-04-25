@@ -742,7 +742,7 @@ class _InvestorLandCard extends StatelessWidget {
                               ),
                             ),
                           ),
-                          _buildStatusBadge(),
+                          _buildStatusTag(context, land.isActive, isRented: land.isRented),
                         ],
                       ),
                     ),
@@ -801,14 +801,14 @@ class _InvestorLandCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge() {
+  Widget _buildStatusTag(BuildContext context, bool isActive, {bool isRented = false}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: (land.isRented ? Colors.orange : Colors.green).withAlpha(50),
+        color: (isRented ? Colors.orange : Colors.green).withAlpha(50),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: (land.isRented ? Colors.orange : Colors.green).withOpacity(
+          color: (isRented ? Colors.orange : Colors.green).withOpacity(
             0.5,
           ),
           width: 0.5,

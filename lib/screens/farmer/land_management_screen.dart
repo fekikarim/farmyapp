@@ -877,6 +877,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
               ),
             ),
             const SizedBox(height: 8),
+            Text(
               AppLocalizations.of(context)!.deleteLandActionWarning,
               style: TextStyle(color: Colors.white70, fontSize: 14),
             ),

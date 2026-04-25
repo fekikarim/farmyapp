@@ -27,7 +27,7 @@ class _InvestorWorkerMarketplaceState extends State<InvestorWorkerMarketplace> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   String? _selectedSkill;
-
+  final List<String> _skills = [
     'All',
     'Watering',
     'Harvesting',
@@ -640,17 +640,24 @@ class _MarketplaceWorkerCard extends StatelessWidget {
       ),
     );
   }
+}
 
-  String _translateSkill(BuildContext context, String skill) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (skill) {
-      case 'All': return l10n.all;
-      case 'Watering': return l10n.watering;
-      case 'Harvesting': return l10n.harvesting;
-      case 'Planting': return l10n.planting;
-      case 'Animal Care': return l10n.animalCare;
-      case 'Machine Operation': return l10n.machineOperation;
-      default: return skill;
-    }
+String _translateSkill(BuildContext context, String skill) {
+  final l10n = AppLocalizations.of(context)!;
+  switch (skill) {
+    case 'All':
+      return l10n.all;
+    case 'Watering':
+      return l10n.watering;
+    case 'Harvesting':
+      return l10n.harvesting;
+    case 'Planting':
+      return l10n.planting;
+    case 'Animal Care':
+      return l10n.animalCare;
+    case 'Machine Operation':
+      return l10n.machineOperation;
+    default:
+      return skill;
   }
 }

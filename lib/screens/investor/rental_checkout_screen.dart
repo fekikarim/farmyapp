@@ -262,7 +262,7 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                     ),
                   ),
                   Text(
-                    AppLocalizations.of(context)!.organicPlotGrid(widget.land.gridWidth.toString(), widget.land.gridHeight.toString()),
+                    AppLocalizations.of(context)!.organicPlotGrid(widget.land.gridWidth, widget.land.gridHeight),
                     style: TextStyle(
                       color: isDark ? Colors.white70 : Colors.black54,
                       fontSize: 14,

@@ -977,6 +977,14 @@
     }
   },
   "investor": "Investisseur",
+  "squareMeters": "{count} m²",
+  "@squareMeters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "toLabel": "À : {name}",
   "@toLabel": {
     "placeholders": {
@@ -1021,7 +1029,15 @@
   "@minutesCount": {
     "placeholders": {
       "count": {
-        "type": "String"
+        "type": "int"
+      }
+    }
+  },
+  "hoursCount": "{count} h",
+  "@hoursCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
       }
     }
   },
@@ -1039,14 +1055,15 @@
   "open": "Ouvert",
   "done": "Terminé",
   "noTasksHere": "Aucune tâche ici",
-  "activeTasksCount": "{count} Tâches Actives",
+  "activeTasksCount": "{count} tâches actives",
   "@activeTasksCount": {
     "placeholders": {
       "count": {
-        "type": "String"
+        "type": "int"
       }
     }
   },
+  "activeTasksLabel": "Tâches actives",
   "farmerPro": "Farmer Pro",
   "assignedTo": "Assigné à {name}",
   "@assignedTo": {
@@ -1163,10 +1180,10 @@
   "@organicPlotGrid": {
     "placeholders": {
       "w": {
-        "type": "String"
+        "type": "int"
       },
       "h": {
-        "type": "String"
+        "type": "int"
       }
     }
   },
@@ -1200,11 +1217,14 @@
       }
     }
   },
-  "gridPlots": "[gridPlots]",
+  "gridPlots": "{w}x{h} parcelles",
   "@gridPlots": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "w": {
+        "type": "int"
+      },
+      "h": {
+        "type": "int"
       }
     }
   },
@@ -1261,10 +1281,13 @@
   "rentalSlotsUsage": "[rentalSlotsUsage]",
   "selectAtLeast3Points": "[selectAtLeast3Points]",
   "activeLabelUpper": "[activeLabelUpper]",
-  "salaryAmountType": "[salaryAmountType]",
+  "salaryAmountType": "{amount} / {type}",
   "@salaryAmountType": {
     "placeholders": {
-      "param": {
+      "amount": {
+        "type": "int"
+      },
+      "type": {
         "type": "String"
       }
     }
@@ -1415,16 +1438,33 @@
   "roiEst": "[roiEst]",
   "paymentRequiredToActivate": "[paymentRequiredToActivate]",
   "invalidNumericAmount": "[invalidNumericAmount]",
-  "pointsDefined": "[pointsDefined]",
+  "pointsDefined": "{count} points définis",
   "@pointsDefined": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nItemsSold": "{count} articles vendus",
+  "@nItemsSold": {
+    "placeholders": {
+      "count": {
+        "type": "int"
       }
     }
   },
   "itemVerification": "[itemVerification]",
   "invalidGeometryHint": "[invalidGeometryHint]",
+  "noItemsFound": "Aucun article trouvé",
+  "noItemsFoundStatus": "Aucun article {status} trouvé",
+  "@noItemsFoundStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
   "declinedUpper": "[declinedUpper]",
   "connectionError": "[connectionError]",
   "startByListingPlot": "[startByListingPlot]",
@@ -1568,11 +1608,11 @@
   "pleaseEnterRejectionReason": "[pleaseEnterRejectionReason]",
   "negotiatingUpper": "[negotiatingUpper]",
   "rentNowUpper": "[rentNowUpper]",
-  "nTasksUpper": "[nTasksUpper]",
+  "nTasksUpper": "{count} TÂCHES",
   "@nTasksUpper": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "count": {
+        "type": "int"
       }
     }
   },

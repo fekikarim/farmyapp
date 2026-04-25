@@ -221,6 +221,19 @@
   "totalSalesValue": "Total Sales Value",
   "itemsSold": "Items Sold",
   "@itemsSold": {
+    "description": "Label for the number of items sold"
+  },
+  "nTasksUpper": "TASKS",
+  "minutesCount": "{count} min",
+  "@minutesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursCount": "{count} h",
+  "@hoursCount": {
     "placeholders": {
       "count": {
         "type": "int"
@@ -895,11 +908,11 @@
   "awaitingPayment": "Awaiting Payment",
   "negotiate": "Negotiate",
   "perTask": "per task",
-  "squareMeters": "{value} m²",
+  "squareMeters": "{count} m²",
   "@squareMeters": {
     "placeholders": {
-      "value": {
-        "type": "String"
+      "count": {
+        "type": "int"
       }
     }
   },
@@ -1461,8 +1474,9 @@
   "tabPending": "PENDING",
   "tabApproved": "APPROVED",
   "tabRejected": "REJECTED",
-  "noItemsFound": "No {status} items found",
-  "@noItemsFound": {
+  "noItemsFound": "No items found",
+  "noItemsFoundStatus": "No {status} items found",
+  "@noItemsFoundStatus": {
     "placeholders": {
       "status": {
         "type": "String"
@@ -1692,10 +1706,11 @@
   "@activeTasksCount": {
     "placeholders": {
       "count": {
-        "type": "String"
+        "type": "int"
       }
     }
   },
+  "activeTasksLabel": "Active Tasks",
   "farmerPro": "Farmer Pro",
   "assignedTo": "Assigned to {name}",
   "@assignedTo": {
@@ -1805,10 +1820,10 @@
   "@organicPlotGrid": {
     "placeholders": {
       "w": {
-        "type": "String"
+        "type": "int"
       },
       "h": {
-        "type": "String"
+        "type": "int"
       }
     }
   },
@@ -1842,11 +1857,14 @@
       }
     }
   },
-  "gridPlots": "[gridPlots]",
+  "gridPlots": "{w}x{h} plots",
   "@gridPlots": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "w": {
+        "type": "int"
+      },
+      "h": {
+        "type": "int"
       }
     }
   },
@@ -1892,21 +1910,24 @@
   "negotiationsUpper": "[negotiationsUpper]",
   "noWorkersFoundUpper": "[noWorkersFoundUpper]",
   "unknownInvestor": "[unknownInvestor]",
-  "hoursLeft": "[hoursLeft]",
+  "hoursLeft": "{count} hours left",
   "@hoursLeft": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "count": {
+        "type": "int"
       }
     }
   },
   "rentalSlotsUsage": "[rentalSlotsUsage]",
   "selectAtLeast3Points": "[selectAtLeast3Points]",
   "activeLabelUpper": "[activeLabelUpper]",
-  "salaryAmountType": "[salaryAmountType]",
+  "salaryAmountType": "{amount} / {type}",
   "@salaryAmountType": {
     "placeholders": {
-      "param": {
+      "amount": {
+        "type": "int"
+      },
+      "type": {
         "type": "String"
       }
     }
@@ -1928,11 +1949,14 @@
   "boundaries": "[boundaries]",
   "noInvestmentsYet": "[noInvestmentsYet]",
   "activeStatusUpper": "[activeStatusUpper]",
-  "plotsCount": "[plotsCount]",
+  "plotsCount": "{w}x{h} plots",
   "@plotsCount": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "w": {
+        "type": "int"
+      },
+      "h": {
+        "type": "int"
       }
     }
   },
@@ -1989,11 +2013,11 @@
       }
     }
   },
-  "daysLeft": "[daysLeft]",
+  "daysLeft": "{count} days left",
   "@daysLeft": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "count": {
+        "type": "int"
       }
     }
   },
@@ -2057,11 +2081,19 @@
   "roiEst": "[roiEst]",
   "paymentRequiredToActivate": "[paymentRequiredToActivate]",
   "invalidNumericAmount": "[invalidNumericAmount]",
-  "pointsDefined": "[pointsDefined]",
+  "pointsDefined": "{count} points defined",
   "@pointsDefined": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nItemsSold": "{count} items sold",
+  "@nItemsSold": {
+    "placeholders": {
+      "count": {
+        "type": "int"
       }
     }
   },
@@ -2101,10 +2133,13 @@
   "aiPortfolioAnalysisHint": "[aiPortfolioAnalysisHint]",
   "defineOnMap": "[defineOnMap]",
   "itemUpper": "[itemUpper]",
-  "amountPerType": "[amountPerType]",
+  "amountPerType": "{amount} / {type}",
   "@amountPerType": {
     "placeholders": {
-      "param": {
+      "amount": {
+        "type": "String"
+      },
+      "type": {
         "type": "String"
       }
     }
@@ -2174,11 +2209,11 @@
   "generalLandProof": "[generalLandProof]",
   "landNameTooShort": "[landNameTooShort]",
   "verifiedUpper": "[verifiedUpper]",
-  "minutesLeft": "[minutesLeft]",
+  "minutesLeft": "{count} minutes left",
   "@minutesLeft": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "count": {
+        "type": "int"
       }
     }
   },
@@ -2210,14 +2245,31 @@
   "pleaseEnterRejectionReason": "[pleaseEnterRejectionReason]",
   "negotiatingUpper": "[negotiatingUpper]",
   "rentNowUpper": "[rentNowUpper]",
-  "nTasksUpper": "[nTasksUpper]",
+  "nTasksUpper": "{count} TASKS",
   "@nTasksUpper": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "count": {
+        "type": "int"
       }
     }
   },
   "noSpecialSkillsUpper": "[noSpecialSkillsUpper]",
-  "noLandAssignmentsHint": "[noLandAssignmentsHint]"
+  "noLandAssignmentsHint": "[noLandAssignmentsHint]",
+  "perTask": "per task",
+  "minutesCount": "{count}m",
+  "@minutesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursCount": "{count}h",
+  "@hoursCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

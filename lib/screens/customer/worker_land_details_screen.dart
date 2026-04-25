@@ -596,7 +596,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
           _detailRow(
             AppLocalizations.of(context)!.area,
             land != null
-                ? AppLocalizations.of(context)!.squareMeters('${(land.gridWidth * land.gridHeight).toInt()}')
+                ? AppLocalizations.of(context)!.squareMeters((land.gridWidth * land.gridHeight).toInt())
                 : '-',
           ),
           _detailRow(AppLocalizations.of(context)!.assignmentRole, _translateRole(context, assignment.role)),

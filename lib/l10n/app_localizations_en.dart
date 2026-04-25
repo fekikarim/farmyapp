@@ -412,8 +412,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get totalSalesValue => 'Total Sales Value';
 
   @override
-  String itemsSold(int count) {
-    return 'Items Sold';
+  String get itemsSold => 'Items Sold';
+
+  @override
+  String nTasksUpper(int count) {
+    return '$count TASKS';
+  }
+
+  @override
+  String minutesCount(int count) {
+    return '${count}m';
+  }
+
+  @override
+  String hoursCount(int count) {
+    return '${count}h';
   }
 
   @override
@@ -1745,8 +1758,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get perTask => 'per task';
 
   @override
-  String squareMeters(String value) {
-    return '$value m²';
+  String squareMeters(int count) {
+    return '$count m²';
   }
 
   @override
@@ -2736,7 +2749,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabRejected => 'REJECTED';
 
   @override
-  String noItemsFound(String status) {
+  String get noItemsFound => 'No items found';
+
+  @override
+  String noItemsFoundStatus(String status) {
     return 'No $status items found';
   }
 
@@ -3042,11 +3058,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timeLabel => 'Time';
 
   @override
-  String minutesCount(String count) {
-    return '$count mins';
-  }
-
-  @override
   String get createTask => 'Create Task';
 
   @override
@@ -3070,9 +3081,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noTasksHere => 'No tasks here';
 
   @override
-  String activeTasksCount(String count) {
+  String activeTasksCount(int count) {
     return '$count Active Tasks';
   }
+
+  @override
+  String get activeTasksLabel => 'Active Tasks';
 
   @override
   String get farmerPro => 'Farmer Pro';
@@ -3263,7 +3277,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get availableUpper => 'AVAILABLE';
 
   @override
-  String organicPlotGrid(String w, String h) {
+  String organicPlotGrid(int w, int h) {
     return 'Organic plot (${w}x$h grid)';
   }
 
@@ -3322,4 +3336,685 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get immutableOnChainRecords => 'Immutable On-Chain Records';
+
+  @override
+  String get captureSubmit => 'Capture & Submit';
+
+  @override
+  String get uploadingImage => 'Uploading image...';
+
+  @override
+  String get pleaseWaitAFewMoments => 'Please wait a few moments...';
+
+  @override
+  String get orSelectAnItem => '[orSelectAnItem]';
+
+  @override
+  String itemIdUpper(String param) {
+    return '[itemIdUpper]';
+  }
+
+  @override
+  String gridPlots(int w, int h) {
+    return '${w}x$h plots';
+  }
+
+  @override
+  String get hireUpper => '[hireUpper]';
+
+  @override
+  String get size => '[size]';
+
+  @override
+  String get ownerLabel => '[ownerLabel]';
+
+  @override
+  String get draw => '[draw]';
+
+  @override
+  String get unknownItem => '[unknownItem]';
+
+  @override
+  String get moveAll => '[moveAll]';
+
+  @override
+  String plotNumber(String param) {
+    return '[plotNumber]';
+  }
+
+  @override
+  String get optimalSolarExposure => '[optimalSolarExposure]';
+
+  @override
+  String get cancelUpper => '[cancelUpper]';
+
+  @override
+  String get failedToRejectRequest => '[failedToRejectRequest]';
+
+  @override
+  String get hireWorkersUpper => '[hireWorkersUpper]';
+
+  @override
+  String get invalidGeometryAlert => '[invalidGeometryAlert]';
+
+  @override
+  String get activeTasks => '[activeTasks]';
+
+  @override
+  String get perTaskUpper => '[perTaskUpper]';
+
+  @override
+  String get analyzePortfolio => '[analyzePortfolio]';
+
+  @override
+  String get noPendingRequests => '[noPendingRequests]';
+
+  @override
+  String get heightAuto => '[heightAuto]';
+
+  @override
+  String rentAmountMonthly(String param) {
+    return '[rentAmountMonthly]';
+  }
+
+  @override
+  String get totalCapitalInvested => '[totalCapitalInvested]';
+
+  @override
+  String get currentLand => '[currentLand]';
+
+  @override
+  String get descriptionTooShort => '[descriptionTooShort]';
+
+  @override
+  String get landName => '[landName]';
+
+  @override
+  String get alreadyRentedUpper => '[alreadyRentedUpper]';
+
+  @override
+  String get requestRejectedRefunded => '[requestRejectedRefunded]';
+
+  @override
+  String get rejectionReasonPrompt => '[rejectionReasonPrompt]';
+
+  @override
+  String get negotiationsUpper => '[negotiationsUpper]';
+
+  @override
+  String get noWorkersFoundUpper => '[noWorkersFoundUpper]';
+
+  @override
+  String get unknownInvestor => '[unknownInvestor]';
+
+  @override
+  String hoursLeft(int count) {
+    return '$count hours left';
+  }
+
+  @override
+  String get rentalSlotsUsage => '[rentalSlotsUsage]';
+
+  @override
+  String get selectAtLeast3Points => '[selectAtLeast3Points]';
+
+  @override
+  String get activeLabelUpper => '[activeLabelUpper]';
+
+  @override
+  String salaryAmountType(int amount, String type) {
+    return '$amount / $type';
+  }
+
+  @override
+  String get expiringSoon => '[expiringSoon]';
+
+  @override
+  String get checkBackLaterOpportunities => '[checkBackLaterOpportunities]';
+
+  @override
+  String get inactive => '[inactive]';
+
+  @override
+  String get endDateUpper => '[endDateUpper]';
+
+  @override
+  String farmerWithColon(String param) {
+    return '[farmerWithColon]';
+  }
+
+  @override
+  String get farmingActivity => '[farmingActivity]';
+
+  @override
+  String get noActiveFarmingActivities => '[noActiveFarmingActivities]';
+
+  @override
+  String get boundaries => '[boundaries]';
+
+  @override
+  String get noInvestmentsYet => '[noInvestmentsYet]';
+
+  @override
+  String get activeStatusUpper => '[activeStatusUpper]';
+
+  @override
+  String plotsCount(int w, int h) {
+    return '${w}x$h plots';
+  }
+
+  @override
+  String get noPendingRequestsHint => '[noPendingRequestsHint]';
+
+  @override
+  String requestedDateUpper(String param) {
+    return '[requestedDateUpper]';
+  }
+
+  @override
+  String get priceCannotBeEmpty => '[priceCannotBeEmpty]';
+
+  @override
+  String get rentedUpper => '[rentedUpper]';
+
+  @override
+  String get rentalLimitReached => '[rentalLimitReached]';
+
+  @override
+  String get invitationUpdates => '[invitationUpdates]';
+
+  @override
+  String get priceStartingFrom => '[priceStartingFrom]';
+
+  @override
+  String get locationHighlights => '[locationHighlights]';
+
+  @override
+  String get amount => '[amount]';
+
+  @override
+  String get publishingFailed => '[publishingFailed]';
+
+  @override
+  String get securedWaterAccess => '[securedWaterAccess]';
+
+  @override
+  String get monthlyRentPriceTND => '[monthlyRentPriceTND]';
+
+  @override
+  String get geometryVerified => '[geometryVerified]';
+
+  @override
+  String landWithColon(String param) {
+    return '[landWithColon]';
+  }
+
+  @override
+  String get cannotPublishInvalidGeometry => '[cannotPublishInvalidGeometry]';
+
+  @override
+  String get retryUpper => '[retryUpper]';
+
+  @override
+  String get imageProofRequiredToApprove => '[imageProofRequiredToApprove]';
+
+  @override
+  String get sendProposalUpper => '[sendProposalUpper]';
+
+  @override
+  String get min => '[min]';
+
+  @override
+  String get pricePerMonth => '[pricePerMonth]';
+
+  @override
+  String get noActiveWorkersUpper => '[noActiveWorkersUpper]';
+
+  @override
+  String get reasonTooShort => '[reasonTooShort]';
+
+  @override
+  String get viewDetails => '[viewDetails]';
+
+  @override
+  String get proofsUpper => '[proofsUpper]';
+
+  @override
+  String get noActiveNegotiationsUpper => '[noActiveNegotiationsUpper]';
+
+  @override
+  String get plantCrops => '[plantCrops]';
+
+  @override
+  String get readyForActivityHint => '[readyForActivityHint]';
+
+  @override
+  String get irrigated => '[irrigated]';
+
+  @override
+  String get tryAdjustingFilters => '[tryAdjustingFilters]';
+
+  @override
+  String get occupiedUpper => '[occupiedUpper]';
+
+  @override
+  String get generalFarmingActivity => '[generalFarmingActivity]';
+
+  @override
+  String endsDate(String param) {
+    return '[endsDate]';
+  }
+
+  @override
+  String daysLeft(int count) {
+    return '$count days left';
+  }
+
+  @override
+  String get hireActivateWorkersHint => '[hireActivateWorkersHint]';
+
+  @override
+  String get manageWorkers => '[manageWorkers]';
+
+  @override
+  String get onTime => '[onTime]';
+
+  @override
+  String removeWorkerConfirmation(String param) {
+    return '[removeWorkerConfirmation]';
+  }
+
+  @override
+  String get assignedLands => '[assignedLands]';
+
+  @override
+  String get limitReachedUpper => '[limitReachedUpper]';
+
+  @override
+  String get proofHistory => '[proofHistory]';
+
+  @override
+  String get farmerInvitations => '[farmerInvitations]';
+
+  @override
+  String get workforceUpper => '[workforceUpper]';
+
+  @override
+  String get descriptionRequired => '[descriptionRequired]';
+
+  @override
+  String get priceGreaterThanZero => '[priceGreaterThanZero]';
+
+  @override
+  String get saveChanges => '[saveChanges]';
+
+  @override
+  String get proofRequestQuestion => '[proofRequestQuestion]';
+
+  @override
+  String get rentalSlotsUsed => '[rentalSlotsUsed]';
+
+  @override
+  String get activeLands => '[activeLands]';
+
+  @override
+  String get widthAuto => '[widthAuto]';
+
+  @override
+  String get spatialDimensions => '[spatialDimensions]';
+
+  @override
+  String idLabel(String param) {
+    return '[idLabel]';
+  }
+
+  @override
+  String rentalExpires(String param) {
+    return '[rentalExpires]';
+  }
+
+  @override
+  String proofSubmissionHint(String param) {
+    return '[proofSubmissionHint]';
+  }
+
+  @override
+  String landPlotNumber(String param) {
+    return '[landPlotNumber]';
+  }
+
+  @override
+  String get messageOptionalUpper => '[messageOptionalUpper]';
+
+  @override
+  String get roiEst => '[roiEst]';
+
+  @override
+  String get paymentRequiredToActivate => '[paymentRequiredToActivate]';
+
+  @override
+  String get invalidNumericAmount => '[invalidNumericAmount]';
+
+  @override
+  String pointsDefined(int count) {
+    return '$count points defined';
+  }
+
+  @override
+  String nItemsSold(int count) {
+    return '$count items sold';
+  }
+
+  @override
+  String get itemVerification => '[itemVerification]';
+
+  @override
+  String get invalidGeometryHint => '[invalidGeometryHint]';
+
+  @override
+  String get declinedUpper => '[declinedUpper]';
+
+  @override
+  String get connectionError => '[connectionError]';
+
+  @override
+  String get startByListingPlot => '[startByListingPlot]';
+
+  @override
+  String get propertyDetails => '[propertyDetails]';
+
+  @override
+  String get invalidGeometry => '[invalidGeometry]';
+
+  @override
+  String get failedToLoadRequests => '[failedToLoadRequests]';
+
+  @override
+  String untilDate(String param) {
+    return '[untilDate]';
+  }
+
+  @override
+  String get drawInstructions => '[drawInstructions]';
+
+  @override
+  String get na => '[na]';
+
+  @override
+  String get noTasksAssignedHint => '[noTasksAssignedHint]';
+
+  @override
+  String get cannotPublishBoundaryConflicts =>
+      '[cannotPublishBoundaryConflicts]';
+
+  @override
+  String get farmingActivities => '[farmingActivities]';
+
+  @override
+  String get listNewLand => '[listNewLand]';
+
+  @override
+  String get noApprovedWorkersUpper => '[noApprovedWorkersUpper]';
+
+  @override
+  String get expiredUpper => '[expiredUpper]';
+
+  @override
+  String get conflictDetected => '[conflictDetected]';
+
+  @override
+  String get rejectRequest => '[rejectRequest]';
+
+  @override
+  String get boundaryConflictAlert => '[boundaryConflictAlert]';
+
+  @override
+  String get requestProof => '[requestProof]';
+
+  @override
+  String get perHourUpper => '[perHourUpper]';
+
+  @override
+  String get exploreLands => '[exploreLands]';
+
+  @override
+  String get premiumFarmlandUpper => '[premiumFarmlandUpper]';
+
+  @override
+  String get newProposal => '[newProposal]';
+
+  @override
+  String get suspendedUpper => '[suspendedUpper]';
+
+  @override
+  String get aiPortfolioAnalysisHint => '[aiPortfolioAnalysisHint]';
+
+  @override
+  String get defineOnMap => '[defineOnMap]';
+
+  @override
+  String get itemUpper => '[itemUpper]';
+
+  @override
+  String amountPerType(String amount, String type) {
+    return '$amount / $type';
+  }
+
+  @override
+  String get landDescriptionHint => '[landDescriptionHint]';
+
+  @override
+  String get autoFromBoundary => '[autoFromBoundary]';
+
+  @override
+  String get tryAgainUpper => '[tryAgainUpper]';
+
+  @override
+  String get landNameRequired => '[landNameRequired]';
+
+  @override
+  String get activeUpper => '[activeUpper]';
+
+  @override
+  String get hiringProposals => '[hiringProposals]';
+
+  @override
+  String get confirmReject => '[confirmReject]';
+
+  @override
+  String get movePoint => '[movePoint]';
+
+  @override
+  String get priceExceedsLimit => '[priceExceedsLimit]';
+
+  @override
+  String get egSalaryHint => '[egSalaryHint]';
+
+  @override
+  String hireWorkerUpper(String param) {
+    return '[hireWorkerUpper]';
+  }
+
+  @override
+  String get hiringProposalSent => '[hiringProposalSent]';
+
+  @override
+  String get entireLand => '[entireLand]';
+
+  @override
+  String get acceptedUpper => '[acceptedUpper]';
+
+  @override
+  String get fundsReleasedAfterVerification =>
+      '[fundsReleasedAfterVerification]';
+
+  @override
+  String get enterRejectionReason => '[enterRejectionReason]';
+
+  @override
+  String get proofRequests => '[proofRequests]';
+
+  @override
+  String get enableVoiceInput => '[enableVoiceInput]';
+
+  @override
+  String get salaryAmountTNDUpper => '[salaryAmountTNDUpper]';
+
+  @override
+  String get unableToRetrieveLandDetails => '[unableToRetrieveLandDetails]';
+
+  @override
+  String get hourlyUpper => '[hourlyUpper]';
+
+  @override
+  String aiLandInvestmentHint(String param) {
+    return '[aiLandInvestmentHint]';
+  }
+
+  @override
+  String get askAiAnalyst => '[askAiAnalyst]';
+
+  @override
+  String get monthlyUpper => '[monthlyUpper]';
+
+  @override
+  String get activeContracts => '[activeContracts]';
+
+  @override
+  String get workerRespondedReviewCounterOffer =>
+      '[workerRespondedReviewCounterOffer]';
+
+  @override
+  String get unlockUnlimitedSlotsInvestorPlus =>
+      '[unlockUnlimitedSlotsInvestorPlus]';
+
+  @override
+  String get escrowBalance => '[escrowBalance]';
+
+  @override
+  String get pleaseEnterAName => '[pleaseEnterAName]';
+
+  @override
+  String get raiseLivestock => '[raiseLivestock]';
+
+  @override
+  String get noLandAssignments => '[noLandAssignments]';
+
+  @override
+  String get aiVerifyUpper => '[aiVerifyUpper]';
+
+  @override
+  String get requestExpired => '[requestExpired]';
+
+  @override
+  String get rejectUpper => '[rejectUpper]';
+
+  @override
+  String get landUpdatedSuccess => '[landUpdatedSuccess]';
+
+  @override
+  String get realTimeTaskNotificationsSoon => '[realTimeTaskNotificationsSoon]';
+
+  @override
+  String get approveUpper => '[approveUpper]';
+
+  @override
+  String untilDateUpper(String param) {
+    return '[untilDateUpper]';
+  }
+
+  @override
+  String get overlapsExistingLand => '[overlapsExistingLand]';
+
+  @override
+  String get itemRequests => '[itemRequests]';
+
+  @override
+  String get startDateUpper => '[startDateUpper]';
+
+  @override
+  String get generalLandProof => '[generalLandProof]';
+
+  @override
+  String get landNameTooShort => '[landNameTooShort]';
+
+  @override
+  String get verifiedUpper => '[verifiedUpper]';
+
+  @override
+  String minutesLeft(int count) {
+    return '$count minutes left';
+  }
+
+  @override
+  String get tapToDrawBoundaries => '[tapToDrawBoundaries]';
+
+  @override
+  String get directRoadAccess => '[directRoadAccess]';
+
+  @override
+  String invitationFrom(String param) {
+    return '[invitationFrom]';
+  }
+
+  @override
+  String get failedToLoadContracts => '[failedToLoadContracts]';
+
+  @override
+  String get verificationFailed => '[verificationFailed]';
+
+  @override
+  String get perimeterNotSet => '[perimeterNotSet]';
+
+  @override
+  String get requestApprovedItemPlaced => '[requestApprovedItemPlaced]';
+
+  @override
+  String get inviteWorkersMarketplaceHint => '[inviteWorkersMarketplaceHint]';
+
+  @override
+  String get landNameHint => '[landNameHint]';
+
+  @override
+  String get publishListing => '[publishListing]';
+
+  @override
+  String get hireApprovedWorkerNegotiationHint =>
+      '[hireApprovedWorkerNegotiationHint]';
+
+  @override
+  String get request => '[request]';
+
+  @override
+  String get counterOfferUpper => '[counterOfferUpper]';
+
+  @override
+  String get proposedUpper => '[proposedUpper]';
+
+  @override
+  String get verificationSuccessful => '[verificationSuccessful]';
+
+  @override
+  String get rentLandToStartUpper => '[rentLandToStartUpper]';
+
+  @override
+  String get expiredLabel => '[expiredLabel]';
+
+  @override
+  String get salaryTypeUpper => '[salaryTypeUpper]';
+
+  @override
+  String get pleaseEnterRejectionReason => '[pleaseEnterRejectionReason]';
+
+  @override
+  String get negotiatingUpper => '[negotiatingUpper]';
+
+  @override
+  String get rentNowUpper => '[rentNowUpper]';
+
+  @override
+  String get noSpecialSkillsUpper => '[noSpecialSkillsUpper]';
+
+  @override
+  String get noLandAssignmentsHint => '[noLandAssignmentsHint]';
 }

@@ -401,7 +401,7 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                             currentCount: workerProvider.tasks
                                 .where((t) => !t.isCompleted && !t.isVerified)
                                 .length,
-                            label: AppLocalizations.of(context)!.activeTasksCount,
+                            label: AppLocalizations.of(context)!.activeTasksLabel,
                             icon: Icons.task_alt_rounded,
                             accentColor: Colors.green,
                             upgradePlanName: AppLocalizations.of(context)!.farmerPro,

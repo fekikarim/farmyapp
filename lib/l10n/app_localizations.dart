@@ -832,11 +832,29 @@ abstract class AppLocalizations {
   /// **'Total Sales Value'**
   String get totalSalesValue;
 
-  /// No description provided for @itemsSold.
+  /// Label for the number of items sold
   ///
   /// In en, this message translates to:
   /// **'Items Sold'**
-  String itemsSold(int count);
+  String get itemsSold;
+
+  /// No description provided for @nTasksUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} TASKS'**
+  String nTasksUpper(int count);
+
+  /// No description provided for @minutesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m'**
+  String minutesCount(int count);
+
+  /// No description provided for @hoursCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h'**
+  String hoursCount(int count);
 
   /// No description provided for @advancedAnalytics.
   ///
@@ -3281,8 +3299,8 @@ abstract class AppLocalizations {
   /// No description provided for @squareMeters.
   ///
   /// In en, this message translates to:
-  /// **'{value} m²'**
-  String squareMeters(String value);
+  /// **'{count} m²'**
+  String squareMeters(int count);
 
   /// No description provided for @amountPrefix.
   ///
@@ -5081,8 +5099,14 @@ abstract class AppLocalizations {
   /// No description provided for @noItemsFound.
   ///
   /// In en, this message translates to:
+  /// **'No items found'**
+  String get noItemsFound;
+
+  /// No description provided for @noItemsFoundStatus.
+  ///
+  /// In en, this message translates to:
   /// **'No {status} items found'**
-  String noItemsFound(String status);
+  String noItemsFoundStatus(String status);
 
   /// No description provided for @placedBadge.
   ///
@@ -5624,12 +5648,6 @@ abstract class AppLocalizations {
   /// **'Time'**
   String get timeLabel;
 
-  /// No description provided for @minutesCount.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} mins'**
-  String minutesCount(String count);
-
   /// No description provided for @createTask.
   ///
   /// In en, this message translates to:
@@ -5676,7 +5694,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{count} Active Tasks'**
-  String activeTasksCount(String count);
+  String activeTasksCount(int count);
+
+  /// No description provided for @activeTasksLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Tasks'**
+  String get activeTasksLabel;
 
   /// No description provided for @farmerPro.
   ///
@@ -6018,7 +6042,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Organic plot ({w}x{h} grid)'**
-  String organicPlotGrid(String w, String h);
+  String organicPlotGrid(int w, int h);
 
   /// No description provided for @checkout.
   ///
@@ -6127,6 +6151,1254 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Immutable On-Chain Records'**
   String get immutableOnChainRecords;
+
+  /// No description provided for @captureSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Capture & Submit'**
+  String get captureSubmit;
+
+  /// No description provided for @uploadingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading image...'**
+  String get uploadingImage;
+
+  /// No description provided for @pleaseWaitAFewMoments.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait a few moments...'**
+  String get pleaseWaitAFewMoments;
+
+  /// No description provided for @orSelectAnItem.
+  ///
+  /// In en, this message translates to:
+  /// **'[orSelectAnItem]'**
+  String get orSelectAnItem;
+
+  /// No description provided for @itemIdUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[itemIdUpper]'**
+  String itemIdUpper(String param);
+
+  /// No description provided for @gridPlots.
+  ///
+  /// In en, this message translates to:
+  /// **'{w}x{h} plots'**
+  String gridPlots(int w, int h);
+
+  /// No description provided for @hireUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[hireUpper]'**
+  String get hireUpper;
+
+  /// No description provided for @size.
+  ///
+  /// In en, this message translates to:
+  /// **'[size]'**
+  String get size;
+
+  /// No description provided for @ownerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'[ownerLabel]'**
+  String get ownerLabel;
+
+  /// No description provided for @draw.
+  ///
+  /// In en, this message translates to:
+  /// **'[draw]'**
+  String get draw;
+
+  /// No description provided for @unknownItem.
+  ///
+  /// In en, this message translates to:
+  /// **'[unknownItem]'**
+  String get unknownItem;
+
+  /// No description provided for @moveAll.
+  ///
+  /// In en, this message translates to:
+  /// **'[moveAll]'**
+  String get moveAll;
+
+  /// No description provided for @plotNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'[plotNumber]'**
+  String plotNumber(String param);
+
+  /// No description provided for @optimalSolarExposure.
+  ///
+  /// In en, this message translates to:
+  /// **'[optimalSolarExposure]'**
+  String get optimalSolarExposure;
+
+  /// No description provided for @cancelUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[cancelUpper]'**
+  String get cancelUpper;
+
+  /// No description provided for @failedToRejectRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'[failedToRejectRequest]'**
+  String get failedToRejectRequest;
+
+  /// No description provided for @hireWorkersUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[hireWorkersUpper]'**
+  String get hireWorkersUpper;
+
+  /// No description provided for @invalidGeometryAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'[invalidGeometryAlert]'**
+  String get invalidGeometryAlert;
+
+  /// No description provided for @activeTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'[activeTasks]'**
+  String get activeTasks;
+
+  /// No description provided for @perTaskUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[perTaskUpper]'**
+  String get perTaskUpper;
+
+  /// No description provided for @analyzePortfolio.
+  ///
+  /// In en, this message translates to:
+  /// **'[analyzePortfolio]'**
+  String get analyzePortfolio;
+
+  /// No description provided for @noPendingRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'[noPendingRequests]'**
+  String get noPendingRequests;
+
+  /// No description provided for @heightAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'[heightAuto]'**
+  String get heightAuto;
+
+  /// No description provided for @rentAmountMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'[rentAmountMonthly]'**
+  String rentAmountMonthly(String param);
+
+  /// No description provided for @totalCapitalInvested.
+  ///
+  /// In en, this message translates to:
+  /// **'[totalCapitalInvested]'**
+  String get totalCapitalInvested;
+
+  /// No description provided for @currentLand.
+  ///
+  /// In en, this message translates to:
+  /// **'[currentLand]'**
+  String get currentLand;
+
+  /// No description provided for @descriptionTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'[descriptionTooShort]'**
+  String get descriptionTooShort;
+
+  /// No description provided for @landName.
+  ///
+  /// In en, this message translates to:
+  /// **'[landName]'**
+  String get landName;
+
+  /// No description provided for @alreadyRentedUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[alreadyRentedUpper]'**
+  String get alreadyRentedUpper;
+
+  /// No description provided for @requestRejectedRefunded.
+  ///
+  /// In en, this message translates to:
+  /// **'[requestRejectedRefunded]'**
+  String get requestRejectedRefunded;
+
+  /// No description provided for @rejectionReasonPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'[rejectionReasonPrompt]'**
+  String get rejectionReasonPrompt;
+
+  /// No description provided for @negotiationsUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[negotiationsUpper]'**
+  String get negotiationsUpper;
+
+  /// No description provided for @noWorkersFoundUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[noWorkersFoundUpper]'**
+  String get noWorkersFoundUpper;
+
+  /// No description provided for @unknownInvestor.
+  ///
+  /// In en, this message translates to:
+  /// **'[unknownInvestor]'**
+  String get unknownInvestor;
+
+  /// No description provided for @hoursLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} hours left'**
+  String hoursLeft(int count);
+
+  /// No description provided for @rentalSlotsUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'[rentalSlotsUsage]'**
+  String get rentalSlotsUsage;
+
+  /// No description provided for @selectAtLeast3Points.
+  ///
+  /// In en, this message translates to:
+  /// **'[selectAtLeast3Points]'**
+  String get selectAtLeast3Points;
+
+  /// No description provided for @activeLabelUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[activeLabelUpper]'**
+  String get activeLabelUpper;
+
+  /// No description provided for @salaryAmountType.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} / {type}'**
+  String salaryAmountType(int amount, String type);
+
+  /// No description provided for @expiringSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'[expiringSoon]'**
+  String get expiringSoon;
+
+  /// No description provided for @checkBackLaterOpportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'[checkBackLaterOpportunities]'**
+  String get checkBackLaterOpportunities;
+
+  /// No description provided for @inactive.
+  ///
+  /// In en, this message translates to:
+  /// **'[inactive]'**
+  String get inactive;
+
+  /// No description provided for @endDateUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[endDateUpper]'**
+  String get endDateUpper;
+
+  /// No description provided for @farmerWithColon.
+  ///
+  /// In en, this message translates to:
+  /// **'[farmerWithColon]'**
+  String farmerWithColon(String param);
+
+  /// No description provided for @farmingActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'[farmingActivity]'**
+  String get farmingActivity;
+
+  /// No description provided for @noActiveFarmingActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'[noActiveFarmingActivities]'**
+  String get noActiveFarmingActivities;
+
+  /// No description provided for @boundaries.
+  ///
+  /// In en, this message translates to:
+  /// **'[boundaries]'**
+  String get boundaries;
+
+  /// No description provided for @noInvestmentsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'[noInvestmentsYet]'**
+  String get noInvestmentsYet;
+
+  /// No description provided for @activeStatusUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[activeStatusUpper]'**
+  String get activeStatusUpper;
+
+  /// No description provided for @plotsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{w}x{h} plots'**
+  String plotsCount(int w, int h);
+
+  /// No description provided for @noPendingRequestsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[noPendingRequestsHint]'**
+  String get noPendingRequestsHint;
+
+  /// No description provided for @requestedDateUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[requestedDateUpper]'**
+  String requestedDateUpper(String param);
+
+  /// No description provided for @priceCannotBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'[priceCannotBeEmpty]'**
+  String get priceCannotBeEmpty;
+
+  /// No description provided for @rentedUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[rentedUpper]'**
+  String get rentedUpper;
+
+  /// No description provided for @rentalLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'[rentalLimitReached]'**
+  String get rentalLimitReached;
+
+  /// No description provided for @invitationUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'[invitationUpdates]'**
+  String get invitationUpdates;
+
+  /// No description provided for @priceStartingFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'[priceStartingFrom]'**
+  String get priceStartingFrom;
+
+  /// No description provided for @locationHighlights.
+  ///
+  /// In en, this message translates to:
+  /// **'[locationHighlights]'**
+  String get locationHighlights;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'[amount]'**
+  String get amount;
+
+  /// No description provided for @publishingFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'[publishingFailed]'**
+  String get publishingFailed;
+
+  /// No description provided for @securedWaterAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'[securedWaterAccess]'**
+  String get securedWaterAccess;
+
+  /// No description provided for @monthlyRentPriceTND.
+  ///
+  /// In en, this message translates to:
+  /// **'[monthlyRentPriceTND]'**
+  String get monthlyRentPriceTND;
+
+  /// No description provided for @geometryVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'[geometryVerified]'**
+  String get geometryVerified;
+
+  /// No description provided for @landWithColon.
+  ///
+  /// In en, this message translates to:
+  /// **'[landWithColon]'**
+  String landWithColon(String param);
+
+  /// No description provided for @cannotPublishInvalidGeometry.
+  ///
+  /// In en, this message translates to:
+  /// **'[cannotPublishInvalidGeometry]'**
+  String get cannotPublishInvalidGeometry;
+
+  /// No description provided for @retryUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[retryUpper]'**
+  String get retryUpper;
+
+  /// No description provided for @imageProofRequiredToApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'[imageProofRequiredToApprove]'**
+  String get imageProofRequiredToApprove;
+
+  /// No description provided for @sendProposalUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[sendProposalUpper]'**
+  String get sendProposalUpper;
+
+  /// No description provided for @min.
+  ///
+  /// In en, this message translates to:
+  /// **'[min]'**
+  String get min;
+
+  /// No description provided for @pricePerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'[pricePerMonth]'**
+  String get pricePerMonth;
+
+  /// No description provided for @noActiveWorkersUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[noActiveWorkersUpper]'**
+  String get noActiveWorkersUpper;
+
+  /// No description provided for @reasonTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'[reasonTooShort]'**
+  String get reasonTooShort;
+
+  /// No description provided for @viewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'[viewDetails]'**
+  String get viewDetails;
+
+  /// No description provided for @proofsUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[proofsUpper]'**
+  String get proofsUpper;
+
+  /// No description provided for @noActiveNegotiationsUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[noActiveNegotiationsUpper]'**
+  String get noActiveNegotiationsUpper;
+
+  /// No description provided for @plantCrops.
+  ///
+  /// In en, this message translates to:
+  /// **'[plantCrops]'**
+  String get plantCrops;
+
+  /// No description provided for @readyForActivityHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[readyForActivityHint]'**
+  String get readyForActivityHint;
+
+  /// No description provided for @irrigated.
+  ///
+  /// In en, this message translates to:
+  /// **'[irrigated]'**
+  String get irrigated;
+
+  /// No description provided for @tryAdjustingFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'[tryAdjustingFilters]'**
+  String get tryAdjustingFilters;
+
+  /// No description provided for @occupiedUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[occupiedUpper]'**
+  String get occupiedUpper;
+
+  /// No description provided for @generalFarmingActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'[generalFarmingActivity]'**
+  String get generalFarmingActivity;
+
+  /// No description provided for @endsDate.
+  ///
+  /// In en, this message translates to:
+  /// **'[endsDate]'**
+  String endsDate(String param);
+
+  /// No description provided for @daysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days left'**
+  String daysLeft(int count);
+
+  /// No description provided for @hireActivateWorkersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[hireActivateWorkersHint]'**
+  String get hireActivateWorkersHint;
+
+  /// No description provided for @manageWorkers.
+  ///
+  /// In en, this message translates to:
+  /// **'[manageWorkers]'**
+  String get manageWorkers;
+
+  /// No description provided for @onTime.
+  ///
+  /// In en, this message translates to:
+  /// **'[onTime]'**
+  String get onTime;
+
+  /// No description provided for @removeWorkerConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'[removeWorkerConfirmation]'**
+  String removeWorkerConfirmation(String param);
+
+  /// No description provided for @assignedLands.
+  ///
+  /// In en, this message translates to:
+  /// **'[assignedLands]'**
+  String get assignedLands;
+
+  /// No description provided for @limitReachedUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[limitReachedUpper]'**
+  String get limitReachedUpper;
+
+  /// No description provided for @proofHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'[proofHistory]'**
+  String get proofHistory;
+
+  /// No description provided for @farmerInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'[farmerInvitations]'**
+  String get farmerInvitations;
+
+  /// No description provided for @workforceUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[workforceUpper]'**
+  String get workforceUpper;
+
+  /// No description provided for @descriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'[descriptionRequired]'**
+  String get descriptionRequired;
+
+  /// No description provided for @priceGreaterThanZero.
+  ///
+  /// In en, this message translates to:
+  /// **'[priceGreaterThanZero]'**
+  String get priceGreaterThanZero;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'[saveChanges]'**
+  String get saveChanges;
+
+  /// No description provided for @proofRequestQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'[proofRequestQuestion]'**
+  String get proofRequestQuestion;
+
+  /// No description provided for @rentalSlotsUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'[rentalSlotsUsed]'**
+  String get rentalSlotsUsed;
+
+  /// No description provided for @activeLands.
+  ///
+  /// In en, this message translates to:
+  /// **'[activeLands]'**
+  String get activeLands;
+
+  /// No description provided for @widthAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'[widthAuto]'**
+  String get widthAuto;
+
+  /// No description provided for @spatialDimensions.
+  ///
+  /// In en, this message translates to:
+  /// **'[spatialDimensions]'**
+  String get spatialDimensions;
+
+  /// No description provided for @idLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'[idLabel]'**
+  String idLabel(String param);
+
+  /// No description provided for @rentalExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'[rentalExpires]'**
+  String rentalExpires(String param);
+
+  /// No description provided for @proofSubmissionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[proofSubmissionHint]'**
+  String proofSubmissionHint(String param);
+
+  /// No description provided for @landPlotNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'[landPlotNumber]'**
+  String landPlotNumber(String param);
+
+  /// No description provided for @messageOptionalUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[messageOptionalUpper]'**
+  String get messageOptionalUpper;
+
+  /// No description provided for @roiEst.
+  ///
+  /// In en, this message translates to:
+  /// **'[roiEst]'**
+  String get roiEst;
+
+  /// No description provided for @paymentRequiredToActivate.
+  ///
+  /// In en, this message translates to:
+  /// **'[paymentRequiredToActivate]'**
+  String get paymentRequiredToActivate;
+
+  /// No description provided for @invalidNumericAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'[invalidNumericAmount]'**
+  String get invalidNumericAmount;
+
+  /// No description provided for @pointsDefined.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} points defined'**
+  String pointsDefined(int count);
+
+  /// No description provided for @nItemsSold.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items sold'**
+  String nItemsSold(int count);
+
+  /// No description provided for @itemVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'[itemVerification]'**
+  String get itemVerification;
+
+  /// No description provided for @invalidGeometryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[invalidGeometryHint]'**
+  String get invalidGeometryHint;
+
+  /// No description provided for @declinedUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[declinedUpper]'**
+  String get declinedUpper;
+
+  /// No description provided for @connectionError.
+  ///
+  /// In en, this message translates to:
+  /// **'[connectionError]'**
+  String get connectionError;
+
+  /// No description provided for @startByListingPlot.
+  ///
+  /// In en, this message translates to:
+  /// **'[startByListingPlot]'**
+  String get startByListingPlot;
+
+  /// No description provided for @propertyDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'[propertyDetails]'**
+  String get propertyDetails;
+
+  /// No description provided for @invalidGeometry.
+  ///
+  /// In en, this message translates to:
+  /// **'[invalidGeometry]'**
+  String get invalidGeometry;
+
+  /// No description provided for @failedToLoadRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'[failedToLoadRequests]'**
+  String get failedToLoadRequests;
+
+  /// No description provided for @untilDate.
+  ///
+  /// In en, this message translates to:
+  /// **'[untilDate]'**
+  String untilDate(String param);
+
+  /// No description provided for @drawInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'[drawInstructions]'**
+  String get drawInstructions;
+
+  /// No description provided for @na.
+  ///
+  /// In en, this message translates to:
+  /// **'[na]'**
+  String get na;
+
+  /// No description provided for @noTasksAssignedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[noTasksAssignedHint]'**
+  String get noTasksAssignedHint;
+
+  /// No description provided for @cannotPublishBoundaryConflicts.
+  ///
+  /// In en, this message translates to:
+  /// **'[cannotPublishBoundaryConflicts]'**
+  String get cannotPublishBoundaryConflicts;
+
+  /// No description provided for @farmingActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'[farmingActivities]'**
+  String get farmingActivities;
+
+  /// No description provided for @listNewLand.
+  ///
+  /// In en, this message translates to:
+  /// **'[listNewLand]'**
+  String get listNewLand;
+
+  /// No description provided for @noApprovedWorkersUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[noApprovedWorkersUpper]'**
+  String get noApprovedWorkersUpper;
+
+  /// No description provided for @expiredUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[expiredUpper]'**
+  String get expiredUpper;
+
+  /// No description provided for @conflictDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'[conflictDetected]'**
+  String get conflictDetected;
+
+  /// No description provided for @rejectRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'[rejectRequest]'**
+  String get rejectRequest;
+
+  /// No description provided for @boundaryConflictAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'[boundaryConflictAlert]'**
+  String get boundaryConflictAlert;
+
+  /// No description provided for @requestProof.
+  ///
+  /// In en, this message translates to:
+  /// **'[requestProof]'**
+  String get requestProof;
+
+  /// No description provided for @perHourUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[perHourUpper]'**
+  String get perHourUpper;
+
+  /// No description provided for @exploreLands.
+  ///
+  /// In en, this message translates to:
+  /// **'[exploreLands]'**
+  String get exploreLands;
+
+  /// No description provided for @premiumFarmlandUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[premiumFarmlandUpper]'**
+  String get premiumFarmlandUpper;
+
+  /// No description provided for @newProposal.
+  ///
+  /// In en, this message translates to:
+  /// **'[newProposal]'**
+  String get newProposal;
+
+  /// No description provided for @suspendedUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[suspendedUpper]'**
+  String get suspendedUpper;
+
+  /// No description provided for @aiPortfolioAnalysisHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[aiPortfolioAnalysisHint]'**
+  String get aiPortfolioAnalysisHint;
+
+  /// No description provided for @defineOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'[defineOnMap]'**
+  String get defineOnMap;
+
+  /// No description provided for @itemUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[itemUpper]'**
+  String get itemUpper;
+
+  /// No description provided for @amountPerType.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} / {type}'**
+  String amountPerType(String amount, String type);
+
+  /// No description provided for @landDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[landDescriptionHint]'**
+  String get landDescriptionHint;
+
+  /// No description provided for @autoFromBoundary.
+  ///
+  /// In en, this message translates to:
+  /// **'[autoFromBoundary]'**
+  String get autoFromBoundary;
+
+  /// No description provided for @tryAgainUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[tryAgainUpper]'**
+  String get tryAgainUpper;
+
+  /// No description provided for @landNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'[landNameRequired]'**
+  String get landNameRequired;
+
+  /// No description provided for @activeUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[activeUpper]'**
+  String get activeUpper;
+
+  /// No description provided for @hiringProposals.
+  ///
+  /// In en, this message translates to:
+  /// **'[hiringProposals]'**
+  String get hiringProposals;
+
+  /// No description provided for @confirmReject.
+  ///
+  /// In en, this message translates to:
+  /// **'[confirmReject]'**
+  String get confirmReject;
+
+  /// No description provided for @movePoint.
+  ///
+  /// In en, this message translates to:
+  /// **'[movePoint]'**
+  String get movePoint;
+
+  /// No description provided for @priceExceedsLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'[priceExceedsLimit]'**
+  String get priceExceedsLimit;
+
+  /// No description provided for @egSalaryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[egSalaryHint]'**
+  String get egSalaryHint;
+
+  /// No description provided for @hireWorkerUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[hireWorkerUpper]'**
+  String hireWorkerUpper(String param);
+
+  /// No description provided for @hiringProposalSent.
+  ///
+  /// In en, this message translates to:
+  /// **'[hiringProposalSent]'**
+  String get hiringProposalSent;
+
+  /// No description provided for @entireLand.
+  ///
+  /// In en, this message translates to:
+  /// **'[entireLand]'**
+  String get entireLand;
+
+  /// No description provided for @acceptedUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[acceptedUpper]'**
+  String get acceptedUpper;
+
+  /// No description provided for @fundsReleasedAfterVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'[fundsReleasedAfterVerification]'**
+  String get fundsReleasedAfterVerification;
+
+  /// No description provided for @enterRejectionReason.
+  ///
+  /// In en, this message translates to:
+  /// **'[enterRejectionReason]'**
+  String get enterRejectionReason;
+
+  /// No description provided for @proofRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'[proofRequests]'**
+  String get proofRequests;
+
+  /// No description provided for @enableVoiceInput.
+  ///
+  /// In en, this message translates to:
+  /// **'[enableVoiceInput]'**
+  String get enableVoiceInput;
+
+  /// No description provided for @salaryAmountTNDUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[salaryAmountTNDUpper]'**
+  String get salaryAmountTNDUpper;
+
+  /// No description provided for @unableToRetrieveLandDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'[unableToRetrieveLandDetails]'**
+  String get unableToRetrieveLandDetails;
+
+  /// No description provided for @hourlyUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[hourlyUpper]'**
+  String get hourlyUpper;
+
+  /// No description provided for @aiLandInvestmentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[aiLandInvestmentHint]'**
+  String aiLandInvestmentHint(String param);
+
+  /// No description provided for @askAiAnalyst.
+  ///
+  /// In en, this message translates to:
+  /// **'[askAiAnalyst]'**
+  String get askAiAnalyst;
+
+  /// No description provided for @monthlyUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[monthlyUpper]'**
+  String get monthlyUpper;
+
+  /// No description provided for @activeContracts.
+  ///
+  /// In en, this message translates to:
+  /// **'[activeContracts]'**
+  String get activeContracts;
+
+  /// No description provided for @workerRespondedReviewCounterOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'[workerRespondedReviewCounterOffer]'**
+  String get workerRespondedReviewCounterOffer;
+
+  /// No description provided for @unlockUnlimitedSlotsInvestorPlus.
+  ///
+  /// In en, this message translates to:
+  /// **'[unlockUnlimitedSlotsInvestorPlus]'**
+  String get unlockUnlimitedSlotsInvestorPlus;
+
+  /// No description provided for @escrowBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'[escrowBalance]'**
+  String get escrowBalance;
+
+  /// No description provided for @pleaseEnterAName.
+  ///
+  /// In en, this message translates to:
+  /// **'[pleaseEnterAName]'**
+  String get pleaseEnterAName;
+
+  /// No description provided for @raiseLivestock.
+  ///
+  /// In en, this message translates to:
+  /// **'[raiseLivestock]'**
+  String get raiseLivestock;
+
+  /// No description provided for @noLandAssignments.
+  ///
+  /// In en, this message translates to:
+  /// **'[noLandAssignments]'**
+  String get noLandAssignments;
+
+  /// No description provided for @aiVerifyUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[aiVerifyUpper]'**
+  String get aiVerifyUpper;
+
+  /// No description provided for @requestExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'[requestExpired]'**
+  String get requestExpired;
+
+  /// No description provided for @rejectUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[rejectUpper]'**
+  String get rejectUpper;
+
+  /// No description provided for @landUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'[landUpdatedSuccess]'**
+  String get landUpdatedSuccess;
+
+  /// No description provided for @realTimeTaskNotificationsSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'[realTimeTaskNotificationsSoon]'**
+  String get realTimeTaskNotificationsSoon;
+
+  /// No description provided for @approveUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[approveUpper]'**
+  String get approveUpper;
+
+  /// No description provided for @untilDateUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[untilDateUpper]'**
+  String untilDateUpper(String param);
+
+  /// No description provided for @overlapsExistingLand.
+  ///
+  /// In en, this message translates to:
+  /// **'[overlapsExistingLand]'**
+  String get overlapsExistingLand;
+
+  /// No description provided for @itemRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'[itemRequests]'**
+  String get itemRequests;
+
+  /// No description provided for @startDateUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[startDateUpper]'**
+  String get startDateUpper;
+
+  /// No description provided for @generalLandProof.
+  ///
+  /// In en, this message translates to:
+  /// **'[generalLandProof]'**
+  String get generalLandProof;
+
+  /// No description provided for @landNameTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'[landNameTooShort]'**
+  String get landNameTooShort;
+
+  /// No description provided for @verifiedUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[verifiedUpper]'**
+  String get verifiedUpper;
+
+  /// No description provided for @minutesLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} minutes left'**
+  String minutesLeft(int count);
+
+  /// No description provided for @tapToDrawBoundaries.
+  ///
+  /// In en, this message translates to:
+  /// **'[tapToDrawBoundaries]'**
+  String get tapToDrawBoundaries;
+
+  /// No description provided for @directRoadAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'[directRoadAccess]'**
+  String get directRoadAccess;
+
+  /// No description provided for @invitationFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'[invitationFrom]'**
+  String invitationFrom(String param);
+
+  /// No description provided for @failedToLoadContracts.
+  ///
+  /// In en, this message translates to:
+  /// **'[failedToLoadContracts]'**
+  String get failedToLoadContracts;
+
+  /// No description provided for @verificationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'[verificationFailed]'**
+  String get verificationFailed;
+
+  /// No description provided for @perimeterNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'[perimeterNotSet]'**
+  String get perimeterNotSet;
+
+  /// No description provided for @requestApprovedItemPlaced.
+  ///
+  /// In en, this message translates to:
+  /// **'[requestApprovedItemPlaced]'**
+  String get requestApprovedItemPlaced;
+
+  /// No description provided for @inviteWorkersMarketplaceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[inviteWorkersMarketplaceHint]'**
+  String get inviteWorkersMarketplaceHint;
+
+  /// No description provided for @landNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[landNameHint]'**
+  String get landNameHint;
+
+  /// No description provided for @publishListing.
+  ///
+  /// In en, this message translates to:
+  /// **'[publishListing]'**
+  String get publishListing;
+
+  /// No description provided for @hireApprovedWorkerNegotiationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[hireApprovedWorkerNegotiationHint]'**
+  String get hireApprovedWorkerNegotiationHint;
+
+  /// No description provided for @request.
+  ///
+  /// In en, this message translates to:
+  /// **'[request]'**
+  String get request;
+
+  /// No description provided for @counterOfferUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[counterOfferUpper]'**
+  String get counterOfferUpper;
+
+  /// No description provided for @proposedUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[proposedUpper]'**
+  String get proposedUpper;
+
+  /// No description provided for @verificationSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'[verificationSuccessful]'**
+  String get verificationSuccessful;
+
+  /// No description provided for @rentLandToStartUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[rentLandToStartUpper]'**
+  String get rentLandToStartUpper;
+
+  /// No description provided for @expiredLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'[expiredLabel]'**
+  String get expiredLabel;
+
+  /// No description provided for @salaryTypeUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[salaryTypeUpper]'**
+  String get salaryTypeUpper;
+
+  /// No description provided for @pleaseEnterRejectionReason.
+  ///
+  /// In en, this message translates to:
+  /// **'[pleaseEnterRejectionReason]'**
+  String get pleaseEnterRejectionReason;
+
+  /// No description provided for @negotiatingUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[negotiatingUpper]'**
+  String get negotiatingUpper;
+
+  /// No description provided for @rentNowUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[rentNowUpper]'**
+  String get rentNowUpper;
+
+  /// No description provided for @noSpecialSkillsUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'[noSpecialSkillsUpper]'**
+  String get noSpecialSkillsUpper;
+
+  /// No description provided for @noLandAssignmentsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'[noLandAssignmentsHint]'**
+  String get noLandAssignmentsHint;
 }
 
 class _AppLocalizationsDelegate

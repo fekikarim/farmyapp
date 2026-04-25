@@ -702,7 +702,7 @@ class _ApprovedWorkersTab extends StatelessWidget {
     if (isLoading) return _shimmerList(true); // Always dark
 
     if (error != null) {
-      return _errorView(isDark: true, message: error!, onRetry: onRefresh);
+      return _errorView(context: context, isDark: true, message: error!, onRetry: onRefresh);
     }
 
     if (workers.isEmpty) {
@@ -919,7 +919,7 @@ class _NegotiationsTab extends StatelessWidget {
     if (isLoading) return _shimmerList(true); // Always dark
 
     if (error != null) {
-      return _errorView(isDark: true, message: error!, onRetry: onRefresh);
+      return _errorView(context: context, isDark: true, message: error!, onRetry: onRefresh);
     }
 
     if (contracts.isEmpty) {
@@ -1118,7 +1118,7 @@ class _NegotiationCard extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              AppLocalizations.of(context)!.salaryAmountType(contract.salaryAmount.toStringAsFixed(0), _translateSalaryTypeLabel(context, contract.salaryTypeLabel)),
+                              AppLocalizations.of(context)!.salaryAmountType(contract.salaryAmount.toInt(), _translateSalaryTypeLabel(context, contract.salaryTypeLabel)),
                               style: const TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold,
@@ -1227,7 +1227,7 @@ class _ActiveWorkersTab extends StatelessWidget {
     if (isLoading) return _shimmerList(true); // Always dark
 
     if (error != null) {
-      return _errorView(isDark: true, message: error!, onRetry: onRefresh);
+      return _errorView(context: context, isDark: true, message: error!, onRetry: onRefresh);
     }
 
     if (contracts.isEmpty) {
@@ -1390,7 +1390,7 @@ class _ActiveWorkersTab extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              AppLocalizations.of(context)!.salaryAmountType(c.salaryAmount.toStringAsFixed(0), _translateSalaryTypeLabel(context, c.salaryTypeLabel)),
+                              AppLocalizations.of(context)!.salaryAmountType(c.salaryAmount.toInt(), _translateSalaryTypeLabel(context, c.salaryTypeLabel)),
                               style: TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold,
@@ -1832,7 +1832,7 @@ class _ProofsTab extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            AppLocalizations.of(context)!.requestedDateUpper(DateFormat.MMMd(Localizations.localeOf(context).toString()).add_Hm().format(p.createdAt).toUpperCase()),
+                            AppLocalizations.of(context)!.requestedDateUpper(DateFormat.MMMd(Localizations.localeOf(context).toString()).add_Hm().format(p.createdAt ?? DateTime.now()).toUpperCase()),
                             style: const TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
@@ -2202,6 +2202,7 @@ class _RemoveWorkerButtonState extends State<_RemoveWorkerButton> {
 
 // ── Error view helper ──
 Widget _errorView({
+  required BuildContext context,
   required bool isDark,
   required String message,
   required VoidCallback onRetry,

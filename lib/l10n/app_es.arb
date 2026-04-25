@@ -977,6 +977,14 @@
     }
   },
   "investor": "Inversor",
+  "squareMeters": "{count} m²",
+  "@squareMeters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "toLabel": "A: {name}",
   "@toLabel": {
     "placeholders": {
@@ -1021,7 +1029,15 @@
   "@minutesCount": {
     "placeholders": {
       "count": {
-        "type": "String"
+        "type": "int"
+      }
+    }
+  },
+  "hoursCount": "{count} h",
+  "@hoursCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
       }
     }
   },
@@ -1039,14 +1055,15 @@
   "open": "Abierto",
   "done": "Hecho",
   "noTasksHere": "No hay tareas aquí",
-  "activeTasksCount": "{count} Tareas Activas",
+  "activeTasksCount": "{count} tareas activas",
   "@activeTasksCount": {
     "placeholders": {
       "count": {
-        "type": "String"
+        "type": "int"
       }
     }
   },
+  "activeTasksLabel": "Tareas activas",
   "farmerPro": "Farmer Pro",
   "assignedTo": "Asignado a {name}",
   "@assignedTo": {
@@ -1163,10 +1180,10 @@
   "@organicPlotGrid": {
     "placeholders": {
       "w": {
-        "type": "String"
+        "type": "int"
       },
       "h": {
-        "type": "String"
+        "type": "int"
       }
     }
   },
@@ -1200,11 +1217,14 @@
       }
     }
   },
-  "gridPlots": "[gridPlots]",
+  "gridPlots": "{w}x{h} parcelas",
   "@gridPlots": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "w": {
+        "type": "int"
+      },
+      "h": {
+        "type": "int"
       }
     }
   },
@@ -1261,10 +1281,13 @@
   "rentalSlotsUsage": "[rentalSlotsUsage]",
   "selectAtLeast3Points": "[selectAtLeast3Points]",
   "activeLabelUpper": "[activeLabelUpper]",
-  "salaryAmountType": "[salaryAmountType]",
+  "salaryAmountType": "{amount} / {type}",
   "@salaryAmountType": {
     "placeholders": {
-      "param": {
+      "amount": {
+        "type": "int"
+      },
+      "type": {
         "type": "String"
       }
     }
@@ -1415,10 +1438,27 @@
   "roiEst": "[roiEst]",
   "paymentRequiredToActivate": "[paymentRequiredToActivate]",
   "invalidNumericAmount": "[invalidNumericAmount]",
-  "pointsDefined": "[pointsDefined]",
+  "pointsDefined": "{count} puntos definidos",
   "@pointsDefined": {
     "placeholders": {
-      "param": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nItemsSold": "{count} artículos vendidos",
+  "@nItemsSold": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noItemsFound": "No se encontraron artículos",
+  "noItemsFoundStatus": "No se encontraron artículos {status}",
+  "@noItemsFoundStatus": {
+    "placeholders": {
+      "status": {
         "type": "String"
       }
     }
@@ -1568,11 +1608,11 @@
   "pleaseEnterRejectionReason": "[pleaseEnterRejectionReason]",
   "negotiatingUpper": "[negotiatingUpper]",
   "rentNowUpper": "[rentNowUpper]",
-  "nTasksUpper": "[nTasksUpper]",
+  "nTasksUpper": "{count} TAREAS",
   "@nTasksUpper": {
     "placeholders": {
-      "param": {
-        "type": "String"
+      "count": {
+        "type": "int"
       }
     }
   },

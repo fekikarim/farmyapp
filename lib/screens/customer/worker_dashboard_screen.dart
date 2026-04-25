@@ -2048,6 +2048,56 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
       ),
     );
   }
+
+  String _translateContractStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toLowerCase()) {
+      case 'active':
+        return l10n.activeLabel;
+      case 'pending':
+      case 'hiring_pending':
+      case 'payment_pending':
+        return l10n.pendingLabel;
+      case 'suspended':
+        return l10n.suspendedLabel;
+      case 'inactive':
+        return l10n.inactiveLabel;
+      default:
+        return status;
+    }
+  }
+
+  String _translateTaskStatus(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toLowerCase()) {
+      case 'open':
+      case 'assigned':
+        return l10n.open;
+      case 'in_progress':
+      case 'in progress':
+        return l10n.inProgress;
+      case 'completed':
+      case 'done':
+        return l10n.completed;
+      default:
+        return status;
+    }
+  }
+
+  String _translateSalaryTypeLabel(BuildContext context, String label) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (label.toLowerCase()) {
+      case 'monthly':
+        return l10n.monthly;
+      case 'hourly':
+        return l10n.hourly;
+      case 'per task':
+      case 'per_task':
+        return l10n.perTask;
+      default:
+        return label;
+    }
+  }
 }
 
 class _ProofCountdown extends StatefulWidget {

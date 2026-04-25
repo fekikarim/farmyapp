@@ -1467,13 +1467,14 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     );
   }
 
-  String _formatTime(DateTime? dt) {
+  String _formatTime(BuildContext context, DateTime? dt) {
     if (dt == null) return '';
     final now = DateTime.now();
     final diff = now.difference(dt);
-    if (diff.inMinutes < 1) return AppLocalizations.of(context)!.justNow;
-    if (diff.inMinutes < 60) return AppLocalizations.of(context)!.minutesAgo(diff.inMinutes.toString());
-    if (diff.inHours < 24) return AppLocalizations.of(context)!.hoursAgo(diff.inHours.toString());
+    final l10n = AppLocalizations.of(context)!;
+    if (diff.inMinutes < 1) return l10n.justNow;
+    if (diff.inMinutes < 60) return l10n.minutesAgo(diff.inMinutes.toString());
+    if (diff.inHours < 24) return l10n.hoursAgo(diff.inHours.toString());
     return DateFormat.Md(Localizations.localeOf(context).toString()).add_Hm().format(dt);
   }
 
@@ -2335,16 +2336,4 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
         return status;
     }
   }
-
-  String _formatTime(BuildContext context, DateTime? dt) {
-    if (dt == null) return '';
-    final now = DateTime.now();
-    final diff = now.difference(dt);
-    final l10n = AppLocalizations.of(context)!;
-    if (diff.inMinutes < 1) return l10n.justNow;
-    if (diff.inMinutes < 60) return l10n.minutesAgo(diff.inMinutes.toString());
-    if (diff.inHours < 24) return l10n.hoursAgo(diff.inHours.toString());
-    return DateFormat.Md(Localizations.localeOf(context).toString()).add_Hm().format(dt);
-  }
-}
 }

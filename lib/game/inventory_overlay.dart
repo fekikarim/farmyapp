@@ -305,7 +305,7 @@ class _InventoryOverlayState extends State<InventoryOverlay>
             Icon(Icons.inbox, size: 48, color: Colors.white.withOpacity(0.1)),
             const SizedBox(height: 16),
             Text(
-              AppLocalizations.of(context)!.noItemsFound(filterStatus),
+              AppLocalizations.of(context)!.noItemsFoundStatus(filterStatus),
               style: TextStyle(color: Colors.white.withOpacity(0.3)),
             ),
           ],

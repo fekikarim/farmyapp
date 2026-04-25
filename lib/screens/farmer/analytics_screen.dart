@@ -91,7 +91,7 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      AppLocalizations.of(context)!.itemsSold(productProvider.myProducts.where((p) => p.status == ProductStatus.sold).length),
+                      AppLocalizations.of(context)!.nItemsSold(productProvider.myProducts.where((p) => p.status == ProductStatus.sold).length),
                       style: const TextStyle(color: Colors.grey),
                     ),
                   ],

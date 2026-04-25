@@ -342,13 +342,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                         Icons.people_alt_outlined,
                         color: Colors.white,
                       ),
-                      label: Text(
-                        AppLocalizations.of(context)!.manageWorkers,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                      label: Text(AppLocalizations.of(context)!.manageWorkers),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green.shade600,
                         shape: RoundedRectangleBorder(
@@ -468,6 +462,7 @@ class _LandDetailsScreenState extends State<LandDetailsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Text(
                             AppLocalizations.of(context)!.rentalLimitReached,
                             style: TextStyle(
                               fontSize: 14,
