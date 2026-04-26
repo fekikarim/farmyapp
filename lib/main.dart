@@ -31,6 +31,7 @@ import 'theme/app_theme.dart';
 import 'providers/wallet_provider.dart';
 import 'providers/worker_provider.dart';
 import 'providers/worker_lifecycle_provider.dart';
+import 'providers/worker_performance_provider.dart';
 import 'providers/subscription_provider.dart';
 import 'providers/delivery_provider.dart';
 import 'providers/vendor_delivery_provider.dart';
@@ -97,6 +98,7 @@ void main() async {
           ChangeNotifierProvider(create: (_) => DeliveryProvider()),
           ChangeNotifierProvider(create: (_) => VendorDeliveryProvider()),
           ChangeNotifierProvider(create: (_) => CropCalendarProvider()),
+          ChangeNotifierProvider(create: (_) => WorkerPerformanceProvider()),
           ChangeNotifierProvider(
             create: (_) => ThemeProvider(initialThemeMode: initialTheme),
           ),

@@ -10,6 +10,7 @@ import 'customer/marketplace_screen.dart';
 
 // Farmer Screens
 import 'farmer/analytics_screen.dart';
+import 'farmer/worker_performance_dashboard.dart';
 // import 'farmer/products_screen.dart'; // Replaced by new implementation
 import 'farmer/land_management_screen.dart';
 // import 'farmer/my_farms_screen.dart';
@@ -95,7 +96,7 @@ class _MainScreenState extends State<MainScreen> {
         const FarmerAnalyticsScreen(),
         const FarmerLandManagementScreen(),
         const MyProductsScreen(),
-        const SizedBox(), // FarmerMyFarmsScreen() removed
+        const WorkerPerformanceDashboard(), // Worker Performance Dashboard
         const SettingsScreen(),
       ];
       items = [
@@ -115,9 +116,9 @@ class _MainScreenState extends State<MainScreen> {
           label: AppLocalizations.of(context)!.products,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.agriculture_outlined),
-          activeIcon: Icon(Icons.agriculture),
-          label: AppLocalizations.of(context)!.myFarms,
+          icon: Icon(Icons.people_outlined),
+          activeIcon: Icon(Icons.people),
+          label: AppLocalizations.of(context)!.workerPerformanceTitle,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings_outlined),

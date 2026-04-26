@@ -8035,6 +8035,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'per cycle'**
   String get perCycle;
+
+  /// No description provided for @workerPerformanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Workers'**
+  String get workerPerformanceTitle;
+
+  /// No description provided for @totalWorkers.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Workers'**
+  String get totalWorkers;
+
+  /// No description provided for @avgPerformanceScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Score'**
+  String get avgPerformanceScore;
+
+  /// No description provided for @totalTasksCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks Completed'**
+  String get totalTasksCompleted;
+
+  /// No description provided for @overallVerificationRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Rate'**
+  String get overallVerificationRate;
+
+  /// No description provided for @verifiedProofs.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get verifiedProofs;
+
+  /// No description provided for @rejectedProofs.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejectedProofs;
+
+  /// No description provided for @averageCompletionTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Time'**
+  String get averageCompletionTime;
+
+  /// No description provided for @performanceScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance Score'**
+  String get performanceScore;
+
+  /// No description provided for @topPerformers.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Performers'**
+  String get topPerformers;
+
+  /// No description provided for @needsAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs Attention'**
+  String get needsAttention;
+
+  /// No description provided for @filterByLand.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Land'**
+  String get filterByLand;
+
+  /// No description provided for @filterByDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Date'**
+  String get filterByDate;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortBy;
+
+  /// No description provided for @noWorkersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No workers found'**
+  String get noWorkersFound;
+
+  /// No description provided for @noDataForFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'No data for selected filters'**
+  String get noDataForFilters;
+
+  /// No description provided for @errorLoadingPerformance.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading performance data'**
+  String get errorLoadingPerformance;
+
+  /// No description provided for @allTime.
+  ///
+  /// In en, this message translates to:
+  /// **'All Time'**
+  String get allTime;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This Week'**
+  String get thisWeek;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This Month'**
+  String get thisMonth;
+
+  /// No description provided for @scoreHighToLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Score: High to Low'**
+  String get scoreHighToLow;
+
+  /// No description provided for @scoreLowToHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Score: Low to High'**
+  String get scoreLowToHigh;
+
+  /// No description provided for @tasksHighToLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks: Most to Least'**
+  String get tasksHighToLow;
+
+  /// No description provided for @nameAZ.
+  ///
+  /// In en, this message translates to:
+  /// **'Name: A-Z'**
+  String get nameAZ;
+
+  /// No description provided for @workerListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker Performance'**
+  String get workerListTitle;
+
+  /// No description provided for @workersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'workers'**
+  String get workersCount;
+
+  /// No description provided for @tasksCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks'**
+  String get tasksCompleted;
+
+  /// No description provided for @verificationRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Rate'**
+  String get verificationRate;
 }
 
 class _AppLocalizationsDelegate

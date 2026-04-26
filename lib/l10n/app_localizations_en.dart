@@ -4359,4 +4359,88 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get perCycle => 'per cycle';
+
+  @override
+  String get workerPerformanceTitle => 'Workers';
+
+  @override
+  String get totalWorkers => 'Total Workers';
+
+  @override
+  String get avgPerformanceScore => 'Avg Score';
+
+  @override
+  String get totalTasksCompleted => 'Tasks Completed';
+
+  @override
+  String get overallVerificationRate => 'Verification Rate';
+
+  @override
+  String get verifiedProofs => 'Verified';
+
+  @override
+  String get rejectedProofs => 'Rejected';
+
+  @override
+  String get averageCompletionTime => 'Avg Time';
+
+  @override
+  String get performanceScore => 'Performance Score';
+
+  @override
+  String get topPerformers => 'Top Performers';
+
+  @override
+  String get needsAttention => 'Needs Attention';
+
+  @override
+  String get filterByLand => 'Filter by Land';
+
+  @override
+  String get filterByDate => 'Filter by Date';
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get noWorkersFound => 'No workers found';
+
+  @override
+  String get noDataForFilters => 'No data for selected filters';
+
+  @override
+  String get errorLoadingPerformance => 'Error loading performance data';
+
+  @override
+  String get allTime => 'All Time';
+
+  @override
+  String get thisWeek => 'This Week';
+
+  @override
+  String get thisMonth => 'This Month';
+
+  @override
+  String get scoreHighToLow => 'Score: High to Low';
+
+  @override
+  String get scoreLowToHigh => 'Score: Low to High';
+
+  @override
+  String get tasksHighToLow => 'Tasks: Most to Least';
+
+  @override
+  String get nameAZ => 'Name: A-Z';
+
+  @override
+  String get workerListTitle => 'Worker Performance';
+
+  @override
+  String get workersCount => 'workers';
+
+  @override
+  String get tasksCompleted => 'Tasks';
+
+  @override
+  String get verificationRate => 'Verification Rate';
 }

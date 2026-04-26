@@ -195,7 +195,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get all => 'Tous';
 
   @override
-  String get allLands => 'Toutes les terres';
+  String get allLands => 'Tous les Terrains';
 
   @override
   String get allNotificationsMarkedRead =>
@@ -4431,4 +4431,88 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get perCycle => 'par cycle';
+
+  @override
+  String get workerPerformanceTitle => 'Travailleurs';
+
+  @override
+  String get totalWorkers => 'Travailleurs Total';
+
+  @override
+  String get avgPerformanceScore => 'Score Moyen';
+
+  @override
+  String get totalTasksCompleted => 'Tâches Terminées';
+
+  @override
+  String get overallVerificationRate => 'Taux de Vérification';
+
+  @override
+  String get verifiedProofs => 'Vérifié';
+
+  @override
+  String get rejectedProofs => 'Rejeté';
+
+  @override
+  String get averageCompletionTime => 'Temps Moyen';
+
+  @override
+  String get performanceScore => 'Score de Performance';
+
+  @override
+  String get topPerformers => 'Meilleurs Performeurs';
+
+  @override
+  String get needsAttention => 'Besoin d\'Attention';
+
+  @override
+  String get filterByLand => 'Filtrer par Terrain';
+
+  @override
+  String get filterByDate => 'Filtrer par Date';
+
+  @override
+  String get sortBy => 'Trier par';
+
+  @override
+  String get noWorkersFound => 'Aucun travailleur trouvé';
+
+  @override
+  String get noDataForFilters => 'Aucune donnée pour les filtres sélectionnés';
+
+  @override
+  String get errorLoadingPerformance => 'Erreur lors du chargement des données';
+
+  @override
+  String get allTime => 'Tout le Temps';
+
+  @override
+  String get thisWeek => 'Cette Semaine';
+
+  @override
+  String get thisMonth => 'Ce Mois';
+
+  @override
+  String get scoreHighToLow => 'Score: Élevé à Faible';
+
+  @override
+  String get scoreLowToHigh => 'Score: Faible à Élevé';
+
+  @override
+  String get tasksHighToLow => 'Tâches: Plus à Moins';
+
+  @override
+  String get nameAZ => 'Nom: A-Z';
+
+  @override
+  String get workerListTitle => 'Performance des Travailleurs';
+
+  @override
+  String get workersCount => 'travailleurs';
+
+  @override
+  String get tasksCompleted => 'Tâches';
+
+  @override
+  String get verificationRate => 'Taux de Vérification';
 }
