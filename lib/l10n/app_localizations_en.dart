@@ -4146,4 +4146,217 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get madeWithLove => 'Made with ❤️ by the Be.net Team';
+
+  @override
+  String get cropCalendarTitle => 'Crop Calendar';
+
+  @override
+  String get monthView => 'Month';
+
+  @override
+  String get yearView => 'Year';
+
+  @override
+  String get plantingDate => 'Planting Date';
+
+  @override
+  String get expectedHarvest => 'Expected Harvest';
+
+  @override
+  String get cropRotation => 'Crop Rotation';
+
+  @override
+  String get addCropPlan => 'Add Crop Plan';
+
+  @override
+  String get noCropsMessage => 'No crops scheduled';
+
+  @override
+  String get growingStatus => 'Growing';
+
+  @override
+  String get readyStatus => 'Ready';
+
+  @override
+  String get completedStatus => 'Completed';
+
+  @override
+  String get plannedStatus => 'Planned';
+
+  @override
+  String get activeStatus => 'Active';
+
+  @override
+  String get harvestedStatus => 'Harvested';
+
+  @override
+  String get overdueStatus => 'Overdue';
+
+  @override
+  String daysUntilHarvest(Object days) {
+    return '$days days until harvest';
+  }
+
+  @override
+  String get readyToHarvest => 'Ready to harvest';
+
+  @override
+  String get selectCrop => 'Select Crop';
+
+  @override
+  String get newCropPlan => 'New Crop Plan';
+
+  @override
+  String get schedulePlanting => 'Schedule your next planting';
+
+  @override
+  String get expectedHarvestDate => 'Expected Harvest Date';
+
+  @override
+  String get cropCycle => 'Crop Cycle';
+
+  @override
+  String get days => 'days';
+
+  @override
+  String get perennial => 'perennial';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get cropPlanCreated => 'Crop plan created successfully';
+
+  @override
+  String get cropPlanFailed => 'Failed to create crop plan';
+
+  @override
+  String get activeCrops => 'Active';
+
+  @override
+  String get readySoon => 'Ready Soon';
+
+  @override
+  String get plannedCrops => 'Planned';
+
+  @override
+  String get loading => 'Loading';
+
+  @override
+  String get notesOptional => 'Notes (Optional)';
+
+  @override
+  String get addNotesHint => 'Add any notes about this crop plan...';
+
+  @override
+  String get saving => 'Saving...';
+
+  @override
+  String get createPlan => 'Create Plan';
+
+  @override
+  String get selectALand => 'Select a land';
+
+  @override
+  String get pleaseSelectLand => 'Please select a land';
+
+  @override
+  String get pleaseSelectCrop => 'Please select a crop';
+
+  @override
+  String get loadingCrops => 'Loading available crops...';
+
+  @override
+  String get noCropsAvailable => 'No crops available';
+
+  @override
+  String get addCropsFirst => 'Add crops to the shop first, or try reloading.';
+
+  @override
+  String get reload => 'Reload';
+
+  @override
+  String get noCropVariantsFound => 'No crop variants found';
+
+  @override
+  String cycleDaysLabel(Object days) {
+    return 'Cycle: $days days';
+  }
+
+  @override
+  String get perennialSuffix => '(perennial)';
+
+  @override
+  String get failedToLoadCrops => 'Failed to load crops';
+
+  @override
+  String get cropPlanCreatedSuccess => 'Crop plan created successfully';
+
+  @override
+  String get failedToCreatePlan => 'Failed to create plan';
+
+  @override
+  String get fillAllRequiredFields => 'Please fill all required fields';
+
+  @override
+  String get legendTitle => 'Legend';
+
+  @override
+  String get plantedLabel => 'Planted';
+
+  @override
+  String get plantingLabel => 'Planting';
+
+  @override
+  String get harvestLabel => 'Harvest';
+
+  @override
+  String get readyLabel => 'Ready!';
+
+  @override
+  String get nowLabel => 'Now';
+
+  @override
+  String get harvestButton => 'Harvest';
+
+  @override
+  String get plantButton => 'Plant';
+
+  @override
+  String cropCount(Object count) {
+    return '$count crop';
+  }
+
+  @override
+  String cropCount_plural(Object count) {
+    return '$count crops';
+  }
+
+  @override
+  String get noCropsThisMonth => 'No crops this month';
+
+  @override
+  String overdueByDays(Object days) {
+    return 'Overdue by $days days';
+  }
+
+  @override
+  String get plantToday => 'Plant today!';
+
+  @override
+  String plantInDays(Object days) {
+    return 'Plant in $days days';
+  }
+
+  @override
+  String get readyToHarvestStatus => 'Ready to harvest';
+
+  @override
+  String get growingStatusShort => 'Growing';
+
+  @override
+  String get producesLabel => 'Produces';
+
+  @override
+  String get perCycle => 'per cycle';
 }

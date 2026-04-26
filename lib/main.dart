@@ -40,6 +40,7 @@ import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
 
 import 'providers/game_provider.dart';
+import 'providers/crop_calendar_provider.dart';
 import 'widgets/edge_panel.dart';
 
 import 'utils/global_keys.dart';
@@ -95,6 +96,7 @@ void main() async {
           ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
           ChangeNotifierProvider(create: (_) => DeliveryProvider()),
           ChangeNotifierProvider(create: (_) => VendorDeliveryProvider()),
+          ChangeNotifierProvider(create: (_) => CropCalendarProvider()),
           ChangeNotifierProvider(
             create: (_) => ThemeProvider(initialThemeMode: initialTheme),
           ),

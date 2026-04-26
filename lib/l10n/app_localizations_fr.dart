@@ -3207,7 +3207,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Veuillez sélectionner au moins une compétence';
 
   @override
-  String get selectLand => 'Sélectionner une terre';
+  String get selectLand => 'Sélectionner une Terre';
 
   @override
   String get selectLanguage => 'Choisir la langue';
@@ -4216,4 +4216,219 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get madeWithLove => 'Fait avec ❤️ par l\'équipe Be.net';
+
+  @override
+  String get cropCalendarTitle => 'Calendrier des Cultures';
+
+  @override
+  String get monthView => 'Mois';
+
+  @override
+  String get yearView => 'Année';
+
+  @override
+  String get plantingDate => 'Date de Plantation';
+
+  @override
+  String get expectedHarvest => 'Récolte Prévue';
+
+  @override
+  String get cropRotation => 'Rotation des Cultures';
+
+  @override
+  String get addCropPlan => 'Ajouter un Plan';
+
+  @override
+  String get noCropsMessage => 'Aucune culture programmée';
+
+  @override
+  String get growingStatus => 'En Croissance';
+
+  @override
+  String get readyStatus => 'Prêt';
+
+  @override
+  String get completedStatus => 'Terminé';
+
+  @override
+  String get plannedStatus => 'Planifié';
+
+  @override
+  String get activeStatus => 'Actif';
+
+  @override
+  String get harvestedStatus => 'Récolté';
+
+  @override
+  String get overdueStatus => 'En Retard';
+
+  @override
+  String daysUntilHarvest(Object days) {
+    return '$days jours avant la récolte';
+  }
+
+  @override
+  String get readyToHarvest => 'Prêt à récolter';
+
+  @override
+  String get selectCrop => 'Sélectionner une Culture';
+
+  @override
+  String get newCropPlan => 'Nouveau Plan de Culture';
+
+  @override
+  String get schedulePlanting => 'Planifiez votre prochaine plantation';
+
+  @override
+  String get expectedHarvestDate => 'Date de Récolte Prévue';
+
+  @override
+  String get cropCycle => 'Cycle de Culture';
+
+  @override
+  String get days => 'jours';
+
+  @override
+  String get perennial => 'vivace';
+
+  @override
+  String get today => 'Aujourd\'hui';
+
+  @override
+  String get cropPlanCreated => 'Plan de culture créé avec succès';
+
+  @override
+  String get cropPlanFailed => 'Échec de la création du plan';
+
+  @override
+  String get activeCrops => 'Actifs';
+
+  @override
+  String get readySoon => 'Bientôt Prêts';
+
+  @override
+  String get plannedCrops => 'Planifiés';
+
+  @override
+  String get loading => 'Chargement';
+
+  @override
+  String get notesOptional => 'Notes (Optionnel)';
+
+  @override
+  String get addNotesHint => 'Ajoutez des notes sur ce plan de culture...';
+
+  @override
+  String get saving => 'Enregistrement...';
+
+  @override
+  String get createPlan => 'Créer le Plan';
+
+  @override
+  String get selectALand => 'Sélectionner une terre';
+
+  @override
+  String get pleaseSelectLand => 'Veuillez sélectionner une terre';
+
+  @override
+  String get pleaseSelectCrop => 'Veuillez sélectionner une culture';
+
+  @override
+  String get loadingCrops => 'Chargement des cultures disponibles...';
+
+  @override
+  String get noCropsAvailable => 'Aucune culture disponible';
+
+  @override
+  String get addCropsFirst =>
+      'Ajoutez d\'abord des cultures à la boutique, ou essayez de recharger.';
+
+  @override
+  String get reload => 'Recharger';
+
+  @override
+  String get noCropVariantsFound => 'Aucune variante de culture trouvée';
+
+  @override
+  String cycleDaysLabel(Object days) {
+    return 'Cycle: $days jours';
+  }
+
+  @override
+  String get perennialSuffix => '(vivace)';
+
+  @override
+  String get failedToLoadCrops => 'Échec du chargement des cultures';
+
+  @override
+  String get cropPlanCreatedSuccess => 'Plan de culture créé avec succès';
+
+  @override
+  String get failedToCreatePlan => 'Échec de la création du plan';
+
+  @override
+  String get fillAllRequiredFields =>
+      'Veuillez remplir tous les champs obligatoires';
+
+  @override
+  String get legendTitle => 'Légende';
+
+  @override
+  String get plantedLabel => 'Planté';
+
+  @override
+  String get plantingLabel => 'Plantation';
+
+  @override
+  String get harvestLabel => 'Récolte';
+
+  @override
+  String get readyLabel => 'Prêt!';
+
+  @override
+  String get nowLabel => 'Maintenant';
+
+  @override
+  String get harvestButton => 'Récolter';
+
+  @override
+  String get plantButton => 'Planter';
+
+  @override
+  String cropCount(Object count) {
+    return '$count culture';
+  }
+
+  @override
+  String cropCount_plural(Object count) {
+    return '$count cultures';
+  }
+
+  @override
+  String get noCropsThisMonth => 'Aucune culture ce mois';
+
+  @override
+  String overdueByDays(Object days) {
+    return 'En retard de $days jours';
+  }
+
+  @override
+  String get plantToday => 'Planter aujourd\'hui!';
+
+  @override
+  String plantInDays(Object days) {
+    return 'Planter dans $days jours';
+  }
+
+  @override
+  String get readyToHarvestStatus => 'Prêt à récolter';
+
+  @override
+  String get growingStatusShort => 'En croissance';
+
+  @override
+  String get producesLabel => 'Produit';
+
+  @override
+  String get perCycle => 'par cycle';
 }
