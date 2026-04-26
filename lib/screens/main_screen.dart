@@ -250,7 +250,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
             );
           } else if (role == 'customer' && user.hasWorkerProfile) {
-            return FloatingActionButton.extended(
+            return FloatingActionButton(
               heroTag: 'worker_tasks_fab',
               onPressed: () {
                 Navigator.push(
@@ -258,15 +258,8 @@ class _MainScreenState extends State<MainScreen> {
                   MaterialPageRoute(builder: (_) => const WorkerTasksScreen()),
                 );
               },
-              icon: const Icon(Icons.assignment, color: Colors.black),
-              label: Text(
-                AppLocalizations.of(context)!.myWorkerTasks,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
               backgroundColor: Colors.amberAccent,
+              child: const Icon(Icons.assignment, color: Colors.black),
             );
           }
           return const SizedBox.shrink();

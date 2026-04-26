@@ -9,6 +9,7 @@ import 'package:farmyapp/l10n/app_localizations.dart';
 import 'settings/edit_profile_screen.dart';
 import 'settings/change_password_screen.dart';
 import 'settings/enable_2fa_screen.dart';
+import 'about_us_screen.dart';
 import '../screens/kyc/kyc_flow_screen.dart';
 import '../screens/wallet/payment_methods_screen.dart';
 import 'customer/become_worker_screen.dart';
@@ -680,7 +681,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 context,
                 icon: Icons.info_outline,
                 title: AppLocalizations.of(context)!.aboutUs,
-                onTap: () => _showComingSoonDialog(context),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AboutUsScreen()),
+                ),
               ),
 
               const SizedBox(height: 32),
@@ -799,22 +803,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
       child: content,
-    );
-  }
-
-  void _showComingSoonDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.comingSoon),
-        content: Text(AppLocalizations.of(context)!.featureUnderDevelopment),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.ok),
-          ),
-        ],
-      ),
     );
   }
 

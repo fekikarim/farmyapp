@@ -4144,4 +4144,76 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get machine => 'machine';
+
+  @override
+  String get aboutFarmyTitle => 'À propos de Farmy';
+
+  @override
+  String get farmyTagline =>
+      'Donner du pouvoir à l\'agriculture grâce à l\'innovation, la gestion et des expériences immersives';
+
+  @override
+  String get farmyDescription =>
+      'Farmy est une plateforme agricole complète qui comble le fossé entre l\'agriculture traditionnelle et la technologie moderne. Nous fournissons des outils de gestion agricole, des connexions marketplace, des opportunités d\'investissement et des expériences gamifiées pour rendre l\'agriculture accessible et engageante pour tous.';
+
+  @override
+  String get missionTitle => 'Notre Mission';
+
+  @override
+  String get missionDescription =>
+      'Révolutionner l\'agriculture en créant un écosystème connecté où les agriculteurs, les investisseurs, les travailleurs et les consommateurs collaborent de manière fluide grâce à des solutions technologiques innovantes.';
+
+  @override
+  String get visionTitle => 'Notre Vision';
+
+  @override
+  String get visionDescription =>
+      'Un monde où l\'agriculture durable prospère grâce à l\'autonomisation numérique, rendant l\'agriculture plus efficace, plus rentable et accessible aux communautés du monde entier.';
+
+  @override
+  String get meetTheTeamTitle => 'Rencontrez l\'équipe';
+
+  @override
+  String get meetTheTeamSubtitle => 'L\'équipe Be.net derrière Farmy';
+
+  @override
+  String get leadDeveloperRole => 'Développeur Principal';
+
+  @override
+  String get developerRole => 'Développeur';
+
+  @override
+  String get faqTitle => 'Questions fréquemment posées';
+
+  @override
+  String get faqWhatIsFarmy => 'Qu\'est-ce que Farmy ?';
+
+  @override
+  String get faqWhatIsFarmyAnswer =>
+      'Farmy est une plateforme agricole tout-en-un combinant des outils de gestion de ferme, des fonctionnalités marketplace, des opportunités d\'investissement et des expériences gamifiées. Elle connecte les agriculteurs, les investisseurs, les travailleurs et les clients dans un écosystème numérique fluide.';
+
+  @override
+  String get faqWhoIsBehind => 'Qui est derrière Farmy ?';
+
+  @override
+  String get faqWhoIsBehindAnswer =>
+      'Farmy a été construit par l\'équipe Be.net - un groupe de développeurs passionnés de Tunisie dédiés à transformer l\'agriculture grâce à la technologie. Notre équipe comprend Karim Feki, Nesrine Derouiche, Mohamed Abidi, Oussema Issaoui et Fatma Hidoussi.';
+
+  @override
+  String get faqTechnologies => 'Quelles technologies sont utilisées ?';
+
+  @override
+  String get faqTechnologiesAnswer =>
+      'Farmy est construit avec Flutter pour des expériences mobiles et web cross-plateforme, un backend Node.js, Firebase pour les fonctionnalités temps réel, la blockchain Hedera pour des transactions sécurisées, et intègre des fonctionnalités alimentées par l\'IA pour l\'analyse des cultures et les recommandations.';
+
+  @override
+  String get faqContribute =>
+      'Comment puis-je contribuer ou contacter l\'équipe ?';
+
+  @override
+  String get faqContributeAnswer =>
+      'Vous pouvez contacter notre équipe via GitHub en contribuant à nos projets open-source, vous connecter avec nous sur LinkedIn, ou visiter nos sites web portfolio. Nous accueillons les commentaires, suggestions et opportunités de collaboration !';
+
+  @override
+  String get madeWithLove => 'Fait avec ❤️ par l\'équipe Be.net';
 }

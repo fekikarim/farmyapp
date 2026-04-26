@@ -7507,6 +7507,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'machine'**
   String get machine;
+
+  /// No description provided for @aboutFarmyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About Farmy'**
+  String get aboutFarmyTitle;
+
+  /// No description provided for @farmyTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Empowering agriculture through innovation, management, and immersive experiences'**
+  String get farmyTagline;
+
+  /// No description provided for @farmyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Farmy is a comprehensive agricultural platform that bridges the gap between traditional farming and modern technology. We provide tools for farm management, marketplace connections, investment opportunities, and gamified experiences to make agriculture accessible and engaging for everyone.'**
+  String get farmyDescription;
+
+  /// No description provided for @missionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Our Mission'**
+  String get missionTitle;
+
+  /// No description provided for @missionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'To revolutionize agriculture by creating a connected ecosystem where farmers, investors, workers, and consumers collaborate seamlessly through innovative technology solutions.'**
+  String get missionDescription;
+
+  /// No description provided for @visionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Our Vision'**
+  String get visionTitle;
+
+  /// No description provided for @visionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A world where sustainable agriculture thrives through digital empowerment, making farming more efficient, profitable, and accessible to communities worldwide.'**
+  String get visionDescription;
+
+  /// No description provided for @meetTheTeamTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet the Team'**
+  String get meetTheTeamTitle;
+
+  /// No description provided for @meetTheTeamSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The Be.net Team behind Farmy'**
+  String get meetTheTeamSubtitle;
+
+  /// No description provided for @leadDeveloperRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Lead Developer'**
+  String get leadDeveloperRole;
+
+  /// No description provided for @developerRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Developer'**
+  String get developerRole;
+
+  /// No description provided for @faqTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequently Asked Questions'**
+  String get faqTitle;
+
+  /// No description provided for @faqWhatIsFarmy.
+  ///
+  /// In en, this message translates to:
+  /// **'What is Farmy?'**
+  String get faqWhatIsFarmy;
+
+  /// No description provided for @faqWhatIsFarmyAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Farmy is an all-in-one agricultural platform combining farm management tools, marketplace features, investment opportunities, and gamified experiences. It connects farmers, investors, workers, and customers in a seamless digital ecosystem.'**
+  String get faqWhatIsFarmyAnswer;
+
+  /// No description provided for @faqWhoIsBehind.
+  ///
+  /// In en, this message translates to:
+  /// **'Who is behind Farmy?'**
+  String get faqWhoIsBehind;
+
+  /// No description provided for @faqWhoIsBehindAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Farmy was built by the Be.net Team - a group of passionate developers from Tunisia dedicated to transforming agriculture through technology. Our team includes Karim Feki, Nesrine Derouiche, Mohamed Abidi, Oussema Issaoui, and Fatma Hidoussi.'**
+  String get faqWhoIsBehindAnswer;
+
+  /// No description provided for @faqTechnologies.
+  ///
+  /// In en, this message translates to:
+  /// **'What technologies are used?'**
+  String get faqTechnologies;
+
+  /// No description provided for @faqTechnologiesAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Farmy is built with Flutter for cross-platform mobile and web experiences, Node.js backend, Firebase for real-time features, Hedera blockchain for secure transactions, and integrates AI-powered features for crop analysis and recommendations.'**
+  String get faqTechnologiesAnswer;
+
+  /// No description provided for @faqContribute.
+  ///
+  /// In en, this message translates to:
+  /// **'How can I contribute or contact the team?'**
+  String get faqContribute;
+
+  /// No description provided for @faqContributeAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'You can reach out to our team through GitHub by contributing to our open-source projects, connect with us on LinkedIn, or visit our portfolio websites. We welcome feedback, suggestions, and collaboration opportunities!'**
+  String get faqContributeAnswer;
+
+  /// No description provided for @madeWithLove.
+  ///
+  /// In en, this message translates to:
+  /// **'Made with ❤️ by the Be.net Team'**
+  String get madeWithLove;
 }
 
 class _AppLocalizationsDelegate
