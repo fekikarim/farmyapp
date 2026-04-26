@@ -204,7 +204,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
           final landCount = context.watch<LandProvider>().myLands.length;
           final isAtLimit = !subProvider.isWithinLimit('land_limit', landCount);
 
-          return FloatingActionButton.extended(
+          return FloatingActionButton(
             heroTag: 'land_management_fab',
             onPressed: isAtLimit
                 ? () => _showLandLimitDialog(subProvider.planName)
@@ -214,20 +214,16 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                       builder: (context) => const FarmerAddLandScreen(),
                     ),
                   ),
-            label: Text(
-              isAtLimit ? AppLocalizations.of(context)!.limitReached : AppLocalizations.of(context)!.newListing,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            icon: Icon(
-              isAtLimit
-                  ? Icons.lock_outline_rounded
-                  : Icons.add_location_alt_outlined,
-            ),
             backgroundColor: isAtLimit
                 ? Colors.amber.shade700
                 : Colors.green[600],
             foregroundColor: Colors.white,
             elevation: 4,
+            child: Icon(
+              isAtLimit
+                  ? Icons.lock_outline_rounded
+                  : Icons.add_location_alt_outlined,
+            ),
           );
         },
       ),
