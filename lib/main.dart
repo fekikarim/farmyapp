@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
 import 'services/stripe_runtime_service.dart';
+import 'services/farmer_dashboard_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
@@ -64,9 +65,21 @@ void main() async {
     return true;
   };
 
+  // Load environment variables with error handling
+  try {
+    await dotenv.load(fileName: '.env');
+    final apiBaseUrl = dotenv.env['API_BASE_URL'];
+    if (apiBaseUrl != null && apiBaseUrl.isNotEmpty) {
+      FarmerDashboardService.setBaseUrl(apiBaseUrl);
+      debugPrint('📡 Using API_BASE_URL: $apiBaseUrl');
+    }
+  } catch (e) {
+    debugPrint('⚠️ Failed to load .env file: $e');
+    // Continue without env - use default URLs
+  }
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await PushNotificationService.initialize();
-  await dotenv.load(fileName: ".env");
   await StripeRuntimeService.bootstrap();
 
   // Load saved theme
@@ -83,6 +96,7 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
   runApp(
     ProviderScope(
       child: MultiProvider(

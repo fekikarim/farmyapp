@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 import '../models/farmer_dashboard_model.dart';
 import 'auth_service.dart';
@@ -22,12 +23,28 @@ class DashboardServiceException implements Exception {
 
 class FarmerDashboardService {
   static const Duration _requestTimeout = Duration(seconds: 15);
+  
+  // Configurable backend URL - change this for your environment
+  // For physical devices, use your computer's local IP (e.g., 'http://192.168.1.x:3001')
+  static String _customBaseUrl = '';
+  
+  static void setBaseUrl(String url) {
+    _customBaseUrl = url;
+  }
+  
   static String get _baseUrl {
-    // For development, use localhost
+    // Allow override via setter for physical devices
+    if (_customBaseUrl.isNotEmpty) {
+      return _customBaseUrl;
+    }
+    
+    // Default development URLs
     if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3001';
+      return 'http://10.0.2.2:3001';  // Android emulator
     } else if (Platform.isIOS) {
-      return 'http://localhost:3001';
+      // For iOS physical devices, use your computer's IP
+      // Run: ipconfig getifaddr en0 to get your IP
+      return 'http://192.168.0.149:3001';  // Your Mac's IP - update if needed
     }
     return 'http://localhost:3001';
   }
@@ -49,40 +66,63 @@ class FarmerDashboardService {
   static Future<FarmerDashboardData> getDashboardData({String? localeCode}) async {
     try {
       final headers = await _getHeaders(localeCode: localeCode);
+      final url = '$_apiUrl/farmer/dashboard';
+      // ignore: avoid_print
+      print('📡 Dashboard API Request: $url');
+      // ignore: avoid_print
+      print('📡 Headers: $headers');
       final response = await http
           .get(
-            Uri.parse('$_apiUrl/farmer/dashboard'),
+            Uri.parse(url),
             headers: headers,
           )
           .timeout(_requestTimeout);
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
-        return FarmerDashboardData.fromJson(jsonData);
+        // Backend returns { success: true, data: {...} }
+        final dashboardData = jsonData['data'] ?? jsonData;
+        // ignore: avoid_print
+        print('📊 Dashboard API Response Keys: ${jsonData.keys.toList()}');
+        // ignore: avoid_print
+        print('📊 Dashboard Data Keys: ${dashboardData is Map ? dashboardData.keys.toList() : "not a map"}');
+        return FarmerDashboardData.fromJson(dashboardData);
       }
 
+      // ignore: avoid_print
+      print('❌ Dashboard API Error: ${response.statusCode} - ${response.body.substring(0, min(200, response.body.length))}');
       throw _buildHttpError(response);
     } on DashboardServiceException {
       rethrow;
     } on TimeoutException {
+      // ignore: avoid_print
+      print('⏱️ Dashboard timeout');
       throw const DashboardServiceException(
         'timeout',
         'Connection timed out. Please try again.',
       );
-    } on SocketException {
-      throw const DashboardServiceException(
-        'network',
-        'No internet connection. Please check your network.',
+    } on FormatException catch (e) {
+      // ignore: avoid_print
+      print('❌ Dashboard parse error: ${e.message}');
+      throw DashboardServiceException(
+        'parse_error',
+        'Invalid response format: ${e.message}',
       );
-    } on FormatException {
-      throw const DashboardServiceException(
-        'invalid_response',
-        'Invalid response format from server.',
+    } on http.ClientException catch (e) {
+      // ignore: avoid_print
+      print('❌ Dashboard network error: ${e.message}');
+      throw DashboardServiceException(
+        'network_error',
+        'Network error: ${e.message}. Please check your connection.',
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      // ignore: avoid_print
+      print('❌ Dashboard unknown error: $e');
+      // ignore: avoid_print
+      print('❌ Stack trace: $stackTrace');
       throw DashboardServiceException(
         'unknown',
-        'Failed to load dashboard: $e',
+        'Failed to load dashboard: ${e.toString()}',
       );
     }
   }
@@ -153,7 +193,11 @@ class FarmerDashboardService {
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
-        return FarmerDashboardData.fromJson(jsonData);
+        // Backend returns { success: true, data: {...} }
+        final dashboardData = jsonData['data'] ?? jsonData;
+        // ignore: avoid_print
+        print('Dashboard API response structure: ${jsonData.keys}');
+        return FarmerDashboardData.fromJson(dashboardData);
       }
 
       // Backward compatibility with deployments where refresh endpoint is not present.

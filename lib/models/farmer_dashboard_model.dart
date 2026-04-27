@@ -43,6 +43,18 @@ class HeroMetrics {
       'lastMonthRevenue': lastMonthRevenue,
     };
   }
+
+  factory HeroMetrics.empty() {
+    return const HeroMetrics(
+      activeLands: 0,
+      openTasks: 0,
+      overdueTasks: 0,
+      pendingItemRequests: 0,
+      monthlyRevenue: 0.0,
+      revenueTrend: 0.0,
+      lastMonthRevenue: 0.0,
+    );
+  }
 }
 
 /// Alert Priority Enum
@@ -331,25 +343,30 @@ class FarmerDashboardData {
   });
 
   factory FarmerDashboardData.fromJson(Map<String, dynamic> json) {
-    final data = json['data'] ?? json;
     return FarmerDashboardData(
-      heroMetrics: HeroMetrics.fromJson(data['heroMetrics'] ?? {}),
-      alerts: (data['alerts'] as List<dynamic>?)
-              ?.map((e) => SmartAlert.fromJson(e))
-              .toList() ??
-          [],
-      lands: (data['lands'] as List<dynamic>?)
-              ?.map((e) => LandOperational.fromJson(e))
-              .toList() ??
-          [],
-      workers: (data['workers'] as List<dynamic>?)
-              ?.map((e) => ActiveWorker.fromJson(e))
-              .toList() ??
-          [],
-      aiSessions: (data['aiSessions'] as List<dynamic>?)
-              ?.map((e) => AISessionPreview.fromJson(e))
-              .toList() ??
-          [],
+      heroMetrics: json['heroMetrics'] != null
+          ? HeroMetrics.fromJson(json['heroMetrics'] as Map<String, dynamic>)
+          : HeroMetrics.empty(),
+      alerts: json['alerts'] != null
+          ? (json['alerts'] as List<dynamic>)
+              .map((e) => SmartAlert.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : [],
+      lands: json['lands'] != null
+          ? (json['lands'] as List<dynamic>)
+              .map((e) => LandOperational.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : [],
+      workers: json['workers'] != null
+          ? (json['workers'] as List<dynamic>)
+              .map((e) => ActiveWorker.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : [],
+      aiSessions: json['aiSessions'] != null
+          ? (json['aiSessions'] as List<dynamic>)
+              .map((e) => AISessionPreview.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : [],
     );
   }
 

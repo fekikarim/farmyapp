@@ -76,9 +76,6 @@ class FarmerDashboardProvider extends ChangeNotifier {
     if (_isLoading && !force) return;
 
     _lastSyncAttempt = DateTime.now();
-
-    if (_isLoading) return;
-
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -115,9 +112,6 @@ class FarmerDashboardProvider extends ChangeNotifier {
     if (_isRefreshing && !force) return;
 
     _lastSyncAttempt = DateTime.now();
-
-    if (_isRefreshing) return;
-
     _isRefreshing = true;
     notifyListeners();
 
@@ -160,7 +154,11 @@ class FarmerDashboardProvider extends ChangeNotifier {
 
     final referenceTime = _lastSuccessfulSync ?? _lastUpdated;
     if (referenceTime == null || DateTime.now().difference(referenceTime) > maxAge) {
-      await refresh(localeCode: _localeCode);
+      try {
+        await refresh(localeCode: _localeCode);
+      } catch (_) {
+        // Error already handled in refresh method, don't crash
+      }
     }
   }
 
