@@ -53,12 +53,19 @@ class HederaService {
     fallback: 'http://192.168.0.133:3001',
   );
 
-  static Future<List<HederaEntry>> getMyRegistry() async {
+  static Future<List<HederaEntry>> getMyRegistry({
+    DateTime? from,
+    DateTime? to,
+  }) async {
     try {
-      final response = await AuthService.authenticatedRequest(
-        'GET',
-        Uri.parse('$_baseUrl/api/v1/hedera/my-registry'),
-      );
+      final params = <String, String>{};
+      if (from != null) params['from'] = _formatDate(from);
+      if (to != null) params['to'] = _formatDate(to);
+
+      final uri = Uri.parse('$_baseUrl/api/v1/hedera/my-registry')
+          .replace(queryParameters: params.isNotEmpty ? params : null);
+
+      final response = await AuthService.authenticatedRequest('GET', uri);
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         final List data = body['data'] ?? [];
@@ -69,4 +76,7 @@ class HederaService {
       return [];
     }
   }
+
+  static String _formatDate(DateTime dt) =>
+      '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
 }

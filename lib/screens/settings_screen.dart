@@ -15,6 +15,7 @@ import '../screens/wallet/payment_methods_screen.dart';
 import 'customer/become_worker_screen.dart';
 import 'customer/worker_dashboard_screen.dart';
 import 'investor/hedera_registry_screen.dart';
+import 'investor/invoice_generator_screen.dart';
 import 'shared/proof_requests_screen.dart';
 import '../services/auth_service.dart';
 import '../providers/worker_lifecycle_provider.dart';
@@ -373,6 +374,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const HederaRegistryScreen(),
+                  ),
+                ),
+              ),
+              _buildSettingsTile(
+                context,
+                icon: Icons.receipt_long_rounded,
+                title: 'Invoice Generator',
+                subtitle: 'Generate PDF invoices from your activity',
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF2D6A4F), Color(0xFF1B4332)],
+                        ),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Text(
+                        'PDF',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+                    ),
+                  ],
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const InvoiceGeneratorScreen(),
                   ),
                 ),
               ),
