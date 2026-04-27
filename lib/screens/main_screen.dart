@@ -9,7 +9,7 @@ import 'customer/subscriptions_screen.dart';
 import 'customer/marketplace_screen.dart';
 
 // Farmer Screens
-import 'farmer/analytics_screen.dart';
+import 'farmer/farmer_operational_dashboard.dart';
 import 'farmer/worker_performance_dashboard.dart';
 // import 'farmer/products_screen.dart'; // Replaced by new implementation
 import 'farmer/land_management_screen.dart';
@@ -33,14 +33,36 @@ import 'investment_agent_screen.dart';
 import '../features/ai_assistant/ai_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final int initialIndex;
+
+  const MainScreen({super.key, this.initialIndex = 0});
+
+  static bool trySwitchToTab(BuildContext context, int index) {
+    final state = context.findAncestorStateOfType<_MainScreenState>();
+    if (state == null) return false;
+    state._switchToTab(index);
+    return true;
+  }
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
+  late int _currentIndex;
+
+  void _switchToTab(int index) {
+    if (index == _currentIndex) return;
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +115,7 @@ class _MainScreenState extends State<MainScreen> {
       ];
     } else if (role == 'farmer') {
       screens = [
-        const FarmerAnalyticsScreen(),
+        const FarmerOperationalDashboard(),
         const FarmerLandManagementScreen(),
         const MyProductsScreen(),
         const WorkerPerformanceDashboard(), // Worker Performance Dashboard
@@ -101,9 +123,9 @@ class _MainScreenState extends State<MainScreen> {
       ];
       items = [
         BottomNavigationBarItem(
-          icon: Icon(Icons.analytics_outlined),
-          activeIcon: Icon(Icons.analytics),
-          label: AppLocalizations.of(context)!.analytics,
+          icon: Icon(Icons.home_outlined),
+          activeIcon: Icon(Icons.home),
+          label: AppLocalizations.of(context)!.home,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.landscape_outlined),
@@ -213,6 +235,10 @@ class _MainScreenState extends State<MainScreen> {
       floatingActionButton: Builder(
         builder: (context) {
           if (role == 'investor' || role == 'farmer') {
+            if (role == 'farmer' && _currentIndex == 0) {
+              return const SizedBox.shrink();
+            }
+
             return SizedBox(
               width: 58,
               height: 58,
@@ -279,9 +305,7 @@ class _MainScreenState extends State<MainScreen> {
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
+            _switchToTab(index);
           },
           type: BottomNavigationBarType.fixed,
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,

@@ -62,7 +62,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get activeLabelUpper => 'ACTIF';
 
   @override
-  String get activeLands => 'Terres actives';
+  String get activeLands => 'Terrains Actifs';
 
   @override
   String activeOnCycle(String cycle) {
@@ -1180,8 +1180,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get failedToLoadContracts => 'Échec du chargement des contrats';
 
   @override
-  String get failedToLoadData =>
-      'Impossible de charger les données. Veuillez réessayer.';
+  String get failedToLoadData => 'Échec du chargement des données';
 
   @override
   String get failedToLoadFarm => 'Impossible de charger la ferme';
@@ -1677,7 +1676,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get inviteExistingWorker => 'Inviter un Travailleur Existant';
 
   @override
-  String get inviteToLand => 'Inviter sur le terrain';
+  String get inviteToLand =>
+      'Choisissez le terrain pour inviter des travailleurs :';
 
   @override
   String get inviteWorker => 'Inviter un travailleur';
@@ -1709,7 +1709,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get itemPlacedSuccess => 'Article placé avec succès !';
 
   @override
-  String get itemRequests => 'Demandes d\'articles';
+  String get itemRequests => 'Demandes d\'Articles';
 
   @override
   String get itemUpper => 'ARTICLE';
@@ -2213,7 +2213,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noInternetDescription =>
-      'Nous n\'avons pas pu nous connecter au serveur. Veuillez vérifier votre connexion Internet et réessayer.';
+      'Veuillez vérifier votre connexion internet et réessayer';
 
   @override
   String get noInvestmentsYet => 'Aucun investissement pour le moment';
@@ -2238,7 +2238,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucune affectation de terre pour le moment';
 
   @override
-  String get noLandsFound => 'Aucune terre trouvée';
+  String get noLandsFound => 'Aucun terrain trouvé';
 
   @override
   String get noLandsRented => 'Vous n\'avez encore loué aucune terre.';
@@ -2320,7 +2320,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notifications => 'Notifications';
 
   @override
-  String get notificationsTitle => 'Notifications';
+  String get notificationsTitle => 'Alertes';
 
   @override
   String get occupiedUpper => 'OCCUPÉ';
@@ -3207,7 +3207,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Veuillez sélectionner au moins une compétence';
 
   @override
-  String get selectLand => 'Sélectionner une Terre';
+  String get selectLand => 'Sélectionner Terrain';
 
   @override
   String get selectLanguage => 'Choisir la langue';
@@ -3307,7 +3307,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get soldUpper => 'VENDU';
 
   @override
-  String get somethingWentWrong => 'Quelque chose s\'est mal passé';
+  String get somethingWentWrong => 'Une erreur s\'est produite';
 
   @override
   String get soon => 'Bientôt';
@@ -3629,7 +3629,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tryAdjustingFilters => 'Essayez d\'ajuster les filtres';
 
   @override
-  String get tryAgain => 'Réessayer';
+  String get tryAgain => 'Veuillez réessayer';
 
   @override
   String get tryAgainUpper => 'RÉESSAYER';
@@ -4310,7 +4310,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get plannedCrops => 'Planifiés';
 
   @override
-  String get loading => 'Chargement';
+  String get loading => 'Chargement...';
 
   @override
   String get notesOptional => 'Notes (Optionnel)';
@@ -4515,4 +4515,144 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get verificationRate => 'Taux de Vérification';
+
+  @override
+  String get dashboardTitle => 'Tableau de Bord';
+
+  @override
+  String get openTasks => 'Tâches Ouvertes';
+
+  @override
+  String get monthlyRevenue => 'Revenu Mensuel';
+
+  @override
+  String get overdueTasks => 'Tâches En Retard';
+
+  @override
+  String get ownedAndRented => 'Possédés + Loués';
+
+  @override
+  String get onTrack => 'À L\'heure';
+
+  @override
+  String get alertCritical => 'Critique';
+
+  @override
+  String get alertWarning => 'Avertissement';
+
+  @override
+  String get alertInfo => 'Info';
+
+  @override
+  String get allSystemsOperational => 'Tous les Systèmes Opérationnels';
+
+  @override
+  String get noAlertsMessage => 'Aucune alerte critique pour le moment';
+
+  @override
+  String get quickActions => 'Actions Rapides';
+
+  @override
+  String get quickActionAddLand => 'Ajouter Terrain';
+
+  @override
+  String get quickActionReviewRequests => 'Examiner Demandes';
+
+  @override
+  String get quickActionInviteWorker => 'Inviter Travailleur';
+
+  @override
+  String get quickActionManageProducts => 'Gérer Produits';
+
+  @override
+  String get quickActionAIAssistant => 'Assistant IA';
+
+  @override
+  String get quickActionCropCalendar => 'Calendrier Cultures';
+
+  @override
+  String get yourLands => 'Vos Terrains';
+
+  @override
+  String landsCount(Object count) {
+    return '$count terrains';
+  }
+
+  @override
+  String get activeWorkers => 'Travailleurs Actifs';
+
+  @override
+  String get seeAll => 'Voir Tout';
+
+  @override
+  String get harvestReady => 'Prêt à Récolter';
+
+  @override
+  String get pendingRequests => 'Demandes En Attente';
+
+  @override
+  String get statusOwned => 'Possédé';
+
+  @override
+  String get statusRented => 'Loué';
+
+  @override
+  String get aiAssistantTitle => 'Assistant IA Farmy';
+
+  @override
+  String get aiAssistantSubtitle =>
+      'Demandez des insights, conseils ou analyses';
+
+  @override
+  String get aiAssistantCTA => 'Démarrer Chat';
+
+  @override
+  String get recentConversations => 'Conversations Récentes';
+
+  @override
+  String get noActiveWorkers => 'Aucun travailleur actif';
+
+  @override
+  String get inviteWorkersMessage =>
+      'Invitez des travailleurs pour gérer vos terrains';
+
+  @override
+  String get invite => 'Inviter';
+
+  @override
+  String get noLandsYet => 'Vous n\'avez pas encore de terrains';
+
+  @override
+  String get addFirstLandMessage =>
+      'Ajoutez votre premier terrain pour commencer';
+
+  @override
+  String get failedLoadDashboard => 'Échec du Chargement du Tableau de Bord';
+
+  @override
+  String get lowDurabilityAlert => 'Alerte Durabilité Faible';
+
+  @override
+  String get durabilityWarning => 'Avertissement Durabilité';
+
+  @override
+  String get repair => 'Réparer';
+
+  @override
+  String get check => 'Vérifier';
+
+  @override
+  String get harvestReadySoon => 'Récolte Bientôt Prête';
+
+  @override
+  String get harvestOverdue => 'Récolte En Retard';
+
+  @override
+  String get needsReview => 'À Vérifier';
+
+  @override
+  String get revenueTrendUp => 'Revenus en hausse';
+
+  @override
+  String get revenueTrendDown => 'Revenus en baisse';
 }

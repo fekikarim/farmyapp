@@ -63,7 +63,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get activeLabelUpper => 'ACTIVO';
 
   @override
-  String get activeLands => 'Tierras activas';
+  String get activeLands => 'Terrenos Activos';
 
   @override
   String activeOnCycle(String cycle) {
@@ -1168,8 +1168,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get failedToLoadContracts => 'Error al cargar los contratos';
 
   @override
-  String get failedToLoadData =>
-      'No se pudieron cargar los datos. Por favor, intenta de nuevo.';
+  String get failedToLoadData => 'Error al cargar datos';
 
   @override
   String get failedToLoadFarm => 'No se pudo cargar la granja';
@@ -1662,7 +1661,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get inviteExistingWorker => 'Inviter Trabajador Existente';
 
   @override
-  String get inviteToLand => 'Invitar al terreno';
+  String get inviteToLand => 'Elige a qué terreno invitar trabajadores:';
 
   @override
   String get inviteWorker => 'Invitar trabajador';
@@ -1693,7 +1692,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get itemPlacedSuccess => '¡Artículo colocado exitosamente!';
 
   @override
-  String get itemRequests => 'Solicitudes de artículos';
+  String get itemRequests => 'Solicitudes de Artículos';
 
   @override
   String get itemUpper => 'ARTÍCULO';
@@ -2197,7 +2196,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noInternetDescription =>
-      'No pudimos conectarnos al servidor. Por favor, verifica tu conexión a Internet e inténtalo de nuevo.';
+      'Verifica tu conexión a internet e intenta de nuevo';
 
   @override
   String get noInvestmentsYet => 'Aún no hay inversiones';
@@ -2220,7 +2219,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noLandAssignmentsYet => 'No hay asignaciones de tierra todavía';
 
   @override
-  String get noLandsFound => 'No se encontraron tierras';
+  String get noLandsFound => 'No se encontraron terrenos';
 
   @override
   String get noLandsRented => 'Todavía no has alquilado ninguna tierra.';
@@ -2303,7 +2302,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get notifications => 'Notificaciones';
 
   @override
-  String get notificationsTitle => 'Notifications';
+  String get notificationsTitle => 'Alertas';
 
   @override
   String get occupiedUpper => 'OCUPADO';
@@ -3609,7 +3608,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get tryAdjustingFilters => 'Intente ajustar los filtros';
 
   @override
-  String get tryAgain => 'Intentar de nuevo';
+  String get tryAgain => 'Por favor intenta de nuevo';
 
   @override
   String get tryAgainUpper => 'REINTENTAR';
@@ -4284,7 +4283,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get plannedCrops => 'Planificados';
 
   @override
-  String get loading => 'Cargando';
+  String get loading => 'Cargando...';
 
   @override
   String get notesOptional => 'Notas (Opcional)';
@@ -4490,4 +4489,142 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get verificationRate => 'Tasa de Verificación';
+
+  @override
+  String get dashboardTitle => 'Panel de Control';
+
+  @override
+  String get openTasks => 'Tareas Abiertas';
+
+  @override
+  String get monthlyRevenue => 'Ingreso Mensual';
+
+  @override
+  String get overdueTasks => 'Tareas Atrasadas';
+
+  @override
+  String get ownedAndRented => 'Propios + Alquilados';
+
+  @override
+  String get onTrack => 'A Tiempo';
+
+  @override
+  String get alertCritical => 'Crítico';
+
+  @override
+  String get alertWarning => 'Advertencia';
+
+  @override
+  String get alertInfo => 'Info';
+
+  @override
+  String get allSystemsOperational => 'Todos los Sistemas Operativos';
+
+  @override
+  String get noAlertsMessage => 'No hay alertas críticas en este momento';
+
+  @override
+  String get quickActions => 'Acciones Rápidas';
+
+  @override
+  String get quickActionAddLand => 'Agregar Terreno';
+
+  @override
+  String get quickActionReviewRequests => 'Revisar Solicitudes';
+
+  @override
+  String get quickActionInviteWorker => 'Invitar Trabajador';
+
+  @override
+  String get quickActionManageProducts => 'Gestionar Productos';
+
+  @override
+  String get quickActionAIAssistant => 'Asistente IA';
+
+  @override
+  String get quickActionCropCalendar => 'Calendario Cultivos';
+
+  @override
+  String get yourLands => 'Tus Terrenos';
+
+  @override
+  String landsCount(Object count) {
+    return '$count terrenos';
+  }
+
+  @override
+  String get activeWorkers => 'Trabajadores Activos';
+
+  @override
+  String get seeAll => 'Ver Todo';
+
+  @override
+  String get harvestReady => 'Listo para Cosecha';
+
+  @override
+  String get pendingRequests => 'Solicitudes Pendientes';
+
+  @override
+  String get statusOwned => 'Propio';
+
+  @override
+  String get statusRented => 'Alquilado';
+
+  @override
+  String get aiAssistantTitle => 'Asistente IA Farmy';
+
+  @override
+  String get aiAssistantSubtitle => 'Pide insights, consejos o análisis';
+
+  @override
+  String get aiAssistantCTA => 'Iniciar Chat';
+
+  @override
+  String get recentConversations => 'Conversaciones Recientes';
+
+  @override
+  String get noActiveWorkers => 'No hay trabajadores activos';
+
+  @override
+  String get inviteWorkersMessage =>
+      'Invita trabajadores para gestionar tus terrenos';
+
+  @override
+  String get invite => 'Invitar';
+
+  @override
+  String get noLandsYet => 'Aún no tienes terrenos';
+
+  @override
+  String get addFirstLandMessage => 'Agrega tu primer terreno para comenzar';
+
+  @override
+  String get failedLoadDashboard => 'Error al Cargar el Panel de Control';
+
+  @override
+  String get lowDurabilityAlert => 'Alerta de Durabilidad Baja';
+
+  @override
+  String get durabilityWarning => 'Advertencia de Durabilidad';
+
+  @override
+  String get repair => 'Reparar';
+
+  @override
+  String get check => 'Verificar';
+
+  @override
+  String get harvestReadySoon => 'Cosecha Casi Lista';
+
+  @override
+  String get harvestOverdue => 'Cosecha Atrasada';
+
+  @override
+  String get needsReview => 'Necesita Revisión';
+
+  @override
+  String get revenueTrendUp => 'Ingresos en aumento';
+
+  @override
+  String get revenueTrendDown => 'Ingresos en disminución';
 }
