@@ -6,11 +6,13 @@ import 'package:provider/provider.dart';
 import '../../models/land_model.dart';
 import '../../providers/land_provider.dart';
 import '../../providers/subscription_provider.dart';
+import '../../theme/app_theme.dart';
 import '../../widgets/subscription_limit_bar.dart';
 import 'add_land_screen.dart';
 import 'rental_requests_screen.dart';
 import 'edit_land_sheet.dart';
 import 'workforce_screen.dart';
+import 'crop_calendar_screen.dart';
 import '../../services/auth_service.dart';
 import '../../models/user_model.dart';
 import '../../models/land_rental_model.dart';
@@ -752,7 +754,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
     return Row(
       children: [
         Expanded(
-          child: ElevatedButton.icon(
+          child: ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               Navigator.push(
@@ -766,11 +768,6 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                 ),
               );
             },
-            icon: Icon(Icons.people_alt_outlined),
-            label: Text(
-              AppLocalizations.of(context)!.workforce,
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
               foregroundColor: Colors.white,
@@ -780,6 +777,32 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
               ),
               elevation: 4,
             ),
+            child: const Icon(Icons.people_alt_outlined, size: 24),
+          ),
+        ),
+        const SizedBox(width: 12),
+        // Crop Calendar Button
+        Expanded(
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const CropCalendarScreen(),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.secondaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 18),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 4,
+            ),
+            child: const Icon(Icons.calendar_today_outlined, size: 24),
           ),
         ),
         const SizedBox(width: 16),

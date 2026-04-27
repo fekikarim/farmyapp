@@ -1160,7 +1160,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToLoadContracts => 'Failed to load contracts';
 
   @override
-  String get failedToLoadData => 'Failed to load data. Please try again.';
+  String get failedToLoadData => 'Failed to load data';
 
   @override
   String get failedToLoadFarm => 'Failed to load farm';
@@ -1647,7 +1647,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inviteExistingWorker => 'Invite Existing Worker';
 
   @override
-  String get inviteToLand => 'Invite to Land';
+  String get inviteToLand => 'Choose which land to invite workers to:';
 
   @override
   String get inviteWorker => 'Invite Worker';
@@ -2175,7 +2175,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noInternetDescription =>
-      'We could not connect to the server. Please check your internet connection and try again.';
+      'Please check your internet connection and try again';
 
   @override
   String get noInvestmentsYet => 'No investments yet';
@@ -2280,7 +2280,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifications => 'Notifications';
 
   @override
-  String get notificationsTitle => 'Notifications';
+  String get notificationsTitle => 'Alerts';
 
   @override
   String get occupiedUpper => 'OCCUPIED';
@@ -3570,7 +3570,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tryAdjustingFilters => 'Try adjusting filters';
 
   @override
-  String get tryAgain => 'Try Again';
+  String get tryAgain => 'Please try again';
 
   @override
   String get tryAgainUpper => 'TRY AGAIN';
@@ -4146,4 +4146,438 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get madeWithLove => 'Made with ❤️ by the Be.net Team';
+
+  @override
+  String get cropCalendarTitle => 'Crop Calendar';
+
+  @override
+  String get monthView => 'Month';
+
+  @override
+  String get yearView => 'Year';
+
+  @override
+  String get plantingDate => 'Planting Date';
+
+  @override
+  String get expectedHarvest => 'Expected Harvest';
+
+  @override
+  String get cropRotation => 'Crop Rotation';
+
+  @override
+  String get addCropPlan => 'Add Crop Plan';
+
+  @override
+  String get noCropsMessage => 'No crops scheduled';
+
+  @override
+  String get growingStatus => 'Growing';
+
+  @override
+  String get readyStatus => 'Ready';
+
+  @override
+  String get completedStatus => 'Completed';
+
+  @override
+  String get plannedStatus => 'Planned';
+
+  @override
+  String get activeStatus => 'Active';
+
+  @override
+  String get harvestedStatus => 'Harvested';
+
+  @override
+  String get overdueStatus => 'Overdue';
+
+  @override
+  String daysUntilHarvest(Object days) {
+    return '$days days until harvest';
+  }
+
+  @override
+  String get readyToHarvest => 'Ready to harvest';
+
+  @override
+  String get selectCrop => 'Select Crop';
+
+  @override
+  String get newCropPlan => 'New Crop Plan';
+
+  @override
+  String get schedulePlanting => 'Schedule your next planting';
+
+  @override
+  String get expectedHarvestDate => 'Expected Harvest Date';
+
+  @override
+  String get cropCycle => 'Crop Cycle';
+
+  @override
+  String get days => 'days';
+
+  @override
+  String get perennial => 'perennial';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get cropPlanCreated => 'Crop plan created successfully';
+
+  @override
+  String get cropPlanFailed => 'Failed to create crop plan';
+
+  @override
+  String get activeCrops => 'Active';
+
+  @override
+  String get readySoon => 'Ready Soon';
+
+  @override
+  String get plannedCrops => 'Planned';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get notesOptional => 'Notes (Optional)';
+
+  @override
+  String get addNotesHint => 'Add any notes about this crop plan...';
+
+  @override
+  String get saving => 'Saving...';
+
+  @override
+  String get createPlan => 'Create Plan';
+
+  @override
+  String get selectALand => 'Select a land';
+
+  @override
+  String get pleaseSelectLand => 'Please select a land';
+
+  @override
+  String get pleaseSelectCrop => 'Please select a crop';
+
+  @override
+  String get loadingCrops => 'Loading available crops...';
+
+  @override
+  String get noCropsAvailable => 'No crops available';
+
+  @override
+  String get addCropsFirst => 'Add crops to the shop first, or try reloading.';
+
+  @override
+  String get reload => 'Reload';
+
+  @override
+  String get noCropVariantsFound => 'No crop variants found';
+
+  @override
+  String cycleDaysLabel(Object days) {
+    return 'Cycle: $days days';
+  }
+
+  @override
+  String get perennialSuffix => '(perennial)';
+
+  @override
+  String get failedToLoadCrops => 'Failed to load crops';
+
+  @override
+  String get cropPlanCreatedSuccess => 'Crop plan created successfully';
+
+  @override
+  String get failedToCreatePlan => 'Failed to create plan';
+
+  @override
+  String get fillAllRequiredFields => 'Please fill all required fields';
+
+  @override
+  String get legendTitle => 'Legend';
+
+  @override
+  String get plantedLabel => 'Planted';
+
+  @override
+  String get plantingLabel => 'Planting';
+
+  @override
+  String get harvestLabel => 'Harvest';
+
+  @override
+  String get readyLabel => 'Ready!';
+
+  @override
+  String get nowLabel => 'Now';
+
+  @override
+  String get harvestButton => 'Harvest';
+
+  @override
+  String get plantButton => 'Plant';
+
+  @override
+  String cropCount(Object count) {
+    return '$count crop';
+  }
+
+  @override
+  String cropCount_plural(Object count) {
+    return '$count crops';
+  }
+
+  @override
+  String get noCropsThisMonth => 'No crops this month';
+
+  @override
+  String overdueByDays(Object days) {
+    return 'Overdue by $days days';
+  }
+
+  @override
+  String get plantToday => 'Plant today!';
+
+  @override
+  String plantInDays(Object days) {
+    return 'Plant in $days days';
+  }
+
+  @override
+  String get readyToHarvestStatus => 'Ready to harvest';
+
+  @override
+  String get growingStatusShort => 'Growing';
+
+  @override
+  String get producesLabel => 'Produces';
+
+  @override
+  String get perCycle => 'per cycle';
+
+  @override
+  String get workerPerformanceTitle => 'Workers';
+
+  @override
+  String get totalWorkers => 'Total Workers';
+
+  @override
+  String get avgPerformanceScore => 'Avg Score';
+
+  @override
+  String get totalTasksCompleted => 'Tasks Completed';
+
+  @override
+  String get overallVerificationRate => 'Verification Rate';
+
+  @override
+  String get verifiedProofs => 'Verified';
+
+  @override
+  String get rejectedProofs => 'Rejected';
+
+  @override
+  String get averageCompletionTime => 'Avg Time';
+
+  @override
+  String get performanceScore => 'Performance Score';
+
+  @override
+  String get topPerformers => 'Top Performers';
+
+  @override
+  String get needsAttention => 'Needs Attention';
+
+  @override
+  String get filterByLand => 'Filter by Land';
+
+  @override
+  String get filterByDate => 'Filter by Date';
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get noWorkersFound => 'No workers found';
+
+  @override
+  String get noDataForFilters => 'No data for selected filters';
+
+  @override
+  String get errorLoadingPerformance => 'Error loading performance data';
+
+  @override
+  String get allTime => 'All Time';
+
+  @override
+  String get thisWeek => 'This Week';
+
+  @override
+  String get thisMonth => 'This Month';
+
+  @override
+  String get scoreHighToLow => 'Score: High to Low';
+
+  @override
+  String get scoreLowToHigh => 'Score: Low to High';
+
+  @override
+  String get tasksHighToLow => 'Tasks: Most to Least';
+
+  @override
+  String get nameAZ => 'Name: A-Z';
+
+  @override
+  String get workerListTitle => 'Worker Performance';
+
+  @override
+  String get workersCount => 'workers';
+
+  @override
+  String get tasksCompleted => 'Tasks';
+
+  @override
+  String get verificationRate => 'Verification Rate';
+
+  @override
+  String get dashboardTitle => 'Dashboard';
+
+  @override
+  String get openTasks => 'Open Tasks';
+
+  @override
+  String get monthlyRevenue => 'Monthly Revenue';
+
+  @override
+  String get overdueTasks => 'Overdue Tasks';
+
+  @override
+  String get ownedAndRented => 'Owned + Rented';
+
+  @override
+  String get onTrack => 'On Track';
+
+  @override
+  String get alertCritical => 'Critical';
+
+  @override
+  String get alertWarning => 'Warning';
+
+  @override
+  String get alertInfo => 'Info';
+
+  @override
+  String get allSystemsOperational => 'All Systems Operational';
+
+  @override
+  String get noAlertsMessage => 'No critical alerts at this time';
+
+  @override
+  String get quickActions => 'Quick Actions';
+
+  @override
+  String get quickActionAddLand => 'Add Land';
+
+  @override
+  String get quickActionReviewRequests => 'Review Requests';
+
+  @override
+  String get quickActionInviteWorker => 'Invite Worker';
+
+  @override
+  String get quickActionManageProducts => 'Manage Products';
+
+  @override
+  String get quickActionAIAssistant => 'AI Assistant';
+
+  @override
+  String get quickActionCropCalendar => 'Crop Calendar';
+
+  @override
+  String get yourLands => 'Your Lands';
+
+  @override
+  String landsCount(Object count) {
+    return '$count lands';
+  }
+
+  @override
+  String get activeWorkers => 'Active Workers';
+
+  @override
+  String get seeAll => 'See All';
+
+  @override
+  String get harvestReady => 'Harvest Ready';
+
+  @override
+  String get pendingRequests => 'Pending Requests';
+
+  @override
+  String get statusOwned => 'Owned';
+
+  @override
+  String get statusRented => 'Rented';
+
+  @override
+  String get aiAssistantTitle => 'Farmy AI Assistant';
+
+  @override
+  String get aiAssistantSubtitle => 'Ask for insights, advice, or analysis';
+
+  @override
+  String get aiAssistantCTA => 'Start Chat';
+
+  @override
+  String get recentConversations => 'Recent Conversations';
+
+  @override
+  String get noActiveWorkers => 'No active workers';
+
+  @override
+  String get inviteWorkersMessage => 'Invite workers to help manage your lands';
+
+  @override
+  String get invite => 'Invite';
+
+  @override
+  String get noLandsYet => 'You don\'t have any lands yet';
+
+  @override
+  String get addFirstLandMessage => 'Add your first land to get started';
+
+  @override
+  String get failedLoadDashboard => 'Failed to Load Dashboard';
+
+  @override
+  String get lowDurabilityAlert => 'Low Durability Alert';
+
+  @override
+  String get durabilityWarning => 'Durability Warning';
+
+  @override
+  String get repair => 'Repair';
+
+  @override
+  String get check => 'Check';
+
+  @override
+  String get harvestReadySoon => 'Harvest Ready Soon';
+
+  @override
+  String get harvestOverdue => 'Harvest Overdue';
+
+  @override
+  String get needsReview => 'Needs Review';
+
+  @override
+  String get revenueTrendUp => 'Revenue trending up';
+
+  @override
+  String get revenueTrendDown => 'Revenue trending down';
 }

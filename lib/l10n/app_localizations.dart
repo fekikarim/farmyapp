@@ -2185,7 +2185,7 @@ abstract class AppLocalizations {
   /// No description provided for @failedToLoadData.
   ///
   /// In en, this message translates to:
-  /// **'Failed to load data. Please try again.'**
+  /// **'Failed to load data'**
   String get failedToLoadData;
 
   /// No description provided for @failedToLoadFarm.
@@ -3065,7 +3065,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteToLand.
   ///
   /// In en, this message translates to:
-  /// **'Invite to Land'**
+  /// **'Choose which land to invite workers to:'**
   String get inviteToLand;
 
   /// No description provided for @inviteWorker.
@@ -4037,7 +4037,7 @@ abstract class AppLocalizations {
   /// No description provided for @noInternetDescription.
   ///
   /// In en, this message translates to:
-  /// **'We could not connect to the server. Please check your internet connection and try again.'**
+  /// **'Please check your internet connection and try again'**
   String get noInternetDescription;
 
   /// No description provided for @noInvestmentsYet.
@@ -4241,7 +4241,7 @@ abstract class AppLocalizations {
   /// No description provided for @notificationsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Notifications'**
+  /// **'Alerts'**
   String get notificationsTitle;
 
   /// No description provided for @occupiedUpper.
@@ -6593,7 +6593,7 @@ abstract class AppLocalizations {
   /// No description provided for @tryAgain.
   ///
   /// In en, this message translates to:
-  /// **'Try Again'**
+  /// **'Please try again'**
   String get tryAgain;
 
   /// No description provided for @tryAgainUpper.
@@ -7633,6 +7633,846 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Made with ❤️ by the Be.net Team'**
   String get madeWithLove;
+
+  /// No description provided for @cropCalendarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Crop Calendar'**
+  String get cropCalendarTitle;
+
+  /// No description provided for @monthView.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get monthView;
+
+  /// No description provided for @yearView.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get yearView;
+
+  /// No description provided for @plantingDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Planting Date'**
+  String get plantingDate;
+
+  /// No description provided for @expectedHarvest.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected Harvest'**
+  String get expectedHarvest;
+
+  /// No description provided for @cropRotation.
+  ///
+  /// In en, this message translates to:
+  /// **'Crop Rotation'**
+  String get cropRotation;
+
+  /// No description provided for @addCropPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Crop Plan'**
+  String get addCropPlan;
+
+  /// No description provided for @noCropsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No crops scheduled'**
+  String get noCropsMessage;
+
+  /// No description provided for @growingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Growing'**
+  String get growingStatus;
+
+  /// No description provided for @readyStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get readyStatus;
+
+  /// No description provided for @completedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completedStatus;
+
+  /// No description provided for @plannedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned'**
+  String get plannedStatus;
+
+  /// No description provided for @activeStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeStatus;
+
+  /// No description provided for @harvestedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Harvested'**
+  String get harvestedStatus;
+
+  /// No description provided for @overdueStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get overdueStatus;
+
+  /// No description provided for @daysUntilHarvest.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days until harvest'**
+  String daysUntilHarvest(Object days);
+
+  /// No description provided for @readyToHarvest.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to harvest'**
+  String get readyToHarvest;
+
+  /// No description provided for @selectCrop.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Crop'**
+  String get selectCrop;
+
+  /// No description provided for @newCropPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'New Crop Plan'**
+  String get newCropPlan;
+
+  /// No description provided for @schedulePlanting.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule your next planting'**
+  String get schedulePlanting;
+
+  /// No description provided for @expectedHarvestDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected Harvest Date'**
+  String get expectedHarvestDate;
+
+  /// No description provided for @cropCycle.
+  ///
+  /// In en, this message translates to:
+  /// **'Crop Cycle'**
+  String get cropCycle;
+
+  /// No description provided for @days.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get days;
+
+  /// No description provided for @perennial.
+  ///
+  /// In en, this message translates to:
+  /// **'perennial'**
+  String get perennial;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @cropPlanCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Crop plan created successfully'**
+  String get cropPlanCreated;
+
+  /// No description provided for @cropPlanFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create crop plan'**
+  String get cropPlanFailed;
+
+  /// No description provided for @activeCrops.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeCrops;
+
+  /// No description provided for @readySoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready Soon'**
+  String get readySoon;
+
+  /// No description provided for @plannedCrops.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned'**
+  String get plannedCrops;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// No description provided for @notesOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (Optional)'**
+  String get notesOptional;
+
+  /// No description provided for @addNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add any notes about this crop plan...'**
+  String get addNotesHint;
+
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get saving;
+
+  /// No description provided for @createPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Plan'**
+  String get createPlan;
+
+  /// No description provided for @selectALand.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a land'**
+  String get selectALand;
+
+  /// No description provided for @pleaseSelectLand.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a land'**
+  String get pleaseSelectLand;
+
+  /// No description provided for @pleaseSelectCrop.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a crop'**
+  String get pleaseSelectCrop;
+
+  /// No description provided for @loadingCrops.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading available crops...'**
+  String get loadingCrops;
+
+  /// No description provided for @noCropsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No crops available'**
+  String get noCropsAvailable;
+
+  /// No description provided for @addCropsFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Add crops to the shop first, or try reloading.'**
+  String get addCropsFirst;
+
+  /// No description provided for @reload.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload'**
+  String get reload;
+
+  /// No description provided for @noCropVariantsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No crop variants found'**
+  String get noCropVariantsFound;
+
+  /// No description provided for @cycleDaysLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle: {days} days'**
+  String cycleDaysLabel(Object days);
+
+  /// No description provided for @perennialSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'(perennial)'**
+  String get perennialSuffix;
+
+  /// No description provided for @failedToLoadCrops.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load crops'**
+  String get failedToLoadCrops;
+
+  /// No description provided for @cropPlanCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Crop plan created successfully'**
+  String get cropPlanCreatedSuccess;
+
+  /// No description provided for @failedToCreatePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create plan'**
+  String get failedToCreatePlan;
+
+  /// No description provided for @fillAllRequiredFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all required fields'**
+  String get fillAllRequiredFields;
+
+  /// No description provided for @legendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Legend'**
+  String get legendTitle;
+
+  /// No description provided for @plantedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Planted'**
+  String get plantedLabel;
+
+  /// No description provided for @plantingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Planting'**
+  String get plantingLabel;
+
+  /// No description provided for @harvestLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Harvest'**
+  String get harvestLabel;
+
+  /// No description provided for @readyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready!'**
+  String get readyLabel;
+
+  /// No description provided for @nowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get nowLabel;
+
+  /// No description provided for @harvestButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Harvest'**
+  String get harvestButton;
+
+  /// No description provided for @plantButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant'**
+  String get plantButton;
+
+  /// No description provided for @cropCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} crop'**
+  String cropCount(Object count);
+
+  /// No description provided for @cropCount_plural.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} crops'**
+  String cropCount_plural(Object count);
+
+  /// No description provided for @noCropsThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'No crops this month'**
+  String get noCropsThisMonth;
+
+  /// No description provided for @overdueByDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue by {days} days'**
+  String overdueByDays(Object days);
+
+  /// No description provided for @plantToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant today!'**
+  String get plantToday;
+
+  /// No description provided for @plantInDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant in {days} days'**
+  String plantInDays(Object days);
+
+  /// No description provided for @readyToHarvestStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to harvest'**
+  String get readyToHarvestStatus;
+
+  /// No description provided for @growingStatusShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Growing'**
+  String get growingStatusShort;
+
+  /// No description provided for @producesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Produces'**
+  String get producesLabel;
+
+  /// No description provided for @perCycle.
+  ///
+  /// In en, this message translates to:
+  /// **'per cycle'**
+  String get perCycle;
+
+  /// No description provided for @workerPerformanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Workers'**
+  String get workerPerformanceTitle;
+
+  /// No description provided for @totalWorkers.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Workers'**
+  String get totalWorkers;
+
+  /// No description provided for @avgPerformanceScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Score'**
+  String get avgPerformanceScore;
+
+  /// No description provided for @totalTasksCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks Completed'**
+  String get totalTasksCompleted;
+
+  /// No description provided for @overallVerificationRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Rate'**
+  String get overallVerificationRate;
+
+  /// No description provided for @verifiedProofs.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get verifiedProofs;
+
+  /// No description provided for @rejectedProofs.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejectedProofs;
+
+  /// No description provided for @averageCompletionTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Time'**
+  String get averageCompletionTime;
+
+  /// No description provided for @performanceScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance Score'**
+  String get performanceScore;
+
+  /// No description provided for @topPerformers.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Performers'**
+  String get topPerformers;
+
+  /// No description provided for @needsAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs Attention'**
+  String get needsAttention;
+
+  /// No description provided for @filterByLand.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Land'**
+  String get filterByLand;
+
+  /// No description provided for @filterByDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Date'**
+  String get filterByDate;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortBy;
+
+  /// No description provided for @noWorkersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No workers found'**
+  String get noWorkersFound;
+
+  /// No description provided for @noDataForFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'No data for selected filters'**
+  String get noDataForFilters;
+
+  /// No description provided for @errorLoadingPerformance.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading performance data'**
+  String get errorLoadingPerformance;
+
+  /// No description provided for @allTime.
+  ///
+  /// In en, this message translates to:
+  /// **'All Time'**
+  String get allTime;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This Week'**
+  String get thisWeek;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This Month'**
+  String get thisMonth;
+
+  /// No description provided for @scoreHighToLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Score: High to Low'**
+  String get scoreHighToLow;
+
+  /// No description provided for @scoreLowToHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Score: Low to High'**
+  String get scoreLowToHigh;
+
+  /// No description provided for @tasksHighToLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks: Most to Least'**
+  String get tasksHighToLow;
+
+  /// No description provided for @nameAZ.
+  ///
+  /// In en, this message translates to:
+  /// **'Name: A-Z'**
+  String get nameAZ;
+
+  /// No description provided for @workerListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker Performance'**
+  String get workerListTitle;
+
+  /// No description provided for @workersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'workers'**
+  String get workersCount;
+
+  /// No description provided for @tasksCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks'**
+  String get tasksCompleted;
+
+  /// No description provided for @verificationRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Rate'**
+  String get verificationRate;
+
+  /// No description provided for @dashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashboardTitle;
+
+  /// No description provided for @openTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Tasks'**
+  String get openTasks;
+
+  /// No description provided for @monthlyRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Revenue'**
+  String get monthlyRevenue;
+
+  /// No description provided for @overdueTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue Tasks'**
+  String get overdueTasks;
+
+  /// No description provided for @ownedAndRented.
+  ///
+  /// In en, this message translates to:
+  /// **'Owned + Rented'**
+  String get ownedAndRented;
+
+  /// No description provided for @onTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'On Track'**
+  String get onTrack;
+
+  /// No description provided for @alertCritical.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical'**
+  String get alertCritical;
+
+  /// No description provided for @alertWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get alertWarning;
+
+  /// No description provided for @alertInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get alertInfo;
+
+  /// No description provided for @allSystemsOperational.
+  ///
+  /// In en, this message translates to:
+  /// **'All Systems Operational'**
+  String get allSystemsOperational;
+
+  /// No description provided for @noAlertsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No critical alerts at this time'**
+  String get noAlertsMessage;
+
+  /// No description provided for @quickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Actions'**
+  String get quickActions;
+
+  /// No description provided for @quickActionAddLand.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Land'**
+  String get quickActionAddLand;
+
+  /// No description provided for @quickActionReviewRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Requests'**
+  String get quickActionReviewRequests;
+
+  /// No description provided for @quickActionInviteWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Worker'**
+  String get quickActionInviteWorker;
+
+  /// No description provided for @quickActionManageProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Products'**
+  String get quickActionManageProducts;
+
+  /// No description provided for @quickActionAIAssistant.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Assistant'**
+  String get quickActionAIAssistant;
+
+  /// No description provided for @quickActionCropCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Crop Calendar'**
+  String get quickActionCropCalendar;
+
+  /// No description provided for @yourLands.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Lands'**
+  String get yourLands;
+
+  /// No description provided for @landsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} lands'**
+  String landsCount(Object count);
+
+  /// No description provided for @activeWorkers.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Workers'**
+  String get activeWorkers;
+
+  /// No description provided for @seeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See All'**
+  String get seeAll;
+
+  /// No description provided for @harvestReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Harvest Ready'**
+  String get harvestReady;
+
+  /// No description provided for @pendingRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Requests'**
+  String get pendingRequests;
+
+  /// No description provided for @statusOwned.
+  ///
+  /// In en, this message translates to:
+  /// **'Owned'**
+  String get statusOwned;
+
+  /// No description provided for @statusRented.
+  ///
+  /// In en, this message translates to:
+  /// **'Rented'**
+  String get statusRented;
+
+  /// No description provided for @aiAssistantTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Farmy AI Assistant'**
+  String get aiAssistantTitle;
+
+  /// No description provided for @aiAssistantSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for insights, advice, or analysis'**
+  String get aiAssistantSubtitle;
+
+  /// No description provided for @aiAssistantCTA.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Chat'**
+  String get aiAssistantCTA;
+
+  /// No description provided for @recentConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Conversations'**
+  String get recentConversations;
+
+  /// No description provided for @noActiveWorkers.
+  ///
+  /// In en, this message translates to:
+  /// **'No active workers'**
+  String get noActiveWorkers;
+
+  /// No description provided for @inviteWorkersMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite workers to help manage your lands'**
+  String get inviteWorkersMessage;
+
+  /// No description provided for @invite.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite'**
+  String get invite;
+
+  /// No description provided for @noLandsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have any lands yet'**
+  String get noLandsYet;
+
+  /// No description provided for @addFirstLandMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first land to get started'**
+  String get addFirstLandMessage;
+
+  /// No description provided for @failedLoadDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to Load Dashboard'**
+  String get failedLoadDashboard;
+
+  /// No description provided for @lowDurabilityAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'Low Durability Alert'**
+  String get lowDurabilityAlert;
+
+  /// No description provided for @durabilityWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Durability Warning'**
+  String get durabilityWarning;
+
+  /// No description provided for @repair.
+  ///
+  /// In en, this message translates to:
+  /// **'Repair'**
+  String get repair;
+
+  /// No description provided for @check.
+  ///
+  /// In en, this message translates to:
+  /// **'Check'**
+  String get check;
+
+  /// No description provided for @harvestReadySoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Harvest Ready Soon'**
+  String get harvestReadySoon;
+
+  /// No description provided for @harvestOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Harvest Overdue'**
+  String get harvestOverdue;
+
+  /// No description provided for @needsReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs Review'**
+  String get needsReview;
+
+  /// No description provided for @revenueTrendUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue trending up'**
+  String get revenueTrendUp;
+
+  /// No description provided for @revenueTrendDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue trending down'**
+  String get revenueTrendDown;
 }
 
 class _AppLocalizationsDelegate
