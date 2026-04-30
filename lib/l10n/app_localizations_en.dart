@@ -2171,11 +2171,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noHistoryYet => 'No history yet';
 
   @override
-  String get noInternetConnection => 'No Internet Connection';
+  String get noInternetConnection => 'Connection Issue';
 
   @override
   String get noInternetDescription =>
-      'Please check your internet connection and try again';
+      'We could not connect to the server. Please check your internet connection and try again.';
 
   @override
   String get noInvestmentsYet => 'No investments yet';

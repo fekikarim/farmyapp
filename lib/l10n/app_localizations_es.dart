@@ -2192,7 +2192,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noHistoryYet => 'Aún no hay historial';
 
   @override
-  String get noInternetConnection => 'Sin conexión a Internet';
+  String get noInternetConnection => 'Problema de conexión';
 
   @override
   String get noInternetDescription =>

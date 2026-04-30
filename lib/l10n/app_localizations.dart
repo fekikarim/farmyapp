@@ -4031,13 +4031,13 @@ abstract class AppLocalizations {
   /// No description provided for @noInternetConnection.
   ///
   /// In en, this message translates to:
-  /// **'No Internet Connection'**
+  /// **'Connection Issue'**
   String get noInternetConnection;
 
   /// No description provided for @noInternetDescription.
   ///
   /// In en, this message translates to:
-  /// **'Please check your internet connection and try again'**
+  /// **'We could not connect to the server. Please check your internet connection and try again.'**
   String get noInternetDescription;
 
   /// No description provided for @noInvestmentsYet.

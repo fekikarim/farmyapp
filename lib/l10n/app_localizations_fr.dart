@@ -2209,7 +2209,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noHistoryYet => 'Pas encore d\'historique';
 
   @override
-  String get noInternetConnection => 'Pas de connexion Internet';
+  String get noInternetConnection => 'Problème de connexion';
 
   @override
   String get noInternetDescription =>
