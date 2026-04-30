@@ -53,11 +53,11 @@ class AuthService {
     try {
       final response = await http
           .get(Uri.parse('$_baseUrl/api/v1/health'))
-          .timeout(const Duration(seconds: 5));
+          .timeout(const Duration(seconds: 10));
 
       return response.statusCode == 200;
     } catch (e) {
-      print('Server Health Check Failed: $e');
+      print('Server Health Check Failed ($baseUrl): $e');
       return false;
     }
   }

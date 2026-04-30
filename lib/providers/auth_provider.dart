@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/notification_service.dart';
@@ -32,9 +33,9 @@ class AuthProvider with ChangeNotifier {
     try {
       _hasConnectionError = false;
 
-      // Proactively check server health first
-      final isOnline = await AuthService.checkServerHealth();
-      if (!isOnline) {
+      // 1. Check physical connectivity first
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult.contains(ConnectivityResult.none)) {
         _hasConnectionError = true;
         _isLoading = false;
         _isInitializing = false;
@@ -42,9 +43,11 @@ class AuthProvider with ChangeNotifier {
         return;
       }
 
-      final hasRefreshToken =
-          await AuthService.getAccessToken() !=
-          null; // Simple check if we were logged in
+      // 2. Proactively check server health, but don't hard-block if it's just a transient issue
+      // and we have internet. This avoids the "No Internet" screen when the device is online.
+      await AuthService.checkServerHealth();
+      
+      final hasRefreshToken = await AuthService.getAccessToken() != null;
       if (hasRefreshToken) {
         // Try to refresh tokens first
         final refreshSuccess = await AuthService.refreshTokens();
@@ -74,7 +77,17 @@ class AuthProvider with ChangeNotifier {
           _user = localUser.copyWith(isBanned: true);
         }
       } else if (e.toString().contains('Server connection failed')) {
-        _hasConnectionError = true;
+        // Only set connection error if we are sure there's no internet.
+        // If we have internet but server is down, we don't want to show the NoInternet screen
+        // because Apple Reviewers will reject it as a bug (since they have internet).
+        final connectivityResult = await Connectivity().checkConnectivity();
+        if (connectivityResult.contains(ConnectivityResult.none)) {
+          _hasConnectionError = true;
+        } else {
+          // Internet is UP, but server is DOWN. 
+          // We can just log it and stay on Login screen or show a different error.
+          print('Server is unreachable despite active internet connection.');
+        }
       }
     }
 
