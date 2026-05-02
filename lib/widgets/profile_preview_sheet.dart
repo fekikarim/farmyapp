@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'dart:ui';
 
 import 'package:farmyapp/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -261,6 +260,12 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
     if (user == null) return _buildErrorView(theme);
 
     final profile = user.profile;
+    
+    // Check if profile is discoverable - if not, show restricted view
+    final isDiscoverable = profile?.discoverable ?? true;
+    if (!isDiscoverable) {
+      return _buildRestrictedView(theme, user);
+    }
     final isDark = theme.brightness == Brightness.dark;
     final name = _displayName(user);
     final username = _optional(profile?.username);
@@ -429,6 +434,7 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
     final coverUrl =
         _resolveAssetUrl(profile?.coverImage) ??
         _resolveAssetUrl(profile?.picture);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Stack(
       fit: StackFit.expand,
@@ -441,20 +447,23 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
             fallback: _buildCoverFallback(theme),
             semanticLabel: 'Profile cover image',
           ),
-        BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: const SizedBox.expand(),
-        ),
+        // Subtle dark overlay for text readability - NO BLUR
         DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                Colors.black.withValues(alpha: 0.28),
-                Colors.black.withValues(alpha: 0.12),
-                Colors.black.withValues(alpha: 0.42),
-              ],
+              colors: isDark
+                  ? [
+                      Colors.black.withValues(alpha: 0.45),
+                      Colors.black.withValues(alpha: 0.25),
+                      Colors.black.withValues(alpha: 0.55),
+                    ]
+                  : [
+                      Colors.black.withValues(alpha: 0.32),
+                      Colors.black.withValues(alpha: 0.18),
+                      Colors.black.withValues(alpha: 0.48),
+                    ],
             ),
           ),
         ),
@@ -926,7 +935,7 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
       icon: Icons.link_rounded,
       child: Column(
         children: [
-          if (_optional(user.email) != null)
+          if (_shouldShowEmail(user))
             _buildLinkTile(
               theme,
               Icons.mail_outline_rounded,
@@ -1229,6 +1238,81 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
     );
   }
 
+  Widget _buildRestrictedView(ThemeData theme, User user) {
+    final color = theme.colorScheme.primary;
+    final name = _displayName(user);
+    final profile = user.profile;
+    final l10n = AppLocalizations.of(context);
+    
+    return Center(
+      key: const ValueKey('profile-preview-restricted'),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Align(alignment: Alignment.centerRight, child: _buildCloseButton()),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.10),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.visibility_off_rounded, size: 58, color: color),
+            ),
+            const SizedBox(height: 22),
+            Text(
+              l10n?.privacyRestricted ?? 'Profile Hidden',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              '$name has chosen to hide their profile from the marketplace. Their profile is not currently discoverable.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.62),
+                height: 1.45,
+              ),
+            ),
+            if (profile?.completenessScore != null) ...[
+              const SizedBox(height: 26),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.insights_rounded, size: 18, color: color),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Profile ${profile!.completenessScore}% complete',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            const SizedBox(height: 26),
+            ElevatedButton.icon(
+              onPressed: _fetchProfile,
+              icon: const Icon(Icons.refresh_rounded),
+              label: Text(l10n?.retryButton ?? 'Refresh'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   String _errorTitle(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     switch (_errorType) {
@@ -1266,10 +1350,19 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
 
   bool _hasLinksOrContact(User user) {
     final profile = user.profile;
-    return _optional(user.email) != null ||
+    final showContact = profile?.showContactInfo ?? false;
+    // Only show email if showContactInfo is enabled
+    final hasContact = showContact && _optional(user.email) != null;
+    return hasContact ||
         _optional(profile?.linkedin) != null ||
         _optional(profile?.website) != null ||
         _optional(profile?.farmPage) != null;
+  }
+  
+  bool _shouldShowEmail(User user) {
+    final profile = user.profile;
+    final showContact = profile?.showContactInfo ?? false;
+    return showContact && _optional(user.email) != null;
   }
 
   String _displayName(User user) {

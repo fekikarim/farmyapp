@@ -38,11 +38,15 @@ class _EditProfileScreenState extends State<EditProfileScreen>
   String? _loadError;
   String? _syncWarning;
   int _completenessScore = 0;
+  int _savedCompletenessScore = 0; // Track score from last save
 
   XFile? _pendingAvatar;
   XFile? _pendingCover;
   User? _currentUser;
   String _originalUsername = '';
+  
+  // Store original values to detect actual changes vs focus changes
+  final Map<String, String> _originalValues = {};
 
   final _nameController = TextEditingController();
   final _usernameController = TextEditingController();
@@ -202,11 +206,13 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     _discoverable = profile?.discoverable ?? true;
     _showContactInfo = profile?.showContactInfo ?? false;
     _completenessScore = profile?.completenessScore ?? _estimateCompleteness();
+    _savedCompletenessScore = _completenessScore;
     _isUsernameAvailable = _originalUsername.isNotEmpty ? true : null;
     _loadError = null;
     if (resetUnsaved) {
       _hasUnsavedChanges = false;
       _syncWarning = null;
+      _updateOriginalValues(); // Store baseline values
     }
     _isHydrating = false;
   }
@@ -266,12 +272,34 @@ class _EditProfileScreenState extends State<EditProfileScreen>
 
   void _markUnsaved() {
     if (_isHydrating) return;
-    final score = _estimateCompleteness();
-    if (!_hasUnsavedChanges || _completenessScore != score) {
+    // Check if values actually changed from original saved values
+    final hasActualChanges = _detectActualChanges();
+    if (hasActualChanges != _hasUnsavedChanges) {
       setState(() {
-        _hasUnsavedChanges = true;
-        _completenessScore = score;
+        _hasUnsavedChanges = hasActualChanges;
       });
+    }
+  }
+  
+  bool _detectActualChanges() {
+    // Compare current controller values with original saved values
+    if (_discoverable != (_currentUser?.profile?.discoverable ?? true)) return true;
+    if (_showContactInfo != (_currentUser?.profile?.showContactInfo ?? false)) return true;
+    
+    for (final controller in _allControllers) {
+      final key = controller.hashCode.toString();
+      final originalValue = _originalValues[key] ?? '';
+      final currentValue = controller.text;
+      if (originalValue != currentValue) return true;
+    }
+    return false;
+  }
+  
+  void _updateOriginalValues() {
+    // Store current values as the new "original" baseline
+    _originalValues.clear();
+    for (final controller in _allControllers) {
+      _originalValues[controller.hashCode.toString()] = controller.text;
     }
   }
 
@@ -358,7 +386,12 @@ class _EditProfileScreenState extends State<EditProfileScreen>
 
       context.read<AuthProvider>().setUser(updatedUser);
       _hydrateFromUser(updatedUser, resetUnsaved: true);
-      setState(() => _isSaving = false);
+      // Update completeness score from server response after save
+      setState(() {
+        _isSaving = false;
+        _completenessScore = updatedUser.profile?.completenessScore ?? _completenessScore;
+        _savedCompletenessScore = _completenessScore;
+      });
       _showSnack(l10n.profileUpdatedSuccess, isError: false);
     } catch (e) {
       if (!mounted) return;
@@ -584,16 +617,17 @@ class _EditProfileScreenState extends State<EditProfileScreen>
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 220),
               child: _hasUnsavedChanges
-                  ? TextButton(
+                  ? IconButton(
                       key: const ValueKey('save-action'),
                       onPressed: _isSaving ? null : _saveProfile,
-                      child: _isSaving
+                      icon: _isSaving
                           ? const SizedBox(
-                              width: 18,
-                              height: 18,
+                              width: 20,
+                              height: 20,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : Text(l10n.saveChangesTooltip),
+                          : Icon(Icons.save_rounded, color: theme.colorScheme.primary),
+                      tooltip: l10n.saveChangesTooltip,
                     )
                   : const SizedBox.shrink(key: ValueKey('empty-action')),
             ),
@@ -902,6 +936,8 @@ class _EditProfileScreenState extends State<EditProfileScreen>
   }
 
   Widget _buildCompletenessCard(ThemeData theme) {
+    // Always show the last saved score from server - never estimate while typing
+    final displayScore = _savedCompletenessScore;
     return _sectionCard(
       theme,
       title: AppLocalizations.of(context)!.profileCompleteness,
@@ -912,7 +948,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
           Row(
             children: [
               Text(
-                '$_completenessScore%',
+                '$displayScore%',
                 style: theme.textTheme.headlineMedium?.copyWith(
                   color: theme.colorScheme.primary,
                   fontWeight: FontWeight.w900,
@@ -931,13 +967,13 @@ class _EditProfileScreenState extends State<EditProfileScreen>
           ClipRRect(
             borderRadius: BorderRadius.circular(99),
             child: LinearProgressIndicator(
-              value: _completenessScore / 100,
+              value: displayScore / 100,
               minHeight: 10,
               backgroundColor: theme.colorScheme.primary.withValues(
                 alpha: 0.14,
               ),
               valueColor: AlwaysStoppedAnimation(
-                _completenessScore >= 90
+                displayScore >= 90
                     ? Colors.green
                     : theme.colorScheme.primary,
               ),
@@ -1378,23 +1414,18 @@ class _EditProfileScreenState extends State<EditProfileScreen>
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: _isSaving ? null : _saveProfile,
-                        icon: _isSaving
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Icon(Icons.save_rounded),
-                        label: Text(
-                          AppLocalizations.of(context)!.saveChangesTooltip,
-                        ),
-                      ),
+                    FloatingActionButton.small(
+                      onPressed: _isSaving ? null : _saveProfile,
+                      child: _isSaving
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(Icons.save_rounded),
                     ),
                   ],
                 ),

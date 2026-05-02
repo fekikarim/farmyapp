@@ -93,8 +93,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addCreditsTitle => 'Ajouter des crédits';
 
   @override
-  String get addExtraSecurity =>
-      'Ajouter une couche de sécurité supplémentaire';
+  String get addExtraSecurity => 'Ajouter une couche de sécurité supplémentaire';
 
   @override
   String get addMore => 'Ajouter plus';
@@ -112,8 +111,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addProduct => 'Ajouter un produit';
 
   @override
-  String get addProductFirst =>
-      'Ajoutez votre premier produit pour le voir ici !';
+  String get addProductFirst => 'Ajoutez votre premier produit pour le voir ici !';
 
   @override
   String get addToBasket => 'Ajouter au panier';
@@ -125,8 +123,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addWorker => 'Ajouter un Travailleur';
 
   @override
-  String get addWorkersMarketplaceHint =>
-      'Appuyez sur le bouton + pour ajouter des travailleurs depuis le marché';
+  String get addWorkersMarketplaceHint => 'Appuyez sur le bouton + pour ajouter des travailleurs depuis le marché';
 
   @override
   String addedToBasket(String title) {
@@ -137,8 +134,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addressLabel => 'Adresse';
 
   @override
-  String get adjustSearchFilters =>
-      'Essayez d\'ajuster votre recherche ou vos filtres';
+  String get adjustSearchFilters => 'Essayez d\'ajuster votre recherche ou vos filtres';
 
   @override
   String advanceNotifyCustomer(String status) {
@@ -149,15 +145,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get advancedAnalytics => 'Analyses avancées';
 
   @override
-  String get agreeToTermsAndPrivacy =>
-      'J\'accepte les conditions et la politique de confidentialité';
+  String get agreeToTermsAndPrivacy => 'J\'accepte les conditions et la politique de confidentialité';
 
   @override
   String get aiAssistant => 'Assistant IA';
 
   @override
-  String get aiAssistantDescription =>
-      'Dates de semis, santé des cultures, engrais et conseils pratiques avec détection automatique de la langue.';
+  String get aiAssistantDescription => 'Dates de semis, santé des cultures, engrais et conseils pratiques avec détection automatique de la langue.';
 
   @override
   String get aiAutoAssignTasks => '🤖 Auto-attribution des tâches par IA';
@@ -182,8 +176,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get aiVerificationComingSoon => 'Vérification IA bientôt disponible';
 
   @override
-  String get aiVerificationDescription =>
-      'La vérification automatisée de l\'identité et des compétences accélérera votre approbation.';
+  String get aiVerificationDescription => 'La vérification automatisée de l\'identité et des compétences accélérera votre approbation.';
 
   @override
   String get aiVerifyUpper => 'VÉRIFIER PAR IA';
@@ -198,12 +191,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get allLands => 'Tous les Terrains';
 
   @override
-  String get allNotificationsMarkedRead =>
-      'Toutes les notifications sont marquées comme lues';
+  String get allNotificationsMarkedRead => 'Toutes les notifications sont marquées comme lues';
 
   @override
-  String get allocatingSpatialResources =>
-      'Allocation des ressources spatiales...';
+  String get allocatingSpatialResources => 'Allocation des ressources spatiales...';
 
   @override
   String get alreadyHaveAccount => 'Vous avez déjà un compte ?';
@@ -255,8 +246,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get analyzeInventory => 'Analyser l\'inventaire';
 
   @override
-  String get analyzeInventoryPrompt =>
-      'Analysez mon inventaire actuel de produits. S\'agit-il de bons produits à conserver ou devrais-je me concentrer sur autre chose en fonction du marché ?';
+  String get analyzeInventoryPrompt => 'Analysez mon inventaire actuel de produits. S\'agit-il de bons produits à conserver ou devrais-je me concentrer sur autre chose en fonction du marché ?';
 
   @override
   String get analyzePortfolio => 'Analyser le portefeuille';
@@ -347,16 +337,13 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get availableForAssignment =>
-      'Vous êtes disponible pour des assignations.';
+  String get availableForAssignment => 'Vous êtes disponible pour des assignations.';
 
   @override
-  String get availableForAssignments =>
-      'Vous êtes disponible pour de nouvelles affectations.';
+  String get availableForAssignments => 'Vous êtes disponible pour de nouvelles affectations.';
 
   @override
-  String get availableInstantPayment =>
-      'Disponible pour un paiement instantané';
+  String get availableInstantPayment => 'Disponible pour un paiement instantané';
 
   @override
   String get availableUpper => 'DISPONIBLE';
@@ -374,8 +361,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get backToMarketplace => 'Retour au marché';
 
   @override
-  String get backendDisconnected =>
-      'Backend déconnecté. Reconnexion automatique...';
+  String get backendDisconnected => 'Backend déconnecté. Reconnexion automatique...';
 
   @override
   String balanceAmount(String amount) {
@@ -403,8 +389,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get bannedDescription =>
-      'Votre compte a été suspendu en raison de violations spécifiques. Veuillez contacter le support si vous pensez qu\'il s\'agit d\'une erreur.';
+  String get bannedDescription => 'Votre compte a été suspendu en raison de violations spécifiques. Veuillez contacter le support si vous pensez qu\'il s\'agit d\'une erreur.';
 
   @override
   String get becomeAWorker => 'Devenir travailleur';
@@ -425,8 +410,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get boundaryConflictAlert => 'Alerte de conflit de limites';
 
   @override
-  String get browseMarketplaceDescription =>
-      'Parcourez le marché et ajoutez\ndes produits frais !';
+  String get browseMarketplaceDescription => 'Parcourez le marché et ajoutez\ndes produits frais !';
 
   @override
   String get browseProducts => 'Parcourir les produits';
@@ -467,8 +451,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cancelDeliveryQuestion => 'Annuler la livraison ?';
 
   @override
-  String get cancelNotifyCustomer =>
-      'Ceci annulera la livraison et en informera le client.';
+  String get cancelNotifyCustomer => 'Ceci annulera la livraison et en informera le client.';
 
   @override
   String get cancelUpper => 'ANNULER';
@@ -480,16 +463,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cancellationReasonLabel => 'Raison d\'annulation';
 
   @override
-  String get cancelledOrFailedToAddCard =>
-      'Annulé ou échec de l\'ajout de la carte.';
+  String get cancelledOrFailedToAddCard => 'Annulé ou échec de l\'ajout de la carte.';
 
   @override
-  String get cannotPublishBoundaryConflicts =>
-      'Impossible de publier : conflits de limites détectés';
+  String get cannotPublishBoundaryConflicts => 'Impossible de publier : conflits de limites détectés';
 
   @override
-  String get cannotPublishInvalidGeometry =>
-      'Impossible de publier avec une géométrie invalide';
+  String get cannotPublishInvalidGeometry => 'Impossible de publier avec une géométrie invalide';
 
   @override
   String get captureSubmit => 'Capturer et Soumettre';
@@ -516,12 +496,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get chatTitle => 'Titre de la discussion';
 
   @override
-  String get checkBackLaterFreshProducts =>
-      'Revenez plus tard pour des produits frais';
+  String get checkBackLaterFreshProducts => 'Revenez plus tard pour des produits frais';
 
   @override
-  String get checkBackLaterOpportunities =>
-      'Revenez plus tard pour de nouvelles opportunités';
+  String get checkBackLaterOpportunities => 'Revenez plus tard pour de nouvelles opportunités';
 
   @override
   String get checkout => 'Paiement';
@@ -552,8 +530,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get clearAll => 'Tout vider';
 
   @override
-  String get clearBasketDescription =>
-      'Cela supprimera tous les articles de votre panier.';
+  String get clearBasketDescription => 'Cela supprimera tous les articles de votre panier.';
 
   @override
   String get clearBasketTitle => 'Vider le panier ?';
@@ -574,8 +551,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get comingSoon => 'À venir';
 
   @override
-  String get comingSoonDesc =>
-      'Cette fonctionnalité est en cours de développement. Vous pourrez bientôt placer des articles sur votre terre !';
+  String get comingSoonDesc => 'Cette fonctionnalité est en cours de développement. Vous pourrez bientôt placer des articles sur votre terre !';
 
   @override
   String get comingSoonTitle => 'Bientôt disponible';
@@ -649,8 +625,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get contractActivated => 'Contrat activé avec succès !';
 
   @override
-  String get contractApproved =>
-      'Contrat approuvé ! En attente du paiement de l\'investisseur.';
+  String get contractApproved => 'Contrat approuvé ! En attente du paiement de l\'investisseur.';
 
   @override
   String get contractDeclined => 'Offre de contrat déclinée.';
@@ -684,15 +659,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get copyToClipboardTooltip => 'Copier dans le presse-papiers';
 
   @override
-  String get correctErrorsInForm =>
-      'Veuillez corriger les erreurs dans le formulaire';
+  String get correctErrorsInForm => 'Veuillez corriger les erreurs dans le formulaire';
 
   @override
   String get couldNotOpenHashScan => 'Impossible d\'ouvrir HashScan';
 
   @override
-  String get couldNotSendMessage =>
-      'Impossible d\'envoyer votre message. Veuillez réessayer.';
+  String get couldNotSendMessage => 'Impossible d\'envoyer votre message. Veuillez réessayer.';
 
   @override
   String get counter => 'Contre-offre';
@@ -713,8 +686,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get createAccount => 'Créer un compte';
 
   @override
-  String get createChatDescription =>
-      'Créez une discussion pour demander des conseils agricoles pratiques.';
+  String get createChatDescription => 'Créez une discussion pour demander des conseils agricoles pratiques.';
 
   @override
   String get createNewPassword => 'Créer un nouveau mot de passe';
@@ -843,8 +815,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteLand => 'Supprimer la terre';
 
   @override
-  String get deleteLandActionWarning =>
-      'Cette action ne peut pas être annulée. Toutes les données associées seront définitivement supprimées.';
+  String get deleteLandActionWarning => 'Cette action ne peut pas être annulée. Toutes les données associées seront définitivement supprimées.';
 
   @override
   String deleteLandConfirmation(String name) {
@@ -884,8 +855,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deliveryTimeline => 'Chronologie de livraison';
 
   @override
-  String get deliveryTrackingEmptyHint =>
-      'Le suivi de livraison apparaîtra\nune fois votre commande traitée.';
+  String get deliveryTrackingEmptyHint => 'Le suivi de livraison apparaîtra\nune fois votre commande traitée.';
 
   @override
   String get description => 'Description';
@@ -903,8 +873,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get directLinksLabel => 'Liens directs';
 
   @override
-  String get directMessagingDescription =>
-      'Description de la messagerie directe';
+  String get directMessagingDescription => 'Description de la messagerie directe';
 
   @override
   String get directRoadAccess => 'Accès routier direct';
@@ -925,8 +894,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get discoverableMarketplace => 'Découvrable sur le marché';
 
   @override
-  String get discoverableSubtitle =>
-      'Permettre aux autres de trouver et de voir votre profil';
+  String get discoverableSubtitle => 'Permettre aux autres de trouver et de voir votre profil';
 
   @override
   String get dismiss => 'IGNORER';
@@ -952,8 +920,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get draw => 'Dessiner';
 
   @override
-  String get drawInstructions =>
-      'Appuyez sur la carte pour dessiner les limites';
+  String get drawInstructions => 'Appuyez sur la carte pour dessiner les limites';
 
   @override
   String get driverNearby => 'Livreur à proximité !';
@@ -1027,16 +994,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get english => 'Anglais';
 
   @override
-  String get enter2faCode =>
-      'Entrez le code à 6 chiffres de votre application d\'authentification pour continuer.';
+  String get enter2faCode => 'Entrez le code à 6 chiffres de votre application d\'authentification pour continuer.';
 
   @override
-  String get enter6DigitCodeConfirm =>
-      'Saisissez le code à 6 chiffres de votre application pour confirmer :';
+  String get enter6DigitCodeConfirm => 'Saisissez le code à 6 chiffres de votre application pour confirmer :';
 
   @override
-  String get enter6DigitCodeDisable =>
-      'Saisissez le code à 6 chiffres de votre application d\'authentification pour désactiver l\'authentification à deux facteurs.';
+  String get enter6DigitCodeDisable => 'Saisissez le code à 6 chiffres de votre application d\'authentification pour désactiver l\'authentification à deux facteurs.';
 
   @override
   String get enterAmount => 'SAISIR UN MONTANT';
@@ -1045,12 +1009,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get enterCodeManually => 'Ou entrez ce code manuellement :';
 
   @override
-  String get enterCurrentPasswordError =>
-      'Veuillez saisir votre mot de passe actuel';
+  String get enterCurrentPasswordError => 'Veuillez saisir votre mot de passe actuel';
 
   @override
-  String get enterPreferencesHint =>
-      'Entrez vos préférences ou demandez une analyse...';
+  String get enterPreferencesHint => 'Entrez vos préférences ou demandez une analyse...';
 
   @override
   String get enterRejectionReason => 'Saisir le motif du rejet';
@@ -1065,12 +1027,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get error => 'Erreur';
 
   @override
-  String get errorFetchingTasks =>
-      'Erreur lors de la récupération de vos tâches';
+  String get errorFetchingTasks => 'Erreur lors de la récupération de vos tâches';
 
   @override
-  String get errorFetchingYourTasks =>
-      'Erreur lors de la récupération de vos tâches';
+  String get errorFetchingYourTasks => 'Erreur lors de la récupération de vos tâches';
 
   @override
   String errorWithPrefix(String error) {
@@ -1134,8 +1094,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get failedCompleteTask => 'Échec de la finalisation de la tâche';
 
   @override
-  String get failedInitiate2FA =>
-      'Échec de l\'initialisation de la configuration 2FA';
+  String get failedInitiate2FA => 'Échec de l\'initialisation de la configuration 2FA';
 
   @override
   String get failedLoadPlans => 'Échec du chargement des forfaits';
@@ -1144,8 +1103,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get failedLoadTasks => 'Échec du chargement des tâches';
 
   @override
-  String get failedReachAnalyst =>
-      'Échec de la connexion à l\'analyste stratégique IA.';
+  String get failedReachAnalyst => 'Échec de la connexion à l\'analyste stratégique IA.';
 
   @override
   String get failedToAccept => 'Échec de l\'acceptation de l\'offre.';
@@ -1154,8 +1112,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get failedToAssignWorker => 'Échec de l\'assignation du travailleur';
 
   @override
-  String get failedToCreatePayment =>
-      'Échec de la création de l\'intention de paiement.';
+  String get failedToCreatePayment => 'Échec de la création de l\'intention de paiement.';
 
   @override
   String get failedToCreateProfile => 'Échec de la création du profil';
@@ -1164,8 +1121,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get failedToDecline => 'Échec du refus de l\'offre.';
 
   @override
-  String get failedToDeleteNotification =>
-      'Échec de la suppression de la notification';
+  String get failedToDeleteNotification => 'Échec de la suppression de la notification';
 
   @override
   String get failedToDeleteProduct => 'Échec de la suppression du produit';
@@ -1186,8 +1142,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get failedToLoadFarm => 'Impossible de charger la ferme';
 
   @override
-  String get failedToLoadInventory =>
-      'Impossible de charger l\'inventaire. Veuillez réessayer.';
+  String get failedToLoadInventory => 'Impossible de charger l\'inventaire. Veuillez réessayer.';
 
   @override
   String get failedToLoadProofs => 'Échec du chargement des preuves';
@@ -1202,8 +1157,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get failedToLoadSubscriptions => 'Échec du chargement des abonnements';
 
   @override
-  String get failedToLoadWorkerProfile =>
-      'Échec du chargement du profil de travailleur';
+  String get failedToLoadWorkerProfile => 'Échec du chargement du profil de travailleur';
 
   @override
   String get failedToRejectRequest => 'Échec du rejet de la demande';
@@ -1215,15 +1169,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get failedToSendCode => 'Échec de l\'envoi du code. Réessayez.';
 
   @override
-  String get failedToSendCounterOffer =>
-      'Échec de l\'envoi de la contre-offre.';
+  String get failedToSendCounterOffer => 'Échec de l\'envoi de la contre-offre.';
 
   @override
   String get failedToSendInvitation => 'Échec de l\'envoi de l\'invitation';
 
   @override
-  String get failedToSyncBackend =>
-      'Échec de la synchronisation avec le serveur';
+  String get failedToSyncBackend => 'Échec de la synchronisation avec le serveur';
 
   @override
   String get failedToUpdateProduct => 'Échec de la mise à jour du produit.';
@@ -1238,8 +1190,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get farmAnalysisDefault => 'Analyse de la ferme';
 
   @override
-  String get farmboxDescription =>
-      'Recevez chaque semaine des légumes frais cultivés localement à votre porte !';
+  String get farmboxDescription => 'Recevez chaque semaine des légumes frais cultivés localement à votre porte !';
 
   @override
   String get farmboxSubscription => 'Abonnement FarmBox';
@@ -1251,8 +1202,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get farmerDetailsTitle => 'Détails de l\'agriculteur';
 
   @override
-  String get farmerInfoSyncedFromAssignment =>
-      'Informations synchronisées depuis l\'affectation';
+  String get farmerInfoSyncedFromAssignment => 'Informations synchronisées depuis l\'affectation';
 
   @override
   String get farmerInvitations => 'Invitations d\'agriculteurs';
@@ -1261,8 +1211,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get farmerPro => 'Farmer Pro';
 
   @override
-  String get farmerProfileUnavailable =>
-      'Le profil de l\'agriculteur est indisponible pour le moment.';
+  String get farmerProfileUnavailable => 'Le profil de l\'agriculteur est indisponible pour le moment.';
 
   @override
   String farmerWithColon(String param) {
@@ -1295,19 +1244,16 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get featureUnderDevelopment =>
-      'Cette fonctionnalité est actuellement en cours de développement.';
+  String get featureUnderDevelopment => 'Cette fonctionnalité est actuellement en cours de développement.';
 
   @override
   String get feed => 'Nourrir';
 
   @override
-  String get fetchingBlockchainRecords =>
-      'Récupération des enregistrements blockchain...';
+  String get fetchingBlockchainRecords => 'Récupération des enregistrements blockchain...';
 
   @override
-  String get fetchingSpatialData =>
-      'Récupération des données spatiales précises...';
+  String get fetchingSpatialData => 'Récupération des données spatiales précises...';
 
   @override
   String get filterAll => 'Tous';
@@ -1337,15 +1283,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get flipIdHint => 'Retournez votre ID et scannez le verso';
 
   @override
-  String get flipIdInstruction =>
-      'Super ! Maintenant, retournez votre pièce d\'identité';
+  String get flipIdInstruction => 'Super ! Maintenant, retournez votre pièce d\'identité';
 
   @override
   String get forgotPassword => 'Mot de passe oublié ?';
 
   @override
-  String get forgotPasswordSubtitle =>
-      'Entrez votre adresse e-mail et nous vous enverrons un code à 6 chiffres pour réinitialiser votre mot de passe.';
+  String get forgotPasswordSubtitle => 'Entrez votre adresse e-mail et nous vous enverrons un code à 6 chiffres pour réinitialiser votre mot de passe.';
 
   @override
   String get forgotPasswordTitle => 'Mot de passe oublié ?';
@@ -1377,8 +1321,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get fullName => 'Nom complet';
 
   @override
-  String get fundsReleasedAfterVerification =>
-      'Fonds libérés après vérification';
+  String get fundsReleasedAfterVerification => 'Fonds libérés après vérification';
 
   @override
   String get gameFeatures => 'Fonctionnalités du jeu';
@@ -1469,8 +1412,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get hireActivateWorkersHint => 'Embaucher et activer des travailleurs';
 
   @override
-  String get hireApprovedWorkerNegotiationHint =>
-      'Embaucher un travailleur approuvé pour commencer la négociation';
+  String get hireApprovedWorkerNegotiationHint => 'Embaucher un travailleur approuvé pour commencer la négociation';
 
   @override
   String get hireUpper => 'EMBAUCHER';
@@ -1534,15 +1476,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get identityTab => 'Identité';
 
   @override
-  String get imageProofRequiredToApprove =>
-      'Preuve en image requise pour approuver';
+  String get imageProofRequiredToApprove => 'Preuve en image requise pour approuver';
 
   @override
   String get imageUnavailable => 'Image non disponible';
 
   @override
-  String get immutableOnChainRecords =>
-      'Enregistrements immuables sur la chaîne';
+  String get immutableOnChainRecords => 'Enregistrements immuables sur la chaîne';
 
   @override
   String get inBasket => 'Dans le panier';
@@ -1590,8 +1530,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get invalidNumericAmount => 'Montant numérique invalide';
 
   @override
-  String get invalidPaymentData =>
-      'Données de paiement invalides reçues du serveur. Veuillez réessayer.';
+  String get invalidPaymentData => 'Données de paiement invalides reçues du serveur. Veuillez réessayer.';
 
   @override
   String get invalidPhoneFormat => 'Format de téléphone invalide';
@@ -1600,15 +1539,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get investSustainableFarming => 'Investir dans l\'agriculture durable';
 
   @override
-  String get investmentAgentWelcomeDesc =>
-      'Dites-moi votre budget et votre préférence en matière de risques, ou posez des questions sur le marché actuel et les tendances météorologiques.';
+  String get investmentAgentWelcomeDesc => 'Dites-moi votre budget et votre préférence en matière de risques, ou posez des questions sur le marché actuel et les tendances météorologiques.';
 
   @override
   String get investmentRevenue => 'Revenus d\'investissement';
 
   @override
-  String get investmentStrategyChroniclesTitle =>
-      'Chroniques de stratégie d\'investissement';
+  String get investmentStrategyChroniclesTitle => 'Chroniques de stratégie d\'investissement';
 
   @override
   String get investments => 'Investissements';
@@ -1617,11 +1554,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get investor => 'Investisseur';
 
   @override
-  String investorAcceptOfferConfirmation(
-    String name,
-    String amount,
-    String type,
-  ) {
+  String investorAcceptOfferConfirmation(String name, String amount, String type) {
     return 'Vous êtes sur le point d\'accepter la contre-offre de $name de $amount $type. Une fois acceptée, vous devrez payer le premier mois de salaire pour activer le contrat.';
   }
 
@@ -1666,8 +1599,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get invitationUpdates => 'Mises à jour des invitations';
 
   @override
-  String get invitationsSyncIssue =>
-      'Problème de synchronisation des invitations';
+  String get invitationsSyncIssue => 'Problème de synchronisation des invitations';
 
   @override
   String get invitationsUnavailable => 'Invitations indisponibles';
@@ -1676,8 +1608,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get inviteExistingWorker => 'Inviter un Travailleur Existant';
 
   @override
-  String get inviteToLand =>
-      'Choisissez le terrain pour inviter des travailleurs :';
+  String get inviteToLand => 'Choisissez le terrain pour inviter des travailleurs :';
 
   @override
   String get inviteWorker => 'Inviter un travailleur';
@@ -1688,8 +1619,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get inviteWorkersMarketplaceHint =>
-      'Inviter des travailleurs du marketplace';
+  String get inviteWorkersMarketplaceHint => 'Inviter des travailleurs du marketplace';
 
   @override
   String get iotSensorDashboard => '🌡️ Tableau de bord des capteurs IoT';
@@ -1734,8 +1664,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get joinTheWorkforce => 'Rejoindre la main-d\'œuvre';
 
   @override
-  String get joinWorkforceDescription =>
-      'Créez votre profil professionnel et\ncommencez à gagner de l\'argent dans les fermes voisines dès aujourd\'hui.';
+  String get joinWorkforceDescription => 'Créez votre profil professionnel et\ncommencez à gagner de l\'argent dans les fermes voisines dès aujourd\'hui.';
 
   @override
   String get justNow => 'À l\'instant';
@@ -1761,8 +1690,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get landBoundary => 'Limite du terrain';
 
   @override
-  String get landDataSyncSuccess =>
-      '✨ Données foncières synchronisées avec succès !';
+  String get landDataSyncSuccess => '✨ Données foncières synchronisées avec succès !';
 
   @override
   String get landDeletedSuccess => 'Terre supprimée avec succès';
@@ -1843,8 +1771,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get linkedinProfile => 'Profil LinkedIn';
 
   @override
-  String get linkedinUrlError =>
-      'Entrez une URL ou un identifiant LinkedIn valide';
+  String get linkedinUrlError => 'Entrez une URL ou un identifiant LinkedIn valide';
 
   @override
   String get listNewLand => 'Lister une nouvelle terre';
@@ -1856,8 +1783,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get listingPublished => 'Annonce publiée';
 
   @override
-  String get listingPublishedHint =>
-      'Votre annonce est maintenant visible publiquement.';
+  String get listingPublishedHint => 'Votre annonce est maintenant visible publiquement.';
 
   @override
   String get live => 'EN DIRECT';
@@ -1881,8 +1807,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get logout => 'Déconnexion';
 
   @override
-  String get lookAtCameraHint =>
-      'Regardez directement la caméra avec les yeux ouverts';
+  String get lookAtCameraHint => 'Regardez directement la caméra avec les yeux ouverts';
 
   @override
   String get machineOperation => 'Utilisation de machines';
@@ -1891,8 +1816,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get maintenance => 'Maintenance';
 
   @override
-  String get makePurchaseImmutableRecordsHint =>
-      'Effectuez un achat pour voir les enregistrements immuables ici.';
+  String get makePurchaseImmutableRecordsHint => 'Effectuez un achat pour voir les enregistrements immuables ici.';
 
   @override
   String get manageButton => 'Gérer';
@@ -1972,8 +1896,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get messageCannotBeEmpty => 'Le message ne peut pas être vide';
 
   @override
-  String get messageNoReadableText =>
-      'Ce message ne contient aucun texte lisible.';
+  String get messageNoReadableText => 'Ce message ne contient aucun texte lisible.';
 
   @override
   String get messageOptionalUpper => 'MESSAGE (OPTIONNEL)';
@@ -2049,8 +1972,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get mustRentLand =>
-      'Vous devez louer une terre pour acheter des articles.';
+  String get mustRentLand => 'Vous devez louer une terre pour acheter des articles.';
 
   @override
   String mustSubmitBefore(String date) {
@@ -2175,15 +2097,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noAvailableWorkers => 'Aucun travailleur disponible !';
 
   @override
-  String get noBlockchainRecordsYet =>
-      'Aucun enregistrement Blockchain pour le moment';
+  String get noBlockchainRecordsYet => 'Aucun enregistrement Blockchain pour le moment';
 
   @override
   String get noCamerasFound => 'Aucune caméra trouvée sur cet appareil.';
 
   @override
-  String get noChatStateDescription =>
-      'Commencez une nouvelle conversation pour obtenir des conseils d\'experts sur votre agriculture.';
+  String get noChatStateDescription => 'Commencez une nouvelle conversation pour obtenir des conseils d\'experts sur votre agriculture.';
 
   @override
   String get noChatStateTitle => 'Bienvenue sur Farmy AI';
@@ -2192,8 +2112,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noConversationsYet => 'Pas encore de conversations.';
 
   @override
-  String get noDeliveriesDesc =>
-      'Les livraisons de vos produits\napparaîtront ici quand les clients commanderont.';
+  String get noDeliveriesDesc => 'Les livraisons de vos produits\napparaîtront ici quand les clients commanderont.';
 
   @override
   String get noDeliveriesYet => 'Pas encore de livraisons';
@@ -2202,8 +2121,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noDescriptionAvailable => 'Aucune description disponible';
 
   @override
-  String get noDescriptionProvided =>
-      'Aucune description fournie pour cette terre.';
+  String get noDescriptionProvided => 'Aucune description fournie pour cette terre.';
 
   @override
   String get noHistoryYet => 'Pas encore d\'historique';
@@ -2212,8 +2130,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noInternetConnection => 'Pas de connexion Internet';
 
   @override
-  String get noInternetDescription =>
-      'Veuillez vérifier votre connexion internet et réessayer';
+  String get noInternetDescription => 'Veuillez vérifier votre connexion internet et réessayer';
 
   @override
   String get noInvestmentsYet => 'Aucun investissement pour le moment';
@@ -2230,12 +2147,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noLandAssignments => 'Aucune assignation de terre';
 
   @override
-  String get noLandAssignmentsHint =>
-      'Aucune assignation de terre pour le moment';
+  String get noLandAssignmentsHint => 'Aucune assignation de terre pour le moment';
 
   @override
-  String get noLandAssignmentsYet =>
-      'Aucune affectation de terre pour le moment';
+  String get noLandAssignmentsYet => 'Aucune affectation de terre pour le moment';
 
   @override
   String get noLandsFound => 'Aucun terrain trouvé';
@@ -2256,8 +2171,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noPendingRequests => 'Aucune demande en attente';
 
   @override
-  String get noPendingRequestsHint =>
-      'Vous n\'avez aucune demande en attente pour le moment.';
+  String get noPendingRequestsHint => 'Vous n\'avez aucune demande en attente pour le moment.';
 
   @override
   String get noPendingTasks => 'Aucune tâche en attente !';
@@ -2329,15 +2243,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get off => 'DÉSACTIVÉ';
 
   @override
-  String get offerAcceptedProceedToPayment =>
-      'Offre acceptée ! Veuillez procéder au paiement pour activer le contrat.';
+  String get offerAcceptedProceedToPayment => 'Offre acceptée ! Veuillez procéder au paiement pour activer le contrat.';
 
   @override
   String get offerSkillsFarms => 'Offrez vos compétences sur les fermes';
 
   @override
-  String get offlineModeCached =>
-      'Mode hors ligne : les réponses en cache seront utilisées si disponibles.';
+  String get offlineModeCached => 'Mode hors ligne : les réponses en cache seront utilisées si disponibles.';
 
   @override
   String get ok => 'OK';
@@ -2355,8 +2267,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get onTimeLabel => 'À l\'heure';
 
   @override
-  String get onlyLettersAllowed =>
-      'Seules les lettres et les espaces sont autorisés';
+  String get onlyLettersAllowed => 'Seules les lettres et les espaces sont autorisés';
 
   @override
   String get oopsSomethingWentWrong => 'Oups ! Quelque chose s\'est mal passé';
@@ -2392,15 +2303,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orderDelivered => 'Commande Livrée !';
 
   @override
-  String get orderDeliveredSuccess =>
-      'Votre commande a été livrée avec succès. Merci pour votre achat !';
+  String get orderDeliveredSuccess => 'Votre commande a été livrée avec succès. Merci pour votre achat !';
 
   @override
   String get orderDetails => 'Détails de la commande';
 
   @override
-  String get orderHistoryEmptyHint =>
-      'Votre historique de commandes apparaîtra ici\naprès votre premier achat.';
+  String get orderHistoryEmptyHint => 'Votre historique de commandes apparaîtra ici\naprès votre premier achat.';
 
   @override
   String get orderIdLabel => 'ID de la commande';
@@ -2452,12 +2361,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get passwordChangedSuccess => 'Mot de passe modifié avec succès';
 
   @override
-  String get passwordPolicyHint =>
-      'Votre nouveau mot de passe doit être différent des anciens.';
+  String get passwordPolicyHint => 'Votre nouveau mot de passe doit être différent des anciens.';
 
   @override
-  String get passwordResetSuccess =>
-      'Mot de passe réinitialisé avec succès ! Veuillez vous connecter.';
+  String get passwordResetSuccess => 'Mot de passe réinitialisé avec succès ! Veuillez vous connecter.';
 
   @override
   String payAmount(String amount) {
@@ -2504,19 +2411,16 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get paymentIssueHint =>
-      'Un problème est survenu lors du traitement de votre paiement.';
+  String get paymentIssueHint => 'Un problème est survenu lors du traitement de votre paiement.';
 
   @override
   String get paymentMethods => 'Méthodes de paiement';
 
   @override
-  String get paymentPendingVerifying =>
-      'Paiement soumis. Nous le vérifions en arrière-plan.';
+  String get paymentPendingVerifying => 'Paiement soumis. Nous le vérifions en arrière-plan.';
 
   @override
-  String get paymentProcessingSync =>
-      'Le paiement est toujours en cours de traitement. Votre abonnement se synchronisera automatiquement.';
+  String get paymentProcessingSync => 'Le paiement est toujours en cours de traitement. Votre abonnement se synchronisera automatiquement.';
 
   @override
   String get paymentRequiredToActivate => 'Paiement requis pour activer';
@@ -2525,12 +2429,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get paymentSecurity => 'Paiement sécurisé traité par Stripe.';
 
   @override
-  String get paymentStatusDelay =>
-      'La vérification du statut du paiement est retardée. Nous continuerons la synchronisation en arrière-plan.';
+  String get paymentStatusDelay => 'La vérification du statut du paiement est retardée. Nous continuerons la synchronisation en arrière-plan.';
 
   @override
-  String get paymentSubmittedHint =>
-      'Paiement soumis. Le contrat sera activé une fois confirmé.';
+  String get paymentSubmittedHint => 'Paiement soumis. Le contrat sera activé une fois confirmé.';
 
   @override
   String paymentSummary(String price, String cycle, String planName) {
@@ -2568,8 +2470,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get performance => 'Performance';
 
   @override
-  String get performanceGraphComingSoon =>
-      'Graphique de performance bientôt disponible';
+  String get performanceGraphComingSoon => 'Graphique de performance bientôt disponible';
 
   @override
   String get perimeterNotSet => 'Périmètre non défini';
@@ -2592,8 +2493,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get placementFailedGeneric =>
-      'Impossible de placer l\'article. Essayez ailleurs.';
+  String get placementFailedGeneric => 'Impossible de placer l\'article. Essayez ailleurs.';
 
   @override
   String get placingItem => 'Placement de l\'article...';
@@ -2631,16 +2531,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pleaseEnterUnit => 'Veuillez entrer une unité';
 
   @override
-  String get pleaseEnterValidSalary =>
-      'Veuillez entrer un montant de salaire valide';
+  String get pleaseEnterValidSalary => 'Veuillez entrer un montant de salaire valide';
 
   @override
-  String get pleaseSelectPaymentMethod =>
-      'Veuillez sélectionner un mode de paiement';
+  String get pleaseSelectPaymentMethod => 'Veuillez sélectionner un mode de paiement';
 
   @override
-  String get pleaseSelectProductType =>
-      'Veuillez sélectionner un type de produit';
+  String get pleaseSelectProductType => 'Veuillez sélectionner un type de produit';
 
   @override
   String get pleaseWaitAFewMoments => 'Veuillez patienter quelques instants...';
@@ -2661,8 +2558,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get portfolioAnalyticsLoading =>
-      'Chargement des analyses du portefeuille...';
+  String get portfolioAnalyticsLoading => 'Chargement des analyses du portefeuille...';
 
   @override
   String get portfolioInsights => 'Aperçu du portefeuille';
@@ -2683,8 +2579,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get premiumFarmlandUpper => 'TERRE AGRICOLE PREMIUM';
 
   @override
-  String get premiumFeatureDesc =>
-      'Mettez à niveau votre abonnement pour débloquer cette fonctionnalité.';
+  String get premiumFeatureDesc => 'Mettez à niveau votre abonnement pour débloquer cette fonctionnalité.';
 
   @override
   String get premiumFeatureTitle => 'Fonctionnalité Premium';
@@ -2693,8 +2588,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get premiumLabel => 'PREMIUM';
 
   @override
-  String get premiumPortfolioDesc =>
-      'Obtenez un suivi du ROI en temps réel, des rapports de dividendes automatisés et des conseils d\'investissement optimisés par l\'IA.';
+  String get premiumPortfolioDesc => 'Obtenez un suivi du ROI en temps réel, des rapports de dividendes automatisés et des conseils d\'investissement optimisés par l\'IA.';
 
   @override
   String get priceCannotBeEmpty => 'Le prix ne peut pas être vide';
@@ -2777,8 +2671,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get productionStrategy => 'Stratégie de production';
 
   @override
-  String get productionStrategyDescription =>
-      'Obtenez une analyse approfondie de vos frais généraux de production, de votre rendement potentiel et des stratégies de maximisation des profits alimentées par l\'IA.';
+  String get productionStrategyDescription => 'Obtenez une analyse approfondie de vos frais généraux de production, de votre rendement potentiel et des stratégies de maximisation des profits alimentées par l\'IA.';
 
   @override
   String get productivity => 'Productivité';
@@ -2790,8 +2683,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get profileCompleteness => 'Complétude du profil';
 
   @override
-  String get profileLoadError =>
-      'Impossible de charger le profil. Vérifiez votre connexion.';
+  String get profileLoadError => 'Impossible de charger le profil. Vérifiez votre connexion.';
 
   @override
   String get profileNotFound => 'Profil introuvable ou privé';
@@ -2817,8 +2709,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get proofRequestQuestion => 'Question de demande de preuve';
 
   @override
-  String get proofRequestedHint =>
-      'Une demande de preuve a été envoyée au travailleur.';
+  String get proofRequestedHint => 'Une demande de preuve a été envoyée au travailleur.';
 
   @override
   String get proofRequests => 'Demandes de preuves';
@@ -2829,8 +2720,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get proofSubmittedVerified =>
-      'Preuve soumise et vérifiée avec succès.';
+  String get proofSubmittedVerified => 'Preuve soumise et vérifiée avec succès.';
 
   @override
   String get proofVerifiedSuccessfully => 'Preuve vérifiée avec succès !';
@@ -2865,8 +2755,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get purchaseFailed => 'Achat échoué. Crédits insuffisants ?';
 
   @override
-  String get purchaseRequestSent =>
-      'Demande envoyée ! Transaction enregistrée sur Hedera.';
+  String get purchaseRequestSent => 'Demande envoyée ! Transaction enregistrée sur Hedera.';
 
   @override
   String get purchasesLabel => 'Achats';
@@ -2900,8 +2789,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get quote3 => 'Vous connecter aux racines de votre alimentation.';
 
   @override
-  String get quote4 =>
-      'Chaque investissement dans la nature rapporte le meilleur intérêt.';
+  String get quote4 => 'Chaque investissement dans la nature rapporte le meilleur intérêt.';
 
   @override
   String get quote5 => 'De petits choix ont un grand impact sur notre planète.';
@@ -2913,8 +2801,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get quote7 => 'Autonomiser les agriculteurs, nourrir le monde.';
 
   @override
-  String get quote8 =>
-      'La durabilité n\'est pas un objectif, c\'est un mode de vie.';
+  String get quote8 => 'La durabilité n\'est pas un objectif, c\'est un mode de vie.';
 
   @override
   String get raiseLivestock => 'Élever du bétail';
@@ -2935,12 +2822,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get readyForActivityHint => 'Prêt pour l\'activité';
 
   @override
-  String get realTimeTaskNotificationsSoon =>
-      'Notifications de tâches en temps réel bientôt';
+  String get realTimeTaskNotificationsSoon => 'Notifications de tâches en temps réel bientôt';
 
   @override
-  String get realtimeNotificationsSoon =>
-      'Notifications de tâches en temps réel bientôt disponibles';
+  String get realtimeNotificationsSoon => 'Notifications de tâches en temps réel bientôt disponibles';
 
   @override
   String get reasonTooShort => 'Le motif est trop court';
@@ -2989,8 +2874,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get rentalConfirmed => 'Location confirmée';
 
   @override
-  String get rentalConfirmedDescription =>
-      'Votre location a été confirmée et le matériel sera bientôt livré.';
+  String get rentalConfirmedDescription => 'Votre location a été confirmée et le matériel sera bientôt livré.';
 
   @override
   String get rentalDuration => 'Durée de location';
@@ -3037,8 +2921,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get requestProof => 'Demander une preuve';
 
   @override
-  String get requestProofHint =>
-      'Demandez au travailleur de soumettre une preuve photographique de son travail.';
+  String get requestProofHint => 'Demandez au travailleur de soumettre une preuve photographique de son travail.';
 
   @override
   String get requestRejectedRefunded => 'Demande rejetée et remboursée';
@@ -3081,8 +2964,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get revenue => 'Revenus';
 
   @override
-  String get revenueAnalysisPrompt =>
-      'Analysez mes sources de revenus et suggérez des moyens de maximiser mes profits en fonction des tendances actuelles du marché.';
+  String get revenueAnalysisPrompt => 'Analysez mes sources de revenus et suggérez des moyens de maximiser mes profits en fonction des tendances actuelles du marché.';
 
   @override
   String get revenueTitle => 'Revenus';
@@ -3164,22 +3046,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scanFrontId => 'Scanner le recto de l\'ID';
 
   @override
-  String get scanQRCodeDesc =>
-      'Scannez ce code QR avec votre application d\'authentification (Google Authenticator, Authy, etc.)';
+  String get scanQRCodeDesc => 'Scannez ce code QR avec votre application d\'authentification (Google Authenticator, Authy, etc.)';
 
   @override
   String get searchProducts => 'Rechercher des produits...';
 
   @override
-  String get searchWorkerMarketplace =>
-      'Rechercher dans le marché des travailleurs';
+  String get searchWorkerMarketplace => 'Rechercher dans le marché des travailleurs';
 
   @override
   String get searchWorkers => 'Rechercher des travailleurs...';
 
   @override
-  String get secureCardPaymentDesc =>
-      'Paiement sécurisé par carte de crédit/débit';
+  String get secureCardPaymentDesc => 'Paiement sécurisé par carte de crédit/débit';
 
   @override
   String get secureCreditCardPayment => 'Paiement sécurisé par carte bancaire';
@@ -3203,8 +3082,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get selectAtLeast3Points => 'Sélectionnez au moins 3 points';
 
   @override
-  String get selectAtLeastOneSkill =>
-      'Veuillez sélectionner au moins une compétence';
+  String get selectAtLeastOneSkill => 'Veuillez sélectionner au moins une compétence';
 
   @override
   String get selectLand => 'Sélectionner Terrain';
@@ -3261,8 +3139,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get showContactInfoLabel => 'Afficher les coordonnées';
 
   @override
-  String get showContactInfoSubtitle =>
-      'Rendre le téléphone et l\'e-mail visibles par les relations';
+  String get showContactInfoSubtitle => 'Rendre le téléphone et l\'e-mail visibles par les relations';
 
   @override
   String get signIn => 'Se connecter';
@@ -3297,8 +3174,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get skip => 'Passer';
 
   @override
-  String get smartPayrollIntegration =>
-      '💰 Intégration de la paie intelligente';
+  String get smartPayrollIntegration => '💰 Intégration de la paie intelligente';
 
   @override
   String get soilManagement => 'Gestion des sols';
@@ -3336,12 +3212,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get startDateUpper => 'DATE DE DÉBUT';
 
   @override
-  String get startJourneyWithFarmy =>
-      'Commencez votre voyage avec Farmy aujourd\'hui';
+  String get startJourneyWithFarmy => 'Commencez votre voyage avec Farmy aujourd\'hui';
 
   @override
-  String get startNegotiationHint =>
-      'Commencez la négociation en envoyant un message.';
+  String get startNegotiationHint => 'Commencez la négociation en envoyant un message.';
 
   @override
   String get startSellingProduce => 'Commencez à vendre vos produits';
@@ -3361,12 +3235,10 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get stayTunedSpatialTracking =>
-      'Restez à l\'écoute pour le suivi avancé des actifs spatiaux !';
+  String get stayTunedSpatialTracking => 'Restez à l\'écoute pour le suivi avancé des actifs spatiaux !';
 
   @override
-  String get strategicPortfolioAnalystTitle =>
-      'Analyste de portefeuille stratégique';
+  String get strategicPortfolioAnalystTitle => 'Analyste de portefeuille stratégique';
 
   @override
   String get strategySessionDefault => 'Session stratégique';
@@ -3384,8 +3256,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get subscription => 'Abonnement';
 
   @override
-  String get subscriptionHeadline =>
-      'Sélectionnez un forfait pour débloquer l\'expérience complète Farmy.\nUn abonnement ouvre toutes les portes.';
+  String get subscriptionHeadline => 'Sélectionnez un forfait pour débloquer l\'expérience complète Farmy.\nUn abonnement ouvre toutes les portes.';
 
   @override
   String get subscriptions => 'Abonnements';
@@ -3443,8 +3314,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get systemOfferAccepted => 'Offre acceptée. Passage au paiement.';
 
   @override
-  String get systemOfferDeclined =>
-      'Offre déclinée. Cette négociation a été annulée.';
+  String get systemOfferDeclined => 'Offre déclinée. Cette négociation a été annulée.';
 
   @override
   String get tabAll => 'TOUT';
@@ -3480,12 +3350,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get taskAssigned => 'Tâche assignée !';
 
   @override
-  String get taskCompleted =>
-      'Tâche terminée ! Vous êtes maintenant disponible.';
+  String get taskCompleted => 'Tâche terminée ! Vous êtes maintenant disponible.';
 
   @override
-  String get taskCompletedSuccess =>
-      'Tâche terminée ! Vous êtes maintenant disponible.';
+  String get taskCompletedSuccess => 'Tâche terminée ! Vous êtes maintenant disponible.';
 
   @override
   String get taskCreated => 'Tâche créée avec succès !';
@@ -3619,8 +3487,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get trackOrder => 'Suivre la commande';
 
   @override
-  String get transactionIdCopied =>
-      'ID de transaction copié dans le presse-papiers';
+  String get transactionIdCopied => 'ID de transaction copié dans le presse-papiers';
 
   @override
   String get trustTab => 'Confiance';
@@ -3641,8 +3508,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tva => 'TVA (19%)';
 
   @override
-  String get twoFADesc =>
-      'L\'authentification à deux facteurs ajoute une couche de sécurité supplémentaire à votre compte. Pour vous connecter, vous devrez fournir un code à 6 chiffres provenant de votre application d\'authentification.';
+  String get twoFADesc => 'L\'authentification à deux facteurs ajoute une couche de sécurité supplémentaire à votre compte. Pour vous connecter, vous devrez fournir un code à 6 chiffres provenant de votre application d\'authentification.';
 
   @override
   String get twoFADisabledSuccess => '2FA désactivé avec succès';
@@ -3657,24 +3523,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get unableToLoadTracking => 'Impossible de charger le suivi';
 
   @override
-  String get unableToOpenFarmerProfile =>
-      'Impossible d\'ouvrir le profil de l\'agriculteur. Veuillez réessayer.';
+  String get unableToOpenFarmerProfile => 'Impossible d\'ouvrir le profil de l\'agriculteur. Veuillez réessayer.';
 
   @override
-  String get unableToPlayVoiceOutput =>
-      'Impossible de lire la sortie vocale pour le moment.';
+  String get unableToPlayVoiceOutput => 'Impossible de lire la sortie vocale pour le moment.';
 
   @override
-  String get unableToProcessInvitation =>
-      'Impossible de traiter la réponse à l\'invitation.';
+  String get unableToProcessInvitation => 'Impossible de traiter la réponse à l\'invitation.';
 
   @override
-  String get unableToRetrieveLandDetails =>
-      'Impossible de récupérer les détails de la terre';
+  String get unableToRetrieveLandDetails => 'Impossible de récupérer les détails de la terre';
 
   @override
-  String get unableToStartVoiceInput =>
-      'Impossible de démarrer l\'entrée vocale. Veuillez vérifier les permissions.';
+  String get unableToStartVoiceInput => 'Impossible de démarrer l\'entrée vocale. Veuillez vérifier les permissions.';
 
   @override
   String get unavailable => 'Indisponible';
@@ -3721,19 +3582,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get unlockDeepInsights => 'Débloquez des informations approfondies';
 
   @override
-  String get unlockDeepInsightsDescription =>
-      'Obtenez des prévisions de récolte alimentées par l\'IA, un historique détaillé de la santé des sols et des projections de ROI avancées.';
+  String get unlockDeepInsightsDescription => 'Obtenez des prévisions de récolte alimentées par l\'IA, un historique détaillé de la santé des sols et des projections de ROI avancées.';
 
   @override
   String get unlockPortfolioMaster => 'Débloquer Portfolio Master';
 
   @override
-  String get unlockUnlimitedSlotsInvestorPlus =>
-      'Débloquez des emplacements illimités avec Investor+';
+  String get unlockUnlimitedSlotsInvestorPlus => 'Débloquez des emplacements illimités avec Investor+';
 
   @override
-  String get unsavedChangesDesc =>
-      'Vous avez des modifications non enregistrées. Voulez-vous les abandonner ?';
+  String get unsavedChangesDesc => 'Vous avez des modifications non enregistrées. Voulez-vous les abandonner ?';
 
   @override
   String get unsavedChangesTitle => 'Modifications non enregistrées';
@@ -3789,8 +3647,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get upgradePlanName => 'Farmer Pro';
 
   @override
-  String get upgradePremium =>
-      'Passez au niveau supérieur pour les fonctionnalités premium';
+  String get upgradePremium => 'Passez au niveau supérieur pour les fonctionnalités premium';
 
   @override
   String get upgradeRequired => 'Mise à niveau requise';
@@ -3828,8 +3685,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get user => 'Utilisateur';
 
   @override
-  String get usernameFormatError =>
-      'Utilisez des minuscules, des chiffres, des points, des tirets bas';
+  String get usernameFormatError => 'Utilisez des minuscules, des chiffres, des points, des tirets bas';
 
   @override
   String get usernameLabel => 'Nom d\'utilisateur';
@@ -3893,8 +3749,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get viewAssignmentsTasks => 'Consultez vos affectations et tâches';
 
   @override
-  String get viewBlockchainRecords =>
-      'Consultez vos enregistrements blockchain';
+  String get viewBlockchainRecords => 'Consultez vos enregistrements blockchain';
 
   @override
   String get viewDetails => 'Voir les détails';
@@ -3903,12 +3758,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get viewInvestmentBreakdown => 'Voir le détail dans Investissements';
 
   @override
-  String get viewManageLandInvestments =>
-      'Voir et gérer vos investissements fonciers';
+  String get viewManageLandInvestments => 'Voir et gérer vos investissements fonciers';
 
   @override
-  String get viewManageProofRequests =>
-      'Consulter et gérer les demandes de preuves';
+  String get viewManageProofRequests => 'Consulter et gérer les demandes de preuves';
 
   @override
   String get viewMyOrders => 'Voir mes commandes';
@@ -3917,8 +3770,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get viewPlans => 'Voir les plans';
 
   @override
-  String get viewRecentActivity =>
-      'Consultez votre activité récente et les mises à jour';
+  String get viewRecentActivity => 'Consultez votre activité récente et les mises à jour';
 
   @override
   String get viewReviews => 'Voir les avis';
@@ -3927,20 +3779,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get voiceInput => 'Entrée vocale';
 
   @override
-  String get voiceInputNotAvailable =>
-      'L\'entrée vocale n\'est pas disponible sur cet appareil.';
+  String get voiceInputNotAvailable => 'L\'entrée vocale n\'est pas disponible sur cet appareil.';
 
   @override
-  String get voiceOutputMuted =>
-      'La sortie vocale est coupée. Réactivez-la pour lire ce message.';
+  String get voiceOutputMuted => 'La sortie vocale est coupée. Réactivez-la pour lire ce message.';
 
   @override
-  String get waitUsernameCheck =>
-      'Veuillez patienter pendant la vérification du nom d\'utilisateur';
+  String get waitUsernameCheck => 'Veuillez patienter pendant la vérification du nom d\'utilisateur';
 
   @override
-  String get waitingForWorkerResponse =>
-      'En attente de la réponse du travailleur';
+  String get waitingForWorkerResponse => 'En attente de la réponse du travailleur';
 
   @override
   String get walletCards => 'Portefeuille et cartes';
@@ -3970,36 +3818,31 @@ class AppLocalizationsFr extends AppLocalizations {
   String get welcomeBack => 'Bon retour';
 
   @override
-  String get welcomeCustomerSubtitle =>
-      'Soutenez les agriculteurs locaux et profitez de produits frais et durables directement à la source.';
+  String get welcomeCustomerSubtitle => 'Soutenez les agriculteurs locaux et profitez de produits frais et durables directement à la source.';
 
   @override
   String get welcomeCustomerTitle => 'Bienvenue sur Farmy !';
 
   @override
-  String get welcomeFarmerSubtitle =>
-      'Votre voyage vers la gestion agricole numérique commence ici. Développons votre entreprise ensemble !';
+  String get welcomeFarmerSubtitle => 'Votre voyage vers la gestion agricole numérique commence ici. Développons votre entreprise ensemble !';
 
   @override
   String get welcomeFarmerTitle => 'Autonomiser les agriculteurs';
 
   @override
-  String get welcomeInvestorSubtitle =>
-      'Explorez des opportunités durables et développez votre portefeuille agricole vert avec nous.';
+  String get welcomeInvestorSubtitle => 'Explorez des opportunités durables et développez votre portefeuille agricole vert avec nous.';
 
   @override
   String get welcomeInvestorTitle => 'Investissez dans l\'avenir';
 
   @override
-  String get welcomeStrategicAnalysis =>
-      'Bienvenue dans l\'analyse stratégique';
+  String get welcomeStrategicAnalysis => 'Bienvenue dans l\'analyse stratégique';
 
   @override
   String get welcomeToFarmy => 'Bienvenue sur Farmy';
 
   @override
-  String get welcomeWorkerSubtitle =>
-      'Connectez-vous à des fermes modernes et commencez votre voyage productif dans l\'agriculture durable.';
+  String get welcomeWorkerSubtitle => 'Connectez-vous à des fermes modernes et commencez votre voyage productif dans l\'agriculture durable.';
 
   @override
   String get welcomeWorkerTitle => 'Rejoignez la main-d\'œuvre';
@@ -4011,8 +3854,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get withdraw => 'Retirer';
 
   @override
-  String get withdrawMessageConfirmation =>
-      'Cela supprimera définitivement votre dernier message de négociation.';
+  String get withdrawMessageConfirmation => 'Cela supprimera définitivement votre dernier message de négociation.';
 
   @override
   String get withdrawMessageQuestion => 'Retirer ce message ?';
@@ -4035,23 +3877,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get workerPlus => 'Worker Plus';
 
   @override
-  String get workerPlusDescription =>
-      'Boostez votre profil, obtenez une mise en relation prioritaire et des retraits instantanés.';
+  String get workerPlusDescription => 'Boostez votre profil, obtenez une mise en relation prioritaire et des retraits instantanés.';
 
   @override
-  String get workerProfileCreated =>
-      '🎉 Profil de travailleur créé ! En attente de vérification.';
+  String get workerProfileCreated => '🎉 Profil de travailleur créé ! En attente de vérification.';
 
   @override
   String get workerRemovedSuccessfully => 'Travailleur supprimé avec succès';
 
   @override
-  String get workerRespondedReviewCounterOffer =>
-      'Le travailleur a répondu, examinez la contre-offre';
+  String get workerRespondedReviewCounterOffer => 'Le travailleur a répondu, examinez la contre-offre';
 
   @override
-  String get workersAcceptedDeclinedInvites =>
-      'Travailleurs ayant accepté ou décliné vos invitations';
+  String get workersAcceptedDeclinedInvites => 'Travailleurs ayant accepté ou décliné vos invitations';
 
   @override
   String workersAvailable(String count) {
@@ -4109,8 +3947,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get fetchingFarmData => 'Récupération des données de la ferme...';
 
   @override
-  String get preparingLandGeometry =>
-      'Préparation de la géométrie du terrain...';
+  String get preparingLandGeometry => 'Préparation de la géométrie du terrain...';
 
   @override
   String get finalizingWorld => 'Finalisation du monde...';
@@ -4149,26 +3986,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get aboutFarmyTitle => 'À propos de Farmy';
 
   @override
-  String get farmyTagline =>
-      'Donner du pouvoir à l\'agriculture grâce à l\'innovation, la gestion et des expériences immersives';
+  String get farmyTagline => 'Donner du pouvoir à l\'agriculture grâce à l\'innovation, la gestion et des expériences immersives';
 
   @override
-  String get farmyDescription =>
-      'Farmy est une plateforme agricole complète qui comble le fossé entre l\'agriculture traditionnelle et la technologie moderne. Nous fournissons des outils de gestion agricole, des connexions marketplace, des opportunités d\'investissement et des expériences gamifiées pour rendre l\'agriculture accessible et engageante pour tous.';
+  String get farmyDescription => 'Farmy est une plateforme agricole complète qui comble le fossé entre l\'agriculture traditionnelle et la technologie moderne. Nous fournissons des outils de gestion agricole, des connexions marketplace, des opportunités d\'investissement et des expériences gamifiées pour rendre l\'agriculture accessible et engageante pour tous.';
 
   @override
   String get missionTitle => 'Notre Mission';
 
   @override
-  String get missionDescription =>
-      'Révolutionner l\'agriculture en créant un écosystème connecté où les agriculteurs, les investisseurs, les travailleurs et les consommateurs collaborent de manière fluide grâce à des solutions technologiques innovantes.';
+  String get missionDescription => 'Révolutionner l\'agriculture en créant un écosystème connecté où les agriculteurs, les investisseurs, les travailleurs et les consommateurs collaborent de manière fluide grâce à des solutions technologiques innovantes.';
 
   @override
   String get visionTitle => 'Notre Vision';
 
   @override
-  String get visionDescription =>
-      'Un monde où l\'agriculture durable prospère grâce à l\'autonomisation numérique, rendant l\'agriculture plus efficace, plus rentable et accessible aux communautés du monde entier.';
+  String get visionDescription => 'Un monde où l\'agriculture durable prospère grâce à l\'autonomisation numérique, rendant l\'agriculture plus efficace, plus rentable et accessible aux communautés du monde entier.';
 
   @override
   String get meetTheTeamTitle => 'Rencontrez l\'équipe';
@@ -4189,30 +4022,25 @@ class AppLocalizationsFr extends AppLocalizations {
   String get faqWhatIsFarmy => 'Qu\'est-ce que Farmy ?';
 
   @override
-  String get faqWhatIsFarmyAnswer =>
-      'Farmy est une plateforme agricole tout-en-un combinant des outils de gestion de ferme, des fonctionnalités marketplace, des opportunités d\'investissement et des expériences gamifiées. Elle connecte les agriculteurs, les investisseurs, les travailleurs et les clients dans un écosystème numérique fluide.';
+  String get faqWhatIsFarmyAnswer => 'Farmy est une plateforme agricole tout-en-un combinant des outils de gestion de ferme, des fonctionnalités marketplace, des opportunités d\'investissement et des expériences gamifiées. Elle connecte les agriculteurs, les investisseurs, les travailleurs et les clients dans un écosystème numérique fluide.';
 
   @override
   String get faqWhoIsBehind => 'Qui est derrière Farmy ?';
 
   @override
-  String get faqWhoIsBehindAnswer =>
-      'Farmy a été construit par l\'équipe Be.net - un groupe de développeurs passionnés de Tunisie dédiés à transformer l\'agriculture grâce à la technologie. Notre équipe comprend Karim Feki, Nesrine Derouiche, Mohamed Abidi, Oussema Issaoui et Fatma Hidoussi.';
+  String get faqWhoIsBehindAnswer => 'Farmy a été construit par l\'équipe Be.net - un groupe de développeurs passionnés de Tunisie dédiés à transformer l\'agriculture grâce à la technologie. Notre équipe comprend Karim Feki, Nesrine Derouiche, Mohamed Abidi, Oussema Issaoui et Fatma Hidoussi.';
 
   @override
   String get faqTechnologies => 'Quelles technologies sont utilisées ?';
 
   @override
-  String get faqTechnologiesAnswer =>
-      'Farmy est construit avec Flutter pour des expériences mobiles et web cross-plateforme, un backend Node.js, Firebase pour les fonctionnalités temps réel, la blockchain Hedera pour des transactions sécurisées, et intègre des fonctionnalités alimentées par l\'IA pour l\'analyse des cultures et les recommandations.';
+  String get faqTechnologiesAnswer => 'Farmy est construit avec Flutter pour des expériences mobiles et web cross-plateforme, un backend Node.js, Firebase pour les fonctionnalités temps réel, la blockchain Hedera pour des transactions sécurisées, et intègre des fonctionnalités alimentées par l\'IA pour l\'analyse des cultures et les recommandations.';
 
   @override
-  String get faqContribute =>
-      'Comment puis-je contribuer ou contacter l\'équipe ?';
+  String get faqContribute => 'Comment puis-je contribuer ou contacter l\'équipe ?';
 
   @override
-  String get faqContributeAnswer =>
-      'Vous pouvez contacter notre équipe via GitHub en contribuant à nos projets open-source, vous connecter avec nous sur LinkedIn, ou visiter nos sites web portfolio. Nous accueillons les commentaires, suggestions et opportunités de collaboration !';
+  String get faqContributeAnswer => 'Vous pouvez contacter notre équipe via GitHub en contribuant à nos projets open-source, vous connecter avec nous sur LinkedIn, ou visiter nos sites web portfolio. Nous accueillons les commentaires, suggestions et opportunités de collaboration !';
 
   @override
   String get madeWithLove => 'Fait avec ❤️ par l\'équipe Be.net';
@@ -4340,8 +4168,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noCropsAvailable => 'Aucune culture disponible';
 
   @override
-  String get addCropsFirst =>
-      'Ajoutez d\'abord des cultures à la boutique, ou essayez de recharger.';
+  String get addCropsFirst => 'Ajoutez d\'abord des cultures à la boutique, ou essayez de recharger.';
 
   @override
   String get reload => 'Recharger';
@@ -4367,8 +4194,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get failedToCreatePlan => 'Échec de la création du plan';
 
   @override
-  String get fillAllRequiredFields =>
-      'Veuillez remplir tous les champs obligatoires';
+  String get fillAllRequiredFields => 'Veuillez remplir tous les champs obligatoires';
 
   @override
   String get legendTitle => 'Légende';
@@ -4600,8 +4426,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get aiAssistantTitle => 'Assistant IA Farmy';
 
   @override
-  String get aiAssistantSubtitle =>
-      'Demandez des insights, conseils ou analyses';
+  String get aiAssistantSubtitle => 'Demandez des insights, conseils ou analyses';
 
   @override
   String get aiAssistantCTA => 'Démarrer Chat';
@@ -4613,8 +4438,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noActiveWorkers => 'Aucun travailleur actif';
 
   @override
-  String get inviteWorkersMessage =>
-      'Invitez des travailleurs pour gérer vos terrains';
+  String get inviteWorkersMessage => 'Invitez des travailleurs pour gérer vos terrains';
 
   @override
   String get invite => 'Inviter';
@@ -4623,8 +4447,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noLandsYet => 'Vous n\'avez pas encore de terrains';
 
   @override
-  String get addFirstLandMessage =>
-      'Ajoutez votre premier terrain pour commencer';
+  String get addFirstLandMessage => 'Ajoutez votre premier terrain pour commencer';
 
   @override
   String get failedLoadDashboard => 'Échec du Chargement du Tableau de Bord';

@@ -98,10 +98,20 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).user;
     
+    final theme = Theme.of(context);
+    
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.myTasksTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.amber.shade700,
+        title: Text(
+          AppLocalizations.of(context)!.myTasksTitle,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            color: theme.textTheme.titleLarge?.color,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -118,10 +128,22 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.check_circle_outline, size: 80, color: Colors.green.shade200),
+                          Icon(Icons.check_circle_outline, size: 80, color: theme.colorScheme.primary.withValues(alpha: 0.5)),
                           const SizedBox(height: 16),
-                          Text(AppLocalizations.of(context)!.noPendingTasks, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          Text(AppLocalizations.of(context)!.availableForAssignments, style: const TextStyle(color: Colors.grey)),
+                          Text(
+                            AppLocalizations.of(context)!.noPendingTasks,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.textTheme.bodyLarge?.color,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            AppLocalizations.of(context)!.availableForAssignments,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
+                            ),
+                          ),
                         ],
                       ),
                     )
@@ -152,9 +174,9 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
                                       Chip(
                                         label: Text(
                                           task['status']?.toUpperCase() ?? AppLocalizations.of(context)!.unknownCaps,
-                                          style: TextStyle(color: isCompleted ? Colors.green.shade700 : Colors.amber.shade900, fontSize: 10, fontWeight: FontWeight.bold),
+                                          style: TextStyle(color: isCompleted ? Colors.green.shade700 : Theme.of(context).colorScheme.primary, fontSize: 10, fontWeight: FontWeight.bold),
                                         ),
-                                        backgroundColor: isCompleted ? Colors.green.shade50 : Colors.amber.shade50,
+                                        backgroundColor: isCompleted ? Colors.green.shade50 : Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
                                       ),
                                     ],
                                   ),
