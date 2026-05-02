@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
+import '../providers/worker_provider.dart';
 
 // Customer Screens
 import 'customer/home_screen.dart';
 import 'customer/subscriptions_screen.dart';
 import 'customer/marketplace_screen.dart';
+import 'customer/worker_dashboard_screen.dart';
 
 // Farmer Screens
 import 'farmer/farmer_operational_dashboard.dart';
@@ -27,6 +29,7 @@ import 'marketplace/my_products_screen.dart';
 
 // Worker
 import 'worker/tasks_screen.dart';
+import 'worker/wallet/worker_wallet_screen.dart';
 
 // Agent
 import 'investment_agent_screen.dart';
@@ -68,6 +71,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
+    final workerProvider = Provider.of<WorkerProvider>(context);
 
     if (user == null) {
       // If user becomes null (logout), navigate back to the AuthWrapper at '/'
@@ -85,34 +89,65 @@ class _MainScreenState extends State<MainScreen> {
 
     // Define tabs based on role
     if (role == 'customer') {
-      screens = [
-        const CustomerHomeScreen(),
-        const CustomerMarketplaceScreen(),
-        const SubscriptionsScreen(),
-        const SettingsScreen(),
-      ];
-      items = [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
-          label: AppLocalizations.of(context)!.home,
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.storefront_outlined),
-          activeIcon: Icon(Icons.storefront),
-          label: AppLocalizations.of(context)!.marketplace,
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.subscriptions_outlined),
-          activeIcon: Icon(Icons.subscriptions),
-          label: AppLocalizations.of(context)!.subscriptions,
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings_outlined),
-          activeIcon: Icon(Icons.settings),
-          label: AppLocalizations.of(context)!.settings,
-        ),
-      ];
+      if (workerProvider.isVerifiedWorker) {
+        screens = [
+          const CustomerHomeScreen(),
+          const WorkerDashboardScreen(),
+          const WorkerTasksScreen(),
+          const SettingsScreen(),
+        ];
+        items = [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: AppLocalizations.of(context)!.home,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.work_outline),
+            activeIcon: Icon(Icons.work),
+            label: 'Find Jobs',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.assignment_outlined),
+            activeIcon: Icon(Icons.assignment),
+            label: AppLocalizations.of(context)!.tasks,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings_outlined),
+            activeIcon: Icon(Icons.settings),
+            label: AppLocalizations.of(context)!.settings,
+          ),
+        ];
+      } else {
+        screens = [
+          const CustomerHomeScreen(),
+          const CustomerMarketplaceScreen(),
+          const SubscriptionsScreen(),
+          const SettingsScreen(),
+        ];
+        items = [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: AppLocalizations.of(context)!.home,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.storefront_outlined),
+            activeIcon: Icon(Icons.storefront),
+            label: AppLocalizations.of(context)!.marketplace,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.subscriptions_outlined),
+            activeIcon: Icon(Icons.subscriptions),
+            label: AppLocalizations.of(context)!.subscriptions,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings_outlined),
+            activeIcon: Icon(Icons.settings),
+            label: AppLocalizations.of(context)!.settings,
+          ),
+        ];
+      }
     } else if (role == 'farmer') {
       screens = [
         const FarmerOperationalDashboard(),
@@ -184,12 +219,21 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ];
     } else if (role == 'worker') {
-      screens = [const WorkerTasksScreen(), const SettingsScreen()];
+      screens = [
+        const WorkerTasksScreen(),
+        const WorkerWalletScreen(),
+        const SettingsScreen()
+      ];
       items = [
         BottomNavigationBarItem(
           icon: Icon(Icons.assignment_outlined),
           activeIcon: Icon(Icons.assignment),
           label: AppLocalizations.of(context)!.tasks,
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.account_balance_wallet_outlined),
+          activeIcon: Icon(Icons.account_balance_wallet),
+          label: 'Wallet',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings_outlined),
@@ -275,18 +319,6 @@ class _MainScreenState extends State<MainScreen> {
                   size: 28,
                 ),
               ),
-            );
-          } else if (role == 'customer' && user.hasWorkerProfile) {
-            return FloatingActionButton(
-              heroTag: 'worker_tasks_fab',
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const WorkerTasksScreen()),
-                );
-              },
-              backgroundColor: Colors.amberAccent,
-              child: const Icon(Icons.assignment, color: Colors.black),
             );
           }
           return const SizedBox.shrink();

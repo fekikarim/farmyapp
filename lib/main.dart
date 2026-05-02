@@ -33,6 +33,7 @@ import 'providers/wallet_provider.dart';
 import 'providers/worker_provider.dart';
 import 'providers/worker_lifecycle_provider.dart';
 import 'providers/worker_performance_provider.dart';
+import 'providers/worker_wallet_provider.dart';
 import 'providers/farmer_dashboard_provider.dart';
 import 'providers/subscription_provider.dart';
 import 'providers/delivery_provider.dart';
@@ -114,6 +115,7 @@ void main() async {
           ChangeNotifierProvider(create: (_) => VendorDeliveryProvider()),
           ChangeNotifierProvider(create: (_) => CropCalendarProvider()),
           ChangeNotifierProvider(create: (_) => WorkerPerformanceProvider()),
+          ChangeNotifierProvider(create: (_) => WorkerWalletProvider()),
           ChangeNotifierProvider(create: (_) => FarmerDashboardProvider()),
           ChangeNotifierProvider(
             create: (_) => ThemeProvider(initialThemeMode: initialTheme),
