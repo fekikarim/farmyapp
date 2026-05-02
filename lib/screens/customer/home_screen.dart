@@ -17,6 +17,7 @@ import '../worker/wallet/withdrawal_screen.dart';
 import '../worker/wallet/earnings_history_screen.dart';
 import '../worker/wallet/transaction_history_screen.dart';
 import '../main_screen.dart';
+import '../settings/edit_profile_screen.dart';
 import '../../models/task_model.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
@@ -127,10 +128,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Worker Dashboard',
+                            'Welcome back, ready to work?',
                             style: theme.textTheme.bodyLarge?.copyWith(
                               color: theme.colorScheme.onSurface.withOpacity(0.6),
-                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -183,14 +183,17 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                _buildKpiCard(
-                  context,
-                  title: 'Escrow Balance',
-                  value: '\$${pendingBalance.toStringAsFixed(2)}',
-                  icon: Icons.lock_outline,
-                  color: Colors.purple,
-                  isDark: isDark,
-                  fullWidth: true,
+                SizedBox(
+                  width: double.infinity,
+                  child: _buildKpiCard(
+                    context,
+                    title: 'Escrow Balance',
+                    value: '\$${pendingBalance.toStringAsFixed(2)}',
+                    icon: Icons.lock_outline,
+                    color: Colors.purple,
+                    isDark: isDark,
+                    fullWidth: true,
+                  ),
                 ),
                 const SizedBox(height: 32),
 
@@ -221,6 +224,42 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                     ),
                   const SizedBox(height: 32),
                 ],
+
+                // Quick Actions
+                Text(
+                  'Quick Actions',
+                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildQuickActionCard(context, 'Wallet', Icons.account_balance_wallet, Colors.green, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkerWalletScreen()));
+                      }),
+                      _buildQuickActionCard(context, 'Withdraw', Icons.attach_money, Colors.blue, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const WithdrawalScreen()));
+                      }),
+                      _buildQuickActionCard(context, 'Earnings', Icons.insights, Colors.indigo, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const EarningsHistoryScreen()));
+                      }),
+                      _buildQuickActionCard(context, 'History', Icons.history, Colors.blueGrey, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const TransactionHistoryScreen()));
+                      }),
+                      _buildQuickActionCard(context, 'Marketplace', Icons.storefront, Colors.orange, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomerMarketplaceScreen()));
+                      }),
+                      _buildQuickActionCard(context, 'FarmBox', Icons.local_shipping, Colors.purple, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionsScreen()));
+                      }),
+                      _buildQuickActionCard(context, 'Profile', Icons.person, Colors.teal, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfileScreen()));
+                      }),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
 
                 // Earnings Wallet Card
                 Container(
@@ -261,24 +300,18 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      Text(
-                        'Wallet Balance',
-                        style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 16),
-                      ),
+                      const Text('Wallet Balance', style: TextStyle(color: Colors.white70, fontSize: 16)),
                       const SizedBox(height: 4),
                       Text(
                         '\$${walletBalance.toStringAsFixed(2)}',
-                        style: const TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold),
+                        style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            // Shortcut to wallet (if available) or trigger withdraw modal
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Navigating to Wallet...')),
-                            );
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const WithdrawalScreen()));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
@@ -289,42 +322,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                           child: const Text('Withdraw Funds', style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 32),
-
-                // Quick Actions
-                Text(
-                  'Quick Actions',
-                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildQuickActionCard(context, 'Wallet', Icons.account_balance_wallet, Colors.green, () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkerWalletScreen()));
-                      }),
-                      _buildQuickActionCard(context, 'Withdraw', Icons.attach_money, Colors.blue, () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const WithdrawalScreen()));
-                      }),
-                      _buildQuickActionCard(context, 'Earnings', Icons.insights, Colors.indigo, () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const EarningsHistoryScreen()));
-                      }),
-                      _buildQuickActionCard(context, 'History', Icons.history, Colors.blueGrey, () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const TransactionHistoryScreen()));
-                      }),
-                      _buildQuickActionCard(context, 'Marketplace', Icons.storefront, Colors.orange, () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomerMarketplaceScreen()));
-                      }),
-                      _buildQuickActionCard(context, 'FarmBox', Icons.local_shipping, Colors.purple, () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionsScreen()));
-                      }),
-                      _buildQuickActionCard(context, 'Profile', Icons.person, Colors.teal, () {
-                        MainScreen.trySwitchToTab(context, 3);
-                      }),
                     ],
                   ),
                 ),
