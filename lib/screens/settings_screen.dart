@@ -98,108 +98,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           color: theme.colorScheme.onSurface.withOpacity(0.6),
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      Column(
+                      const SizedBox(height: 16),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        alignment: WrapAlignment.center,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              _getRoleLabel(context, user.role).toUpperCase(),
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
+                          // Primary Role Badge
+                          _buildRoleChip(
+                            context,
+                            label: _getRoleLabel(context, user.role).toUpperCase(),
+                            icon: _getRoleIcon(user.role),
+                            gradientColors: [
+                              theme.colorScheme.primary,
+                              theme.colorScheme.primaryContainer,
+                            ],
+                            textColor: Colors.white,
                           ),
+                          // Worker Badge (if applicable)
                           if (workerProvider.myProfile != null &&
-                              user.role == 'customer') ...[
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.blue.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: Colors.blue,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.engineering_outlined,
-                                    size: 14,
-                                    color: Colors.blue,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    AppLocalizations.of(context)!.worker,
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: user.isVerified
-                                  ? Colors.green.withOpacity(0.1)
-                                  : Colors.orange.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: user.isVerified
-                                    ? Colors.green
-                                    : Colors.orange,
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  user.isVerified
-                                      ? Icons.verified
-                                      : Icons.gpp_bad,
-                                  size: 16,
-                                  color: user.isVerified
-                                      ? Colors.green
-                                      : Colors.orange,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  user.isVerified
-                                      ? AppLocalizations.of(context)!.verified
-                                      : AppLocalizations.of(context)!.unverified,
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: user.isVerified
-                                        ? Colors.green
-                                        : Colors.orange,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                              user.role == 'customer')
+                            _buildRoleChip(
+                              context,
+                              label: AppLocalizations.of(context)!.worker,
+                              icon: Icons.engineering_outlined,
+                              gradientColors: [
+                                Colors.blue.shade400,
+                                Colors.blue.shade700,
                               ],
+                              textColor: Colors.white,
                             ),
+                          // Verification Badge
+                          _buildRoleChip(
+                            context,
+                            label: user.isVerified
+                                ? AppLocalizations.of(context)!.verified
+                                : AppLocalizations.of(context)!.unverified,
+                            icon: user.isVerified
+                                ? Icons.verified_rounded
+                                : Icons.gpp_bad_outlined,
+                            gradientColors: user.isVerified
+                                ? [
+                                    Colors.green.shade400,
+                                    Colors.green.shade700,
+                                  ]
+                                : [
+                                    Colors.orange.shade400,
+                                    Colors.orange.shade700,
+                                  ],
+                            textColor: Colors.white,
                           ),
                         ],
                       ),
@@ -924,5 +871,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
       default:
         return role;
     }
+  }
+
+  IconData _getRoleIcon(String role) {
+    switch (role.toLowerCase()) {
+      case 'customer':
+        return Icons.person_outline;
+      case 'farmer':
+        return Icons.agriculture_outlined;
+      case 'investor':
+        return Icons.trending_up_outlined;
+      case 'worker':
+        return Icons.engineering_outlined;
+      case 'admin':
+        return Icons.admin_panel_settings_outlined;
+      default:
+        return Icons.person_outline;
+    }
+  }
+
+  Widget _buildRoleChip(
+    BuildContext context, {
+    required String label,
+    required IconData icon,
+    required List<Color> gradientColors,
+    required Color textColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: gradientColors,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: gradientColors.first.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 14,
+            color: textColor.withValues(alpha: 0.95),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
