@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
@@ -12,6 +13,21 @@ import 'package:image_picker/image_picker.dart';
 import '../models/user_model.dart';
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
+
+class ProfileFetchException implements Exception {
+  final int? statusCode;
+  final String message;
+
+  const ProfileFetchException(this.message, {this.statusCode});
+
+  bool get isNotFound => statusCode == 404;
+  bool get isServerError => statusCode != null && statusCode! >= 500;
+  bool get isNetworkError => statusCode == 0 || statusCode == 503;
+  bool get isUnauthorized => statusCode == 401 || statusCode == 403;
+
+  @override
+  String toString() => message;
+}
 
 class AuthService {
   static final String _baseUrl = dotenv.get(
@@ -28,15 +44,10 @@ class AuthService {
       return null;
     }
 
-    if (kIsWeb)
-      return GoogleSignIn(
-        serverClientId: serverClientId,
-      );
+    if (kIsWeb) return GoogleSignIn(serverClientId: serverClientId);
     try {
       if (Platform.isAndroid || Platform.isIOS) {
-        return GoogleSignIn(
-          serverClientId: serverClientId,
-        );
+        return GoogleSignIn(serverClientId: serverClientId);
       }
     } catch (_) {}
     return null;
@@ -467,7 +478,6 @@ class AuthService {
 
   // --- Token Management ---
 
-
   static Future<void> _saveAuthData(AuthResponse response) async {
     if (response.tokens != null) {
       await _storage.write(
@@ -560,11 +570,15 @@ class AuthService {
       } else {
         final errorBody = jsonDecode(response.body);
         String errorMessage =
-            errorBody['message'] ?? 'Failed to update profile';
-        if (errorBody['errors'] != null &&
-            errorBody['errors'] is List &&
-            (errorBody['errors'] as List).isNotEmpty) {
-          errorMessage = errorBody['errors'][0]['message'] ?? errorMessage;
+            errorBody['message'] ??
+            errorBody['error'] ??
+            'Failed to update profile';
+        final validationErrors = errorBody['details'] ?? errorBody['errors'];
+        if (validationErrors is List && validationErrors.isNotEmpty) {
+          final firstError = validationErrors.first;
+          if (firstError is Map && firstError['message'] != null) {
+            errorMessage = firstError['message'].toString();
+          }
         }
         throw Exception(errorMessage);
       }
@@ -576,25 +590,76 @@ class AuthService {
 
   static Future<User?> fetchPublicProfile(String userId) async {
     try {
+      final trimmedUserId = userId.trim();
+      if (trimmedUserId.isEmpty) {
+        throw const ProfileFetchException(
+          'Invalid profile identifier',
+          statusCode: 400,
+        );
+      }
+
       final response = await authenticatedRequest(
         'GET',
-        Uri.parse('$_baseUrl/api/v1/auth/users/$userId'),
-      );
+        Uri.parse(
+          '$_baseUrl/api/v1/auth/users/${Uri.encodeComponent(trimmedUserId)}',
+        ),
+      ).timeout(const Duration(seconds: 12));
+
+      final decoded = _decodeJsonObject(response.body);
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body)['data'];
+        final data = decoded['data'];
+        if (data is! Map<String, dynamic>) {
+          throw const ProfileFetchException('Unexpected profile response');
+        }
         return User.fromJson(data);
-      } else {
-        throw Exception('Failed to fetch profile');
       }
+
+      throw ProfileFetchException(
+        _profileErrorMessage(response.statusCode, decoded),
+        statusCode: response.statusCode,
+      );
+    } on TimeoutException {
+      throw const ProfileFetchException(
+        'Profile request timed out. Please try again.',
+        statusCode: 0,
+      );
+    } on FormatException {
+      throw const ProfileFetchException(
+        'The server returned an invalid profile response.',
+        statusCode: 500,
+      );
     } catch (e) {
       print('Fetch Public Profile Error: $e');
-      return null;
+      rethrow;
     }
   }
 
+  static Map<String, dynamic> _decodeJsonObject(String body) {
+    final decoded = jsonDecode(body);
+    if (decoded is Map<String, dynamic>) return decoded;
+    throw const FormatException('Expected a JSON object');
+  }
+
+  static String _profileErrorMessage(
+    int statusCode,
+    Map<String, dynamic> decoded,
+  ) {
+    final serverMessage = decoded['message'] ?? decoded['error'];
+    if (serverMessage != null && serverMessage.toString().trim().isNotEmpty) {
+      return serverMessage.toString();
+    }
+    if (statusCode == 404) return 'User not found';
+    if (statusCode == 401 || statusCode == 403) {
+      return 'You do not have permission to view this profile';
+    }
+    if (statusCode >= 500) return 'Farmy server is temporarily unavailable';
+    return 'Failed to fetch profile';
+  }
+
   static Future<Map<String, dynamic>?> uploadProfilePicture(
-    XFile imageFile,
-  ) async {
+    XFile imageFile, {
+    String type = 'picture',
+  }) async {
     try {
       final url = Uri.parse('$_baseUrl/api/v1/profile/picture');
       final request = http.MultipartRequest('POST', url);
@@ -616,6 +681,7 @@ class AuthService {
           contentType: contentType,
         ),
       );
+      request.fields['type'] = type == 'cover' ? 'cover' : 'picture';
 
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
@@ -627,7 +693,11 @@ class AuthService {
         return data['data'];
       } else {
         final errorBody = jsonDecode(response.body);
-        throw Exception(errorBody['message'] ?? 'Failed to upload image');
+        throw Exception(
+          errorBody['message'] ??
+              errorBody['error'] ??
+              'Failed to upload image',
+        );
       }
     } catch (e) {
       print('Upload Profile Picture Exception: $e');
@@ -635,12 +705,13 @@ class AuthService {
     }
   }
 
-
   static Future<bool> isUsernameAvailable(String username) async {
     try {
       final token = await getAccessToken();
       final response = await http.get(
-        Uri.parse('$_baseUrl/api/v1/profile/check-username/$username'),
+        Uri.parse(
+          '$_baseUrl/api/v1/profile/check-username/${Uri.encodeComponent(username)}',
+        ),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
@@ -686,7 +757,7 @@ class AuthService {
     if (token != null) headers['Authorization'] = 'Bearer $token';
     headers['Content-Type'] = 'application/json';
 
-    final safeHeaders = headers ?? {};
+    final safeHeaders = headers;
     Future<http.Response> performRequest(String tokenToUse) async {
       safeHeaders['Authorization'] = 'Bearer $tokenToUse';
 
@@ -697,8 +768,12 @@ class AuthService {
         request.body = body is String ? body : jsonEncode(body);
       }
 
-      final streamResponse = await request.send();
-      return await http.Response.fromStream(streamResponse);
+      final streamResponse = await request.send().timeout(
+        const Duration(seconds: 15),
+      );
+      return await http.Response.fromStream(
+        streamResponse,
+      ).timeout(const Duration(seconds: 15));
     }
 
     try {
@@ -722,7 +797,7 @@ class AuthService {
           jsonEncode({
             'message': e.toString().contains('Timeout')
                 ? 'Request timed out. Please try again in a moment.'
-                : 'Server connection failed'
+                : 'Server connection failed',
           }),
           503,
           headers: {'content-type': 'application/json'},
