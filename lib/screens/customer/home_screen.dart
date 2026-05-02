@@ -6,6 +6,8 @@ import 'package:farmyapp/l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../providers/worker_provider.dart';
+import '../../services/auth_service.dart';
+import '../../models/user_model.dart';
 import '../../providers/worker_lifecycle_provider.dart';
 import '../../providers/worker_wallet_provider.dart';
 
@@ -142,16 +144,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         ],
                       ),
                     ),
-                    CircleAvatar(
-                      radius: 28,
-                      backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                      backgroundImage: user?.profilePicture != null
-                          ? NetworkImage(user!.profilePicture!)
-                          : null,
-                      child: user?.profilePicture == null
-                          ? Icon(Icons.person, color: theme.colorScheme.primary, size: 28)
-                          : null,
-                    ),
+                    _buildProfileAvatar(context, user, theme),
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -614,20 +607,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                       ],
                     ),
                   ),
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                    backgroundImage: user?.profilePicture != null
-                        ? NetworkImage(user!.profilePicture!)
-                        : null,
-                    child: user?.profilePicture == null
-                        ? Icon(
-                            Icons.person,
-                            color: theme.colorScheme.primary,
-                            size: 28,
-                          )
-                        : null,
-                  ),
+                  _buildProfileAvatar(context, user, theme),
                 ],
               ),
               const SizedBox(height: 32),
@@ -827,5 +807,152 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         ],
       ),
     );
+  }
+
+  // ==========================================
+  // PROFILE AVATAR WITH LOADING & ERROR HANDLING
+  // ==========================================
+
+  Widget _buildProfileAvatar(BuildContext context, User? user, ThemeData theme) {
+    final String? rawPictureUrl = user?.profilePicture;
+    final String? resolvedUrl = _resolveProfileImageUrl(rawPictureUrl);
+    final String displayName = user?.name ?? user?.email ?? 'User';
+    
+    // If no URL, show fallback immediately
+    if (resolvedUrl == null) {
+      return _buildAvatarFallback(theme, displayName);
+    }
+
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipOval(
+        child: Image.network(
+          resolvedUrl,
+          fit: BoxFit.cover,
+          width: 56,
+          height: 56,
+          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded || frame != null) {
+              return AnimatedOpacity(
+                opacity: 1,
+                duration: const Duration(milliseconds: 260),
+                child: child,
+              );
+            }
+            // Show shimmer/loading state while frame is loading
+            return _buildAvatarLoading(theme);
+          },
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return _buildAvatarLoading(theme);
+          },
+          errorBuilder: (context, error, stackTrace) {
+            // Log error for debugging but don't crash
+            debugPrint('Profile image failed to load: $resolvedUrl - $error');
+            return _buildAvatarFallback(theme, displayName);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAvatarLoading(ThemeData theme) {
+    return Container(
+      color: theme.colorScheme.primary.withValues(alpha: 0.1),
+      child: Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: theme.colorScheme.primary.withValues(alpha: 0.5),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAvatarFallback(ThemeData theme, String name) {
+    final initials = _getInitials(name);
+    
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.primary,
+            theme.colorScheme.secondary,
+          ],
+        ),
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Center(
+        child: initials.isNotEmpty
+            ? Text(
+                initials,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            : Icon(
+                Icons.person,
+                color: Colors.white.withValues(alpha: 0.9),
+                size: 28,
+              ),
+      ),
+    );
+  }
+
+  String? _resolveProfileImageUrl(String? rawPath) {
+    if (rawPath == null || rawPath.isEmpty) return null;
+    
+    // If it's already a full URL with scheme, return as-is
+    final uri = Uri.tryParse(rawPath);
+    if (uri != null && uri.hasScheme && (uri.scheme == 'http' || uri.scheme == 'https')) {
+      return rawPath;
+    }
+    
+    // Otherwise, prepend the base URL
+    final base = AuthService.baseUrl;
+    final cleanBase = base.endsWith('/') ? base.substring(0, base.length - 1) : base;
+    final cleanPath = rawPath.startsWith('/') ? rawPath : '/$rawPath';
+    return '$cleanBase$cleanPath';
+  }
+
+  String _getInitials(String name) {
+    if (name.isEmpty) return '';
+    final parts = name.trim().split(' ').where((s) => s.isNotEmpty).toList();
+    if (parts.isEmpty) return '';
+    if (parts.length == 1) return parts[0][0].toUpperCase();
+    return '${parts[0][0]}${parts[parts.length - 1][0]}'.toUpperCase();
   }
 }
