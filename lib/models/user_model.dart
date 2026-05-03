@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class UserProfile {
   final String? username;
   final String? name;
@@ -66,46 +68,71 @@ class UserProfile {
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
+    String? asString(dynamic value) => value == null ? null : value.toString();
+
+    Map<String, dynamic>? asMap(dynamic value) {
+      if (value is Map<String, dynamic>) return value;
+      if (value is Map)
+        return value.map((key, value) => MapEntry(key.toString(), value));
+      return null;
+    }
+
+    List<String>? asStringList(dynamic value) {
+      if (value is! List) return null;
+      return value
+          .map((item) => item?.toString().trim() ?? '')
+          .where((item) => item.isNotEmpty)
+          .toList();
+    }
+
+    bool? asBool(dynamic value) {
+      if (value is bool) return value;
+      if (value is num) return value != 0;
+      if (value is String) return value.toLowerCase() == 'true' || value == '1';
+      return null;
+    }
+
+    int? asInt(dynamic value) {
+      if (value is int) return value;
+      if (value is num) return value.round();
+      return int.tryParse(value?.toString() ?? '');
+    }
+
+    final portfolioLinks = asMap(json['portfolio_links']);
+    final farmerDetails = asMap(json['farmer_details']);
+    final investorDetails = asMap(json['investor_details']);
+    final privacySettings = asMap(json['privacy_settings']);
+
     return UserProfile(
-      username: json['username'],
-      name: json['name'],
-      picture: json['picture'],
-      coverImage: json['cover_image'],
-      dob: json['dob'],
-      country: json['country'],
-      city: json['city'],
-      timezone: json['timezone'],
-      preferredLanguage: json['preferred_language'],
-      headline: json['headline'],
-      bio: json['bio'],
-      linkedin: json['portfolio_links']?['linkedin'],
-      website: json['portfolio_links']?['website'],
-      farmPage: json['portfolio_links']?['farm_page'],
-      businessName: json['farmer_details']?['business_name'],
-      farmLocations: (json['farmer_details']?['farm_locations'] as List?)
-          ?.map((e) => e as String)
-          .toList(),
-      productionTypes: (json['farmer_details']?['production_types'] as List?)
-          ?.map((e) => e as String)
-          .toList(),
-      workforceSize: json['farmer_details']?['workforce_size'],
-      preferredHiringTypes:
-          (json['farmer_details']?['preferred_hiring_types'] as List?)
-              ?.map((e) => e as String)
-              .toList(),
-      investmentFocus: (json['investor_details']?['investment_focus'] as List?)
-          ?.map((e) => e as String)
-          .toList(),
-      budgetRange: json['investor_details']?['budget_range'],
-      riskProfile: json['investor_details']?['risk_profile'],
-      preferredRegions:
-          (json['investor_details']?['preferred_regions'] as List?)
-              ?.map((e) => e as String)
-              .toList(),
-      involvementLevel: json['investor_details']?['involvement_level'],
-      discoverable: json['privacy_settings']?['discoverable'],
-      showContactInfo: json['privacy_settings']?['show_contact_info'],
-      completenessScore: json['completeness_score'],
+      username: asString(json['username']),
+      name: asString(json['name']),
+      picture: asString(json['picture']),
+      coverImage: asString(json['cover_image']),
+      dob: asString(json['dob']),
+      country: asString(json['country']),
+      city: asString(json['city']),
+      timezone: asString(json['timezone']),
+      preferredLanguage: asString(json['preferred_language']),
+      headline: asString(json['headline']),
+      bio: asString(json['bio']),
+      linkedin: asString(portfolioLinks?['linkedin']),
+      website: asString(portfolioLinks?['website']),
+      farmPage: asString(portfolioLinks?['farm_page']),
+      businessName: asString(farmerDetails?['business_name']),
+      farmLocations: asStringList(farmerDetails?['farm_locations']),
+      productionTypes: asStringList(farmerDetails?['production_types']),
+      workforceSize: asString(farmerDetails?['workforce_size']),
+      preferredHiringTypes: asStringList(
+        farmerDetails?['preferred_hiring_types'],
+      ),
+      investmentFocus: asStringList(investorDetails?['investment_focus']),
+      budgetRange: asString(investorDetails?['budget_range']),
+      riskProfile: asString(investorDetails?['risk_profile']),
+      preferredRegions: asStringList(investorDetails?['preferred_regions']),
+      involvementLevel: asString(investorDetails?['involvement_level']),
+      discoverable: asBool(privacySettings?['discoverable']),
+      showContactInfo: asBool(privacySettings?['show_contact_info']),
+      completenessScore: asInt(json['completeness_score']),
     );
   }
 
@@ -194,24 +221,50 @@ class User {
   String? get username => profile?.username;
 
   factory User.fromJson(Map<String, dynamic> json) {
+    DateTime? parseDate(dynamic value) {
+      if (value == null) return null;
+      return DateTime.tryParse(value.toString());
+    }
+
+    Map<String, dynamic>? parseProfile(dynamic value) {
+      if (value == null) return null;
+      if (value is Map<String, dynamic>) return value;
+      if (value is Map)
+        return value.map((key, value) => MapEntry(key.toString(), value));
+      if (value is String && value.trim().isNotEmpty) {
+        try {
+          final decoded = jsonDecode(value);
+          if (decoded is Map<String, dynamic>) return decoded;
+          if (decoded is Map)
+            return decoded.map((key, value) => MapEntry(key.toString(), value));
+        } catch (_) {
+          return null;
+        }
+      }
+      return null;
+    }
+
+    bool parseBool(dynamic value, {bool fallback = false}) {
+      if (value is bool) return value;
+      if (value is num) return value != 0;
+      if (value is String) return value.toLowerCase() == 'true' || value == '1';
+      return fallback;
+    }
+
+    final profileJson = parseProfile(json['profile']);
+
     return User(
-      id: json['id'],
-      email: json['email'],
-      role: json['role'],
-      phone: json['phone'],
-      profile: json['profile'] != null
-          ? UserProfile.fromJson(json['profile'])
-          : null,
-      isVerified: json['is_verified'] ?? false,
-      isBanned: json['is_banned'] ?? false,
-      isTwoFactorEnabled: json['is_two_factor_enabled'] ?? false,
+      id: json['id']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      role: json['role']?.toString() ?? 'user',
+      phone: json['phone']?.toString(),
+      profile: profileJson != null ? UserProfile.fromJson(profileJson) : null,
+      isVerified: parseBool(json['is_verified']),
+      isBanned: parseBool(json['is_banned']),
+      isTwoFactorEnabled: parseBool(json['is_two_factor_enabled']),
       authProvider: json['auth_provider'] ?? 'email',
       credits: (double.tryParse(json['credits']?.toString() ?? '0.0') ?? 0.0),
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
-          : null,
+      createdAt: parseDate(json['created_at'] ?? json['createdAt']),
       rentedLandsCount: json['rentedLandsCount'] != null
           ? int.tryParse(json['rentedLandsCount'].toString())
           : null,
@@ -220,7 +273,7 @@ class User {
       creditsBalance:
           (double.tryParse(json['credits_balance']?.toString() ?? '0.0') ??
           0.0),
-      hasWorkerProfile: json['has_worker_profile'] ?? false,
+      hasWorkerProfile: parseBool(json['has_worker_profile']),
     );
   }
 

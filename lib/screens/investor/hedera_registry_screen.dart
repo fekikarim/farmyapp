@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/hedera_service.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
+
 class HederaRegistryScreen extends StatefulWidget {
   const HederaRegistryScreen({super.key});
 
@@ -18,10 +19,10 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
   String? _error;
   late AnimationController _animController;
 
-  // Hedera brand purple
-  static const Color _hederaPurple = Color(0xFF8259EF);
-  static const Color _hederaDark = Color(0xFF1A1033);
-  static const Color _hederaAccent = Color(0xFFB39DDB);
+  // Hedera brand colors mapped to app theme
+  static const Color _brandPrimary = Color(0xFF90A53E);
+  static const Color _brandDark = Color(0xFF1A2111);
+  static const Color _brandAccent = Color(0xFFC5D196);
 
   @override
   void initState() {
@@ -54,24 +55,37 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: _hederaDark,
+      backgroundColor: theme.colorScheme.surface,
       body: Stack(
         children: [
-          // Deep space gradient bg
+          // Background Gradient
           Positioned.fill(
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xFF1A1033), Color(0xFF0D0A1F), Color(0xFF12083A)],
+                  colors: isDark
+                      ? [
+                          const Color(0xFF1A2111),
+                          const Color(0xFF0D1208),
+                          const Color(0xFF121A0A)
+                        ]
+                      : [
+                          theme.colorScheme.surface,
+                          _brandPrimary.withOpacity(0.05),
+                          theme.colorScheme.surface,
+                        ],
                 ),
               ),
             ),
           ),
 
-          // Floating glow orbs
+          // Floating glow orbs (more visible in dark mode, subtle in light)
           Positioned(
             top: -60, right: -40,
             child: AnimatedBuilder(
@@ -83,7 +97,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      _hederaPurple.withOpacity(0.18 + _animController.value * 0.06),
+                      _brandPrimary.withOpacity(isDark ? 0.18 + _animController.value * 0.06 : 0.08 + _animController.value * 0.03),
                       Colors.transparent,
                     ],
                   ),
@@ -100,7 +114,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFF3D1A7A).withOpacity(0.25),
+                    const Color(0xFF4F7035).withOpacity(isDark ? 0.25 : 0.08),
                     Colors.transparent,
                   ],
                 ),
@@ -109,12 +123,17 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
           ),
 
           SafeArea(
-            child: Column(
-              children: [
-                _buildHeader(),
-                if (!_isLoading && !(_error != null)) _buildStats(),
-                Expanded(child: _buildBody()),
-              ],
+            child: RefreshIndicator(
+              onRefresh: _load,
+              color: _brandPrimary,
+              backgroundColor: theme.colorScheme.surface,
+              child: Column(
+                children: [
+                  _buildHeader(context, theme, isDark),
+                  if (!_isLoading && _error == null) _buildStats(context, theme, isDark),
+                  Expanded(child: _buildBody(context, theme, isDark)),
+                ],
+              ),
             ),
           ),
         ],
@@ -122,7 +141,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context, ThemeData theme, bool isDark) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: Row(
@@ -131,7 +150,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white70, size: 18),
+            icon: Icon(Icons.arrow_back_ios_new, color: theme.iconTheme.color?.withOpacity(0.8), size: 18),
           ),
           const SizedBox(width: 12),
           // Hedera logo-style icon
@@ -141,13 +160,14 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: const LinearGradient(
-                colors: [Color(0xFF8259EF), Color(0xFF5B2BE8)],
+                colors: [Color(0xFF90A53E), Color(0xFF4F7035)],
               ),
               boxShadow: [
                 BoxShadow(
-                  color: _hederaPurple.withOpacity(0.5),
-                  blurRadius: 12,
+                  color: _brandPrimary.withOpacity(0.4),
+                  blurRadius: 10,
                   spreadRadius: 1,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -167,7 +187,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
               Text(
                 AppLocalizations.of(context)!.hederaRegistryUpper,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: theme.textTheme.bodyLarge?.color,
                   fontWeight: FontWeight.w900,
                   fontSize: 16,
                   letterSpacing: 1.5,
@@ -176,7 +196,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
               Text(
                 AppLocalizations.of(context)!.immutableOnChainRecords,
                 style: TextStyle(
-                  color: _hederaAccent.withOpacity(0.7),
+                  color: isDark ? _brandAccent.withOpacity(0.7) : theme.textTheme.bodySmall?.color?.withOpacity(0.7),
                   fontSize: 11,
                 ),
               ),
@@ -189,11 +209,11 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: isDark ? Colors.white.withOpacity(0.05) : _brandPrimary.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.white10),
+                  border: Border.all(color: isDark ? Colors.white10 : _brandPrimary.withOpacity(0.1)),
                 ),
-                child: const Icon(Icons.refresh_rounded, color: Colors.white54, size: 18),
+                child: Icon(Icons.refresh_rounded, color: isDark ? Colors.white54 : theme.iconTheme.color?.withOpacity(0.6), size: 18),
               ),
             ),
         ],
@@ -201,51 +221,61 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
     );
   }
 
-  Widget _buildStats() {
+  Widget _buildStats(BuildContext context, ThemeData theme, bool isDark) {
     final rentals = _entries.where((e) => e.type == 'land_rental').length;
     final items = _entries.where((e) => e.type == 'item_purchase' || e.type == 'product_purchase').length;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
       child: Row(
         children: [
-          _buildStatCard(AppLocalizations.of(context)!.totalLabel, _entries.length.toString(), Icons.link_rounded),
+          _buildStatCard(context, theme, isDark, AppLocalizations.of(context)!.totalLabel, _entries.length.toString(), Icons.link_rounded),
           const SizedBox(width: 12),
-          _buildStatCard(AppLocalizations.of(context)!.rentalsLabel, rentals.toString(), Icons.landscape_rounded),
+          _buildStatCard(context, theme, isDark, AppLocalizations.of(context)!.rentalsLabel, rentals.toString(), Icons.landscape_rounded),
           const SizedBox(width: 12),
-          _buildStatCard(AppLocalizations.of(context)!.purchasesLabel, items.toString(), Icons.shopping_bag_outlined),
+          _buildStatCard(context, theme, isDark, AppLocalizations.of(context)!.purchasesLabel, items.toString(), Icons.shopping_bag_outlined),
         ],
       ),
     );
   }
 
-  Widget _buildStatCard(String label, String value, IconData icon) {
+  Widget _buildStatCard(BuildContext context, ThemeData theme, bool isDark, String label, String value, IconData icon) {
     return Expanded(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.04),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: _hederaPurple.withOpacity(0.2)),
-            ),
-            child: Column(
-              children: [
-                Icon(icon, color: _hederaAccent, size: 18),
-                const SizedBox(height: 6),
-                Text(value, style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 20,
-                )),
-                Text(label, style: TextStyle(
-                  color: Colors.white.withOpacity(0.4),
-                  fontSize: 10,
-                  letterSpacing: 0.5,
-                )),
-              ],
+      child: Container(
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: isDark ? _brandPrimary.withOpacity(0.2) : _brandPrimary.withOpacity(0.1)),
+          boxShadow: [
+            BoxShadow(
+              color: isDark ? Colors.black26 : _brandPrimary.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+              color: isDark ? Colors.white.withOpacity(0.02) : Colors.transparent,
+              child: Column(
+                children: [
+                  Icon(icon, color: _brandPrimary, size: 18),
+                  const SizedBox(height: 6),
+                  Text(value, style: TextStyle(
+                    color: theme.textTheme.bodyLarge?.color,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 20,
+                  )),
+                  Text(label, style: TextStyle(
+                    color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
+                    fontSize: 10,
+                    letterSpacing: 0.5,
+                  )),
+                ],
+              ),
             ),
           ),
         ),
@@ -253,19 +283,19 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
     );
   }
 
-  Widget _buildBody() {
-    if (_isLoading) return _buildLoader();
-    if (_error != null) return _buildError();
-    if (_entries.isEmpty) return _buildEmpty();
+  Widget _buildBody(BuildContext context, ThemeData theme, bool isDark) {
+    if (_isLoading) return _buildLoader(context, theme, isDark);
+    if (_error != null) return _buildError(context, theme, isDark);
+    if (_entries.isEmpty) return _buildEmpty(context, theme, isDark);
 
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
-      physics: const BouncingScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
       itemCount: _entries.length,
       itemBuilder: (context, i) {
         return TweenAnimationBuilder<double>(
           tween: Tween(begin: 0.0, end: 1.0),
-          duration: Duration(milliseconds: 300 + i * 60),
+          duration: Duration(milliseconds: 300 + (i.clamp(0, 10)) * 60),
           curve: Curves.easeOut,
           builder: (_, value, child) => Opacity(
             opacity: value,
@@ -274,15 +304,15 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
               child: child,
             ),
           ),
-          child: _buildEntryCard(_entries[i]),
+          child: _buildEntryCard(context, theme, isDark, _entries[i]),
         );
       },
     );
   }
 
-  Widget _buildEntryCard(HederaEntry entry) {
+  Widget _buildEntryCard(BuildContext context, ThemeData theme, bool isDark, HederaEntry entry) {
     final isRental = entry.type == 'land_rental';
-    final typeColor = isRental ? const Color(0xFF4ADE80) : _hederaAccent;
+    final typeColor = isRental ? const Color(0xFF4ADE80) : _brandPrimary;
     final typeIcon = isRental ? Icons.landscape_rounded : Icons.shopping_bag_outlined;
     final shortTxId = entry.hederaTransactionId.length > 24
         ? '${entry.hederaTransactionId.substring(0, 24)}...'
@@ -291,21 +321,14 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.white.withOpacity(0.06),
-            Colors.white.withOpacity(0.02),
-          ],
-        ),
-        border: Border.all(color: _hederaPurple.withOpacity(0.25), width: 1),
+        border: Border.all(color: isDark ? _brandPrimary.withOpacity(0.25) : _brandPrimary.withOpacity(0.1), width: 1),
         boxShadow: [
           BoxShadow(
-            color: _hederaPurple.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 6),
+            color: isDark ? Colors.black26 : _brandPrimary.withOpacity(0.06),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -316,170 +339,177 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header row
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: typeColor.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: typeColor.withOpacity(0.3)),
-                      ),
-                      child: Icon(typeIcon, color: typeColor, size: 18),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _capitalize(entry.label),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                            ),
-                          ),
-                          Text(
-                            entry.sublabel,
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.45),
-                              fontSize: 11,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (entry.amount != null)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF4ADE80).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          '\$${entry.amount!.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            color: Color(0xFF4ADE80),
-                            fontWeight: FontWeight.w800,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
+               crossAxisAlignment: CrossAxisAlignment.start,
+               children: [
+                 // Header row
+                 Row(
+                   children: [
+                     Container(
+                       padding: const EdgeInsets.all(10),
+                       decoration: BoxDecoration(
+                         color: typeColor.withOpacity(0.12),
+                         borderRadius: BorderRadius.circular(12),
+                         border: Border.all(color: typeColor.withOpacity(0.2)),
+                       ),
+                       child: Icon(typeIcon, color: typeColor, size: 18),
+                     ),
+                     const SizedBox(width: 12),
+                     Expanded(
+                       child: Column(
+                         crossAxisAlignment: CrossAxisAlignment.start,
+                         children: [
+                           Text(
+                             _capitalize(entry.label),
+                             style: TextStyle(
+                               color: theme.textTheme.bodyLarge?.color,
+                               fontWeight: FontWeight.w700,
+                               fontSize: 14,
+                             ),
+                           ),
+                           Text(
+                             entry.sublabel,
+                             style: TextStyle(
+                               color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                               fontSize: 11,
+                             ),
+                             maxLines: 1,
+                             overflow: TextOverflow.ellipsis,
+                           ),
+                         ],
+                       ),
+                     ),
+                     if (entry.amount != null)
+                       Container(
+                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                         decoration: BoxDecoration(
+                           color: const Color(0xFF4ADE80).withOpacity(0.1),
+                           borderRadius: BorderRadius.circular(8),
+                         ),
+                         child: Text(
+                           '\$${entry.amount!.toStringAsFixed(2)}',
+                           style: const TextStyle(
+                             color: Color(0xFF4ADE80),
+                             fontWeight: FontWeight.w800,
+                             fontSize: 13,
+                           ),
+                         ),
+                       ),
+                   ],
+                 ),
 
-                const SizedBox(height: 14),
+                 const SizedBox(height: 14),
 
-                // Hedera TX section
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: _hederaDark.withOpacity(0.6),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: _hederaPurple.withOpacity(0.2)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.verified_rounded, color: Color(0xFF8259EF), size: 13),
-                          const SizedBox(width: 5),
-                          Text(
-                            AppLocalizations.of(context)!.hederaConsensusServiceUpper,
-                            style: TextStyle(
-                              color: _hederaAccent.withOpacity(0.8),
-                              fontSize: 9,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              shortTxId,
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontFamily: 'monospace',
-                                fontSize: 11,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          // Copy button
-                          GestureDetector(
-                            onTap: () {
-                              Clipboard.setData(ClipboardData(text: entry.hederaTransactionId));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(AppLocalizations.of(context)!.transactionIdCopied),
-                                  backgroundColor: _hederaPurple,
-                                  behavior: SnackBarBehavior.floating,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
-                            },
-                            child: Icon(Icons.copy_rounded, size: 14, color: _hederaAccent.withOpacity(0.6)),
-                          ),
-                          const SizedBox(width: 10),
-                          // HashScan button
-                          GestureDetector(
-                            onTap: () => _openHashScan(entry.hashScanUrl),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFF8259EF), Color(0xFF5B2BE8)],
-                                ),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.open_in_new_rounded, size: 10, color: Colors.white),
-                                  SizedBox(width: 4),
-                                  Text('HashScan', style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  )),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                 // Hedera TX section
+                 Container(
+                   padding: const EdgeInsets.all(12),
+                   decoration: BoxDecoration(
+                     color: isDark ? _brandDark.withOpacity(0.6) : theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                     borderRadius: BorderRadius.circular(12),
+                     border: Border.all(color: _brandPrimary.withOpacity(0.15)),
+                   ),
+                   child: Column(
+                     crossAxisAlignment: CrossAxisAlignment.start,
+                     children: [
+                       Row(
+                         children: [
+                           const Icon(Icons.verified_rounded, color: Color(0xFF90A53E), size: 13),
+                           const SizedBox(width: 5),
+                           Text(
+                             AppLocalizations.of(context)!.hederaConsensusServiceUpper,
+                             style: TextStyle(
+                               color: isDark ? _brandAccent.withOpacity(0.8) : _brandPrimary.withOpacity(0.8),
+                               fontSize: 9,
+                               fontWeight: FontWeight.w800,
+                               letterSpacing: 1.0,
+                             ),
+                           ),
+                         ],
+                       ),
+                       const SizedBox(height: 6),
+                       Row(
+                         children: [
+                           Expanded(
+                             child: Text(
+                               shortTxId,
+                               style: TextStyle(
+                                 color: theme.textTheme.bodyMedium?.color?.withOpacity(0.8),
+                                 fontFamily: 'monospace',
+                                 fontSize: 11,
+                               ),
+                             ),
+                           ),
+                           const SizedBox(width: 8),
+                           // Copy button
+                           GestureDetector(
+                             onTap: () {
+                               Clipboard.setData(ClipboardData(text: entry.hederaTransactionId));
+                               ScaffoldMessenger.of(context).showSnackBar(
+                                 SnackBar(
+                                   content: Text(AppLocalizations.of(context)!.transactionIdCopied),
+                                   backgroundColor: _brandPrimary,
+                                   behavior: SnackBarBehavior.floating,
+                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                   duration: const Duration(seconds: 2),
+                                 ),
+                               );
+                             },
+                             child: Icon(Icons.copy_rounded, size: 16, color: theme.iconTheme.color?.withOpacity(0.6)),
+                           ),
+                           const SizedBox(width: 10),
+                           // HashScan button
+                           GestureDetector(
+                             onTap: () => _openHashScan(entry.hashScanUrl),
+                             child: Container(
+                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                               decoration: BoxDecoration(
+                                 gradient: const LinearGradient(
+                                   colors: [Color(0xFF90A53E), Color(0xFF4F7035)],
+                                 ),
+                                 borderRadius: BorderRadius.circular(6),
+                                 boxShadow: [
+                                   BoxShadow(
+                                     color: _brandPrimary.withOpacity(0.3),
+                                     blurRadius: 4,
+                                     offset: const Offset(0, 2),
+                                   )
+                                 ],
+                               ),
+                               child: const Row(
+                                 mainAxisSize: MainAxisSize.min,
+                                 children: [
+                                   Icon(Icons.open_in_new_rounded, size: 10, color: Colors.white),
+                                   SizedBox(width: 4),
+                                   Text('HashScan', style: TextStyle(
+                                     color: Colors.white,
+                                     fontSize: 10,
+                                     fontWeight: FontWeight.bold,
+                                   )),
+                                 ],
+                               ),
+                             ),
+                           ),
+                         ],
+                       ),
+                     ],
+                   ),
+                 ),
 
-                const SizedBox(height: 10),
+                 const SizedBox(height: 10),
 
-                // Footer: date + status
-                Row(
-                  children: [
-                    Icon(Icons.access_time_rounded, size: 11, color: Colors.white.withOpacity(0.3)),
-                    const SizedBox(width: 4),
-                    Text(
-                      _formatDate(entry.timestamp),
-                      style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 10),
-                    ),
-                    const Spacer(),
-                    _buildStatusPill(entry.status),
-                  ],
-                ),
-              ],
+                 // Footer: date + status
+                 Row(
+                   children: [
+                     Icon(Icons.access_time_rounded, size: 11, color: theme.iconTheme.color?.withOpacity(0.4)),
+                     const SizedBox(width: 4),
+                     Text(
+                       _formatDate(entry.timestamp),
+                       style: TextStyle(color: theme.textTheme.bodySmall?.color?.withOpacity(0.6), fontSize: 10),
+                     ),
+                     const Spacer(),
+                     _buildStatusPill(context, entry.status),
+                   ],
+                 ),
+               ],
             ),
           ),
         ),
@@ -487,7 +517,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
     );
   }
 
-  Widget _buildStatusPill(String status) {
+  Widget _buildStatusPill(BuildContext context, String status) {
     Color color;
     switch (status.toLowerCase()) {
       case 'paid':
@@ -501,14 +531,14 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
         color = const Color(0xFFF87171);
         break;
       default:
-        color = Colors.white38;
+        color = Theme.of(context).disabledColor;
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: color.withOpacity(0.12),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.4)),
+        border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Text(
         _translateStatus(context, status).toUpperCase(),
@@ -517,7 +547,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
     );
   }
 
-  Widget _buildLoader() {
+  Widget _buildLoader(BuildContext context, ThemeData theme, bool isDark) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -531,79 +561,90 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: _hederaPurple.withOpacity(0.3 + _animController.value * 0.3),
+                    color: _brandPrimary.withOpacity(0.2 + _animController.value * 0.2),
                     blurRadius: 30,
                     spreadRadius: 4,
                   ),
                 ],
               ),
               child: CircularProgressIndicator(
-                color: _hederaPurple,
+                color: _brandPrimary,
                 strokeWidth: 2.5,
               ),
             ),
           ),
           const SizedBox(height: 20),
           Text(AppLocalizations.of(context)!.fetchingBlockchainRecords,
-              style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13)),
+              style: TextStyle(color: theme.textTheme.bodySmall?.color, fontSize: 13)),
         ],
       ),
     );
   }
 
-  Widget _buildError() {
+  Widget _buildError(BuildContext context, ThemeData theme, bool isDark) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(Icons.error_outline_rounded, color: Color(0xFFF87171), size: 48),
           const SizedBox(height: 16),
-          Text(AppLocalizations.of(context)!.failedToLoadRecords, style: const TextStyle(color: Colors.white70)),
+          Text(AppLocalizations.of(context)!.failedToLoadRecords, style: TextStyle(color: theme.textTheme.bodyLarge?.color?.withOpacity(0.8))),
           const SizedBox(height: 16),
-          ElevatedButton(
+          ElevatedButton.icon(
             onPressed: _load,
+            icon: const Icon(Icons.refresh_rounded, size: 18),
+            label: Text(AppLocalizations.of(context)!.retry),
             style: ElevatedButton.styleFrom(
-              backgroundColor: _hederaPurple,
+              backgroundColor: _brandPrimary,
               foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            child: Text(AppLocalizations.of(context)!.retry),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildEmpty() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: _hederaPurple.withOpacity(0.08),
-              border: Border.all(color: _hederaPurple.withOpacity(0.2)),
-            ),
-            child: Center(
-              child: Text('H', style: TextStyle(
-                color: _hederaPurple.withOpacity(0.5),
-                fontSize: 36,
-                fontWeight: FontWeight.w900,
-              )),
-            ),
+  Widget _buildEmpty(BuildContext context, ThemeData theme, bool isDark) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+      children: [
+        SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _brandPrimary.withOpacity(0.08),
+                  border: Border.all(color: _brandPrimary.withOpacity(0.2)),
+                ),
+                child: Center(
+                  child: Text('H', style: TextStyle(
+                    color: _brandPrimary.withOpacity(0.6),
+                    fontSize: 36,
+                    fontWeight: FontWeight.w900,
+                  )),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(AppLocalizations.of(context)!.noBlockchainRecordsYet,
+                  style: TextStyle(color: theme.textTheme.bodyLarge?.color, fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Text(AppLocalizations.of(context)!.makePurchaseImmutableRecordsHint,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: theme.textTheme.bodySmall?.color, fontSize: 13, height: 1.5)),
+              ),
+            ],
           ),
-          const SizedBox(height: 20),
-          Text(AppLocalizations.of(context)!.noBlockchainRecordsYet,
-              style: const TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          Text(AppLocalizations.of(context)!.makePurchaseImmutableRecordsHint,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 13, height: 1.5)),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -634,6 +675,7 @@ class _HederaRegistryScreenState extends State<HederaRegistryScreen>
       }
     }
   }
+
   String _translateStatus(BuildContext context, String status) {
     final l10n = AppLocalizations.of(context)!;
     switch (status.toLowerCase()) {

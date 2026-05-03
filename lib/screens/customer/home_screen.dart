@@ -2,10 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:math';
 import 'package:farmyapp/l10n/app_localizations.dart';
+
 import '../../providers/auth_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../providers/worker_provider.dart';
+import '../../services/auth_service.dart';
+import '../../models/user_model.dart';
+import '../../providers/worker_lifecycle_provider.dart';
+import '../../providers/worker_wallet_provider.dart';
+
 import 'subscriptions_screen.dart';
+import 'marketplace_screen.dart';
+import 'become_worker_screen.dart';
+import '../worker/wallet/worker_wallet_screen.dart';
+import '../worker/wallet/withdrawal_screen.dart';
+import '../worker/wallet/earnings_history_screen.dart';
+import '../worker/wallet/transaction_history_screen.dart';
+import '../main_screen.dart';
+import '../settings/edit_profile_screen.dart';
+import '../../models/task_model.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
   const CustomerHomeScreen({super.key});
@@ -17,23 +32,521 @@ class CustomerHomeScreen extends StatefulWidget {
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   String _motivationalQuote = "";
 
-
   @override
   void initState() {
     super.initState();
 
-    // Proactively load worker profile for customers to check verification status
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final authProvider = context.read<AuthProvider>();
       if (authProvider.user?.role == 'customer') {
-        context.read<WorkerProvider>().loadMyProfile();
+        final workerProvider = context.read<WorkerProvider>();
+        workerProvider.loadMyProfile().then((_) {
+          if (workerProvider.isVerifiedWorker) {
+            context.read<WorkerLifecycleProvider>().refreshWorkerDashboardLifecycle();
+            context.read<WorkerWalletProvider>().fetchOverview();
+            workerProvider.loadMyTasks();
+          }
+        });
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final workerProvider = context.watch<WorkerProvider>();
+    final isVerifiedWorker = workerProvider.isVerifiedWorker;
+
+    if (workerProvider.profileLoading) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              const Text(
+                'Loading dashboard...',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (isVerifiedWorker) {
+      return _buildWorkerHome(context);
+    } else {
+      return _buildCustomerHome(context);
+    }
+  }
+
+  // ==========================================
+  // WORKER HOME (Primary Experience)
+  // ==========================================
+
+  Widget _buildWorkerHome(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final workerProvider = context.watch<WorkerProvider>();
+    final lifecycle = context.watch<WorkerLifecycleProvider>();
+    final wallet = context.watch<WorkerWalletProvider>();
+
+    final tasks = workerProvider.myTasks;
+    final todayTasks = tasks.where((t) => !t.isCompleted && !t.isVerified).toList();
+    final pendingBalance = double.tryParse(lifecycle.myBalance['pending_balance']?.toString() ?? '0') ?? 0.0;
+    final walletBalance = double.tryParse(wallet.overviewData?['balance']?.toString() ?? '0') ?? 0.0;
+    final monthlyEarnings = double.tryParse(wallet.overviewData?['total_earnings']?.toString() ?? '0') ?? 0.0;
+
+    final l10n = AppLocalizations.of(context)!;
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final user = authProvider.user;
+
+    return Scaffold(
+      backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await workerProvider.loadMyProfile();
+            if (workerProvider.isVerifiedWorker) {
+              await context.read<WorkerLifecycleProvider>().refreshWorkerDashboardLifecycle();
+              await context.read<WorkerWalletProvider>().fetchOverview();
+              await workerProvider.loadMyTasks();
+            }
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Welcome back, ready to work?',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            user?.name ?? user?.email ?? l10n.user,
+                            style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    _buildProfileAvatar(context, user, theme),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Hero Block (KPIs)
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildKpiCard(
+                        context,
+                        title: 'Tasks Today',
+                        value: '${todayTasks.length}',
+                        icon: Icons.task_alt,
+                        color: Colors.blue,
+                        isDark: isDark,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildKpiCard(
+                        context,
+                        title: 'Monthly Earnings',
+                        value: '\$${monthlyEarnings.toStringAsFixed(2)}',
+                        icon: Icons.trending_up,
+                        color: Colors.green,
+                        isDark: isDark,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: _buildKpiCard(
+                    context,
+                    title: 'Escrow Balance',
+                    value: '\$${pendingBalance.toStringAsFixed(2)}',
+                    icon: Icons.lock_outline,
+                    color: Colors.purple,
+                    isDark: isDark,
+                    fullWidth: true,
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                // Smart Alerts
+                if (lifecycle.pendingInvitations.isNotEmpty || todayTasks.isNotEmpty) ...[
+                  Text(
+                    'Smart Alerts',
+                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  if (lifecycle.pendingInvitations.isNotEmpty)
+                    _buildAlertCard(
+                      context,
+                      title: 'New Invitation',
+                      description: 'You have ${lifecycle.pendingInvitations.length} pending job invitation(s).',
+                      icon: Icons.mail_outline,
+                      color: Colors.orange,
+                      onTap: () => MainScreen.trySwitchToTab(context, 1), // Find Jobs
+                    ),
+                  if (todayTasks.isNotEmpty)
+                    _buildAlertCard(
+                      context,
+                      title: 'Tasks Pending',
+                      description: 'You have ${todayTasks.length} tasks to complete today.',
+                      icon: Icons.warning_amber_rounded,
+                      color: Colors.red,
+                      onTap: () => MainScreen.trySwitchToTab(context, 2), // Tasks
+                    ),
+                  const SizedBox(height: 32),
+                ],
+
+                // Quick Actions
+                Text(
+                  'Quick Actions',
+                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildQuickActionCard(context, 'Wallet', Icons.account_balance_wallet, Colors.green, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkerWalletScreen()));
+                      }),
+                      _buildQuickActionCard(context, 'Withdraw', Icons.attach_money, Colors.blue, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const WithdrawalScreen()));
+                      }),
+                      _buildQuickActionCard(context, 'Earnings', Icons.insights, Colors.indigo, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const EarningsHistoryScreen()));
+                      }),
+                      _buildQuickActionCard(context, 'History', Icons.history, Colors.blueGrey, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const TransactionHistoryScreen()));
+                      }),
+                      _buildQuickActionCard(context, 'Marketplace', Icons.storefront, Colors.orange, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomerMarketplaceScreen()));
+                      }),
+                      _buildQuickActionCard(context, 'FarmBox', Icons.local_shipping, Colors.purple, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionsScreen()));
+                      }),
+                      _buildQuickActionCard(context, 'Profile', Icons.person, Colors.teal, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfileScreen()));
+                      }),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                // Earnings Wallet Card
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [theme.colorScheme.primary, theme.colorScheme.primaryContainer],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.colorScheme.primary.withOpacity(0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Icon(Icons.account_balance_wallet, color: Colors.white, size: 32),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Text(
+                              'Available',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('Wallet Balance', style: TextStyle(color: Colors.white70, fontSize: 16)),
+                      const SizedBox(height: 4),
+                      Text(
+                        '\$${walletBalance.toStringAsFixed(2)}',
+                        style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const WithdrawalScreen()));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: theme.colorScheme.primary,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          child: const Text('Withdraw Funds', style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                // Task List (Core Section)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Your Tasks',
+                      style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    TextButton(
+                      onPressed: () => MainScreen.trySwitchToTab(context, 2),
+                      child: const Text('See All'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                if (tasks.isEmpty)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Text(
+                        'No active tasks. Take a break or find new jobs!',
+                        style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5)),
+                      ),
+                    ),
+                  )
+                else
+                  ...tasks.take(3).map((task) => _buildMiniTaskCard(context, task, isDark)).toList(),
+
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildKpiCard(BuildContext context, {required String title, required String value, required IconData icon, required Color color, required bool isDark, bool fullWidth = false}) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? color.withOpacity(0.1) : color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: color),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600, fontSize: 13),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAlertCard(BuildContext context, {required String title, required String description, required IconData icon, required Color color, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 4),
+                  Text(description, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7))),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, size: 16, color: color),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMiniTaskCard(BuildContext context, FarmTask task, bool isDark) {
+    Color statusColor = Colors.grey;
+    if (task.isOpen) statusColor = Colors.blue;
+    if (task.isInProgress) statusColor = Colors.orange;
+    if (task.isCompleted || task.isVerified) statusColor = Colors.green;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey.shade800 : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: statusColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(task.typeIcon, style: const TextStyle(fontSize: 20)),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(task.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(Icons.monetization_on, size: 14, color: Colors.green.shade600),
+                    const SizedBox(width: 4),
+                    Text('\$${task.reward.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w600)),
+                    const SizedBox(width: 12),
+                    Icon(Icons.access_time, size: 14, color: Colors.grey.shade600),
+                    const SizedBox(width: 4),
+                    Text('${task.timeRequiredMinutes}m', style: TextStyle(color: Colors.grey.shade600)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: statusColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              task.statusLabel,
+              style: TextStyle(color: statusColor, fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActionCard(BuildContext context, String label, IconData icon, MaterialColor color, VoidCallback onTap) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(right: 16),
+        width: 90,
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        decoration: BoxDecoration(
+          color: isDark ? color.shade900.withValues(alpha: 0.3) : color.shade50,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: isDark ? color.shade900.withValues(alpha: 0.5) : color.shade100),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: isDark ? 0.05 : 0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.grey.shade800 : Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withValues(alpha: isDark ? 0 : 0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Icon(icon, size: 24, color: isDark ? color.shade200 : color.shade700),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              label, 
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? Colors.white : color.shade900),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ==========================================
+  // CUSTOMER HOME (Fallback Experience)
+  // ==========================================
+
+  Widget _buildCustomerHome(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
     final theme = Theme.of(context);
@@ -54,7 +567,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       _motivationalQuote = quotes[Random().nextInt(quotes.length)];
     }
 
-    // Get time of day for greeting
     final hour = DateTime.now().hour;
     String greeting;
     if (hour < 12) {
@@ -88,52 +600,17 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          user?.name ?? user?.email?.split('@')[0] ?? l10n.user,
-                          style: theme.textTheme.headlineMedium,
+                          user?.name ?? user?.email ?? l10n.user,
+                          style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ),
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                    backgroundImage: user?.profilePicture != null
-                        ? NetworkImage(user!.profilePicture!)
-                        : null,
-                    child: user?.profilePicture == null
-                        ? Icon(
-                            Icons.person,
-                            color: theme.colorScheme.primary,
-                            size: 28,
-                          )
-                        : null,
-                  ),
+                  _buildProfileAvatar(context, user, theme),
                 ],
               ),
-
               const SizedBox(height: 32),
-
-              // User Role Badge (Optional but nice)
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  l10n.customerAccount,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
 
               // Motivational Quote Card
               Container(
@@ -189,35 +666,26 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                 ),
               ),
 
-              // TODO: Add more sections here (Quick Actions, Recent Activity, etc.)
+              const SizedBox(height: 32),
 
-              // Worker Plus Section for Approved Workers
-              Consumer2<WorkerProvider, SubscriptionProvider>(
-                builder: (context, workerProvider, subProvider, _) {
-                  final workerProfile = workerProvider.myProfile;
-                  // Only show Worker Plus for VERIFIED workers who don't have it yet
-                  final isVerifiedWorker =
-                      workerProfile != null && workerProfile.isVerified;
-                  final hasWorkerPlus =
-                      subProvider.currentSubscription?.plan.planKey ==
-                      'worker_plus';
-
-                  if (!isVerifiedWorker || hasWorkerPlus) {
-                    return const SizedBox.shrink();
-                  }
-
-                  return _buildUpgradeCard(
-                    context,
-                    title: l10n.workerPlus,
-                    description: l10n.workerPlusDescription,
-                    color: Colors.purple,
-                    icon: Icons.work_history,
-                    price: '\$4.99',
-                  );
-                },
+              Text(
+                'Explore Farmy',
+                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              
+              // Marketplace Access
+              _buildUpgradeCard(
+                context,
+                title: 'Marketplace',
+                description: 'Discover fresh, organic products directly from our trusted farmers.',
+                color: Colors.green.shade600,
+                icon: Icons.storefront,
+                price: 'Shop Now',
+                onTap: () => MainScreen.trySwitchToTab(context, 1),
               ),
 
-              // FarmBox Section for All Customers
+              // FarmBox Section
               Consumer<SubscriptionProvider>(
                 builder: (context, subProvider, _) {
                   final hasFarmBox = subProvider.hasFeature('farmbox_active');
@@ -229,10 +697,36 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                     description: l10n.farmboxDescription,
                     color: Colors.orange.shade700,
                     icon: Icons.local_shipping_rounded,
-                    price: 'From \$29.99',
+                    price: l10n.upgradeWithPrice('From \$29.99'),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SubscriptionsScreen()),
+                    ),
                   );
                 },
               ),
+
+              // Worker Entry Point
+              Consumer<WorkerProvider>(
+                builder: (context, workerProvider, _) {
+                  if (workerProvider.isVerifiedWorker) return const SizedBox.shrink();
+
+                  return _buildUpgradeCard(
+                    context,
+                    title: 'Become a Worker',
+                    description: 'Join Farmy as a worker. Complete tasks, earn money, and grow with our community.',
+                    color: Colors.blue.shade700,
+                    icon: Icons.work,
+                    price: 'Get Verified',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const BecomeWorkerScreen()),
+                    ),
+                  );
+                },
+              ),
+              
+              const SizedBox(height: 40),
             ],
           ),
         ),
@@ -247,10 +741,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     required Color color,
     required IconData icon,
     required String price,
+    required VoidCallback onTap,
   }) {
     final theme = Theme.of(context);
     return Container(
-      margin: const EdgeInsets.only(top: 24),
+      margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: color.withOpacity(0.05),
@@ -293,10 +788,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SubscriptionsScreen()),
-              ),
+              onPressed: onTap,
               style: ElevatedButton.styleFrom(
                 backgroundColor: color,
                 foregroundColor: Colors.white,
@@ -307,7 +799,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                 ),
               ),
               child: Text(
-                AppLocalizations.of(context)!.upgradeWithPrice(price),
+                price,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -315,5 +807,152 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         ],
       ),
     );
+  }
+
+  // ==========================================
+  // PROFILE AVATAR WITH LOADING & ERROR HANDLING
+  // ==========================================
+
+  Widget _buildProfileAvatar(BuildContext context, User? user, ThemeData theme) {
+    final String? rawPictureUrl = user?.profilePicture;
+    final String? resolvedUrl = _resolveProfileImageUrl(rawPictureUrl);
+    final String displayName = user?.name ?? user?.email ?? 'User';
+    
+    // If no URL, show fallback immediately
+    if (resolvedUrl == null) {
+      return _buildAvatarFallback(theme, displayName);
+    }
+
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipOval(
+        child: Image.network(
+          resolvedUrl,
+          fit: BoxFit.cover,
+          width: 56,
+          height: 56,
+          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded || frame != null) {
+              return AnimatedOpacity(
+                opacity: 1,
+                duration: const Duration(milliseconds: 260),
+                child: child,
+              );
+            }
+            // Show shimmer/loading state while frame is loading
+            return _buildAvatarLoading(theme);
+          },
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return _buildAvatarLoading(theme);
+          },
+          errorBuilder: (context, error, stackTrace) {
+            // Log error for debugging but don't crash
+            debugPrint('Profile image failed to load: $resolvedUrl - $error');
+            return _buildAvatarFallback(theme, displayName);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAvatarLoading(ThemeData theme) {
+    return Container(
+      color: theme.colorScheme.primary.withValues(alpha: 0.1),
+      child: Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: theme.colorScheme.primary.withValues(alpha: 0.5),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAvatarFallback(ThemeData theme, String name) {
+    final initials = _getInitials(name);
+    
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.primary,
+            theme.colorScheme.secondary,
+          ],
+        ),
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Center(
+        child: initials.isNotEmpty
+            ? Text(
+                initials,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            : Icon(
+                Icons.person,
+                color: Colors.white.withValues(alpha: 0.9),
+                size: 28,
+              ),
+      ),
+    );
+  }
+
+  String? _resolveProfileImageUrl(String? rawPath) {
+    if (rawPath == null || rawPath.isEmpty) return null;
+    
+    // If it's already a full URL with scheme, return as-is
+    final uri = Uri.tryParse(rawPath);
+    if (uri != null && uri.hasScheme && (uri.scheme == 'http' || uri.scheme == 'https')) {
+      return rawPath;
+    }
+    
+    // Otherwise, prepend the base URL
+    final base = AuthService.baseUrl;
+    final cleanBase = base.endsWith('/') ? base.substring(0, base.length - 1) : base;
+    final cleanPath = rawPath.startsWith('/') ? rawPath : '/$rawPath';
+    return '$cleanBase$cleanPath';
+  }
+
+  String _getInitials(String name) {
+    if (name.isEmpty) return '';
+    final parts = name.trim().split(' ').where((s) => s.isNotEmpty).toList();
+    if (parts.isEmpty) return '';
+    if (parts.length == 1) return parts[0][0].toUpperCase();
+    return '${parts[0][0]}${parts[parts.length - 1][0]}'.toUpperCase();
   }
 }

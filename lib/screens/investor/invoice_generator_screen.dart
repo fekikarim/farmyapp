@@ -14,9 +14,9 @@ class InvoiceGeneratorScreen extends StatefulWidget {
 class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
     with SingleTickerProviderStateMixin {
   // ── Brand colours ────────────────────────────────────────────────────────────
-  static const _purple = Color(0xFF8259EF);
-  static const _dark = Color(0xFF1A1033);
-  static const _accent = Color(0xFFB39DDB);
+  static const _primary = Color(0xFF90A53E);
+  static const _dark = Color(0xFF1A2111);
+  static const _accent = Color(0xFFC5D196);
   static const _green = Color(0xFF4ADE80);
 
   // ── State ────────────────────────────────────────────────────────────────────
@@ -64,22 +64,23 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
       firstDate: DateTime(2024),
       lastDate: DateTime.now(),
       initialDateRange: _range,
-      builder: (ctx, child) => Theme(
-        data: ThemeData.light().copyWith(
-          colorScheme: const ColorScheme.light(
-            primary: _purple,
-            onPrimary: Colors.white,
-            surface: Colors.white,
-            onSurface: Color(0xFF1A1A2E),
-            secondary: _purple,
-            onSecondary: Colors.white,
+      builder: (ctx, child) {
+        final theme = Theme.of(ctx);
+        return Theme(
+          data: theme.copyWith(
+            colorScheme: theme.colorScheme.copyWith(
+              primary: _primary,
+              onPrimary: Colors.white,
+              surface: theme.colorScheme.surface,
+              onSurface: theme.textTheme.bodyLarge?.color ?? Colors.black,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(foregroundColor: _primary),
+            ),
           ),
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(foregroundColor: _purple),
-          ),
-        ),
-        child: child!,
-      ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() => _range = picked);
@@ -133,7 +134,7 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
   void _showSnack(String msg, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(msg),
-      backgroundColor: isError ? const Color(0xFFF87171) : _purple,
+      backgroundColor: isError ? const Color(0xFFF87171) : _primary,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     ));
@@ -142,18 +143,31 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
   // ── Build ─────────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: _dark,
+      backgroundColor: theme.colorScheme.surface,
       body: Stack(
         children: [
           // Background gradient
           Positioned.fill(
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xFF1A1033), Color(0xFF0D0A1F), Color(0xFF12083A)],
+                  colors: isDark
+                      ? [
+                          const Color(0xFF1A2111),
+                          const Color(0xFF0D1208),
+                          const Color(0xFF121A0A)
+                        ]
+                      : [
+                          theme.colorScheme.surface,
+                          _primary.withOpacity(0.05),
+                          theme.colorScheme.surface,
+                        ],
                 ),
               ),
             ),
@@ -169,7 +183,7 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: RadialGradient(colors: [
-                    _purple.withOpacity(0.18 + _pulseCtrl.value * 0.06),
+                    _primary.withOpacity(isDark ? 0.18 + _pulseCtrl.value * 0.06 : 0.08 + _pulseCtrl.value * 0.03),
                     Colors.transparent,
                   ]),
                 ),
@@ -178,17 +192,17 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
           ),
 
           SafeArea(
-            child: _generatingPdf ? _buildGeneratingOverlay() : _buildContent(),
+            child: _generatingPdf ? _buildGeneratingOverlay(context, theme, isDark) : _buildContent(context, theme, isDark),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context, ThemeData theme, bool isDark) {
     return Column(
       children: [
-        _buildHeader(),
+        _buildHeader(context, theme, isDark),
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
@@ -196,19 +210,19 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSectionLabel('DATE RANGE'),
+                _buildSectionLabel(theme, isDark, 'DATE RANGE'),
                 const SizedBox(height: 8),
-                _buildDateRangeCard(),
+                _buildDateRangeCard(context, theme, isDark),
                 const SizedBox(height: 24),
-                _buildSectionLabel('ACTIVITY TYPES'),
+                _buildSectionLabel(theme, isDark, 'ACTIVITY TYPES'),
                 const SizedBox(height: 10),
-                _buildTypeChips(),
+                _buildTypeChips(theme, isDark),
                 const SizedBox(height: 24),
-                _buildSectionLabel('PREVIEW'),
+                _buildSectionLabel(theme, isDark, 'PREVIEW'),
                 const SizedBox(height: 10),
-                _buildPreviewCard(),
+                _buildPreviewCard(context, theme, isDark),
                 const SizedBox(height: 32),
-                _buildGenerateButton(),
+                _buildGenerateButton(theme, isDark),
               ],
             ),
           ),
@@ -218,7 +232,7 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
   }
 
   // ── Header ────────────────────────────────────────────────────────────────────
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context, ThemeData theme, bool isDark) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: Row(
@@ -227,7 +241,7 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white70, size: 18),
+            icon: Icon(Icons.arrow_back_ios_new, color: theme.iconTheme.color?.withOpacity(0.8), size: 18),
           ),
           const SizedBox(width: 12),
           Container(
@@ -235,7 +249,7 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: const LinearGradient(colors: [Color(0xFF2D6A4F), Color(0xFF1B4332)]),
-              boxShadow: [BoxShadow(color: const Color(0xFF2D6A4F).withOpacity(0.5), blurRadius: 12)],
+              boxShadow: [BoxShadow(color: const Color(0xFF2D6A4F).withOpacity(0.5), blurRadius: 10, offset: const Offset(0,2))],
             ),
             child: const Center(
               child: Icon(Icons.receipt_long_rounded, color: Colors.white, size: 18),
@@ -245,12 +259,12 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('INVOICE GENERATOR', style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w900,
+              Text('INVOICE GENERATOR', style: TextStyle(
+                color: theme.textTheme.bodyLarge?.color, fontWeight: FontWeight.w900,
                 fontSize: 14, letterSpacing: 1.5,
               )),
               Text('Blockchain-verified PDF', style: TextStyle(
-                color: _accent.withOpacity(0.7), fontSize: 11,
+                color: isDark ? _accent.withOpacity(0.7) : theme.textTheme.bodySmall?.color?.withOpacity(0.7), fontSize: 11,
               )),
             ],
           ),
@@ -260,9 +274,9 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
   }
 
   // ── Section label ─────────────────────────────────────────────────────────────
-  Widget _buildSectionLabel(String label) {
+  Widget _buildSectionLabel(ThemeData theme, bool isDark, String label) {
     return Text(label, style: TextStyle(
-      color: _accent.withOpacity(0.6),
+      color: isDark ? _accent.withOpacity(0.6) : theme.textTheme.bodySmall?.color?.withOpacity(0.8),
       fontSize: 10,
       fontWeight: FontWeight.w800,
       letterSpacing: 1.4,
@@ -270,35 +284,45 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
   }
 
   // ── Date range card ───────────────────────────────────────────────────────────
-  Widget _buildDateRangeCard() {
+  Widget _buildDateRangeCard(BuildContext context, ThemeData theme, bool isDark) {
     return GestureDetector(
       onTap: _pickDateRange,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: _purple.withOpacity(0.3)),
-            ),
-            child: Row(
-              children: [
-                Expanded(child: _dateBox('FROM', _range.start)),
-                Container(width: 1, height: 40, color: _purple.withOpacity(0.3)),
-                Expanded(child: _dateBox('TO', _range.end)),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [_purple, Color(0xFF5B2BE8)]),
-                    borderRadius: BorderRadius.circular(10),
+      child: Container(
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: isDark ? _primary.withOpacity(0.25) : _primary.withOpacity(0.15)),
+          boxShadow: [
+            BoxShadow(
+              color: isDark ? Colors.black26 : _primary.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              color: isDark ? Colors.white.withOpacity(0.05) : Colors.transparent,
+              child: Row(
+                children: [
+                  Expanded(child: _dateBox(theme, isDark, 'FROM', _range.start)),
+                  Container(width: 1, height: 40, color: isDark ? _primary.withOpacity(0.3) : _primary.withOpacity(0.1)),
+                  Expanded(child: _dateBox(theme, isDark, 'TO', _range.end)),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(colors: [_primary, Color(0xFF4F7035)]),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.calendar_month_rounded, color: Colors.white, size: 18),
                   ),
-                  child: const Icon(Icons.calendar_month_rounded, color: Colors.white, size: 18),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -306,16 +330,16 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
     );
   }
 
-  Widget _dateBox(String label, DateTime date) {
+  Widget _dateBox(ThemeData theme, bool isDark, String label, DateTime date) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(color: _accent.withOpacity(0.6), fontSize: 9, letterSpacing: 1)),
+          Text(label, style: TextStyle(color: isDark ? _accent.withOpacity(0.6) : theme.textTheme.bodySmall?.color?.withOpacity(0.6), fontSize: 9, letterSpacing: 1)),
           const SizedBox(height: 4),
-          Text(_fmtDate(date), style: const TextStyle(
-            color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15,
+          Text(_fmtDate(date), style: TextStyle(
+            color: theme.textTheme.bodyLarge?.color, fontWeight: FontWeight.w700, fontSize: 15,
           )),
         ],
       ),
@@ -323,10 +347,10 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
   }
 
   // ── Type chips ────────────────────────────────────────────────────────────────
-  Widget _buildTypeChips() {
+  Widget _buildTypeChips(ThemeData theme, bool isDark) {
     final chips = [
       {'key': 'land_rental', 'label': '🌿 Land Rentals', 'color': _green},
-      {'key': 'item_purchase', 'label': '🎮 Asset Purchases', 'color': _accent},
+      {'key': 'item_purchase', 'label': '🎮 Asset Purchases', 'color': _primary},
       {'key': 'product_purchase', 'label': '🛍️ Products', 'color': const Color(0xFF60A5FA)},
     ];
 
@@ -353,10 +377,10 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: selected ? color.withOpacity(0.15) : Colors.white.withOpacity(0.04),
+              color: selected ? color.withOpacity(0.15) : (isDark ? Colors.white.withOpacity(0.04) : theme.colorScheme.surfaceContainerHighest),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: selected ? color.withOpacity(0.5) : Colors.white.withOpacity(0.1),
+                color: selected ? color.withOpacity(0.5) : (isDark ? Colors.white.withOpacity(0.1) : Colors.transparent),
                 width: selected ? 1.5 : 1,
               ),
             ),
@@ -366,10 +390,10 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
                 if (selected)
                   Icon(Icons.check_circle_rounded, size: 14, color: color)
                 else
-                  Icon(Icons.radio_button_unchecked_rounded, size: 14, color: Colors.white30),
+                  Icon(Icons.radio_button_unchecked_rounded, size: 14, color: theme.iconTheme.color?.withOpacity(0.3)),
                 const SizedBox(width: 6),
                 Text(chip['label'] as String, style: TextStyle(
-                  color: selected ? color : Colors.white54,
+                  color: selected ? color : theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
                   fontWeight: selected ? FontWeight.w700 : FontWeight.normal,
                   fontSize: 13,
                 )),
@@ -382,86 +406,98 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
   }
 
   // ── Preview card ──────────────────────────────────────────────────────────────
-  Widget _buildPreviewCard() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.04),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: _purple.withOpacity(0.25)),
-          ),
-          child: _loadingPreview
-              ? const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: SizedBox(
-                      width: 24, height: 24,
-                      child: CircularProgressIndicator(color: _purple, strokeWidth: 2),
+  Widget _buildPreviewCard(BuildContext context, ThemeData theme, bool isDark) {
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isDark ? _primary.withOpacity(0.25) : _primary.withOpacity(0.15)),
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? Colors.black26 : _primary.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            color: isDark ? Colors.white.withOpacity(0.04) : Colors.transparent,
+            child: _loadingPreview
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: SizedBox(
+                        width: 24, height: 24,
+                        child: CircularProgressIndicator(color: _primary, strokeWidth: 2),
+                      ),
                     ),
-                  ),
-                )
-              : _previewError != null
-                  ? Row(children: [
-                      const Icon(Icons.info_outline, color: Color(0xFFF87171), size: 18),
-                      const SizedBox(width: 8),
-                      const Text('Could not load preview', style: TextStyle(color: Color(0xFFF87171))),
-                    ])
-                  : _preview == null
-                      ? Text('Select types to see a preview.',
-                          style: TextStyle(color: Colors.white.withOpacity(0.4)))
-                      : Column(
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.analytics_outlined, color: _purple, size: 18),
-                                const SizedBox(width: 8),
-                                Text('SUMMARY', style: TextStyle(
-                                  color: _accent.withOpacity(0.7),
-                                  fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.2,
+                  )
+                : _previewError != null
+                    ? Row(children: [
+                        const Icon(Icons.info_outline, color: Color(0xFFF87171), size: 18),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text('Could not load preview', style: const TextStyle(color: Color(0xFFF87171)))),
+                      ])
+                    : _preview == null
+                        ? Text('Select types to see a preview.',
+                            style: TextStyle(color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5)))
+                        : Column(
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.analytics_outlined, color: _primary, size: 18),
+                                  const SizedBox(width: 8),
+                                  Text('SUMMARY', style: TextStyle(
+                                    color: isDark ? _accent.withOpacity(0.7) : _primary.withOpacity(0.8),
+                                    fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.2,
+                                  )),
+                                ],
+                              ),
+                              const SizedBox(height: 14),
+                              Row(
+                                children: [
+                                  _statPill(theme, isDark, _preview!.recordCount.toString(), 'Records', Icons.link_rounded, _primary),
+                                  const SizedBox(width: 12),
+                                  _statPill(
+                                    theme,
+                                    isDark,
+                                    '\$${_preview!.totalAmount.toStringAsFixed(2)}',
+                                    'Total (USD)',
+                                    Icons.attach_money_rounded,
+                                    _green,
+                                  ),
+                                ],
+                              ),
+                              if (_preview!.countByType.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                ..._preview!.countByType.entries.map((e) => Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 2),
+                                  child: Row(
+                                    children: [
+                                      Text(_typeLabel(e.key), style: TextStyle(
+                                        color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6), fontSize: 11,
+                                      )),
+                                      const Spacer(),
+                                      Text('${e.value} record${e.value != 1 ? 's' : ''}',
+                                          style: TextStyle(color: theme.textTheme.bodyMedium?.color?.withOpacity(0.8), fontSize: 11)),
+                                    ],
+                                  ),
                                 )),
                               ],
-                            ),
-                            const SizedBox(height: 14),
-                            Row(
-                              children: [
-                                _statPill(_preview!.recordCount.toString(), 'Records', Icons.link_rounded, _purple),
-                                const SizedBox(width: 12),
-                                _statPill(
-                                  '\$${_preview!.totalAmount.toStringAsFixed(2)}',
-                                  'Total (USD)',
-                                  Icons.attach_money_rounded,
-                                  _green,
-                                ),
-                              ],
-                            ),
-                            if (_preview!.countByType.isNotEmpty) ...[
-                              const SizedBox(height: 12),
-                              ..._preview!.countByType.entries.map((e) => Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 2),
-                                child: Row(
-                                  children: [
-                                    Text(_typeLabel(e.key), style: TextStyle(
-                                      color: Colors.white.withOpacity(0.5), fontSize: 11,
-                                    )),
-                                    const Spacer(),
-                                    Text('${e.value} record${e.value != 1 ? 's' : ''}',
-                                        style: const TextStyle(color: Colors.white70, fontSize: 11)),
-                                  ],
-                                ),
-                              )),
                             ],
-                          ],
-                        ),
+                          ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _statPill(String value, String label, IconData icon, Color color) {
+  Widget _statPill(ThemeData theme, bool isDark, String value, String label, IconData icon, Color color) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
@@ -480,7 +516,7 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
                 Text(value, style: TextStyle(
                   color: color, fontWeight: FontWeight.w900, fontSize: 16,
                 )),
-                Text(label, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 10)),
+                Text(label, style: TextStyle(color: theme.textTheme.bodySmall?.color?.withOpacity(0.6), fontSize: 10)),
               ],
             ),
           ],
@@ -499,7 +535,7 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
   }
 
   // ── Generate button ───────────────────────────────────────────────────────────
-  Widget _buildGenerateButton() {
+  Widget _buildGenerateButton(ThemeData theme, bool isDark) {
     final canGenerate = _selectedTypes.isNotEmpty &&
         (_preview == null || _preview!.recordCount > 0);
 
@@ -517,8 +553,8 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF2D6A4F),
           foregroundColor: Colors.white,
-          disabledBackgroundColor: Colors.white.withOpacity(0.06),
-          disabledForegroundColor: Colors.white30,
+          disabledBackgroundColor: isDark ? Colors.white.withOpacity(0.06) : theme.disabledColor.withOpacity(0.1),
+          disabledForegroundColor: isDark ? Colors.white30 : theme.disabledColor,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           elevation: 0,
@@ -528,7 +564,7 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
   }
 
   // ── Generating overlay ────────────────────────────────────────────────────────
-  Widget _buildGeneratingOverlay() {
+  Widget _buildGeneratingOverlay(BuildContext context, ThemeData theme, bool isDark) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -549,12 +585,12 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
             ),
           ),
           const SizedBox(height: 24),
-          const Text('Generating your invoice...', style: TextStyle(
-            color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w600,
+          Text('Generating your invoice...', style: TextStyle(
+            color: theme.textTheme.bodyLarge?.color, fontSize: 16, fontWeight: FontWeight.w600,
           )),
           const SizedBox(height: 8),
           Text('Fetching blockchain records', style: TextStyle(
-            color: Colors.white.withOpacity(0.35), fontSize: 12,
+            color: theme.textTheme.bodySmall?.color, fontSize: 12,
           )),
         ],
       ),
