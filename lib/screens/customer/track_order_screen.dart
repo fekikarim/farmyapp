@@ -44,14 +44,17 @@ class _TrackOrderScreenState extends State<TrackOrderScreen>
 
     _deliveryProvider = context.read<DeliveryProvider>();
 
-    // Initial fetch + start polling
-    _deliveryProvider.fetchByOrderId(widget.orderId).then((_) {
-      _fadeController.forward();
-      // Start polling only if not terminal
-      final tracking = _deliveryProvider.tracking;
-      if (tracking != null && !tracking.isTerminal) {
-        _deliveryProvider.startPolling(widget.orderId);
-      }
+    // Defer fetch to post-frame to prevent setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _deliveryProvider.fetchByOrderId(widget.orderId).then((_) {
+        if (!mounted) return;
+        _fadeController.forward();
+        // Start polling only if not terminal
+        final tracking = _deliveryProvider.tracking;
+        if (tracking != null && !tracking.isTerminal) {
+          _deliveryProvider.startPolling(widget.orderId);
+        }
+      });
     });
   }
 

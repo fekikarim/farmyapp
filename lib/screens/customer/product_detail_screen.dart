@@ -224,6 +224,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
+                    const SizedBox(height: 24),
+                  ],
+
+                  // Product Origin
+                  if (product.land != null || product.landRental != null) ...[
+                    _buildProductOrigin(context, theme),
+                    const SizedBox(height: 24),
                   ],
 
                   // Quantity selector
@@ -540,6 +547,81 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
 
     Navigator.pop(context);
+  }
+
+  Widget _buildProductOrigin(BuildContext context, ThemeData theme) {
+    final isFarmerOwned = product.land != null;
+    final landName = isFarmerOwned ? product.land!.name : (product.landRental!.land?.name ?? 'Unknown Land');
+    final ownershipType = isFarmerOwned ? 'Farmer-owned' : 'Investor-managed';
+    final icon = isFarmerOwned ? Icons.landscape_rounded : Icons.real_estate_agent_rounded;
+    final color = isFarmerOwned ? theme.colorScheme.primary : Colors.orange.shade600;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Product Origin',
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: color.withOpacity(0.2),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 24),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      landName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        ownershipType,
+                        style: TextStyle(
+                          color: color,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
 

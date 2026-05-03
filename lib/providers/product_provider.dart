@@ -223,6 +223,10 @@ class ProductProvider with ChangeNotifier {
         if (index != -1) {
           _myProducts[index] = updatedProduct;
         }
+        final marketIndex = _products.indexWhere((p) => p.id == id);
+        if (marketIndex != -1) {
+          _products[marketIndex] = updatedProduct;
+        }
         notifyListeners();
         return true;
       } else {

@@ -275,10 +275,9 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     final isRoiDashboard = role == 'investor' && _currentIndex == 0;
+    final isInvestor = role == 'investor';
 
-    return GameEdgePanelOverlay(
-      forceHide: isRoiDashboard,
-      child: Scaffold(
+    final scaffold = Scaffold(
       body: IndexedStack(index: _currentIndex, children: screens),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: Builder(
@@ -353,7 +352,16 @@ class _MainScreenState extends State<MainScreen> {
           items: items,
         ),
       ),
-      ),
     );
+
+    // Only wrap investors with the edge panel
+    if (isInvestor) {
+      return GameEdgePanelOverlay(
+        forceHide: isRoiDashboard,
+        child: scaffold,
+      );
+    }
+
+    return scaffold;
   }
 }

@@ -1,5 +1,7 @@
 import 'user_model.dart';
 import '../services/auth_service.dart';
+import 'land_model.dart';
+import 'land_rental_model.dart';
 
 enum ProductStatus { available, sold, hidden }
 
@@ -17,6 +19,8 @@ class Product {
   final String productTypeId;
   final String? landId;
   final String? landRentalId;
+  final Land? land;
+  final LandRental? landRental;
   final DateTime createdAt;
 
   Product({
@@ -33,6 +37,8 @@ class Product {
     required this.productTypeId,
     this.landId,
     this.landRentalId,
+    this.land,
+    this.landRental,
     required this.createdAt,
   });
 
@@ -51,6 +57,8 @@ class Product {
       productTypeId: json['product_type_id']?.toString() ?? '',
       landId: json['land_id']?.toString(),
       landRentalId: json['land_rental_id']?.toString(),
+      land: json['land'] != null ? Land.fromJson(json['land']) : null,
+      landRental: json['land_rental'] != null ? LandRental.fromJson(json['land_rental']) : null,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : json['createdAt'] != null
