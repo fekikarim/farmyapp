@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../providers/auth_provider.dart';
 import '../providers/game_provider.dart';
 import '../utils/global_keys.dart';
 import 'my_lands_sheet.dart';
 
 class GameEdgePanelOverlay extends StatefulWidget {
   final Widget child;
+  final bool forceHide;
 
-  const GameEdgePanelOverlay({super.key, required this.child});
+  const GameEdgePanelOverlay({super.key, required this.child, this.forceHide = false});
 
   @override
   State<GameEdgePanelOverlay> createState() => _GameEdgePanelOverlayState();
@@ -79,12 +79,12 @@ class _GameEdgePanelOverlayState extends State<GameEdgePanelOverlay>
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
     final gameProvider = Provider.of<GameProvider>(context);
 
-    // Only show for investors who have the setting enabled
+    // Displayed based on the 'Game Features' value (gameProvider.showEdgePanel)
+    // Hidden on specific screens (like roi_dashboard_screen)
     final shouldShow =
-        authProvider.user?.role == 'investor' &&
+        !widget.forceHide &&
         gameProvider.showEdgePanel &&
         !gameProvider.isLoading &&
         !_isHiddenForSheet;
@@ -101,7 +101,7 @@ class _GameEdgePanelOverlayState extends State<GameEdgePanelOverlay>
               onTap: _closePanel,
               behavior: HitTestBehavior.opaque,
               child: Container(
-                color: Colors.black.withOpacity(0.02),
+                color: Colors.black.withValues(alpha:0.02),
               ), // very faint shadow
             ),
           ),
@@ -162,14 +162,14 @@ class _GameEdgePanelOverlayState extends State<GameEdgePanelOverlay>
                                 bottomLeft: Radius.circular(24),
                               ),
                               border: Border.all(
-                                color: Colors.greenAccent.withOpacity(
+                                color: Colors.greenAccent.withValues(alpha:
                                   0.3 + 0.4 * pulse,
                                 ),
                                 width: 1.5,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.greenAccent.withOpacity(
+                                  color: Colors.greenAccent.withValues(alpha:
                                     0.2 + 0.4 * pulse,
                                   ),
                                   blurRadius: 8 + 8 * pulse,
@@ -177,7 +177,7 @@ class _GameEdgePanelOverlayState extends State<GameEdgePanelOverlay>
                                   offset: const Offset(-2, 0),
                                 ),
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
+                                  color: Colors.black.withValues(alpha:0.3),
                                   blurRadius: 4,
                                   offset: const Offset(-2, 2),
                                 ),
@@ -188,7 +188,7 @@ class _GameEdgePanelOverlayState extends State<GameEdgePanelOverlay>
                                 scale: 1.0 + 0.15 * pulse,
                                 child: Icon(
                                   Icons.videogame_asset_rounded,
-                                  color: Colors.white.withOpacity(0.95),
+                                  color: Colors.white.withValues(alpha:0.95),
                                   size: 18,
                                 ),
                               ),
@@ -210,7 +210,7 @@ class _GameEdgePanelOverlayState extends State<GameEdgePanelOverlay>
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.12),
+                            color: Colors.black.withValues(alpha:0.12),
                             blurRadius: 10,
                             offset: const Offset(
                               -4,
@@ -259,16 +259,16 @@ class _GameEdgePanelOverlayState extends State<GameEdgePanelOverlay>
                                         color:
                                             Theme.of(context).brightness ==
                                                 Brightness.dark
-                                            ? Colors.white.withOpacity(0.05)
+                                            ? Colors.white.withValues(alpha:0.05)
                                             : Colors.grey.shade50,
                                         border: Border.all(
                                           color: Theme.of(
                                             context,
-                                          ).dividerColor.withOpacity(0.1),
+                                          ).dividerColor.withValues(alpha:0.1),
                                         ),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black.withOpacity(
+                                            color: Colors.black.withValues(alpha:
                                               0.08,
                                             ),
                                             blurRadius: 6,
