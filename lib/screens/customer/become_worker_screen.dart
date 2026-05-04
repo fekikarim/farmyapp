@@ -360,58 +360,6 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
                 ),
                 const SizedBox(height: 32),
 
-                // Coming Soon Badges
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: isDark ? Colors.grey.shade800 : Colors.amber.shade50,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: isDark
-                          ? Colors.amber.withOpacity(0.2)
-                          : Colors.amber.shade200,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.auto_awesome,
-                        color: isDark
-                            ? Colors.amber.shade400
-                            : Colors.amber.shade600,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppLocalizations.of(context)!.aiVerificationComingSoon,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: isDark
-                                    ? Colors.amber.shade200
-                                    : Colors.amber.shade800,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Automated identity & skill verification will speed up your approval.',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: isDark
-                                    ? Colors.amber.shade100
-                                    : Colors.amber.shade700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 32),
-
                 // Submit Button
                 SizedBox(
                   width: double.infinity,
