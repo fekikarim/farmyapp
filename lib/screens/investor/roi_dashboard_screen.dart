@@ -394,10 +394,10 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.1),
+                color: Colors.green.shade50,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.green.shade200,
                 ),
               ),
               child: Column(
@@ -406,7 +406,7 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
                     children: [
                       Icon(
                         Icons.shopping_bag,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: Colors.green.shade700,
                         size: 18,
                       ),
                       const SizedBox(width: 8),
@@ -414,16 +414,16 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
                         child: Text(
                           'Product Revenue',
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.8),
+                            color: Colors.green.shade800,
                             fontSize: 13,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
                       Text(
                         '+${overview.productRevenue.toStringAsFixed(0)} TND',
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: Colors.green.shade800,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
@@ -433,9 +433,9 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
                     value: (overview.productRevenueContribution / 100).clamp(0.0, 1.0),
-                    backgroundColor: Colors.white.withValues(alpha: 0.2),
+                    backgroundColor: Colors.green.shade200,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.white.withValues(alpha: 0.9),
+                      Colors.green.shade600,
                     ),
                     minHeight: 4,
                     borderRadius: BorderRadius.circular(2),
@@ -447,14 +447,14 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
                       Text(
                         '${overview.productRevenueContribution.toStringAsFixed(1)}% of total revenue',
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.7),
+                          color: Colors.green.shade700,
                           fontSize: 11,
                         ),
                       ),
                       Text(
                         '${overview.totalProductsSold} products sold',
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.7),
+                          color: Colors.green.shade700,
                           fontSize: 11,
                         ),
                       ),
