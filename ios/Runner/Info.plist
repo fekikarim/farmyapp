@@ -2,12 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-    <string>Farmy Net needs access to your photos to let you upload images of your produce or land listings.</string>
-    <key>NSCameraUsageDescription</key>
-    <string>Farmy Net needs access to your camera to take photos of produce for listings and scan your ID for verification.</string>
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>Farmy Net needs permission to save photos to your gallery.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -50,10 +44,16 @@
 	<array>
 		<string>_dartVmService._tcp</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Farmy Net needs access to your camera to take photos of produce for listings and scan your ID for verification.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Used to connect Flutter debug tools to the app.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Farmy uses the microphone for voice questions in the AI Assistant.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Farmy Net needs permission to save photos to your gallery.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Farmy Net needs access to your photos to let you upload images of your produce or land listings.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Farmy uses speech recognition to convert your voice into text for AI support.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

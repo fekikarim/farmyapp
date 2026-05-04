@@ -60,6 +60,12 @@ class WorkerProvider extends ChangeNotifier {
   bool get myTasksLoading => _myTasksLoading;
   String? get myTasksError => _myTasksError;
 
+  // Global Performance Stats
+  Map<String, dynamic> _performanceStats = {};
+  bool _performanceLoading = false;
+  Map<String, dynamic> get performanceStats => _performanceStats;
+  bool get performanceLoading => _performanceLoading;
+
   // ─── Worker Profile Actions ───
 
   Future<void> loadMyProfile() async {
@@ -317,6 +323,21 @@ class WorkerProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<void> loadWorkerPerformance(String workerUserId) async {
+    _performanceLoading = true;
+    _performanceStats = {};
+    notifyListeners();
+
+    try {
+      _performanceStats = await WorkerService.getWorkerPerformance(workerUserId);
+    } catch (e) {
+      _performanceStats = {};
+    } finally {
+      _performanceLoading = false;
+      notifyListeners();
     }
   }
 }

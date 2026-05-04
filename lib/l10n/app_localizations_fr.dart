@@ -2568,6 +2568,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get performance => 'Performance';
 
   @override
+  String get successRate => 'Success Rate';
+
+  @override
+  String get overallPerformance => 'Overall Performance';
+
+  @override
   String get performanceGraphComingSoon =>
       'Graphique de performance bientôt disponible';
 

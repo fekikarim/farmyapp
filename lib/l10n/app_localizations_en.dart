@@ -2526,6 +2526,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get performance => 'Performance';
 
   @override
+  String get successRate => 'Success Rate';
+
+  @override
+  String get overallPerformance => 'Overall Performance';
+
+  @override
   String get performanceGraphComingSoon => 'Performance Graph Coming Soon';
 
   @override

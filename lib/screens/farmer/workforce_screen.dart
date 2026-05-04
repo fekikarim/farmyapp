@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../providers/worker_provider.dart';
+import '../../widgets/farmy_avatar.dart';
 import '../../providers/worker_lifecycle_provider.dart';
 import '../../models/land_worker_model.dart';
 import '../../models/worker_invitation_model.dart';
 import 'worker_marketplace_screen.dart';
 import '../../widgets/profile_preview_sheet.dart';
-import '../../services/auth_service.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
 
 class WorkforceScreen extends StatefulWidget {
@@ -158,7 +159,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
           color: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: comingSoon ? Colors.grey.shade300 : color.withOpacity(0.3),
+            color: comingSoon ? Colors.grey.shade300 : color.withValues(alpha: 0.3),
           ),
         ),
         child: Row(
@@ -166,7 +167,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 24),
@@ -202,7 +203,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? Colors.amber.withOpacity(0.15)
+                      ? Colors.amber.withValues(alpha: 0.15)
                       : Colors.amber.shade50,
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -236,25 +237,23 @@ class _WorkforceScreenState extends State<WorkforceScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey.shade800 : Colors.white,
+          color: isDark ? color.withValues(alpha: 0.05) : color.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withValues(alpha: 0.15), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: color.withValues(alpha: isDark ? 0.05 : 0.02),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
           ],
-          border: Border.all(
-            color: isDark ? Colors.white.withOpacity(0.05) : Colors.transparent,
-          ),
         ),
         child: Column(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 22),
@@ -265,7 +264,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
-                color: isDark ? Colors.white : const Color(0xFF1F2937),
+                color: color,
                 letterSpacing: -0.5,
               ),
             ),
@@ -274,8 +273,8 @@ class _WorkforceScreenState extends State<WorkforceScreen>
               label.toUpperCase(),
               style: TextStyle(
                 fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white54 : Colors.grey.shade500,
+                fontWeight: FontWeight.w700,
+                color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                 letterSpacing: 0.5,
               ),
               textAlign: TextAlign.center,
@@ -290,42 +289,32 @@ class _WorkforceScreenState extends State<WorkforceScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: () => ProfilePreviewSheet.show(context, worker.workerId),
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
+      borderRadius: BorderRadius.circular(20),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey.shade800 : Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: isDark ? Colors.grey.shade900 : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Row(
           children: [
-            // Avatar
-            CircleAvatar(
+            // Avatar with subtle border
+            FarmyAvatar(
+              imageUrl: worker.workerProfilePicture,
               radius: 24,
-              backgroundColor: isDark
-                  ? Colors.green.withOpacity(0.2)
-                  : Colors.green.shade100,
-              backgroundImage: worker.workerProfilePicture != null
-                  ? NetworkImage(
-                      '${AuthService.baseUrl}${worker.workerProfilePicture!}',
-                    )
-                  : null,
-              child: worker.workerProfilePicture == null
-                  ? Icon(
-                      Icons.person,
-                      color: isDark
-                          ? Colors.green.shade400
-                          : Colors.green.shade700,
-                    )
-                  : null,
+              displayName: worker.workerName,
+              border: Border.all(color: Colors.green.withValues(alpha: 0.3), width: 1.5),
             ),
             const SizedBox(width: 14),
             // Info
@@ -336,41 +325,43 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                   Text(
                     worker.workerName ?? AppLocalizations.of(context)!.unknownWorker,
                     style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                       color: isDark ? Colors.white : const Color(0xFF1F2937),
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
-                          vertical: 2,
+                          vertical: 4,
                         ),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? Colors.blue.withOpacity(0.15)
+                              ? Colors.blue.withValues(alpha: 0.15)
                               : Colors.blue.shade50,
                           borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
                         ),
                         child: Text(
                           worker.role,
                           style: TextStyle(
                             fontSize: 11,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w600,
                             color: isDark
                                 ? Colors.blue.shade300
                                 : Colors.blue.shade700,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 10),
                       Text(
                         '${worker.salary.toStringAsFixed(0)} ${AppLocalizations.of(context)!.tndMo}',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
                           color: isDark
                               ? Colors.grey.shade400
                               : Colors.grey.shade600,
@@ -381,17 +372,17 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                 ],
               ),
             ),
-            // Status Dot
+            // Status Dot with glow
             Container(
-              width: 10,
-              height: 10,
+              width: 12,
+              height: 12,
               decoration: BoxDecoration(
                 color: _statusColor(worker.status),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: _statusColor(worker.status).withOpacity(0.4),
-                    blurRadius: 6,
+                    color: _statusColor(worker.status).withValues(alpha: 0.6),
+                    blurRadius: 8,
                   ),
                 ],
               ),
@@ -405,9 +396,13 @@ class _WorkforceScreenState extends State<WorkforceScreen>
   @override
   Widget build(BuildContext context) {
     final workerProvider = context.watch<WorkerProvider>();
+    final lifecycleProvider = context.watch<WorkerLifecycleProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     final stats = workerProvider.workforceStats;
     final workers = workerProvider.landWorkers;
+    final isLoadingWorkers = workerProvider.landWorkersLoading;
+    final isLoadingInvitations = lifecycleProvider.landInvitationsLoading;
 
     return Scaffold(
       backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
@@ -415,6 +410,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
         title: Text(AppLocalizations.of(context)!.workforceLandName(widget.landName)),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showAddWorkerModal,
@@ -422,341 +418,197 @@ class _WorkforceScreenState extends State<WorkforceScreen>
         icon: const Icon(Icons.add, color: Colors.white),
         label: Text(
           AppLocalizations.of(context)!.addWorker,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
-      body: workerProvider.landWorkersLoading
-          ? const Center(child: CircularProgressIndicator())
-          : FadeTransition(
-              opacity: _fadeAnim,
-              child: RefreshIndicator(
-                onRefresh: _refreshAll,
-                child: ListView(
-                  padding: const EdgeInsets.all(20),
+      body: FadeTransition(
+        opacity: _fadeAnim,
+        child: RefreshIndicator(
+          onRefresh: _refreshAll,
+          child: ListView(
+            padding: const EdgeInsets.all(20),
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              if (workerProvider.landWorkersError != null)
+                _buildErrorBanner(
+                  title: AppLocalizations.of(context)!.workersSyncIssue,
+                  message: workerProvider.landWorkersError!,
+                  isDark: isDark,
+                  onRetry: _refreshAll,
+                ),
+              
+              // Stats Dashboard
+              if (isLoadingWorkers && stats.isEmpty)
+                _buildStatsShimmer(isDark)
+              else
+                Row(
                   children: [
-                    if (workerProvider.landWorkersError != null)
-                      _buildErrorBanner(
-                        title: AppLocalizations.of(context)!.workersSyncIssue,
-                        message: workerProvider.landWorkersError!,
-                        isDark: isDark,
-                        onRetry: _refreshAll,
-                      ),
-                    if (context
-                            .watch<WorkerLifecycleProvider>()
-                            .landInvitationsError !=
-                        null)
-                      _buildErrorBanner(
-                        title: AppLocalizations.of(context)!.invitationsSyncIssue,
-                        message: context
-                            .watch<WorkerLifecycleProvider>()
-                            .landInvitationsError!,
-                        isDark: isDark,
-                        onRetry: _refreshAll,
-                      ),
-
-                    // Stats Dashboard
-                    Row(
-                      children: [
-                        _buildStatCard(
-                          AppLocalizations.of(context)!.totalLabel,
-                          '${stats['total'] ?? 0}',
-                          Icons.people,
-                          Colors.blue,
-                        ),
-                        const SizedBox(width: 10),
-                        _buildStatCard(
-                          AppLocalizations.of(context)!.activeLabel,
-                          '${stats['active'] ?? 0}',
-                          Icons.check_circle,
-                          Colors.green,
-                        ),
-                        const SizedBox(width: 10),
-                        _buildStatCard(
-                          AppLocalizations.of(context)!.suspendedLabel,
-                          '${stats['suspended'] ?? 0}',
-                          Icons.pause_circle,
-                          Colors.orange,
-                        ),
-                      ],
+                    _buildStatCard(
+                      AppLocalizations.of(context)!.totalLabel,
+                      '${stats['total'] ?? 0}',
+                      Icons.people,
+                      Colors.blue,
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        _buildStatCard(
-                          AppLocalizations.of(context)!.monthlyCost,
-                          '${stats['monthly_salary_expense'] ?? 0} TND',
-                          Icons.payments,
-                          Colors.purple,
-                        ),
-                        const SizedBox(width: 10),
-                        _buildStatCard(
-                          AppLocalizations.of(context)!.productivity,
-                          '${stats['productivity'] ?? 0}%',
-                          Icons.trending_up,
-                          Colors.teal,
-                        ),
-                      ],
+                    const SizedBox(width: 10),
+                    _buildStatCard(
+                      AppLocalizations.of(context)!.activeLabel,
+                      '${stats['active'] ?? 0}',
+                      Icons.check_circle,
+                      Colors.green,
                     ),
-                    const SizedBox(height: 24),
-
-                    // Worker List
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.workforce,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : Colors.black87,
-                          ),
-                        ),
-                        Text(
-                          AppLocalizations.of(context)!.totalSuffix(workers.length),
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey.shade500,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(width: 10),
+                    _buildStatCard(
+                      AppLocalizations.of(context)!.suspendedLabel,
+                      '${stats['suspended'] ?? 0}',
+                      Icons.pause_circle,
+                      Colors.orange,
                     ),
-                    const SizedBox(height: 14),
-
-                    if (workers.isEmpty)
-                      Container(
-                        padding: const EdgeInsets.all(40),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.people_outline,
-                              size: 64,
-                              color: Colors.grey.shade400,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              AppLocalizations.of(context)!.noWorkersYet,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey.shade500,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              AppLocalizations.of(context)!.addWorkersMarketplaceHint,
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey.shade400,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      )
-                    else
-                      ...workers.map(_buildWorkerCard),
-
-                    // Sent Invitations Section (pending only)
-                    const SizedBox(height: 24),
-                    Builder(
-                      builder: (context) {
-                        final lifecycleProvider = context
-                            .watch<WorkerLifecycleProvider>();
-                        final pending = lifecycleProvider.pendingInvitations;
-                        final decisions =
-                            lifecycleProvider.landInvitations
-                                .where((i) => !i.isPending)
-                                .toList()
-                              ..sort(
-                                (a, b) => (b.createdAt ?? DateTime(1970))
-                                    .compareTo(a.createdAt ?? DateTime(1970)),
-                              );
-                        final isLoadingInvitations =
-                            lifecycleProvider.landInvitationsLoading;
-
-                        // Loading state
-                        if (isLoadingInvitations && pending.isEmpty) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                AppLocalizations.of(context)!.pendingInvitations,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark ? Colors.white : Colors.black87,
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              ...List.generate(
-                                2,
-                                (_) => Container(
-                                  margin: const EdgeInsets.only(bottom: 10),
-                                  height: 68,
-                                  decoration: BoxDecoration(
-                                    color: isDark
-                                        ? Colors.grey.shade800
-                                        : Colors.white,
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  child: Center(
-                                    child: SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.amber.shade600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        }
-
-                        if (pending.isEmpty && decisions.isEmpty) {
-                          return const SizedBox();
-                        }
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (pending.isNotEmpty) ...[
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        AppLocalizations.of(context)!.pendingInvitations,
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: isDark
-                                              ? Colors.white
-                                              : Colors.black87,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 2,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.amber.withOpacity(0.15),
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          '${pending.length}',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.amber.shade700,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  if (isLoadingInvitations)
-                                    SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.amber.shade600,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                AppLocalizations.of(context)!.waitingForWorkerResponse,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: isDark
-                                      ? Colors.white38
-                                      : Colors.grey.shade500,
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              ...pending.map(
-                                (inv) => _buildInvitationCard(inv, isDark),
-                              ),
-                            ],
-
-                            if (decisions.isNotEmpty) ...[
-                              if (pending.isNotEmpty)
-                                const SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  Text(
-                                    AppLocalizations.of(context)!.invitationDecisions,
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                      color: isDark
-                                          ? Colors.white
-                                          : Colors.black87,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue.withOpacity(0.12),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Text(
-                                      '${decisions.length}',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: isDark
-                                            ? Colors.blue.shade300
-                                            : Colors.blue.shade700,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                AppLocalizations.of(context)!.workersAcceptedDeclinedInvites,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: isDark
-                                      ? Colors.white38
-                                      : Colors.grey.shade500,
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              ...decisions
-                                  .take(10)
-                                  .map(
-                                    (inv) => _buildInvitationCard(inv, isDark),
-                                  ),
-                            ],
-                          ],
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 80),
                   ],
                 ),
+              
+              if (!isLoadingWorkers || stats.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    _buildStatCard(
+                      AppLocalizations.of(context)!.monthlyCost,
+                      '${stats['monthly_salary_expense'] ?? 0} TND',
+                      Icons.payments,
+                      Colors.purple,
+                    ),
+                    const SizedBox(width: 10),
+                    _buildStatCard(
+                      AppLocalizations.of(context)!.productivity,
+                      '${stats['productivity'] ?? 0}%',
+                      Icons.trending_up,
+                      Colors.teal,
+                    ),
+                  ],
+                ),
+              ],
+
+              const SizedBox(height: 24),
+
+              // Workforce Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.workforce,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
+                  if (!isLoadingWorkers)
+                    Text(
+                      AppLocalizations.of(context)!.totalSuffix(workers.length),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                ],
               ),
-            ),
+              const SizedBox(height: 14),
+
+              if (isLoadingWorkers && workers.isEmpty)
+                _buildWorkersListShimmer(isDark)
+              else if (workers.isEmpty)
+                _buildEmptyWorkforce()
+              else
+                ...workers.map(_buildWorkerCard),
+
+              // Invitations Section
+              const SizedBox(height: 32),
+              _buildInvitationsSection(lifecycleProvider, isDark, isLoadingInvitations),
+
+              const SizedBox(height: 100),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
+  Widget _buildEmptyWorkforce() {
+    return Container(
+      padding: const EdgeInsets.all(40),
+      child: Column(
+        children: [
+          Icon(Icons.people_outline, size: 64, color: Colors.grey.shade400),
+          const SizedBox(height: 16),
+          Text(
+            AppLocalizations.of(context)!.noWorkersYet,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            AppLocalizations.of(context)!.addWorkersMarketplaceHint,
+            style: const TextStyle(fontSize: 13, color: Colors.grey),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInvitationsSection(WorkerLifecycleProvider provider, bool isDark, bool isLoading) {
+    // FILTER: ONLY PENDING, EXCLUDE APPROVED (Accepted)
+    // This ensures no duplication with the Workforce list
+    final pending = provider.landInvitations.where((i) => i.isPending).toList();
+
+    if (isLoading && pending.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            AppLocalizations.of(context)!.pendingInvitations,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87),
+          ),
+          const SizedBox(height: 14),
+          _buildInvitationsListShimmer(isDark),
+        ],
+      );
+    }
+
+    if (pending.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.pendingInvitations,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(color: Colors.amber.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
+                  child: Text('${pending.length}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber.shade700)),
+                ),
+              ],
+            ),
+            if (isLoading)
+              const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.amber)),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Text(
+          AppLocalizations.of(context)!.waitingForWorkerResponse,
+          style: TextStyle(fontSize: 12, color: isDark ? Colors.white38 : Colors.grey.shade500),
+        ),
+        const SizedBox(height: 14),
+        ...pending.map((inv) => _buildInvitationCard(inv, isDark)),
+      ],
+    );
+  }
   Widget _buildInvitationCard(WorkerInvitation invitation, bool isDark) {
     // Calculate remaining time
     String timeLeft = '';
@@ -789,43 +641,36 @@ class _WorkforceScreenState extends State<WorkforceScreen>
         : AppLocalizations.of(context)!.expiredUpper;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade800 : Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.amber.withOpacity(0.2)),
+        color: isDark ? Colors.grey.shade900 : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: statusColor.withValues(alpha: 0.3), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+            color: statusColor.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         children: [
-          CircleAvatar(
+          FarmyAvatar(
+            imageUrl: invitation.workerProfilePicture,
             radius: 22,
-            backgroundColor: statusColor.withOpacity(0.12),
-            backgroundImage: invitation.workerProfilePicture != null
-                ? NetworkImage(invitation.workerProfilePicture!)
-                : null,
-            child: invitation.workerProfilePicture == null
-                ? Icon(
-                    invitation.isPending
-                        ? Icons.mail_outline
-                        : invitation.isApproved
-                        ? Icons.check_circle_outline
-                        : invitation.isDeclined
-                        ? Icons.cancel_outlined
-                        : Icons.timer_off_outlined,
-                    color: statusColor,
-                    size: 20,
-                  )
-                : null,
+            displayName: invitation.workerName,
+            fallbackIcon: invitation.isPending
+                ? Icons.mail_outline
+                : invitation.isApproved
+                ? Icons.check_circle_outline
+                : invitation.isDeclined
+                ? Icons.cancel_outlined
+                : Icons.timer_off_outlined,
+            border: Border.all(color: statusColor.withValues(alpha: 0.3), width: 1.5),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -833,18 +678,19 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                 Text(
                   invitation.workerName ?? AppLocalizations.of(context)!.worker,
                   style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
                     color: isDark ? Colors.white : Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 4),
                 if (invitation.message != null &&
                     invitation.message!.isNotEmpty)
                   Text(
                     invitation.message!,
                     style: TextStyle(
                       fontSize: 12,
+                      fontWeight: FontWeight.w500,
                       color: isDark
                           ? Colors.grey.shade400
                           : Colors.grey.shade600,
@@ -854,21 +700,22 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                   ),
                 if (timeLeft.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.only(top: 2),
+                    padding: const EdgeInsets.only(top: 4),
                     child: Row(
                       children: [
                         Icon(
                           Icons.timer_outlined,
-                          size: 12,
+                          size: 14,
                           color: isDark
                               ? Colors.grey.shade500
                               : Colors.grey.shade400,
                         ),
-                        const SizedBox(width: 3),
+                        const SizedBox(width: 4),
                         Text(
                           timeLeft,
                           style: TextStyle(
                             fontSize: 11,
+                            fontWeight: FontWeight.w600,
                             color: isDark
                                 ? Colors.grey.shade500
                                 : Colors.grey.shade400,
@@ -881,10 +728,10 @@ class _WorkforceScreenState extends State<WorkforceScreen>
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(8),
+              color: statusColor.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -894,19 +741,19 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                     width: 12,
                     height: 12,
                     child: CircularProgressIndicator(
-                      strokeWidth: 1.5,
+                      strokeWidth: 2,
                       color: Colors.amber.shade700,
                     ),
                   ),
-                  const SizedBox(width: 5),
+                  const SizedBox(width: 6),
                 ],
                 Text(
                   statusLabel,
                   style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
                     color: statusColor,
-                    letterSpacing: 0.3,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ],
@@ -924,17 +771,24 @@ class _WorkforceScreenState extends State<WorkforceScreen>
     required VoidCallback onRetry,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.red.withOpacity(0.1) : Colors.red.shade50,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red.withOpacity(0.2)),
+        color: isDark ? Colors.red.withValues(alpha: 0.08) : Colors.red.shade50,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.2), width: 1.5),
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline, color: Colors.red.shade400, size: 18),
-          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.red.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.error_outline, color: Colors.red.shade400, size: 18),
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -942,15 +796,16 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: isDark ? Colors.red.shade300 : Colors.red.shade700,
                   ),
                 ),
+                const SizedBox(height: 2),
                 Text(
                   message,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 12,
                     color: isDark ? Colors.red.shade200 : Colors.red.shade600,
                   ),
                   maxLines: 2,
@@ -959,8 +814,78 @@ class _WorkforceScreenState extends State<WorkforceScreen>
               ],
             ),
           ),
-          TextButton(onPressed: onRetry, child: Text(AppLocalizations.of(context)!.retry)),
+          TextButton(
+            onPressed: onRetry,
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text(AppLocalizations.of(context)!.retry),
+          ),
         ],
+      ),
+    );
+  }
+
+
+  Widget _buildStatsShimmer(bool isDark) {
+    return Shimmer.fromColors(
+      baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+      highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(child: Container(height: 110, decoration: BoxDecoration(color: isDark ? Colors.grey.shade900 : Colors.white, borderRadius: BorderRadius.circular(20)))),
+              const SizedBox(width: 10),
+              Expanded(child: Container(height: 110, decoration: BoxDecoration(color: isDark ? Colors.grey.shade900 : Colors.white, borderRadius: BorderRadius.circular(20)))),
+              const SizedBox(width: 10),
+              Expanded(child: Container(height: 110, decoration: BoxDecoration(color: isDark ? Colors.grey.shade900 : Colors.white, borderRadius: BorderRadius.circular(20)))),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(child: Container(height: 110, decoration: BoxDecoration(color: isDark ? Colors.grey.shade900 : Colors.white, borderRadius: BorderRadius.circular(20)))),
+              const SizedBox(width: 10),
+              Expanded(child: Container(height: 110, decoration: BoxDecoration(color: isDark ? Colors.grey.shade900 : Colors.white, borderRadius: BorderRadius.circular(20)))),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWorkersListShimmer(bool isDark) {
+    return Shimmer.fromColors(
+      baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+      highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+      child: Column(
+        children: List.generate(3, (index) => Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          height: 80,
+          decoration: BoxDecoration(
+            color: isDark ? Colors.grey.shade900 : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+        )),
+      ),
+    );
+  }
+
+  Widget _buildInvitationsListShimmer(bool isDark) {
+    return Shimmer.fromColors(
+      baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+      highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+      child: Column(
+        children: List.generate(2, (index) => Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          height: 90,
+          decoration: BoxDecoration(
+            color: isDark ? Colors.grey.shade900 : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+        )),
       ),
     );
   }

@@ -285,21 +285,25 @@ class _TrackOrderScreenState extends State<TrackOrderScreen>
   }
 
   Widget _buildDeliveredBanner(ThemeData theme) {
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Use primary color as base, with opacity variations for dark/light mode
+    final primaryColor = colorScheme.primary;
+    final backgroundColor = isDark
+        ? primaryColor.withOpacity(0.15)
+        : primaryColor.withOpacity(0.08);
+    final borderColor = primaryColor.withOpacity(isDark ? 0.3 : 0.2);
+    final iconBgColor = primaryColor.withOpacity(isDark ? 0.25 : 0.15);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.green.shade50,
-              Colors.green.shade100.withOpacity(0.5),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.green.shade200.withOpacity(0.5)),
+          border: Border.all(color: borderColor),
         ),
         child: Row(
           children: [
@@ -307,12 +311,12 @@ class _TrackOrderScreenState extends State<TrackOrderScreen>
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.green.shade100,
+                color: iconBgColor,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.celebration_rounded,
-                color: Colors.green.shade700,
+                color: primaryColor,
                 size: 26,
               ),
             ),
@@ -325,14 +329,14 @@ class _TrackOrderScreenState extends State<TrackOrderScreen>
                     AppLocalizations.of(context)!.orderDelivered,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: Colors.green.shade800,
+                      color: primaryColor,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     AppLocalizations.of(context)!.orderDeliveredSuccess,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: Colors.green.shade700,
+                      color: colorScheme.onSurface.withOpacity(0.7),
                       fontSize: 12,
                     ),
                   ),

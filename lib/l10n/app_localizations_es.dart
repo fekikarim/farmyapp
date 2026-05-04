@@ -2549,6 +2549,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get performance => 'Rendimiento';
 
   @override
+  String get successRate => 'Success Rate';
+
+  @override
+  String get overallPerformance => 'Overall Performance';
+
+  @override
   String get performanceGraphComingSoon =>
       'Gráfico de rendimiento próximamente';
 

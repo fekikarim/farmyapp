@@ -25,6 +25,7 @@ class WorkerPerformanceProvider extends ChangeNotifier {
   List<String> _selectedLandIds = [];
   DateTime? _startDate;
   DateTime? _endDate;
+  String _currentDatePreset = 'all';
   WorkerSortCriteria _sortCriteria = WorkerSortCriteria.scoreHighToLow;
 
   // Available Lands for Filter
@@ -32,7 +33,15 @@ class WorkerPerformanceProvider extends ChangeNotifier {
   bool _landsLoading = false;
 
   // Getters
-  List<WorkerPerformance> get workers => _sortWorkers(_workers);
+  List<WorkerPerformance> get workers {
+    // Filter workers whose assigned lands include any selected land IDs
+    final filtered = _selectedLandIds.isEmpty
+        ? _workers
+        : _workers.where((w) {
+            return w.landIds.any((landId) => _selectedLandIds.contains(landId));
+          }).toList();
+    return _sortWorkers(filtered);
+  }
   PerformanceSummary get summary => _summary;
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -44,6 +53,7 @@ class WorkerPerformanceProvider extends ChangeNotifier {
   List<String> get selectedLandIds => _selectedLandIds;
   DateTime? get startDate => _startDate;
   DateTime? get endDate => _endDate;
+  String get currentDatePreset => _currentDatePreset;
   WorkerSortCriteria get sortCriteria => _sortCriteria;
 
   List<Land> get farmerLands => _farmerLands;
@@ -84,8 +94,9 @@ class WorkerPerformanceProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Load all workers for the farmer's lands, filtering happens client-side
       final response = await WorkerPerformanceService.getWorkerPerformance(
-        landIds: _selectedLandIds.isNotEmpty ? _selectedLandIds : null,
+        landIds: null, // Load all, filter client-side by worker assignments
         startDate: _startDate,
         endDate: _endDate,
       );
@@ -93,7 +104,8 @@ class WorkerPerformanceProvider extends ChangeNotifier {
       _workers = response.workers;
       _summary = response.summary;
     } catch (e) {
-      _error = e.toString();
+      _error = 'Failed to load worker performance: $e';
+      debugPrint('WorkerPerformanceProvider: Error loading workers: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -179,6 +191,7 @@ class WorkerPerformanceProvider extends ChangeNotifier {
   /// Set preset date range
   Future<void> setPresetDateRange(String preset) async {
     final now = DateTime.now();
+    _currentDatePreset = preset;
 
     switch (preset) {
       case 'today':
@@ -194,8 +207,10 @@ class WorkerPerformanceProvider extends ChangeNotifier {
         _endDate = now;
         break;
       case 'all':
+      default:
         _startDate = null;
         _endDate = null;
+        _currentDatePreset = 'all';
         break;
     }
 
@@ -208,6 +223,7 @@ class WorkerPerformanceProvider extends ChangeNotifier {
     _selectedLandIds = [];
     _startDate = null;
     _endDate = null;
+    _currentDatePreset = 'all';
     _sortCriteria = WorkerSortCriteria.scoreHighToLow;
     notifyListeners();
     await loadAll();
