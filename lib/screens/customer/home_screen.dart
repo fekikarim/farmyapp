@@ -28,6 +28,8 @@ import '../worker/wallet/transaction_history_screen.dart';
 import '../main_screen.dart';
 import '../settings/edit_profile_screen.dart';
 import '../../models/task_model.dart';
+import 'package:shimmer/shimmer.dart';
+import '../../main.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
   const CustomerHomeScreen({super.key});
@@ -36,31 +38,56 @@ class CustomerHomeScreen extends StatefulWidget {
   State<CustomerHomeScreen> createState() => _CustomerHomeScreenState();
 }
 
-class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
+class _CustomerHomeScreenState extends State<CustomerHomeScreen> with RouteAware {
   String _motivationalQuote = "";
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final modalRoute = ModalRoute.of(context);
+    if (modalRoute != null) {
+      routeObserver.subscribe(this, modalRoute);
+    }
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _refetchData();
+  }
+
+  void _refetchData() {
+    if (!mounted) return;
+    final authProvider = context.read<AuthProvider>();
+    if (authProvider.user?.role == 'customer') {
+      final workerProvider = context.read<WorkerProvider>();
+      workerProvider.loadMyProfile().then((_) {
+        if (!mounted) return;
+        if (workerProvider.isVerifiedWorker) {
+          context.read<WorkerLifecycleProvider>().refreshWorkerDashboardLifecycle();
+          context.read<WorkerWalletProvider>().fetchOverview();
+          workerProvider.loadMyTasks();
+        } else {
+          // Customer fetches
+          context.read<ProductProvider>().fetchProducts();
+          context.read<WalletProvider>().fetchWalletStatus();
+          context.read<DeliveryProvider>().fetchMyDeliveries(role: 'buyer');
+        }
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final authProvider = context.read<AuthProvider>();
-      if (authProvider.user?.role == 'customer') {
-        final workerProvider = context.read<WorkerProvider>();
-        workerProvider.loadMyProfile().then((_) {
-          if (workerProvider.isVerifiedWorker) {
-            context.read<WorkerLifecycleProvider>().refreshWorkerDashboardLifecycle();
-            context.read<WorkerWalletProvider>().fetchOverview();
-            workerProvider.loadMyTasks();
-          } else {
-            // Customer fetches
-            context.read<ProductProvider>().fetchProducts();
-            context.read<WalletProvider>().fetchWalletStatus();
-            context.read<DeliveryProvider>().fetchMyDeliveries(role: 'buyer');
-          }
-        });
-      }
+      _refetchData();
     });
   }
 
@@ -876,7 +903,62 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
 
   Widget _buildNextDeliveryCard(BuildContext context, DeliveryTracking? delivery, bool isDark) {
     final theme = Theme.of(context);
+    final deliveryProvider = context.watch<DeliveryProvider>();
     
+    if (deliveryProvider.isLoading && delivery == null) {
+      return Shimmer.fromColors(
+        baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+        highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+        child: Container(
+          width: double.infinity,
+          height: 120,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+          ),
+        ),
+      );
+    }
+
+    if (deliveryProvider.error != null && delivery == null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.errorContainer.withOpacity(isDark ? 0.2 : 0.5),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: theme.colorScheme.error.withOpacity(0.5)),
+        ),
+        child: Column(
+          children: [
+            Icon(Icons.error_outline, size: 32, color: theme.colorScheme.error),
+            const SizedBox(height: 16),
+            Text(
+              'Failed to load deliveries.',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.colorScheme.onErrorContainer),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              deliveryProvider.error!,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: theme.colorScheme.onErrorContainer.withOpacity(0.8), height: 1.4),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () => context.read<DeliveryProvider>().fetchMyDeliveries(role: 'buyer'),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.error,
+                foregroundColor: theme.colorScheme.onError,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     if (delivery == null) {
       // Empty state placeholder
       return Container(
