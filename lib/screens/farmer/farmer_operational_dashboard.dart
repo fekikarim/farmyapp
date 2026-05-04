@@ -5,6 +5,8 @@ import 'package:farmyapp/l10n/app_localizations.dart';
 import '../../providers/farmer_dashboard_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/farmer_dashboard_model.dart';
+import '../../models/user_model.dart';
+import '../../services/auth_service.dart';
 import '../main_screen.dart';
 import 'components/hero_metrics_block.dart';
 import 'components/smart_alerts_section.dart';
@@ -525,87 +527,96 @@ class _FarmerOperationalDashboardState extends State<FarmerOperationalDashboard>
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.user;
+
+    final hour = DateTime.now().hour;
+    String greeting;
+    if (hour < 12) {
+      greeting = _l10n.goodMorning;
+    } else if (hour < 17) {
+      greeting = _l10n.goodAfternoon;
+    } else {
+      greeting = _l10n.goodEvening;
+    }
 
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        title: Text(_l10n.dashboardTitle),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                colorScheme.primary.withOpacity(isDark ? 0.08 : 0.12),
-                Colors.transparent,
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          Consumer<FarmerDashboardProvider>(
-            builder: (context, provider, child) {
-              return IconButton(
-                icon: provider.isRefreshing
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.refresh),
-                onPressed: provider.isRefreshing ? null : _refresh,
-                tooltip: _l10n.retry,
-              );
-            },
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          Consumer<FarmerDashboardProvider>(
-            builder: (context, provider, child) {
-              if (provider.error != null && !provider.hasData) {
-                return _buildErrorState(context, provider);
-              }
+      backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Consumer<FarmerDashboardProvider>(
+              builder: (context, provider, child) {
+                if (provider.error != null && !provider.hasData) {
+                  return _buildErrorState(context, provider);
+                }
 
-              return RefreshIndicator(
-                onRefresh: _refresh,
-                color: colorScheme.primary,
-                child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics(),
-                  ),
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 220),
-                        height: provider.isRefreshing ? 2.5 : 0,
-                        child: provider.isRefreshing
-                            ? LinearProgressIndicator(
-                                color: colorScheme.primary,
-                                backgroundColor: colorScheme.primary
-                                    .withOpacity(0.18),
-                              )
-                            : null,
-                      ),
+                return RefreshIndicator(
+                  onRefresh: _refresh,
+                  color: colorScheme.primary,
+                  child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
                     ),
-                    SliverToBoxAdapter(child: _buildSoftErrorBanner(provider)),
-                    SliverToBoxAdapter(
-                      child: _buildEntryAnimation(
-                        index: 0,
-                        child: HeroMetricsBlock(
-                          onLandsTap: () {
-                            _navigateToLandManagement();
-                          },
-                          onItemRequestsTap: () {
-                            _navigateToItemRequests();
-                          },
+                    slivers: [
+                      // Header Section with greeting and profile
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      greeting,
+                                      style: theme.textTheme.bodyLarge?.copyWith(
+                                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      user?.name ?? user?.email ?? _l10n.user,
+                                      style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              _buildProfileAvatar(context, user, theme),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
+                      SliverToBoxAdapter(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 220),
+                          height: provider.isRefreshing ? 2.5 : 0,
+                          child: provider.isRefreshing
+                              ? LinearProgressIndicator(
+                                  color: colorScheme.primary,
+                                  backgroundColor: colorScheme.primary
+                                      .withOpacity(0.18),
+                                )
+                              : null,
+                        ),
+                      ),
+                      SliverToBoxAdapter(child: _buildSoftErrorBanner(provider)),
+                      SliverToBoxAdapter(
+                        child: _buildEntryAnimation(
+                          index: 0,
+                          child: HeroMetricsBlock(
+                            onLandsTap: () {
+                              _navigateToLandManagement();
+                            },
+                            onItemRequestsTap: () {
+                              _navigateToItemRequests();
+                            },
+                          ),
+                        ),
+                      ),
                     SliverToBoxAdapter(
                       child: _buildEntryAnimation(
                         index: 1,
@@ -692,7 +703,155 @@ class _FarmerOperationalDashboardState extends State<FarmerOperationalDashboard>
           _buildQuickActionOverlay(),
         ],
       ),
+    ),
+  );
+  }
+
+  // ==========================================
+  // PROFILE AVATAR WITH LOADING & ERROR HANDLING
+  // ==========================================
+
+  Widget _buildProfileAvatar(BuildContext context, User? user, ThemeData theme) {
+    final String? rawPictureUrl = user?.profilePicture;
+    final String? resolvedUrl = _resolveProfileImageUrl(rawPictureUrl);
+    final String displayName = user?.name ?? user?.email ?? 'User';
+
+    // If no URL, show fallback immediately
+    if (resolvedUrl == null) {
+      return _buildAvatarFallback(theme, displayName);
+    }
+
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: theme.colorScheme.primary.withOpacity(0.2),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withOpacity(0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipOval(
+        child: Image.network(
+          resolvedUrl,
+          fit: BoxFit.cover,
+          width: 56,
+          height: 56,
+          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded || frame != null) {
+              return AnimatedOpacity(
+                opacity: 1,
+                duration: const Duration(milliseconds: 260),
+                child: child,
+              );
+            }
+            // Show shimmer/loading state while frame is loading
+            return _buildAvatarLoading(theme);
+          },
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return _buildAvatarLoading(theme);
+          },
+          errorBuilder: (context, error, stackTrace) {
+            // Log error for debugging but don't crash
+            debugPrint('Profile image failed to load: $resolvedUrl - $error');
+            return _buildAvatarFallback(theme, displayName);
+          },
+        ),
+      ),
     );
+  }
+
+  Widget _buildAvatarLoading(ThemeData theme) {
+    return Container(
+      color: theme.colorScheme.primary.withOpacity(0.1),
+      child: Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: theme.colorScheme.primary.withOpacity(0.5),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAvatarFallback(ThemeData theme, String name) {
+    final initials = _getInitials(name);
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.primary,
+            theme.colorScheme.secondary,
+          ],
+        ),
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: theme.colorScheme.primary.withOpacity(0.2),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withOpacity(0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Center(
+        child: initials.isNotEmpty
+            ? Text(
+                initials,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            : Icon(
+                Icons.person,
+                color: Colors.white.withOpacity(0.9),
+                size: 28,
+              ),
+      ),
+    );
+  }
+
+  String? _resolveProfileImageUrl(String? rawPath) {
+    if (rawPath == null || rawPath.isEmpty) return null;
+
+    // If it's already a full URL with scheme, return as-is
+    final uri = Uri.tryParse(rawPath);
+    if (uri != null && uri.hasScheme && (uri.scheme == 'http' || uri.scheme == 'https')) {
+      return rawPath;
+    }
+
+    // Otherwise, prepend the base URL
+    final base = AuthService.baseUrl;
+    final cleanBase = base.endsWith('/') ? base.substring(0, base.length - 1) : base;
+    final cleanPath = rawPath.startsWith('/') ? rawPath : '/$rawPath';
+    return '$cleanBase$cleanPath';
+  }
+
+  String _getInitials(String name) {
+    if (name.isEmpty) return '';
+    final parts = name.trim().split(' ').where((s) => s.isNotEmpty).toList();
+    if (parts.isEmpty) return '';
+    if (parts.length == 1) return parts[0][0].toUpperCase();
+    return '${parts[0][0]}${parts[parts.length - 1][0]}'.toUpperCase();
   }
 
   Widget _buildErrorState(

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../providers/worker_provider.dart';
+import '../widgets/edge_panel.dart';
 
 // Customer Screens
 import 'customer/home_screen.dart';
@@ -21,7 +22,7 @@ import 'farmer/land_management_screen.dart';
 import 'investor/explore_land_screen.dart';
 import 'investor/my_investments_screen.dart';
 // import 'investor/farming_activities_screen.dart';
-import 'investor/revenue_screen.dart';
+import 'investor/roi_dashboard_screen.dart';
 import 'settings_screen.dart';
 
 // Shared
@@ -185,36 +186,36 @@ class _MainScreenState extends State<MainScreen> {
       ];
     } else if (role == 'investor') {
       screens = [
+        const RoiDashboardScreen(),
         const InvestorExploreLandScreen(),
         const InvestorMyInvestmentsScreen(),
-        const MyProductsScreen(), // Updated: Replaced Activities with Products
-        const InvestorRevenueScreen(),
+        const MyProductsScreen(),
         const SettingsScreen(),
       ];
       items = [
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.dashboard_outlined),
+          activeIcon: Icon(Icons.dashboard),
+          label: 'Dashboard',
+        ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.explore_outlined),
-          activeIcon: Icon(Icons.explore),
+          icon: const Icon(Icons.explore_outlined),
+          activeIcon: const Icon(Icons.explore),
           label: AppLocalizations.of(context)!.explore,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.monetization_on_outlined),
-          activeIcon: Icon(Icons.monetization_on),
+          icon: const Icon(Icons.monetization_on_outlined),
+          activeIcon: const Icon(Icons.monetization_on),
           label: AppLocalizations.of(context)!.investments,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.inventory_2_outlined), // Changed icon
-          activeIcon: Icon(Icons.inventory_2),
-          label: AppLocalizations.of(context)!.products, // Changed label
+          icon: const Icon(Icons.inventory_2_outlined),
+          activeIcon: const Icon(Icons.inventory_2),
+          label: AppLocalizations.of(context)!.products,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.account_balance_wallet_outlined),
-          activeIcon: Icon(Icons.account_balance_wallet),
-          label: AppLocalizations.of(context)!.revenue,
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings_outlined),
-          activeIcon: Icon(Icons.settings),
+          icon: const Icon(Icons.settings_outlined),
+          activeIcon: const Icon(Icons.settings),
           label: AppLocalizations.of(context)!.settings,
         ),
       ];
@@ -273,13 +274,16 @@ class _MainScreenState extends State<MainScreen> {
       _currentIndex = 0;
     }
 
-    return Scaffold(
+    final isRoiDashboard = role == 'investor' && _currentIndex == 0;
+    final isInvestor = role == 'investor';
+
+    final scaffold = Scaffold(
       body: IndexedStack(index: _currentIndex, children: screens),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: Builder(
         builder: (context) {
           if (role == 'investor' || role == 'farmer') {
-            if (role == 'farmer' && _currentIndex == 0) {
+            if ((role == 'farmer' || role == 'investor') && _currentIndex == 0) {
               return const SizedBox.shrink();
             }
 
@@ -349,5 +353,15 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
     );
+
+    // Only wrap investors with the edge panel
+    if (isInvestor) {
+      return GameEdgePanelOverlay(
+        forceHide: isRoiDashboard,
+        child: scaffold,
+      );
+    }
+
+    return scaffold;
   }
 }

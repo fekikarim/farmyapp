@@ -57,6 +57,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   Duration _lastTick = Duration.zero;
   final Set<String> _warnedMissingWorkerSpriteSets = <String>{};
 
+  // GlobalKey to access IsometricMap for camera follow synchronization
+  final GlobalKey<IsometricMapState> _isometricMapKey = GlobalKey<IsometricMapState>();
+
   @override
   void initState() {
     super.initState();
@@ -83,7 +86,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   /// Per-frame callback while manual control is active. Computes the real
   /// elapsed seconds (clamped to 50 ms to survive pauses/backgrounding) and
-  /// forwards the current stick deflection to the provider.
+  /// forwards the current stick deflection to the provider and camera.
   void _onGameTick(Duration elapsed) {
     final double dt = _lastTick == Duration.zero
         ? 1 / 60
@@ -91,20 +94,31 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     _lastTick = elapsed;
     if (!mounted) return;
     final gp = context.read<GameProvider>();
-    if (!gp.manualControlActive) return;
+    if (!gp.manualControlActive) {
+      debugPrint('[GameTick] manualControlActive=false, skipping');
+      return;
+    }
+    // Debug: log stick values periodically
+    if (_stickVec.dx != 0 || _stickVec.dy != 0) {
+      debugPrint('[GameTick] stick=(${_stickVec.dx.toStringAsFixed(2)}, ${_stickVec.dy.toStringAsFixed(2)}) dt=$dt');
+    }
     gp.applyJoystickInput(_stickVec.dx, _stickVec.dy, dt);
+    // Sync camera follow at 60fps for smooth tracking
+    _isometricMapKey.currentState?.onCameraTick(dt);
   }
 
   void _startManualControlTicker() {
     if (!_gameLoopTicker.isActive) {
       _lastTick = Duration.zero;
       _gameLoopTicker.start();
+      debugPrint('[Ticker] Started');
     }
   }
 
   void _stopManualControlTicker() {
     if (_gameLoopTicker.isActive) {
       _gameLoopTicker.stop();
+      debugPrint('[Ticker] Stopped');
     }
     _stickVec = Offset.zero;
     _lastTick = Duration.zero;
@@ -929,6 +943,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             : Stack(
                 children: [
                   IsometricMap(
+                    key: _isometricMapKey,
                     gridWidth:
                         _gridData!['grid_width'] ?? widget.land.gridWidth,
                     gridHeight:
@@ -1341,7 +1356,15 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                 left: 24,
                 bottom: 24,
                 child: SafeArea(
-                  child: VirtualJoystick(onChanged: (vec) => _stickVec = vec),
+                  child: VirtualJoystick(
+                    onChanged: (vec) {
+                      _stickVec = vec;
+                      // Debug: log joystick input
+                      if (vec.dx != 0 || vec.dy != 0) {
+                        debugPrint('[Joystick] vec=(${vec.dx.toStringAsFixed(2)}, ${vec.dy.toStringAsFixed(2)})');
+                      }
+                    },
+                  ),
                 ),
               ),
             ],

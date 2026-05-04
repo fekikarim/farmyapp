@@ -55,13 +55,13 @@ const double _kManualMaxCellsPerSecond = 3.5;
 const double _kManualAcceleration = 18.0;
 const double _kManualDeceleration = 24.0;
 const double _kManualStopEpsilon = 0.02;
-const double _kWorkerCollisionRadius = 0.35;
-// Extra keep-out distance for non-playable cells (fence boundary).
-// Stronger buffer (0.60) ensures worker stays well away from fence visually.
-const double _kOffLandCollisionPadding = 0.60;
-const double _kCollisionSweepStep = 0.12;
-// Combined offset for hard boundary clamping (radius + padding).
-const double _kBoundaryMinOffset = _kWorkerCollisionRadius + _kOffLandCollisionPadding;
+// Collision radius for movement checks - small to allow smooth movement
+const double _kWorkerCollisionRadius = 0.22;
+// Padding for fence boundaries - minimal to prevent getting stuck
+const double _kOffLandCollisionPadding = 0.18;
+const double _kCollisionSweepStep = 0.10;
+// Hard boundary offset for final position clamping
+const double _kBoundaryMinOffset = 0.40; // 0.22 + 0.18
 const double _kCollisionEpsilon = 1e-6;
 const double _kCollisionSettleEpsilon = 1e-4;
 
@@ -648,6 +648,11 @@ class GameProvider with ChangeNotifier {
     final _ResolvedJoystickVector input = _resolveJoystickToIsometric(sx, sy);
     final bool hasIntent =
         input.intensity >= _kManualDeadZone && input.hasDirection;
+    
+    // Debug: log input processing
+    if (sx != 0 || sy != 0) {
+      debugPrint('[Input] sx=$sx, sy=$sy -> grid=(${input.gridX.toStringAsFixed(2)}, ${input.gridY.toStringAsFixed(2)}) intensity=${input.intensity.toStringAsFixed(2)}, hasIntent=$hasIntent');
+    }
 
     final double targetSpeed = hasIntent
         ? input.intensity * _kManualMaxCellsPerSecond
@@ -720,6 +725,9 @@ class GameProvider with ChangeNotifier {
     final double stepX = worker.manualVelocityX * dt;
     final double stepY = worker.manualVelocityY * dt;
 
+    final double prevX = worker.x;
+    final double prevY = worker.y;
+
     final _CollisionMoveResult resolved = _resolveCollisionSweep(
       fromX: worker.x,
       fromY: worker.y,
@@ -729,32 +737,32 @@ class GameProvider with ChangeNotifier {
       gridW: gridW,
       gridH: gridH,
     );
-    final double actualStep = resolved.movedDistance;
-
-    if (resolved.blockedX) {
-      worker.manualVelocityX = 0.0;
-    }
-    if (resolved.blockedY) {
-      worker.manualVelocityY = 0.0;
+    // Check if position changed (collision detection)
+    final bool positionChanged = (resolved.nextX - prevX).abs() > 1e-6 || (resolved.nextY - prevY).abs() > 1e-6;
+    if (!positionChanged && (worker.manualVelocityX.abs() > 0.01 || worker.manualVelocityY.abs() > 0.01)) {
+      debugPrint('[Move] Blocked! velocity=(${worker.manualVelocityX.toStringAsFixed(2)}, ${worker.manualVelocityY.toStringAsFixed(2)}) but position did not change');
     }
 
-    if (actualStep > _kCollisionEpsilon) {
-      worker.x = resolved.nextX;
-      worker.y = resolved.nextY;
+    worker.x = resolved.nextX;
+    worker.y = resolved.nextY;
+    
+    // Debug: log position changes
+    if ((worker.x - prevX).abs() > 1e-6 || (worker.y - prevY).abs() > 1e-6) {
+      debugPrint('[Move] Position: ($prevX, $prevY) -> (${worker.x.toStringAsFixed(4)}, ${worker.y.toStringAsFixed(4)}) velocity=(${worker.manualVelocityX}, ${worker.manualVelocityY})');
+    }
+    
+    if (hasIntent) {
+      // Worker is actively moving - set walking state and animate
       worker.direction = nextDir;
       worker.status = 'walking';
       worker.action = 'walk';
-      worker.advanceAnimPhase(actualStep);
+      worker.animPhase += dt * 8; // 8 cycles per second for smooth animation
     } else {
+      // No joystick input - worker is idle
       worker.direction = nextDir;
       worker.status = 'idle';
       worker.action = 'idle';
-      if (hasIntent) {
-        _logCollisionDebug(
-          'Blocked worker ${worker.workerId} at (${worker.x.toStringAsFixed(2)}, ${worker.y.toStringAsFixed(2)}).',
-        );
-        worker.resetManualVelocity();
-      }
+      worker.resetManualVelocity();
     }
 
     if (_workerChanged(
@@ -817,6 +825,7 @@ class GameProvider with ChangeNotifier {
     required int gridH,
   }) {
     if (gridW <= 0 || gridH <= 0) {
+      debugPrint('[Collision] Invalid grid: gridW=$gridW, gridH=$gridH');
       return _CollisionMoveResult(
         nextX: fromX,
         nextY: fromY,
@@ -1065,9 +1074,11 @@ class GameProvider with ChangeNotifier {
             !isPlayable || !_isCellNavigable(xx, yy, gridW, gridH);
         if (!isBlocked) continue;
 
+        // Use smaller radius for playable cells to allow movement,
+        // use moderate radius for non-playable to prevent entry without blocking
         final double collisionRadius = isPlayable
-            ? _kWorkerCollisionRadius
-            : maxProbeRadius;
+            ? 0.22 // Very small for smooth movement within playable area
+            : 0.30; // Moderate for fence boundary - prevents entry but allows approach
         if (_circleIntersectsCell(x, y, collisionRadius, xx, yy)) {
           return true;
         }

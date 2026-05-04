@@ -11,6 +11,7 @@ import '../../models/land_rental_model.dart';
 import 'land_details_screen.dart';
 import 'package:farmyapp/widgets/subscription_limit_bar.dart';
 import 'widgets/investor_workforce_screen.dart';
+import '../settings/notifications_screen.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
 
 class InvestorExploreLandScreen extends StatefulWidget {
@@ -99,7 +100,14 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
               Icons.notifications_none_rounded,
               color: theme.iconTheme.color,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationsScreen(),
+                ),
+              );
+            },
           ),
           const SizedBox(width: 8),
         ],

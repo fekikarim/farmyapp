@@ -44,10 +44,10 @@ class IsometricMap extends StatefulWidget {
   });
 
   @override
-  State<IsometricMap> createState() => _IsometricMapState();
+  State<IsometricMap> createState() => IsometricMapState();
 }
 
-class _IsometricMapState extends State<IsometricMap> {
+class IsometricMapState extends State<IsometricMap> {
   // Constants
   static const double tileWidth = 64.0;
   static const double tileHeight = 32.0;
@@ -77,9 +77,9 @@ class _IsometricMapState extends State<IsometricMap> {
   final TransformationController _cameraController = TransformationController();
   bool _userInteracting = false;
 
-  // Smooth camera interpolation constants
-  static const double _kCameraLerpFactor = 0.08; // Balanced smoothness
-  static const double _kCameraLerpFast = 0.15;   // For initial catch-up
+  // Smooth camera interpolation constants - 60fps with responsive 0.20 lerp
+  static const double _kCameraLerpFactor = 0.20; // Fast but smooth (60fps)
+  static const double _kCameraLerpFast = 0.30;   // For initial catch-up
 
   @override
   void initState() {
@@ -89,13 +89,12 @@ class _IsometricMapState extends State<IsometricMap> {
       setState(() {
         _animationValue = (_animationValue + 0.02) % 1;
       });
-      // Camera follow update (outside setState to avoid rebuilds)
-      _updateCameraFollow();
+      // Camera follow update now driven by _gameLoopTicker for 60fps sync
     });
   }
 
-  /// Updates camera position when follow mode is active
-  void _updateCameraFollow() {
+  /// Updates camera position when follow mode is active (called at 60fps from GameScreen)
+  void onCameraTick(double dt) {
     final gameProvider = Provider.of<GameProvider>(context, listen: false);
 
     if (!gameProvider.isCameraFollowing) return;
@@ -106,7 +105,7 @@ class _IsometricMapState extends State<IsometricMap> {
     if (worker == null) return;
 
     final targetPos = _gridToScreenPosition(worker.x, worker.y);
-    _centerCameraOn(targetPos);
+    _centerCameraOn(targetPos, dt: dt);
   }
 
   @override
@@ -127,8 +126,9 @@ class _IsometricMapState extends State<IsometricMap> {
     return Offset(isoX, isoY);
   }
 
-  /// Smoothly center camera on target position with lerp interpolation
-  void _centerCameraOn(Offset targetPos, {double? lerpFactor}) {
+  /// Smoothly center camera on target position with delta-time lerp interpolation
+  /// [dt] is elapsed seconds since last frame for frame-rate independent smoothing
+  void _centerCameraOn(Offset targetPos, {double? lerpFactor, double dt = 0.016}) {
     final Matrix4 current = _cameraController.value;
     final Vector3 translation = current.getTranslation();
     final double currentX = translation.x;
@@ -144,8 +144,10 @@ class _IsometricMapState extends State<IsometricMap> {
     final double targetX = (viewport.width / 2) - (targetPos.dx * scale);
     final double targetY = (viewport.height / 2) - (targetPos.dy * scale);
 
-    // Use provided lerp or default
-    final double lerp = lerpFactor ?? _kCameraLerpFactor;
+    // Delta-time aware interpolation for consistent speed at any frame rate
+    // lerp = 1 - (1 - baseLerp)^(dt * 60) where 60 is reference fps
+    final double baseLerp = lerpFactor ?? _kCameraLerpFactor;
+    final double lerp = 1.0 - math.pow(1.0 - baseLerp, dt * 60.0).toDouble();
 
     // Lerp current to target for smooth motion
     final double newX = currentX + (targetX - currentX) * lerp;

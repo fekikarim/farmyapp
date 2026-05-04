@@ -39,13 +39,14 @@ import 'providers/subscription_provider.dart';
 import 'providers/delivery_provider.dart';
 import 'providers/vendor_delivery_provider.dart';
 
+import 'providers/roi_provider.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
 
 import 'providers/game_provider.dart';
 import 'providers/crop_calendar_provider.dart';
-import 'widgets/edge_panel.dart';
 
 import 'utils/global_keys.dart';
 
@@ -117,6 +118,7 @@ void main() async {
           ChangeNotifierProvider(create: (_) => WorkerPerformanceProvider()),
           ChangeNotifierProvider(create: (_) => WorkerWalletProvider()),
           ChangeNotifierProvider(create: (_) => FarmerDashboardProvider()),
+          ChangeNotifierProvider(create: (_) => RoiProvider()),
           ChangeNotifierProvider(
             create: (_) => ThemeProvider(initialThemeMode: initialTheme),
           ),
@@ -156,15 +158,13 @@ class MyApp extends StatelessWidget {
           ],
           navigatorObservers: [routeObserver],
           builder: (context, child) {
-            return GameEdgePanelOverlay(
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: () {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  SystemChannels.textInput.invokeMethod('TextInput.hide');
-                },
-                child: child,
-              ),
+            return GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+                SystemChannels.textInput.invokeMethod('TextInput.hide');
+              },
+              child: child,
             );
           },
           initialRoute: '/',

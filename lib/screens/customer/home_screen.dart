@@ -10,9 +10,16 @@ import '../../services/auth_service.dart';
 import '../../models/user_model.dart';
 import '../../providers/worker_lifecycle_provider.dart';
 import '../../providers/worker_wallet_provider.dart';
+import '../../providers/product_provider.dart';
+import '../../providers/wallet_provider.dart';
+import '../../providers/delivery_provider.dart';
+import '../../models/product_model.dart';
+import '../../models/delivery_model.dart';
+import 'track_order_screen.dart';
 
 import 'subscriptions_screen.dart';
 import 'marketplace_screen.dart';
+import 'product_detail_screen.dart';
 import 'become_worker_screen.dart';
 import '../worker/wallet/worker_wallet_screen.dart';
 import '../worker/wallet/withdrawal_screen.dart';
@@ -46,6 +53,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             context.read<WorkerLifecycleProvider>().refreshWorkerDashboardLifecycle();
             context.read<WorkerWalletProvider>().fetchOverview();
             workerProvider.loadMyTasks();
+          } else {
+            // Customer fetches
+            context.read<ProductProvider>().fetchProducts();
+            context.read<WalletProvider>().fetchWalletStatus();
+            context.read<DeliveryProvider>().fetchMyDeliveries(role: 'buyer');
           }
         });
       }
@@ -550,7 +562,22 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
+
+    final productProvider = context.watch<ProductProvider>();
+    final walletProvider = context.watch<WalletProvider>();
+    final deliveryProvider = context.watch<DeliveryProvider>();
+
+    final credits = walletProvider.credits;
+    final currentMonth = DateTime.now().month;
+    final currentYear = DateTime.now().year;
+    final ordersThisMonth = deliveryProvider.myDeliveries.where((d) => d.createdAt.month == currentMonth && d.createdAt.year == currentYear).length;
+    
+    final activeDeliveries = deliveryProvider.myDeliveries.where((d) => !d.isTerminal).toList();
+    final activeDelivery = activeDeliveries.isNotEmpty ? activeDeliveries.first : null;
+    
+    final latestProducts = productProvider.products.take(3).toList();
 
     final List<String> quotes = [
       l10n.quote1,
@@ -579,26 +606,35 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          greeting,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.6),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await context.read<ProductProvider>().fetchProducts();
+            await context.read<WalletProvider>().fetchWalletStatus();
+            await context.read<DeliveryProvider>().fetchMyDeliveries(role: 'buyer');
+          },
+          color: theme.colorScheme.primary,
+          backgroundColor: theme.colorScheme.surface,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Section
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            greeting,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
+                          const SizedBox(height: 4),
                         Text(
                           user?.name ?? user?.email ?? l10n.user,
                           style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -610,9 +646,37 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                   _buildProfileAvatar(context, user, theme),
                 ],
               ),
-              const SizedBox(height: 32),
+                const SizedBox(height: 32),
 
-              // Motivational Quote Card
+                // User Stats Row
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatCard(
+                        context,
+                        title: 'Orders this month',
+                        value: '$ordersThisMonth',
+                        icon: Icons.shopping_bag_outlined,
+                        color: Colors.blue.shade600,
+                        isDark: isDark,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildStatCard(
+                        context,
+                        title: 'Credits Balance',
+                        value: '\$${credits.toStringAsFixed(2)}',
+                        icon: Icons.account_balance_wallet_outlined,
+                        color: Colors.green.shade600,
+                        isDark: isDark,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+
+                // Motivational Quote Card
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
@@ -667,6 +731,54 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               ),
 
               const SizedBox(height: 32),
+
+                // Your FarmBox — next delivery
+                Text(
+                  'Your FarmBox — next delivery',
+                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                _buildNextDeliveryCard(context, activeDelivery, isDark),
+                const SizedBox(height: 32),
+
+                // Fresh picks for you
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Fresh picks for you',
+                      style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    TextButton(
+                      onPressed: () => MainScreen.trySwitchToTab(context, 1),
+                      child: const Text('See All'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                if (latestProducts.isEmpty)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Text(
+                        'No fresh picks right now.',
+                        style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5)),
+                      ),
+                    ),
+                  )
+                else
+                  SizedBox(
+                    height: 240,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: latestProducts.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 16),
+                      itemBuilder: (ctx, idx) => _buildProductCard(context, latestProducts[idx], isDark),
+                    ),
+                  ),
+
+                const SizedBox(height: 32),
 
               Text(
                 'Explore Farmy',
@@ -729,6 +841,226 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               const SizedBox(height: 40),
             ],
           ),
+        ),
+      ),
+    ),
+  );
+}
+
+  Widget _buildStatCard(BuildContext context, {required String title, required String value, required IconData icon, required Color color, required bool isDark}) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? color.withOpacity(0.1) : color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: color),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600, fontSize: 13),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNextDeliveryCard(BuildContext context, DeliveryTracking? delivery, bool isDark) {
+    final theme = Theme.of(context);
+    
+    if (delivery == null) {
+      // Empty state placeholder
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: isDark ? theme.colorScheme.surfaceContainerHighest.withOpacity(0.3) : theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: theme.dividerColor.withOpacity(0.5)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.local_shipping_outlined, size: 32, color: theme.colorScheme.primary),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No active deliveries.',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.colorScheme.onSurface),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Order your first FarmBox today and get fresh produce delivered right to your door!',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), height: 1.4),
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton(
+              onPressed: () => MainScreen.trySwitchToTab(context, 1),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: theme.colorScheme.primary,
+                side: BorderSide(color: theme.colorScheme.primary.withOpacity(0.5)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Shop Marketplace'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Active delivery tracking card
+    final createdDate = delivery.createdAt;
+    final formattedDate = '${createdDate.day.toString().padLeft(2, '0')}/${createdDate.month.toString().padLeft(2, '0')}/${createdDate.year} at ${createdDate.hour.toString().padLeft(2, '0')}:${createdDate.minute.toString().padLeft(2, '0')}';
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => TrackOrderScreen(orderId: delivery.orderId),
+          ),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: isDark ? theme.colorScheme.primary.withOpacity(0.1) : theme.colorScheme.primary.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: theme.colorScheme.primary.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.local_shipping_rounded, color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    delivery.deliveryStatusLabel,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.colorScheme.onSurface),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    formattedDate,
+                    style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: theme.colorScheme.primary.withOpacity(0.7)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductPlaceholder(ThemeData theme) {
+    return Container(
+      width: double.infinity,
+      color: theme.colorScheme.primary.withValues(alpha: 0.08),
+      child: Center(
+        child: Icon(
+          Icons.eco_rounded,
+          size: 48,
+          color: theme.colorScheme.primary.withValues(alpha: 0.3),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductCard(BuildContext context, Product product, bool isDark) {
+    final theme = Theme.of(context);
+    final imageUrl = product.fullImages.isNotEmpty ? product.fullImages.first : null;
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ProductDetailScreen(product: product),
+          ),
+        );
+      },
+      child: Container(
+        width: 160,
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                child: imageUrl != null
+                    ? Image.network(
+                        imageUrl,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return _buildProductPlaceholder(theme);
+                        },
+                        errorBuilder: (_, __, ___) => _buildProductPlaceholder(theme),
+                      )
+                    : _buildProductPlaceholder(theme),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    product.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${product.price.toStringAsFixed(2)} TND',
+                    style: TextStyle(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
