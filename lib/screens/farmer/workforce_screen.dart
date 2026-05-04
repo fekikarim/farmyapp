@@ -749,54 +749,6 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                       },
                     ),
 
-                    // Coming Soon Section
-                    const SizedBox(height: 24),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.grey.shade800
-                            : Colors.blue.shade50,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isDark
-                              ? Colors.blue.withOpacity(0.2)
-                              : Colors.blue.shade100,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.auto_awesome,
-                                color: Colors.blue.shade600,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                AppLocalizations.of(context)!.soon,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: isDark
-                                      ? Colors.blue.shade200
-                                      : Colors.blue.shade800,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          _comingSoonItem(AppLocalizations.of(context)!.aiAutoAssignTasks, isDark),
-                          _comingSoonItem(AppLocalizations.of(context)!.gpsVerifiedWorkProof, isDark),
-                          _comingSoonItem(AppLocalizations.of(context)!.iotSensorDashboard, isDark),
-                          _comingSoonItem(
-                            AppLocalizations.of(context)!.smartPayrollIntegration,
-                            isDark,
-                          ),
-                        ],
-                      ),
-                    ),
                     const SizedBox(height: 80),
                   ],
                 ),
@@ -1013,26 +965,4 @@ class _WorkforceScreenState extends State<WorkforceScreen>
     );
   }
 
-  Widget _comingSoonItem(String label, bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        children: [
-          Icon(
-            Icons.circle,
-            size: 6,
-            color: isDark ? Colors.blue.shade400 : Colors.blue.shade300,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 13,
-              color: isDark ? Colors.blue.shade100 : Colors.blue.shade700,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

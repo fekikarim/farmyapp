@@ -29,7 +29,7 @@ class HeroMetricsBlock extends StatelessWidget {
     if (heroMetrics == null) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final isCompact = constraints.maxWidth < 430;
@@ -75,16 +75,17 @@ class HeroMetricsBlock extends StatelessWidget {
           ];
 
           if (isCompact) {
-            final cardWidth = (constraints.maxWidth * 0.72)
-                .clamp(186.0, 250.0)
-                .toDouble();
+            // Calculate card width to show ~85% of card width with peek of next card
+            final availableWidth = constraints.maxWidth - 32; // minus padding
+            final cardWidth = (availableWidth * 0.85).clamp(160.0, 220.0);
             return SizedBox(
-              height: 168,
+              height: 160,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: cardItems.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
                 itemBuilder: (context, index) {
                   return SizedBox(width: cardWidth, child: cardItems[index]);
                 },
@@ -114,13 +115,13 @@ class HeroMetricsBlock extends StatelessWidget {
       baseColor: baseColor,
       highlightColor: highlightColor,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         child: Row(
           children: List.generate(3, (index) {
             return Expanded(
               child: Container(
-                height: 132,
-                margin: EdgeInsets.only(right: index < 2 ? 12 : 0),
+                height: 136,
+                margin: EdgeInsets.only(right: index < 2 ? 10 : 0),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
@@ -196,9 +197,10 @@ class _MetricCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(7),
+                    padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       color: iconColor.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(8),
@@ -206,31 +208,32 @@ class _MetricCard extends StatelessWidget {
                     child: Icon(
                       icon,
                       color: iconColor,
-                      size: isSmallScreen ? 16 : 20,
+                      size: isSmallScreen ? 16 : 18,
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Expanded(
+                  Flexible(
                     child: Text(
                       label,
                       style: TextStyle(
-                        fontSize: isSmallScreen ? 12 : 12,
+                        fontSize: isSmallScreen ? 12 : 13,
                         fontWeight: FontWeight.w600,
                         color: colorScheme.onSurface.withOpacity(0.8),
                       ),
                       overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
                 child: Text(
                   value,
                   style: TextStyle(
-                    fontSize: isSmallScreen ? 24 : 26,
+                    fontSize: isSmallScreen ? 22 : 24,
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onSurface,
                     letterSpacing: -0.5,
@@ -239,7 +242,7 @@ class _MetricCard extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color:
                       (subtitleColor ?? colorScheme.onSurface.withOpacity(0.6))
