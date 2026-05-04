@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
+import '../../widgets/farmy_avatar.dart';
 import '../../models/worker_performance_model.dart';
 import '../../providers/worker_performance_provider.dart';
 
@@ -145,6 +146,10 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
             children: [
               // Filter Bar
               _buildFilterBar(context, provider, l10n, isSmallScreen),
+              
+              if (provider.error != null && provider.workers.isNotEmpty)
+                _buildSyncErrorBanner(provider, theme, l10n),
+
               SizedBox(height: isSmallScreen ? 12 : 16),
 
               // Summary KPI Cards
@@ -184,7 +189,7 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
                   child: Column(
-                    key: ValueKey('workers_${provider.sortCriteria}_${provider.workers.length}'),
+                    key: ValueKey('workers_${provider.sortCriteria}_${provider.currentDatePreset}_${provider.selectedLandIds.join(",")}_${provider.workers.length}'),
                     children: provider.workers
                         .map((worker) => _buildWorkerCard(worker, l10n, theme, isSmallScreen))
                         .toList(),
@@ -266,7 +271,7 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: isDark ? Colors.red.withOpacity(0.1) : Colors.red.shade50,
+                color: isDark ? Colors.red.withValues(alpha: 0.1) : Colors.red.shade50,
                 shape: BoxShape.circle,
               ),
               child: Icon(Icons.error_outline, size: 64, color: Colors.red.shade400),
@@ -306,6 +311,43 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSyncErrorBanner(WorkerPerformanceProvider provider, ThemeData theme, AppLocalizations l10n) {
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.red.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.sync_problem_rounded, color: Colors.red.shade400, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Sync issue: ${provider.error}',
+              style: TextStyle(
+                color: Colors.red.shade300,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close_rounded, size: 18),
+            onPressed: () => provider.clearError(),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            color: Colors.red.shade300,
+          ),
+        ],
       ),
     );
   }
@@ -353,12 +395,12 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade800.withOpacity(0.5) : Colors.white,
+        color: isDark ? Colors.grey.shade800.withValues(alpha: 0.5) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: isDark ? Colors.grey.shade700 : Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -509,7 +551,7 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
     };
 
     return DropdownButtonFormField<String>(
-      value: _getCurrentPreset(provider),
+      value: provider.currentDatePreset,
       isExpanded: true,
       dropdownColor: isDark ? Colors.grey.shade800 : Colors.white,
       borderRadius: BorderRadius.circular(16),
@@ -558,10 +600,6 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
     );
   }
 
-  String _getCurrentPreset(WorkerPerformanceProvider provider) {
-    if (provider.startDate == null && provider.endDate == null) return 'all';
-    return 'all';
-  }
 
   Widget _buildSummaryCards(
     WorkerPerformanceProvider provider,
@@ -627,12 +665,12 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
       decoration: BoxDecoration(
-        color: isDark ? color.withOpacity(0.05) : color.withOpacity(0.05),
+        color: isDark ? color.withValues(alpha: 0.05) : color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.15), width: 1.5),
+        border: Border.all(color: color.withValues(alpha: 0.15), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(isDark ? 0.05 : 0.02),
+            color: color.withValues(alpha: isDark ? 0.05 : 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -647,7 +685,7 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.15),
+                  color: color.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, color: color, size: isSmallScreen ? 14 : 16),
@@ -758,16 +796,16 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isDark ? baseColor.withOpacity(0.05) : baseColor.withOpacity(0.05),
+        color: isDark ? baseColor.withValues(alpha: 0.05) : baseColor.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: baseColor.withOpacity(0.2)),
+        border: Border.all(color: baseColor.withValues(alpha: 0.2)),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: baseColor.withOpacity(0.15),
+            color: baseColor.withValues(alpha: 0.15),
             shape: BoxShape.circle,
           ),
           child: Icon(
@@ -793,7 +831,7 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: baseColor.withOpacity(0.3),
+                color: baseColor.withValues(alpha: 0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -826,7 +864,7 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
         border: Border.all(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.04),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -841,15 +879,10 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
               children: [
                 Hero(
                   tag: 'worker_avatar_${worker.workerId}',
-                  child: CircleAvatar(
+                  child: FarmyAvatar(
+                    imageUrl: worker.workerProfilePicture,
                     radius: isSmallScreen ? 24 : 28,
-                    backgroundColor: scoreColor.withOpacity(0.15),
-                    backgroundImage: worker.workerProfilePicture != null
-                        ? NetworkImage(worker.workerProfilePicture!)
-                        : null,
-                    child: worker.workerProfilePicture == null
-                        ? Icon(Icons.person, color: scoreColor, size: isSmallScreen ? 24 : 28)
-                        : null,
+                    displayName: worker.workerName,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -890,7 +923,7 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
                     boxShadow: [
                       if (!isDark)
                         BoxShadow(
-                          color: scoreColor.withOpacity(0.2),
+                          color: scoreColor.withValues(alpha: 0.2),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),

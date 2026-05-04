@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../widgets/farmy_avatar.dart';
 import '../../providers/worker_provider.dart';
 import '../../models/worker_profile_model.dart';
 import '../shared/worker_detail_screen.dart';
 import '../../widgets/profile_preview_sheet.dart';
-import '../../services/auth_service.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
 
 class WorkerMarketplaceScreen extends StatefulWidget {
@@ -93,7 +93,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
           border: Border.all(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.3 : 0.04),
+              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -103,27 +103,12 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
           children: [
             // Avatar with Gradient Border
             Hero(
-              tag: 'marketplace-worker-avatar-${profile.id}',
-              child: Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [theme.colorScheme.primary, Colors.green.shade300],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: CircleAvatar(
-                  radius: 26,
-                  backgroundColor: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
-                  backgroundImage: profile.userProfilePicture != null
-                      ? NetworkImage('${AuthService.baseUrl}${profile.userProfilePicture}')
-                      : null,
-                  child: profile.userProfilePicture == null
-                      ? Icon(Icons.person, color: isDark ? Colors.grey.shade500 : Colors.grey.shade400, size: 28)
-                      : null,
-                ),
+              tag: 'worker_avatar_${profile.userId}',
+              child: FarmyAvatar(
+                imageUrl: profile.userProfilePicture,
+                radius: 26,
+                displayName: profile.userName,
+                border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3), width: 1.5),
               ),
             ),
             const SizedBox(width: 16),
@@ -162,9 +147,9 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                       return Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: isDark ? theme.colorScheme.primary.withOpacity(0.15) : theme.colorScheme.primary.withOpacity(0.1),
+                          color: isDark ? theme.colorScheme.primary.withValues(alpha: 0.15) : theme.colorScheme.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: theme.colorScheme.primary.withOpacity(0.2)),
+                          border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.2)),
                         ),
                         child: Text(
                           _translateSkill(context, skill),
@@ -213,9 +198,9 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: isDark ? theme.colorScheme.primary.withOpacity(0.1) : theme.colorScheme.primary.withOpacity(0.1),
+                    color: isDark ? theme.colorScheme.primary.withValues(alpha: 0.1) : theme.colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: theme.colorScheme.primary.withOpacity(0.3)),
+                    border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
                   ),
                   child: Text(
                     AppLocalizations.of(context)!.amountTND(profile.hourlyRate.toStringAsFixed(0)),
@@ -266,7 +251,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+                    color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -330,7 +315,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                         ),
                         boxShadow: selected ? [
                           BoxShadow(
-                            color: theme.colorScheme.primary.withOpacity(0.3),
+                            color: theme.colorScheme.primary.withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           )

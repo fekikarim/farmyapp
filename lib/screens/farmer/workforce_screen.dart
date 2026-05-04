@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../providers/worker_provider.dart';
+import '../../widgets/farmy_avatar.dart';
 import '../../providers/worker_lifecycle_provider.dart';
 import '../../models/land_worker_model.dart';
 import '../../models/worker_invitation_model.dart';
 import 'worker_marketplace_screen.dart';
 import '../../widgets/profile_preview_sheet.dart';
-import '../../services/auth_service.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
 
 class WorkforceScreen extends StatefulWidget {
@@ -159,7 +159,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
           color: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: comingSoon ? Colors.grey.shade300 : color.withOpacity(0.3),
+            color: comingSoon ? Colors.grey.shade300 : color.withValues(alpha: 0.3),
           ),
         ),
         child: Row(
@@ -167,7 +167,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 24),
@@ -203,7 +203,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? Colors.amber.withOpacity(0.15)
+                      ? Colors.amber.withValues(alpha: 0.15)
                       : Colors.amber.shade50,
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -237,12 +237,12 @@ class _WorkforceScreenState extends State<WorkforceScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         decoration: BoxDecoration(
-          color: isDark ? color.withOpacity(0.05) : color.withOpacity(0.05),
+          color: isDark ? color.withValues(alpha: 0.05) : color.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.15), width: 1.5),
+          border: Border.all(color: color.withValues(alpha: 0.15), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(isDark ? 0.05 : 0.02),
+              color: color.withValues(alpha: isDark ? 0.05 : 0.02),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -253,7 +253,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
+                color: color.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 22),
@@ -301,7 +301,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
           border: Border.all(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.3 : 0.04),
+              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -310,31 +310,11 @@ class _WorkforceScreenState extends State<WorkforceScreen>
         child: Row(
           children: [
             // Avatar with subtle border
-            Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.green.withOpacity(0.3), width: 1.5),
-              ),
-              child: CircleAvatar(
-                radius: 24,
-                backgroundColor: isDark
-                    ? Colors.green.withOpacity(0.15)
-                    : Colors.green.shade50,
-                backgroundImage: worker.workerProfilePicture != null
-                    ? NetworkImage(
-                        '${AuthService.baseUrl}${worker.workerProfilePicture!}',
-                      )
-                    : null,
-                child: worker.workerProfilePicture == null
-                    ? Icon(
-                        Icons.person,
-                        color: isDark
-                            ? Colors.green.shade400
-                            : Colors.green.shade700,
-                      )
-                    : null,
-              ),
+            FarmyAvatar(
+              imageUrl: worker.workerProfilePicture,
+              radius: 24,
+              displayName: worker.workerName,
+              border: Border.all(color: Colors.green.withValues(alpha: 0.3), width: 1.5),
             ),
             const SizedBox(width: 14),
             // Info
@@ -360,10 +340,10 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                         ),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? Colors.blue.withOpacity(0.15)
+                              ? Colors.blue.withValues(alpha: 0.15)
                               : Colors.blue.shade50,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.blue.withOpacity(0.2)),
+                          border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
                         ),
                         child: Text(
                           worker.role,
@@ -401,7 +381,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: _statusColor(worker.status).withOpacity(0.6),
+                    color: _statusColor(worker.status).withValues(alpha: 0.6),
                     blurRadius: 8,
                   ),
                 ],
@@ -610,7 +590,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                 const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(color: Colors.amber.withOpacity(0.15), borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(color: Colors.amber.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
                   child: Text('${pending.length}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber.shade700)),
                 ),
               ],
@@ -666,10 +646,10 @@ class _WorkforceScreenState extends State<WorkforceScreen>
       decoration: BoxDecoration(
         color: isDark ? Colors.grey.shade900 : Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: statusColor.withOpacity(0.3), width: 1.5),
+        border: Border.all(color: statusColor.withValues(alpha: 0.3), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: statusColor.withOpacity(0.05),
+            color: statusColor.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -677,32 +657,18 @@ class _WorkforceScreenState extends State<WorkforceScreen>
       ),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: statusColor.withOpacity(0.3), width: 1.5),
-            ),
-            child: CircleAvatar(
-              radius: 22,
-              backgroundColor: statusColor.withOpacity(0.12),
-              backgroundImage: invitation.workerProfilePicture != null
-                  ? NetworkImage(invitation.workerProfilePicture!)
-                  : null,
-              child: invitation.workerProfilePicture == null
-                  ? Icon(
-                      invitation.isPending
-                          ? Icons.mail_outline
-                          : invitation.isApproved
-                          ? Icons.check_circle_outline
-                          : invitation.isDeclined
-                          ? Icons.cancel_outlined
-                          : Icons.timer_off_outlined,
-                      color: statusColor,
-                      size: 20,
-                    )
-                  : null,
-            ),
+          FarmyAvatar(
+            imageUrl: invitation.workerProfilePicture,
+            radius: 22,
+            displayName: invitation.workerName,
+            fallbackIcon: invitation.isPending
+                ? Icons.mail_outline
+                : invitation.isApproved
+                ? Icons.check_circle_outline
+                : invitation.isDeclined
+                ? Icons.cancel_outlined
+                : Icons.timer_off_outlined,
+            border: Border.all(color: statusColor.withValues(alpha: 0.3), width: 1.5),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -764,7 +730,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.15),
+              color: statusColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -808,16 +774,16 @@ class _WorkforceScreenState extends State<WorkforceScreen>
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.red.withOpacity(0.08) : Colors.red.shade50,
+        color: isDark ? Colors.red.withValues(alpha: 0.08) : Colors.red.shade50,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.red.withOpacity(0.2), width: 1.5),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.2), width: 1.5),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.15),
+              color: Colors.red.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
             child: Icon(Icons.error_outline, color: Colors.red.shade400, size: 18),

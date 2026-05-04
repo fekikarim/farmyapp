@@ -4682,6 +4682,18 @@ abstract class AppLocalizations {
   /// **'Performance'**
   String get performance;
 
+  /// No description provided for @successRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Success Rate'**
+  String get successRate;
+
+  /// No description provided for @overallPerformance.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall Performance'**
+  String get overallPerformance;
+
   /// No description provided for @performanceGraphComingSoon.
   ///
   /// In en, this message translates to:

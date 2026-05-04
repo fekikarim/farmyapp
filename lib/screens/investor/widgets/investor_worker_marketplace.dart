@@ -466,7 +466,7 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                     ],
                   ),
                   child: Hero(
-                    tag: 'marketplace_avatar_${worker.id}',
+                    tag: 'worker_avatar_${worker.userId}',
                     child: CircleAvatar(
                       radius: 26,
                       backgroundColor: Colors.white.withOpacity(0.1),
