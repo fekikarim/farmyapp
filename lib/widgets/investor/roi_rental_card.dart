@@ -84,13 +84,57 @@ class RoiRentalCard extends StatelessWidget {
                   child: _buildMetric(
                     context,
                     title: 'Revenue',
-                    value: '${rental.revenue.toStringAsFixed(2)} TND',
+                    value: '${rental.totalRevenueWithProducts.toStringAsFixed(2)} TND',
                     icon: Icons.attach_money,
                     color: Colors.blue.shade600,
+                    badge: rental.productRevenue > 0 
+                        ? '+${rental.productRevenue.toStringAsFixed(0)} from products'
+                        : null,
                   ),
                 ),
               ],
             ),
+            // Product revenue indicator
+            if (rental.productRevenue > 0) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.green.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.shopping_bag,
+                      size: 14,
+                      color: Colors.green.shade600,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${rental.productsSoldCount} products sold',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.green.shade700,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '(${rental.productContributionPercentage.toStringAsFixed(1)}% of revenue)',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.green.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 12),
             Container(
               width: double.infinity,
@@ -125,7 +169,7 @@ class RoiRentalCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMetric(BuildContext context, {required String title, required String value, required IconData icon, required Color color}) {
+  Widget _buildMetric(BuildContext context, {required String title, required String value, required IconData icon, required Color color, String? badge}) {
     final theme = Theme.of(context);
     return Row(
       children: [
@@ -157,6 +201,15 @@ class RoiRentalCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
+              if (badge != null)
+                Text(
+                  badge,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.green.shade600,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
             ],
           ),
         ),
