@@ -4,14 +4,6 @@ import '../services/auth_service.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class FarmyAvatar extends StatefulWidget {
-  static final customCacheManager = CacheManager(
-    Config(
-      'farmy_avatar_cache',
-      stalePeriod: const Duration(days: 7),
-      maxNrOfCacheObjects: 200,
-    ),
-  );
-
   // Globally track failed URLs to avoid repeated hangs
   static final Set<String> _globallyFailedUrls = <String>{};
 
@@ -77,16 +69,20 @@ class _FarmyAvatarState extends State<FarmyAvatar> {
       return _buildFinalContainer(child: _buildFallback(theme, isDark));
     }
 
+    // Optimization: Calculate dimensions for memory cache
+    final double devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+    final int cacheSize = (widget.radius * 2 * devicePixelRatio).round();
+
     return _buildFinalContainer(
       child: CachedNetworkImage(
         imageUrl: resolvedUrl,
-        cacheManager: FarmyAvatar.customCacheManager,
         fit: BoxFit.cover,
-        memCacheWidth: (widget.radius * 2 * MediaQuery.of(context).devicePixelRatio).round(),
-        memCacheHeight: (widget.radius * 2 * MediaQuery.of(context).devicePixelRatio).round(),
-        maxWidthDiskCache: 500,
-        maxHeightDiskCache: 500,
-        fadeInDuration: const Duration(milliseconds: 350),
+        // Resizing support for better memory performance
+        memCacheWidth: cacheSize,
+        memCacheHeight: cacheSize,
+        maxWidthDiskCache: 400,
+        maxHeightDiskCache: 400,
+        fadeInDuration: const Duration(milliseconds: 300),
         fadeOutDuration: const Duration(milliseconds: 200),
         // "Strong Loading": Show fallback UNDER the progress indicator
         placeholder: (context, url) => Stack(
@@ -100,7 +96,7 @@ class _FarmyAvatarState extends State<FarmyAvatar> {
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.white.withValues(alpha: 0.7),
+                    Colors.white.withValues(alpha: 0.5),
                   ),
                 ),
               ),
