@@ -315,6 +315,38 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  Future<String?> signInWithApple() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final response = await AuthService.signInWithApple();
+      if (response != null) {
+        if (response.require2fa) {
+          _tempUserId = response.userId;
+          _isLoading = false;
+          notifyListeners();
+          return 'requires_2fa';
+        }
+
+        // Fetch full profile after Apple login
+        final userProfile = await AuthService.fetchProfile();
+        _user = userProfile ?? response.user;
+        PushNotificationService.syncTokenWithBackend();
+        _isLoading = false;
+        notifyListeners();
+        return null; // Success
+      }
+      _isLoading = false;
+      notifyListeners();
+      return 'Apple sign-in was cancelled';
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      return e.toString().replaceAll('Exception: ', '');
+    }
+  }
+
   Future<void> logout() async {
     await AuthService.logout();
     _user = null;

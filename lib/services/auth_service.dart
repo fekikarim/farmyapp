@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -10,6 +11,8 @@ import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:uuid/uuid.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:crypto/crypto.dart';
 import '../models/user_model.dart';
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
@@ -30,10 +33,16 @@ class ProfileFetchException implements Exception {
 }
 
 class AuthService {
-  static final String _baseUrl = dotenv.get(
-    'API_BASE_URL',
-    fallback: 'http://192.168.0.133:3001',
-  );
+  static String get _baseUrl {
+    final url = dotenv.maybeGet('API_BASE_URL');
+    if (url == null || url.isEmpty) {
+      throw Exception(
+        'API_BASE_URL not configured. Please set your production API URL in .env file.',
+      );
+    }
+    return url;
+  }
+
   static String get baseUrl => _baseUrl;
   static const _storage = FlutterSecureStorage();
 
@@ -259,6 +268,90 @@ class AuthService {
     } catch (e) {
       print('GitHub Sign-In Error: $e');
       return null;
+    }
+  }
+
+  // --- Apple Sign-In ---
+
+  static String _generateNonce([int length = 32]) {
+    final random = Random.secure();
+    final charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    return List.generate(
+      length,
+      (_) => charset[random.nextInt(charset.length)],
+    ).join();
+  }
+
+  static String _sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
+  static Future<AuthResponse?> signInWithApple() async {
+    try {
+      // Generate nonce for security
+      final rawNonce = _generateNonce();
+      final nonce = _sha256ofString(rawNonce);
+
+      // Request credentials from Apple
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: nonce,
+      );
+
+      // Extract identity token
+      final idToken = credential.identityToken;
+      if (idToken == null) {
+        throw Exception('Apple Sign-In failed: No identity token received');
+      }
+
+      // Prepare user info for new accounts
+      Map<String, dynamic>? userInfo;
+      if (credential.givenName != null || credential.familyName != null) {
+        userInfo = {
+          'name': [
+            credential.givenName,
+            credential.familyName,
+          ].where((n) => n != null).join(' '),
+        };
+      }
+
+      // Send to backend
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/v1/auth/apple'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'idToken': idToken,
+          'rawNonce': rawNonce,
+          if (userInfo != null) 'profile': userInfo,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
+        if (!authResponse.require2fa) {
+          await _saveAuthData(authResponse);
+        }
+        return authResponse;
+      } else {
+        final body = jsonDecode(response.body);
+        throw Exception(
+          body['message'] ?? body['error'] ?? 'Apple authentication failed',
+        );
+      }
+    } on SignInWithAppleAuthorizationException catch (e) {
+      if (e.code == AuthorizationErrorCode.canceled) {
+        return null; // User cancelled
+      }
+      throw Exception('Apple Sign-In failed: ${e.message}');
+    } catch (e) {
+      print('Apple Sign-In Error: $e');
+      rethrow;
     }
   }
 

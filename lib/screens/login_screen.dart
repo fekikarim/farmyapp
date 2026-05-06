@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
@@ -6,6 +8,9 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../utils/validators.dart';
 import '../main.dart'; // Import for routeObserver
+
+/// Enum to track which social provider is currently loading
+enum SocialProvider { none, google, github, apple }
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,10 +24,116 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  SocialProvider _loadingProvider = SocialProvider.none;
 
   void _dismissKeyboard() {
     FocusManager.instance.primaryFocus?.unfocus();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
+  }
+
+  /// Format error messages to be more user-friendly
+  String _formatErrorMessage(String error) {
+    final lowerError = error.toLowerCase();
+    
+    // Cancellation errors - user cancelled
+    if (error.contains('AuthorizationError error 1000') || 
+        error.contains('CANCELED') || 
+        error.contains('User canceled') ||
+        error.contains('canceled') && error.contains('login')) {
+      return 'Sign in was cancelled.';
+    }
+    
+    // Apple Sign-In specific errors
+    if (error.contains('AuthorizationError error 1001')) {
+      return 'Invalid request. Please check your Apple ID settings.';
+    }
+    if (error.contains('AuthorizationError error 1002')) {
+      return 'Invalid credentials. Please try again.';
+    }
+    if (error.contains('AuthorizationError error 1003') || 
+        (lowerError.contains('apple') && lowerError.contains('connection'))) {
+      return 'Unable to connect to Apple. Please check your internet connection.';
+    }
+    if (lowerError.contains('apple') && lowerError.contains('timeout')) {
+      return 'Connection to Apple timed out. Please try again.';
+    }
+    
+    // GitHub specific errors
+    if (lowerError.contains('github') && lowerError.contains('code')) {
+      return 'GitHub authentication failed. Please try again.';
+    }
+    if (lowerError.contains('github') && lowerError.contains('token')) {
+      return 'Unable to verify GitHub account. Please try again.';
+    }
+    if (lowerError.contains('github') && lowerError.contains('email')) {
+      return 'Could not retrieve email from GitHub. Please ensure your GitHub email is verified and public, or try another sign-in method.';
+    }
+    
+    // Google specific errors
+    if (lowerError.contains('google') && lowerError.contains('cancel')) {
+      return 'Google sign-in was cancelled.';
+    }
+    if (lowerError.contains('google') && lowerError.contains('token')) {
+      return 'Unable to verify Google account. Please try again.';
+    }
+    
+    // Network/Connection errors
+    if (lowerError.contains('socketexception') || 
+        lowerError.contains('clientexception') ||
+        lowerError.contains('connection refused') ||
+        error.contains('Server connection failed') ||
+        lowerError.contains('failed to connect') ||
+        lowerError.contains('network error')) {
+      return 'Unable to connect to the server. Please check your internet connection and try again.';
+    }
+    
+    // Timeout errors
+    if (lowerError.contains('timeout') || lowerError.contains('timed out')) {
+      return 'Connection timed out. Please check your internet connection and try again.';
+    }
+    
+    // HTTP status code errors
+    if (error.contains('401') || lowerError.contains('unauthorized')) {
+      return 'Authentication failed. Please check your credentials and try again.';
+    }
+    if (error.contains('403') || lowerError.contains('forbidden')) {
+      return 'Access denied. Your account may be restricted.';
+    }
+    if (error.contains('500') || 
+        error.contains('502') || 
+        error.contains('503') || 
+        error.contains('504') ||
+        lowerError.contains('server error')) {
+      return 'Server error occurred. Please try again later.';
+    }
+    if (error.contains('404') || lowerError.contains('not found')) {
+      return 'Service temporarily unavailable. Please try again later.';
+    }
+    
+    // Account errors
+    if (lowerError.contains('banned') || lowerError.contains('suspended')) {
+      return 'Your account has been suspended. Please contact support.';
+    }
+    if (lowerError.contains('not verified') || lowerError.contains('unverified')) {
+      return 'Please verify your email address before signing in.';
+    }
+    
+    // API/Base URL configuration errors
+    if (lowerError.contains('api_base_url') || lowerError.contains('not configured')) {
+      return 'App configuration error. Please contact support.';
+    }
+    
+    // Database errors
+    if (lowerError.contains('unknown column') || lowerError.contains('sql')) {
+      return 'Service temporarily unavailable. Please try again in a moment.';
+    }
+    
+    // Return cleaned original if no specific formatting needed
+    // Limit length to avoid overwhelming the user
+    if (error.length > 150) {
+      return '${error.substring(0, 150)}...';
+    }
+    return error;
   }
 
   @override
@@ -438,37 +549,9 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                                         mounted) {
                                                       showDialog(
                                                         context: context,
-                                                        builder: (context) => AlertDialog(
-                                                          shape: RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  20,
-                                                                ),
-                                                          ),
-                                                          title: Text(
-                                                            AppLocalizations.of(context)!.loginFailed,
-                                                            style: TextStyle(
-                                                              fontSize: 18,
-                                                            ),
-                                                          ),
-                                                          content: Text(
-                                                            error,
-                                                            style:
-                                                                const TextStyle(
-                                                                  fontSize: 14,
-                                                                ),
-                                                          ),
-                                                          actions: [
-                                                            TextButton(
-                                                              onPressed: () =>
-                                                                  Navigator.pop(
-                                                                    context,
-                                                                  ),
-                                                              child: Text(
-                                                                AppLocalizations.of(context)!.ok,
-                                                              ),
-                                                            ),
-                                                          ],
+                                                        builder: (context) => _ErrorDialog(
+                                                          title: AppLocalizations.of(context)!.loginFailed,
+                                                          message: _formatErrorMessage(error),
                                                         ),
                                                       );
                                                     }
@@ -557,50 +640,34 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                 _SocialButton(
                                   icon: 'assets/google_logo.png',
                                   size: 54,
-                                  onTap: authProvider.isLoading
+                                  providerName: 'Google',
+                                  isLoading: _loadingProvider == SocialProvider.google,
+                                  onTap: _loadingProvider != SocialProvider.none
                                       ? null
                                       : () async {
+                                          setState(() => _loadingProvider = SocialProvider.google);
                                           _dismissKeyboard();
-                                          final result = await authProvider
-                                              .signInWithGoogle();
-                                          if (result == 'requires_2fa') {
-                                            if (mounted) {
-                                              Navigator.pushNamed(
-                                                context,
-                                                '/verify-2fa',
+                                          try {
+                                            final result = await authProvider.signInWithGoogle();
+                                            if (result == 'requires_2fa') {
+                                              if (mounted) {
+                                                Navigator.pushNamed(context, '/verify-2fa');
+                                              }
+                                            } else if (result == null) {
+                                              _dismissKeyboard();
+                                            } else if (mounted) {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) => _ErrorDialog(
+                                                  title: AppLocalizations.of(context)!.loginFailed,
+                                                  message: _formatErrorMessage(result),
+                                                ),
                                               );
                                             }
-                                          } else if (result == null) {
-                                            _dismissKeyboard();
-                                          } else if (mounted) {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => AlertDialog(
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                ),
-                                                title: Text(
-                                                  AppLocalizations.of(context)!.loginFailed,
-                                                  style: const TextStyle(
-                                                    fontSize: 18,
-                                                  ),
-                                                ),
-                                                content: Text(
-                                                  result,
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.pop(context),
-                                                    child: Text(AppLocalizations.of(context)!.ok),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
+                                          } finally {
+                                            if (mounted) {
+                                              setState(() => _loadingProvider = SocialProvider.none);
+                                            }
                                           }
                                         },
                                 ),
@@ -608,56 +675,76 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                 _SocialButton(
                                   icon: 'assets/github_logo.png',
                                   size: 54,
-                                  iconColor: isDark
-                                      ? Colors.white
-                                      : Colors.black,
-                                  onTap: authProvider.isLoading
+                                  providerName: 'GitHub',
+                                  iconColor: isDark ? Colors.white : Colors.black,
+                                  isLoading: _loadingProvider == SocialProvider.github,
+                                  onTap: _loadingProvider != SocialProvider.none
                                       ? null
                                       : () async {
+                                          setState(() => _loadingProvider = SocialProvider.github);
                                           _dismissKeyboard();
-                                          final result = await authProvider
-                                              .signInWithGithub();
-                                          if (result == 'requires_2fa') {
-                                            if (mounted) {
-                                              Navigator.pushNamed(
-                                                context,
-                                                '/verify-2fa',
+                                          try {
+                                            final result = await authProvider.signInWithGithub();
+                                            if (result == 'requires_2fa') {
+                                              if (mounted) {
+                                                Navigator.pushNamed(context, '/verify-2fa');
+                                              }
+                                            } else if (result == null) {
+                                              _dismissKeyboard();
+                                            } else if (mounted) {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) => _ErrorDialog(
+                                                  title: AppLocalizations.of(context)!.loginFailed,
+                                                  message: _formatErrorMessage(result),
+                                                ),
                                               );
                                             }
-                                          } else if (result == null) {
-                                            _dismissKeyboard();
-                                          } else if (mounted) {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => AlertDialog(
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                ),
-                                                title: Text(
-                                                  AppLocalizations.of(context)!.loginFailed,
-                                                  style: const TextStyle(
-                                                    fontSize: 18,
-                                                  ),
-                                                ),
-                                                content: Text(
-                                                  result,
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.pop(context),
-                                                    child: Text(AppLocalizations.of(context)!.ok),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
+                                          } finally {
+                                            if (mounted) {
+                                              setState(() => _loadingProvider = SocialProvider.none);
+                                            }
                                           }
                                         },
                                 ),
+                                // Apple Sign-In - Only on iOS/macOS (Apple requirement)
+                                if (!kIsWeb && (Platform.isIOS || Platform.isMacOS))
+                                  const SizedBox(width: 20),
+                                if (!kIsWeb && (Platform.isIOS || Platform.isMacOS))
+                                  _SocialButton(
+                                    icon: 'assets/apple-logo/apple-logo.png',
+                                    size: 54,
+                                    providerName: 'Apple',
+                                    isLoading: _loadingProvider == SocialProvider.apple,
+                                    onTap: _loadingProvider != SocialProvider.none
+                                        ? null
+                                        : () async {
+                                            setState(() => _loadingProvider = SocialProvider.apple);
+                                            _dismissKeyboard();
+                                            try {
+                                              final result = await authProvider.signInWithApple();
+                                              if (result == 'requires_2fa') {
+                                                if (mounted) {
+                                                  Navigator.pushNamed(context, '/verify-2fa');
+                                                }
+                                              } else if (result == null) {
+                                                _dismissKeyboard();
+                                              } else if (mounted) {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) => _ErrorDialog(
+                                                    title: AppLocalizations.of(context)!.loginFailed,
+                                                    message: _formatErrorMessage(result),
+                                                  ),
+                                                );
+                                              }
+                                            } finally {
+                                              if (mounted) {
+                                                setState(() => _loadingProvider = SocialProvider.none);
+                                              }
+                                            }
+                                          },
+                                  ),
                               ],
                             ),
 
@@ -717,38 +804,284 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
   }
 }
 
-class _SocialButton extends StatelessWidget {
+/// Enhanced Social Button with loading state and haptic feedback
+class _SocialButton extends StatefulWidget {
   final String icon;
   final VoidCallback? onTap;
   final Color? iconColor;
   final double size;
+  final bool isLoading;
+  final String providerName;
 
   const _SocialButton({
     required this.icon,
     this.onTap,
     this.iconColor,
     this.size = 64,
+    this.isLoading = false,
+    required this.providerName,
+  });
+
+  @override
+  State<_SocialButton> createState() => _SocialButtonState();
+}
+
+class _SocialButtonState extends State<_SocialButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _scaleController;
+  late Animation<double> _scaleAnimation;
+  bool _isPressed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.92).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    super.dispose();
+  }
+
+  void _handleTapDown(TapDownDetails details) {
+    if (widget.isLoading || widget.onTap == null) return;
+    setState(() => _isPressed = true);
+    _scaleController.forward();
+    HapticFeedback.lightImpact();
+  }
+
+  void _handleTapUp(TapUpDetails details) {
+    if (widget.isLoading || widget.onTap == null) return;
+    setState(() => _isPressed = false);
+    _scaleController.reverse();
+  }
+
+  void _handleTapCancel() {
+    if (widget.isLoading || widget.onTap == null) return;
+    setState(() => _isPressed = false);
+    _scaleController.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
+    return AnimatedBuilder(
+      animation: _scaleAnimation,
+      builder: (context, child) => Transform.scale(
+        scale: _scaleAnimation.value,
+        child: GestureDetector(
+          onTapDown: _handleTapDown,
+          onTapUp: _handleTapUp,
+          onTapCancel: _handleTapCancel,
+          onTap: widget.isLoading ? null : widget.onTap,
+          child: Container(
+            width: widget.size,
+            height: widget.size,
+            decoration: BoxDecoration(
+              gradient: widget.isLoading
+                  ? LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        primaryColor.withOpacity(isDark ? 0.2 : 0.1),
+                        primaryColor.withOpacity(isDark ? 0.1 : 0.05),
+                      ],
+                    )
+                  : null,
+              color: widget.isLoading
+                  ? null
+                  : (isDark ? Colors.white : Colors.black).withOpacity(0.03),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: widget.isLoading
+                    ? primaryColor.withOpacity(isDark ? 0.4 : 0.3)
+                    : (isDark ? Colors.white : Colors.black).withOpacity(0.08),
+                width: widget.isLoading ? 2 : 1,
+              ),
+              boxShadow: _isPressed && !widget.isLoading
+                  ? [
+                      BoxShadow(
+                        color: primaryColor.withOpacity(isDark ? 0.3 : 0.2),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Center(
+              child: widget.isLoading
+                  ? SizedBox(
+                      width: widget.size * 0.35,
+                      height: widget.size * 0.35,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          primaryColor,
+                        ),
+                      ),
+                    )
+                  : Image.asset(
+                      widget.icon,
+                      height: widget.size * 0.4,
+                      color: widget.iconColor,
+                    ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Enhanced Error Dialog with modern UI matching app theme
+class _ErrorDialog extends StatelessWidget {
+  final String title;
+  final String message;
+  final String? buttonText;
+  final IconData icon;
+  final Color? iconColor;
+
+  const _ErrorDialog({
+    required this.title,
+    required this.message,
+    this.buttonText,
+    this.icon = Icons.error_outline,
+    this.iconColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final errorColor = iconColor ?? (isDark ? Colors.redAccent : Colors.red);
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+    return Dialog(
+      backgroundColor: Colors.transparent,
       child: Container(
-        width: size,
-        height: size,
+        constraints: const BoxConstraints(maxWidth: 320),
         decoration: BoxDecoration(
-          color: (isDark ? Colors.white : Colors.black).withOpacity(0.03),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
-          ),
+          color: isDark ? const Color(0xFF1C1C1E) : Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.4 : 0.15),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
-        child: Center(
-          child: Image.asset(icon, height: size * 0.4, color: iconColor),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Icon Header
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(24, 28, 24, 16),
+              child: Column(
+                children: [
+                  // Error Icon with gradient background
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          errorColor.withOpacity(isDark ? 0.3 : 0.15),
+                          errorColor.withOpacity(isDark ? 0.15 : 0.08),
+                        ],
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Icon(
+                        icon,
+                        size: 32,
+                        color: errorColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Title
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : Colors.black87,
+                      letterSpacing: -0.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            // Message
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: Text(
+                message,
+                style: TextStyle(
+                  fontSize: 15,
+                  height: 1.4,
+                  color: isDark
+                      ? Colors.white.withOpacity(0.7)
+                      : Colors.black54,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            // Divider
+            Divider(
+              height: 1,
+              color: isDark
+                  ? Colors.white.withOpacity(0.1)
+                  : Colors.black.withOpacity(0.08),
+            ),
+            // Action Button
+            InkWell(
+              onTap: () => Navigator.pop(context),
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(24),
+              ),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(24),
+                  ),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      primaryColor.withOpacity(isDark ? 0.15 : 0.08),
+                      primaryColor.withOpacity(isDark ? 0.08 : 0.04),
+                    ],
+                  ),
+                ),
+                child: Text(
+                  buttonText ?? AppLocalizations.of(context)?.ok ?? 'OK',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: primaryColor,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
