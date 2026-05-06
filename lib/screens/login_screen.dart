@@ -35,8 +35,8 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
   String _formatErrorMessage(String error) {
     final lowerError = error.toLowerCase();
     
-    // Cancellation errors - user cancelled
-    if (error.contains('AuthorizationError error 1000') || 
+    // Cancellation errors - user explicitly cancelled
+    if (error.contains('AuthorizationError error 1001') || 
         error.contains('CANCELED') || 
         error.contains('User canceled') ||
         error.contains('canceled') && error.contains('login')) {
@@ -44,8 +44,8 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
     }
     
     // Apple Sign-In specific errors
-    if (error.contains('AuthorizationError error 1001')) {
-      return 'Invalid request. Please check your Apple ID settings.';
+    if (error.contains('AuthorizationError error 1000')) {
+      return 'Configuration error or internal Apple error. Please check your App ID settings and ensure Sign in with Apple is enabled.';
     }
     if (error.contains('AuthorizationError error 1002')) {
       return 'Invalid credentials. Please try again.';
