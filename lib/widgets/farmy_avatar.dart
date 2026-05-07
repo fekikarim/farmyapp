@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io' show Platform;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 import '../services/auth_service.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class FarmyAvatar extends StatefulWidget {
   // Globally track failed URLs to avoid repeated hangs
@@ -36,17 +38,58 @@ class FarmyAvatar extends StatefulWidget {
   State<FarmyAvatar> createState() => _FarmyAvatarState();
 }
 
-class _FarmyAvatarState extends State<FarmyAvatar> {
+class _FarmyAvatarState extends State<FarmyAvatar> with SingleTickerProviderStateMixin {
   bool _localError = false;
+  bool _hasTimedOut = false;
+  bool _isReachable = true;
+  late AnimationController _pulseController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+    _initializeLoading();
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
 
   @override
   void didUpdateWidget(FarmyAvatar oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.imageUrl != widget.imageUrl) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() => _localError = false);
-      });
+      _hasTimedOut = false;
+      _localError = false;
+      _isReachable = true;
+      _initializeLoading();
     }
+  }
+
+  void _initializeLoading() {
+    final url = _resolveUrl(widget.imageUrl);
+    if (url == null) return;
+
+    // Aggressive Protection: If localhost on physical device, skip immediately
+    if (!kIsWeb && (Platform.isIOS || Platform.isAndroid)) {
+      if (url.contains('localhost') || url.contains('127.0.0.1')) {
+        debugPrint('FarmyAvatar: Localhost detected on mobile. Showing fallback immediately.');
+        if (mounted) setState(() => _isReachable = false);
+        return;
+      }
+    }
+
+    // Faster Timeout: 6 seconds is enough for a good connection
+    Future.delayed(const Duration(seconds: 6), () {
+      if (mounted && !_localError && widget.imageUrl == url) {
+        setState(() => _hasTimedOut = true);
+      }
+    });
   }
 
   @override
@@ -60,16 +103,12 @@ class _FarmyAvatarState extends State<FarmyAvatar> {
 
     final resolvedUrl = _resolveUrl(widget.imageUrl);
     
-    // If we know this URL fails, show fallback immediately
-    if (resolvedUrl != null && FarmyAvatar._globallyFailedUrls.contains(resolvedUrl)) {
-      return _buildFinalContainer(child: _buildFallback(theme, isDark));
+    // Advanced UI: Show pulsing fallback if loading, or static fallback if error/timeout
+    if (_localError || _hasTimedOut || !_isReachable || resolvedUrl == null || 
+        FarmyAvatar._globallyFailedUrls.contains(resolvedUrl)) {
+      return _buildFinalContainer(child: _buildFallback(theme, isDark, isError: true));
     }
 
-    if (_localError || resolvedUrl == null) {
-      return _buildFinalContainer(child: _buildFallback(theme, isDark));
-    }
-
-    // Optimization: Calculate dimensions for memory cache
     final double devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
     final int cacheSize = (widget.radius * 2 * devicePixelRatio).round();
 
@@ -77,49 +116,35 @@ class _FarmyAvatarState extends State<FarmyAvatar> {
       child: CachedNetworkImage(
         imageUrl: resolvedUrl,
         fit: BoxFit.cover,
-        // Resizing support for better memory performance
         memCacheWidth: cacheSize,
         memCacheHeight: cacheSize,
-        maxWidthDiskCache: 400,
-        maxHeightDiskCache: 400,
-        fadeInDuration: const Duration(milliseconds: 300),
-        fadeOutDuration: const Duration(milliseconds: 200),
-        // "Strong Loading": Show fallback UNDER the progress indicator
-        placeholder: (context, url) => Stack(
-          fit: StackFit.expand,
-          children: [
-            _buildFallback(theme, isDark),
-            Center(
-              child: SizedBox(
-                width: widget.radius * 0.6,
-                height: widget.radius * 0.6,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.white.withValues(alpha: 0.5),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+        maxWidthDiskCache: 500,
+        maxHeightDiskCache: 500,
+        fadeInDuration: const Duration(milliseconds: 250),
+        fadeOutDuration: const Duration(milliseconds: 150),
+        placeholder: (context, url) => _buildAdvancedPlaceholder(theme, isDark),
         errorWidget: (context, url, error) {
-          debugPrint('FarmyAvatar: Failed to load $url - $error');
-          // Register failure globally to protect other instances
+          debugPrint('FarmyAvatar: Network error for $url');
           _registerFailure(url);
-          return _buildFallback(theme, isDark);
+          return _buildFallback(theme, isDark, isError: true);
         },
       ),
     );
   }
 
   void _registerFailure(String url) {
+    if (FarmyAvatar._globallyFailedUrls.contains(url)) return;
     FarmyAvatar._globallyFailedUrls.add(url);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && !_localError) {
-        setState(() => _localError = true);
-      }
-    });
+    if (mounted && !_localError) {
+      setState(() => _localError = true);
+    }
+  }
+
+  Widget _buildAdvancedPlaceholder(ThemeData theme, bool isDark) {
+    return FadeTransition(
+      opacity: _pulseController.drive(CurveTween(curve: Curves.easeInOut)),
+      child: _buildFallback(theme, isDark, isLoading: true),
+    );
   }
 
   Widget _buildFinalContainer({required Widget child}) {
@@ -144,35 +169,44 @@ class _FarmyAvatarState extends State<FarmyAvatar> {
   }
 
   Widget _buildShimmerPlaceholder(bool isDark) {
-    return Container(
-      width: widget.radius * 2,
-      height: widget.radius * 2,
-      decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade900 : Colors.grey.shade200,
-        shape: widget.shape,
-        borderRadius: widget.shape == BoxShape.rectangle 
-            ? BorderRadius.circular(widget.radius * 0.4) 
-            : null,
+    return Shimmer.fromColors(
+      baseColor: isDark ? Colors.grey.shade900 : Colors.grey.shade300,
+      highlightColor: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
+      child: Container(
+        width: widget.radius * 2,
+        height: widget.radius * 2,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: widget.shape,
+          borderRadius: widget.shape == BoxShape.rectangle 
+              ? BorderRadius.circular(widget.radius * 0.4) 
+              : null,
+        ),
       ),
     );
   }
 
-  Widget _buildFallback(ThemeData theme, bool isDark) {
+  Widget _buildFallback(ThemeData theme, bool isDark, {bool isLoading = false, bool isError = false}) {
     final initials = _getInitials(widget.displayName ?? '');
     final primaryColor = theme.colorScheme.primary;
     final secondaryColor = theme.colorScheme.secondary;
 
-    // Use a premium gradient if no specific background color is provided
+    Color startColor = primaryColor;
+    Color endColor = secondaryColor.withValues(alpha: 0.8);
+
+    if (isError && initials.isEmpty) {
+      // Muted colors for missing data
+      startColor = isDark ? Colors.grey.shade800 : Colors.grey.shade300;
+      endColor = isDark ? Colors.grey.shade900 : Colors.grey.shade400;
+    }
+
     final decoration = widget.backgroundColor != null
         ? BoxDecoration(color: widget.backgroundColor, shape: widget.shape)
         : BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                primaryColor,
-                secondaryColor.withValues(alpha: 0.8),
-              ],
+              colors: [startColor, endColor],
             ),
             shape: widget.shape,
           );
@@ -180,42 +214,48 @@ class _FarmyAvatarState extends State<FarmyAvatar> {
     return Container(
       decoration: decoration,
       child: Center(
-        child: widget.fallbackIcon != null 
-            ? Icon(
-                widget.fallbackIcon,
-                color: Colors.white,
-                size: widget.radius * 1.1,
+        child: (initials.isNotEmpty && widget.fallbackIcon == null)
+            ? Text(
+                initials,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: isLoading ? 0.6 : 1.0),
+                  fontSize: widget.fontSize ?? (widget.radius * 0.85),
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
+                ),
               )
-            : initials.isNotEmpty
-                ? Text(
-                    initials,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: widget.fontSize ?? (widget.radius * 0.85),
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -0.5,
-                    ),
-                  )
-                : Icon(
-                    Icons.person_rounded,
-                    color: Colors.white.withValues(alpha: 0.6),
-                    size: widget.radius * 1.2,
-                  ),
+            : Icon(
+                widget.fallbackIcon ?? Icons.person_rounded,
+                color: Colors.white.withValues(alpha: isLoading ? 0.4 : 0.8),
+                size: widget.radius * 1.1,
+              ),
       ),
     );
   }
 
   String? _resolveUrl(String? path) {
-    if (path == null || path.trim().isEmpty) return null;
-    if (path.startsWith('http')) return path;
+    if (path == null || path.trim().isEmpty) {
+      debugPrint('FarmyAvatar: Path is null or empty');
+      return null;
+    }
+    
+    if (path.startsWith('http')) {
+      debugPrint('FarmyAvatar: Using absolute URL: $path');
+      return path;
+    }
     
     final base = AuthService.baseUrl.trim();
-    if (base.isEmpty) return null;
+    if (base.isEmpty) {
+      debugPrint('FarmyAvatar: Error - AuthService.baseUrl is empty');
+      return null;
+    }
 
     final cleanBase = base.endsWith('/') ? base.substring(0, base.length - 1) : base;
     final cleanPath = path.startsWith('/') ? path : '/$path';
     
-    return '$cleanBase$cleanPath';
+    final resolved = '$cleanBase$cleanPath';
+    debugPrint('FarmyAvatar: Resolved relative path to: $resolved');
+    return resolved;
   }
 
   String _getInitials(String name) {

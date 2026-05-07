@@ -7,6 +7,7 @@ import '../../providers/worker_lifecycle_provider.dart';
 import '../../models/land_worker_model.dart';
 import '../../models/worker_invitation_model.dart';
 import 'worker_marketplace_screen.dart';
+import 'components/post_job_modal.dart';
 import '../../widgets/profile_preview_sheet.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
 
@@ -129,10 +130,17 @@ class _WorkforceScreenState extends State<WorkforceScreen>
             _buildOptionTile(
               icon: Icons.work_outline,
               title: AppLocalizations.of(context)!.openJobRequest,
-              subtitle: AppLocalizations.of(context)!.soon,
-              color: Colors.grey,
-              onTap: null,
-              comingSoon: true,
+              subtitle: AppLocalizations.of(context)!.postJobDescription,
+              color: Colors.blue,
+              onTap: () {
+                Navigator.pop(ctx);
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => PostJobModal(initialLandId: widget.landId),
+                );
+              },
             ),
             const SizedBox(height: 16),
           ],

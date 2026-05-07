@@ -2305,7 +2305,6 @@
   "overdueStatus": "Overdue",
   "daysUntilHarvest": "{days} days until harvest",
   "readyToHarvest": "Ready to harvest",
-  "selectLand": "Select Land",
   "selectCrop": "Select Crop",
   "newCropPlan": "New Crop Plan",
   "schedulePlanting": "Schedule your next planting",
@@ -2435,7 +2434,6 @@
   "itemRequests": "Item Requests",
   "needsReview": "Needs Review",
   "cancel": "Cancel",
-  "selectLand": "Select Land",
   "inviteToLand": "Choose which land to invite workers to:",
   "loading": "Loading...",
   "somethingWentWrong": "Something went wrong",
@@ -2446,5 +2444,28 @@
   "products": "Products",
   "notificationsTitle": "Alerts",
   "revenueTrendUp": "Revenue trending up",
-  "revenueTrendDown": "Revenue trending down"
+  "revenueTrendDown": "Revenue trending down",
+  "postNewJob": "Post New Job",
+  "postJobDescription": "Post a job request for this land",
+  "requiredSkills": "Required Skills",
+  "selectLandError": "Please select a land",
+  "jobTitle": "Job Title",
+  "salaryTND": "Salary (TND)",
+  "jobPostedSuccess": "Job request posted successfully!",
+  "postJob": "Post Job",
+  "recommendedJobs": "Recommended Jobs",
+  "allJobs": "All Jobs",
+  "findJobs": "Find Jobs",
+  "noJobsFound": "No job requests found at the moment.",
+  "filterJobs": "Filter Jobs",
+  "applyFilters": "Apply Filters",
+  "addSkillHint": "Add a skill (e.g. Irrigation)",
+  "skillsMatch": "{score}% Match",
+  "@skillsMatch": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  }
 }

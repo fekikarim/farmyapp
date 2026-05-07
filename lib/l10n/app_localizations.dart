@@ -8485,6 +8485,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Revenue trending down'**
   String get revenueTrendDown;
+
+  /// No description provided for @postNewJob.
+  ///
+  /// In en, this message translates to:
+  /// **'Post New Job'**
+  String get postNewJob;
+
+  /// No description provided for @postJobDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a job request for this land'**
+  String get postJobDescription;
+
+  /// No description provided for @requiredSkills.
+  ///
+  /// In en, this message translates to:
+  /// **'Required Skills'**
+  String get requiredSkills;
+
+  /// No description provided for @selectLandError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a land'**
+  String get selectLandError;
+
+  /// No description provided for @jobTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Job Title'**
+  String get jobTitle;
+
+  /// No description provided for @salaryTND.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary (TND)'**
+  String get salaryTND;
+
+  /// No description provided for @jobPostedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Job request posted successfully!'**
+  String get jobPostedSuccess;
+
+  /// No description provided for @postJob.
+  ///
+  /// In en, this message translates to:
+  /// **'Post Job'**
+  String get postJob;
+
+  /// No description provided for @recommendedJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended Jobs'**
+  String get recommendedJobs;
+
+  /// No description provided for @allJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'All Jobs'**
+  String get allJobs;
+
+  /// No description provided for @findJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Find Jobs'**
+  String get findJobs;
+
+  /// No description provided for @noJobsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No job requests found at the moment.'**
+  String get noJobsFound;
+
+  /// No description provided for @filterJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Jobs'**
+  String get filterJobs;
+
+  /// No description provided for @applyFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Filters'**
+  String get applyFilters;
+
+  /// No description provided for @addSkillHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a skill (e.g. Irrigation)'**
+  String get addSkillHint;
+
+  /// No description provided for @skillsMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'{score}% Match'**
+  String skillsMatch(int score);
 }
 
 class _AppLocalizationsDelegate

@@ -40,6 +40,7 @@ import 'providers/delivery_provider.dart';
 import 'providers/vendor_delivery_provider.dart';
 
 import 'providers/roi_provider.dart';
+import 'providers/job_request_provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/theme_provider.dart';
@@ -119,6 +120,7 @@ void main() async {
           ChangeNotifierProvider(create: (_) => WorkerWalletProvider()),
           ChangeNotifierProvider(create: (_) => FarmerDashboardProvider()),
           ChangeNotifierProvider(create: (_) => RoiProvider()),
+          ChangeNotifierProvider(create: (_) => JobRequestProvider()),
           ChangeNotifierProvider(
             create: (_) => ThemeProvider(initialThemeMode: initialTheme),
           ),

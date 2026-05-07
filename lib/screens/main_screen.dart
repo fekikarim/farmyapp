@@ -30,6 +30,7 @@ import 'marketplace/my_products_screen.dart';
 
 // Worker
 import 'worker/tasks_screen.dart';
+import 'worker/find_jobs_screen.dart';
 import 'worker/wallet/worker_wallet_screen.dart';
 
 // Agent
@@ -93,7 +94,7 @@ class _MainScreenState extends State<MainScreen> {
       if (workerProvider.isVerifiedWorker) {
         screens = [
           const CustomerHomeScreen(),
-          const WorkerDashboardScreen(),
+          const FindJobsScreen(),
           const WorkerTasksScreen(),
           const SettingsScreen(),
         ];
@@ -106,7 +107,7 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.work_outline),
             activeIcon: Icon(Icons.work),
-            label: 'Find Jobs',
+            label: AppLocalizations.of(context)!.findJobs,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.assignment_outlined),
@@ -222,6 +223,7 @@ class _MainScreenState extends State<MainScreen> {
     } else if (role == 'worker') {
       screens = [
         const WorkerTasksScreen(),
+        const FindJobsScreen(),
         const WorkerWalletScreen(),
         const SettingsScreen()
       ];
@@ -230,6 +232,11 @@ class _MainScreenState extends State<MainScreen> {
           icon: Icon(Icons.assignment_outlined),
           activeIcon: Icon(Icons.assignment),
           label: AppLocalizations.of(context)!.tasks,
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.work_outline),
+          activeIcon: Icon(Icons.work),
+          label: AppLocalizations.of(context)!.findJobs,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_balance_wallet_outlined),

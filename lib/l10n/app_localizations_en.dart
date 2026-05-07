@@ -4586,4 +4586,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get revenueTrendDown => 'Revenue trending down';
+
+  @override
+  String get postNewJob => 'Post New Job';
+
+  @override
+  String get postJobDescription => 'Post a job request for this land';
+
+  @override
+  String get requiredSkills => 'Required Skills';
+
+  @override
+  String get selectLandError => 'Please select a land';
+
+  @override
+  String get jobTitle => 'Job Title';
+
+  @override
+  String get salaryTND => 'Salary (TND)';
+
+  @override
+  String get jobPostedSuccess => 'Job request posted successfully!';
+
+  @override
+  String get postJob => 'Post Job';
+
+  @override
+  String get recommendedJobs => 'Recommended Jobs';
+
+  @override
+  String get allJobs => 'All Jobs';
+
+  @override
+  String get findJobs => 'Find Jobs';
+
+  @override
+  String get noJobsFound => 'No job requests found at the moment.';
+
+  @override
+  String get filterJobs => 'Filter Jobs';
+
+  @override
+  String get applyFilters => 'Apply Filters';
+
+  @override
+  String get addSkillHint => 'Add a skill (e.g. Irrigation)';
+
+  @override
+  String skillsMatch(int score) {
+    return '$score% Match';
+  }
 }

@@ -2549,10 +2549,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get performance => 'Rendimiento';
 
   @override
-  String get successRate => 'Success Rate';
+  String get successRate => 'Tasa de éxito';
 
   @override
-  String get overallPerformance => 'Overall Performance';
+  String get overallPerformance => 'Rendimiento general';
 
   @override
   String get performanceGraphComingSoon =>
@@ -4633,4 +4633,56 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get revenueTrendDown => 'Ingresos en disminución';
+
+  @override
+  String get postNewJob => 'Publicar nuevo trabajo';
+
+  @override
+  String get postJobDescription =>
+      'Publicar una oferta de trabajo para este terreno';
+
+  @override
+  String get requiredSkills => 'Habilidades requeridas';
+
+  @override
+  String get selectLandError => 'Por favor seleccione un terreno';
+
+  @override
+  String get jobTitle => 'Título del puesto';
+
+  @override
+  String get salaryTND => 'Salario (TND)';
+
+  @override
+  String get jobPostedSuccess => '¡Oferta de trabajo publicada con éxito!';
+
+  @override
+  String get postJob => 'Publicar trabajo';
+
+  @override
+  String get recommendedJobs => 'Trabajos recomendados';
+
+  @override
+  String get allJobs => 'Todos los trabajos';
+
+  @override
+  String get findJobs => 'Buscar trabajos';
+
+  @override
+  String get noJobsFound =>
+      'No se encontraron ofertas de trabajo por el momento.';
+
+  @override
+  String get filterJobs => 'Filtrar trabajos';
+
+  @override
+  String get applyFilters => 'Aplicar filtros';
+
+  @override
+  String get addSkillHint => 'Añadir una habilidad (ej: Irrigación)';
+
+  @override
+  String skillsMatch(int score) {
+    return '$score% de coincidencia';
+  }
 }
