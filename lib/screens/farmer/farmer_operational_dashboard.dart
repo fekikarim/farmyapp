@@ -317,12 +317,6 @@ class _FarmerOperationalDashboardState extends State<FarmerOperationalDashboard>
     await action();
   }
 
-  Future<void> _navigateToManageProducts() async {
-    await _withQuickActionGuard(
-      loadingLabel: _l10n.loading,
-      action: () => _navigateToTab(2),
-    );
-  }
 
   Future<void> _navigateToAIAssistant() async {
     await _withQuickActionGuard(
@@ -651,9 +645,6 @@ class _FarmerOperationalDashboardState extends State<FarmerOperationalDashboard>
                           },
                           onInviteWorker: () {
                             _showLandSelectorForInviteWorker();
-                          },
-                          onManageProducts: () {
-                            _navigateToManageProducts();
                           },
                           onAIAssistant: () {
                             _navigateToAIAssistant();

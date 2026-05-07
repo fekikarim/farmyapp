@@ -26,7 +26,6 @@ class QuickActionsGrid extends StatelessWidget {
   final VoidCallback? onAddLand;
   final VoidCallback? onReviewRequests;
   final VoidCallback? onInviteWorker;
-  final VoidCallback? onManageProducts;
   final VoidCallback? onAIAssistant;
   final VoidCallback? onCropCalendar;
   final VoidCallback? onManageJobs;
@@ -36,7 +35,6 @@ class QuickActionsGrid extends StatelessWidget {
     this.onAddLand,
     this.onReviewRequests,
     this.onInviteWorker,
-    this.onManageProducts,
     this.onAIAssistant,
     this.onCropCalendar,
     this.onManageJobs,
@@ -71,13 +69,6 @@ class QuickActionsGrid extends StatelessWidget {
         icon: Icons.person_add,
         color: Colors.blue,
         onTap: onInviteWorker ?? () {},
-      ),
-      QuickAction(
-        id: 'manage_products',
-        label: 'Manage Products',
-        icon: Icons.inventory_2,
-        color: Colors.brown,
-        onTap: onManageProducts ?? () {},
       ),
       QuickAction(
         id: 'ai_assistant',
