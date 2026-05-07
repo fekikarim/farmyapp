@@ -29,6 +29,7 @@ class QuickActionsGrid extends StatelessWidget {
   final VoidCallback? onManageProducts;
   final VoidCallback? onAIAssistant;
   final VoidCallback? onCropCalendar;
+  final VoidCallback? onManageJobs;
 
   const QuickActionsGrid({
     super.key,
@@ -38,6 +39,7 @@ class QuickActionsGrid extends StatelessWidget {
     this.onManageProducts,
     this.onAIAssistant,
     this.onCropCalendar,
+    this.onManageJobs,
   });
 
   @override
@@ -90,6 +92,13 @@ class QuickActionsGrid extends StatelessWidget {
         icon: Icons.calendar_month,
         color: Colors.lightGreen,
         onTap: onCropCalendar ?? () {},
+      ),
+      QuickAction(
+        id: 'manage_jobs',
+        label: 'Manage Jobs',
+        icon: Icons.assignment_ind,
+        color: Colors.indigo,
+        onTap: onManageJobs ?? () {},
       ),
     ];
 

@@ -19,6 +19,8 @@ import 'workforce_screen.dart';
 import 'rental_requests_screen.dart';
 import 'crop_calendar_screen.dart';
 import '../../features/ai_assistant/ai_screen.dart';
+import 'manage_jobs_screen.dart';
+import 'manage_applications_screen.dart';
 
 class FarmerOperationalDashboard extends StatefulWidget {
   const FarmerOperationalDashboard({super.key});
@@ -227,6 +229,13 @@ class _FarmerOperationalDashboardState extends State<FarmerOperationalDashboard>
     await _withQuickActionGuard(
       loadingLabel: _l10n.loading,
       action: () => _pushWithTransition(const FarmerAddLandScreen()),
+    );
+  }
+
+  Future<void> _navigateToManageJobs() async {
+    await _withQuickActionGuard(
+      loadingLabel: _l10n.loading,
+      action: () => _pushWithTransition(const ManageJobsScreen()),
     );
   }
 
@@ -651,6 +660,9 @@ class _FarmerOperationalDashboardState extends State<FarmerOperationalDashboard>
                           },
                           onCropCalendar: () {
                             _navigateToCropCalendar();
+                          },
+                          onManageJobs: () {
+                            _navigateToManageJobs();
                           },
                         ),
                       ),

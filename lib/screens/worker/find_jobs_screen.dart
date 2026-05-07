@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../../providers/job_request_provider.dart';
+import '../../providers/job_application_provider.dart';
 import '../../models/job_request_model.dart';
 import 'components/job_card.dart';
+import 'my_applications_screen.dart';
+import 'components/job_filter_modal.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
 
 class FindJobsScreen extends StatefulWidget {
@@ -16,6 +19,7 @@ class FindJobsScreen extends StatefulWidget {
 class _FindJobsScreenState extends State<FindJobsScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ScrollController _scrollController = ScrollController();
+  Map<String, dynamic> _currentFilters = {};
 
   @override
   void initState() {
@@ -24,6 +28,7 @@ class _FindJobsScreenState extends State<FindJobsScreen> with SingleTickerProvid
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<JobRequestProvider>().fetchRecommendedJobs();
       context.read<JobRequestProvider>().fetchAllJobs();
+      context.read<JobApplicationProvider>().fetchMyApplications();
     });
   }
 
@@ -40,57 +45,22 @@ class _FindJobsScreenState extends State<FindJobsScreen> with SingleTickerProvid
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          // Dynamic Background with Mesh-like Gradient
-          Positioned.fill(
-            child: AnimatedContainer(
-              duration: const Duration(seconds: 1),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isDark 
-                    ? [const Color(0xFF0F0F0F), const Color(0xFF1A1A1A), const Color(0xFF000000)]
-                    : [const Color(0xFFF7FDF9), Colors.white, const Color(0xFFE8F5E9)],
-                ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildAdvancedHeader(context, isDark),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildEnhancedJobsList(jobProvider.allJobs, jobProvider.isLoading, jobProvider.error),
+                  _buildEnhancedJobsList(jobProvider.recommendedJobs, jobProvider.isLoading, jobProvider.error),
+                ],
               ),
             ),
-          ),
-          
-          // Subtle Glow Effects (Glassmorphism highlight)
-          if (!isDark)
-            Positioned(
-              top: -100,
-              right: -100,
-              child: Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.green.withOpacity(0.05),
-                ),
-              ),
-            ),
-
-          SafeArea(
-            child: Column(
-              children: [
-                _buildAdvancedHeader(context, isDark),
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _buildEnhancedJobsList(jobProvider.recommendedJobs, jobProvider.isLoading, jobProvider.error),
-                      _buildEnhancedJobsList(jobProvider.allJobs, jobProvider.isLoading, jobProvider.error),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -129,7 +99,13 @@ class _FindJobsScreenState extends State<FindJobsScreen> with SingleTickerProvid
                   ),
                 ],
               ),
-              _buildModernFilterButton(isDark),
+              Row(
+                children: [
+                  _buildMyApplicationsButton(context, isDark),
+                  const SizedBox(width: 12),
+                  _buildModernFilterButton(isDark),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 28),
@@ -163,8 +139,8 @@ class _FindJobsScreenState extends State<FindJobsScreen> with SingleTickerProvid
               dividerColor: Colors.transparent,
               indicatorSize: TabBarIndicatorSize.tab,
               tabs: [
-                Tab(text: AppLocalizations.of(context)!.recommendedJobs),
                 Tab(text: AppLocalizations.of(context)!.allJobs),
+                Tab(text: AppLocalizations.of(context)!.recommendedJobs),
               ],
             ),
           ),
@@ -174,13 +150,15 @@ class _FindJobsScreenState extends State<FindJobsScreen> with SingleTickerProvid
   }
 
   Widget _buildModernFilterButton(bool isDark) {
+    final hasFilters = _currentFilters.values.any((v) => v != null);
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.green,
+        color: hasFilters ? Colors.orange : Colors.green,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.green.withOpacity(0.2),
+            color: (hasFilters ? Colors.orange : Colors.green).withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -189,11 +167,55 @@ class _FindJobsScreenState extends State<FindJobsScreen> with SingleTickerProvid
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {},
+          onTap: _showFilterModal,
           borderRadius: BorderRadius.circular(16),
           child: const Padding(
             padding: EdgeInsets.all(12),
             child: Icon(Icons.tune_rounded, color: Colors.white, size: 24),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showFilterModal() async {
+    final result = await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => JobFilterModal(initialFilters: _currentFilters),
+    );
+
+    if (result != null) {
+      setState(() {
+        _currentFilters = result;
+      });
+      if (mounted) {
+        context.read<JobRequestProvider>().fetchAllJobs(filters: _currentFilters);
+      }
+    }
+  }
+
+  Widget _buildMyApplicationsButton(BuildContext context, bool isDark) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.03),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MyApplicationsScreen()),
+            );
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: const Padding(
+            padding: EdgeInsets.all(12),
+            child: Icon(Icons.description_outlined, color: Colors.green, size: 24),
           ),
         ),
       ),
@@ -239,6 +261,7 @@ class _FindJobsScreenState extends State<FindJobsScreen> with SingleTickerProvid
     }
 
     if (jobs.isEmpty) {
+      final hasFilters = _currentFilters.values.any((v) => v != null);
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -246,9 +269,22 @@ class _FindJobsScreenState extends State<FindJobsScreen> with SingleTickerProvid
             Icon(Icons.auto_awesome_outlined, size: 80, color: Colors.grey.withOpacity(0.3)),
             const SizedBox(height: 24),
             Text(
-              AppLocalizations.of(context)!.noJobsFound,
+              hasFilters ? 'No jobs match your filters' : AppLocalizations.of(context)!.noJobsFound,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.grey.shade500),
             ),
+            if (hasFilters) ...[
+              const SizedBox(height: 16),
+              TextButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _currentFilters = {};
+                  });
+                  context.read<JobRequestProvider>().fetchAllJobs();
+                },
+                icon: const Icon(Icons.filter_list_off, color: Colors.green),
+                label: const Text('Clear Filters', style: TextStyle(color: Colors.green)),
+              ),
+            ],
           ],
         ),
       );
@@ -260,7 +296,7 @@ class _FindJobsScreenState extends State<FindJobsScreen> with SingleTickerProvid
         backgroundColor: Theme.of(context).cardColor,
         onRefresh: () async {
           await context.read<JobRequestProvider>().fetchRecommendedJobs();
-          await context.read<JobRequestProvider>().fetchAllJobs();
+          await context.read<JobRequestProvider>().fetchAllJobs(filters: _currentFilters);
         },
         child: ListView.builder(
           padding: const EdgeInsets.fromLTRB(24, 4, 24, 40),

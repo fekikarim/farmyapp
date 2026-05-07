@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../models/job_request_model.dart';
 import '../../../widgets/farmy_avatar.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import '../../../providers/job_application_provider.dart';
 
 class JobDetailsModal extends StatelessWidget {
   final JobRequest job;
@@ -165,37 +167,66 @@ class JobDetailsModal extends StatelessWidget {
                   const SizedBox(height: 40),
                   
                   // Action Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 64,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.green.withOpacity(0.3),
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
+                  Consumer<JobApplicationProvider>(
+                    builder: (context, applicationProvider, child) {
+                      final hasApplied = applicationProvider.myApplications.any((a) => a.jobId == job.id);
+
+                      return SizedBox(
+                        width: double.infinity,
+                        height: 64,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: (hasApplied ? Colors.grey : Colors.green).withOpacity(0.3),
+                                blurRadius: 15,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // TODO: Implement Apply logic
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          elevation: 0,
+                          child: ElevatedButton(
+                            onPressed: (applicationProvider.isLoading || hasApplied) 
+                              ? null 
+                              : () async {
+                                final success = await applicationProvider.applyToJob(job.id);
+                                if (context.mounted) {
+                                  if (success) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Application submitted successfully!'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                    Navigator.pop(context);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(applicationProvider.error ?? 'Failed to apply'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: hasApplied ? Colors.grey.shade300 : Colors.green,
+                              disabledBackgroundColor: hasApplied ? Colors.grey.shade800 : Colors.green.withOpacity(0.6),
+                              foregroundColor: Colors.white,
+                              disabledForegroundColor: Colors.white70,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              elevation: 0,
+                            ),
+                            child: applicationProvider.isLoading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : Text(
+                                  hasApplied ? 'Applied' : 'Apply for this Job',
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                                ),
+                          ),
                         ),
-                        child: const Text(
-                          'Apply for this Job',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-                        ),
-                      ),
-                    ),
+                      );
+                    }
                   ),
                   const SizedBox(height: 20),
                 ],
