@@ -100,6 +100,198 @@ abstract class AppLocalizations {
     Locale('fr'),
   ];
 
+  /// No description provided for @activeWorkforce.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Workforce'**
+  String get activeWorkforce;
+
+  /// No description provided for @applications.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications'**
+  String get applications;
+
+  /// No description provided for @jobRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Job Requests'**
+  String get jobRequests;
+
+  /// No description provided for @invitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitations'**
+  String get invitations;
+
+  /// No description provided for @noActiveJobRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No active job requests for this land.'**
+  String get noActiveJobRequests;
+
+  /// No description provided for @noActiveJobRequestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Active Job Requests'**
+  String get noActiveJobRequestsTitle;
+
+  /// No description provided for @postJobMarketplaceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a job to find skilled workers for your land.'**
+  String get postJobMarketplaceHint;
+
+  /// No description provided for @postAJob.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a Job'**
+  String get postAJob;
+
+  /// No description provided for @noPendingInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'No Pending Invitations'**
+  String get noPendingInvitations;
+
+  /// No description provided for @noPendingInvitationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Pending Invitations'**
+  String get noPendingInvitationsTitle;
+
+  /// No description provided for @inviteMarketplaceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite existing workers directly from the marketplace.'**
+  String get inviteMarketplaceHint;
+
+  /// No description provided for @searchMarketplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Marketplace'**
+  String get searchMarketplace;
+
+  /// No description provided for @waitingForWorkerResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for worker response'**
+  String get waitingForWorkerResponse;
+
+  /// No description provided for @activeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeLabel;
+
+  /// No description provided for @totalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get totalLabel;
+
+  /// No description provided for @suspendedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get suspendedLabel;
+
+  /// No description provided for @monthlyCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Cost'**
+  String get monthlyCost;
+
+  /// No description provided for @productivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Productivity'**
+  String get productivity;
+
+  /// No description provided for @addWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Worker'**
+  String get addWorker;
+
+  /// No description provided for @openJobRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Job Request'**
+  String get openJobRequest;
+
+  /// No description provided for @inviteExistingWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Existing Worker'**
+  String get inviteExistingWorker;
+
+  /// No description provided for @searchWorkerMarketplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Search the worker marketplace'**
+  String get searchWorkerMarketplace;
+
+  /// No description provided for @postJobDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a job request for this land'**
+  String get postJobDescription;
+
+  /// No description provided for @workforce.
+  ///
+  /// In en, this message translates to:
+  /// **'Workforce'**
+  String get workforce;
+
+  /// No description provided for @noWorkersYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No workers yet'**
+  String get noWorkersYet;
+
+  /// No description provided for @addWorkersMarketplaceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the + button to add workers from the marketplace'**
+  String get addWorkersMarketplaceHint;
+
+  /// No description provided for @workersSyncIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Workers sync issue'**
+  String get workersSyncIssue;
+
+  /// No description provided for @retryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retryLabel;
+
+  /// No description provided for @tndMo.
+  ///
+  /// In en, this message translates to:
+  /// **'TND/mo'**
+  String get tndMo;
+
+  /// No description provided for @unknownWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Worker'**
+  String get unknownWorker;
+
+  /// No description provided for @workforceLandName.
+  ///
+  /// In en, this message translates to:
+  /// **'Workforce — {landName}'**
+  String workforceLandName(String landName);
+
+  /// No description provided for @totalSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} total'**
+  String totalSuffix(int count);
+
   /// No description provided for @about.
   ///
   /// In en, this message translates to:
@@ -189,12 +381,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Active Contracts'**
   String get activeContracts;
-
-  /// No description provided for @activeLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Active'**
-  String get activeLabel;
 
   /// No description provided for @activeLabelUpper.
   ///
@@ -309,18 +495,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add to Land'**
   String get addToLand;
-
-  /// No description provided for @addWorker.
-  ///
-  /// In en, this message translates to:
-  /// **'Add Worker'**
-  String get addWorker;
-
-  /// No description provided for @addWorkersMarketplaceHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Tap the + button to add workers from the marketplace'**
-  String get addWorkersMarketplaceHint;
 
   /// No description provided for @addedToBasket.
   ///
@@ -3056,12 +3230,6 @@ abstract class AppLocalizations {
   /// **'Invitations unavailable'**
   String get invitationsUnavailable;
 
-  /// No description provided for @inviteExistingWorker.
-  ///
-  /// In en, this message translates to:
-  /// **'Invite Existing Worker'**
-  String get inviteExistingWorker;
-
   /// No description provided for @inviteToLand.
   ///
   /// In en, this message translates to:
@@ -3674,12 +3842,6 @@ abstract class AppLocalizations {
   /// **'Monthly'**
   String get monthly;
 
-  /// No description provided for @monthlyCost.
-  ///
-  /// In en, this message translates to:
-  /// **'Monthly Cost'**
-  String get monthlyCost;
-
   /// No description provided for @monthlyRent.
   ///
   /// In en, this message translates to:
@@ -4214,12 +4376,6 @@ abstract class AppLocalizations {
   /// **'NO WORKERS FOUND'**
   String get noWorkersFoundUpper;
 
-  /// No description provided for @noWorkersYet.
-  ///
-  /// In en, this message translates to:
-  /// **'No workers yet'**
-  String get noWorkersYet;
-
   /// No description provided for @notYours.
   ///
   /// In en, this message translates to:
@@ -4333,12 +4489,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open investment assistant'**
   String get openInvestmentAssistant;
-
-  /// No description provided for @openJobRequest.
-  ///
-  /// In en, this message translates to:
-  /// **'Open Job Request'**
-  String get openJobRequest;
 
   /// No description provided for @optimalSolarExposure.
   ///
@@ -5066,12 +5216,6 @@ abstract class AppLocalizations {
   /// **'Get a deep analysis of your current production overhead, potential yield, and profit-maximization strategies powered by AI.'**
   String get productionStrategyDescription;
 
-  /// No description provided for @productivity.
-  ///
-  /// In en, this message translates to:
-  /// **'Productivity'**
-  String get productivity;
-
   /// No description provided for @products.
   ///
   /// In en, this message translates to:
@@ -5762,12 +5906,6 @@ abstract class AppLocalizations {
   /// **'Search products...'**
   String get searchProducts;
 
-  /// No description provided for @searchWorkerMarketplace.
-  ///
-  /// In en, this message translates to:
-  /// **'Search the worker marketplace'**
-  String get searchWorkerMarketplace;
-
   /// No description provided for @searchWorkers.
   ///
   /// In en, this message translates to:
@@ -6212,12 +6350,6 @@ abstract class AppLocalizations {
   /// **'Supervisor'**
   String get supervisor;
 
-  /// No description provided for @suspendedLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Suspended'**
-  String get suspendedLabel;
-
   /// No description provided for @suspendedUpper.
   ///
   /// In en, this message translates to:
@@ -6470,12 +6602,6 @@ abstract class AppLocalizations {
   /// **'Title'**
   String get title;
 
-  /// No description provided for @tndMo.
-  ///
-  /// In en, this message translates to:
-  /// **'TND/mo'**
-  String get tndMo;
-
   /// No description provided for @tndPerMeter.
   ///
   /// In en, this message translates to:
@@ -6536,12 +6662,6 @@ abstract class AppLocalizations {
   /// **'Total Earnings (Wallet)'**
   String get totalEarningsWallet;
 
-  /// No description provided for @totalLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Total'**
-  String get totalLabel;
-
   /// No description provided for @totalOrdersLabel.
   ///
   /// In en, this message translates to:
@@ -6559,12 +6679,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total Sales Value'**
   String get totalSalesValue;
-
-  /// No description provided for @totalSuffix.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} total'**
-  String totalSuffix(int count);
 
   /// No description provided for @totalWithCycle.
   ///
@@ -6757,12 +6871,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown role: {role}'**
   String unknownRole(String role);
-
-  /// No description provided for @unknownWorker.
-  ///
-  /// In en, this message translates to:
-  /// **'Unknown Worker'**
-  String get unknownWorker;
 
   /// No description provided for @unlockDeepInsights.
   ///
@@ -7142,12 +7250,6 @@ abstract class AppLocalizations {
   /// **'Please wait for username availability check'**
   String get waitUsernameCheck;
 
-  /// No description provided for @waitingForWorkerResponse.
-  ///
-  /// In en, this message translates to:
-  /// **'Waiting for worker response'**
-  String get waitingForWorkerResponse;
-
   /// No description provided for @walletCards.
   ///
   /// In en, this message translates to:
@@ -7351,24 +7453,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} Available'**
   String workersAvailable(String count);
-
-  /// No description provided for @workersSyncIssue.
-  ///
-  /// In en, this message translates to:
-  /// **'Workers sync issue'**
-  String get workersSyncIssue;
-
-  /// No description provided for @workforce.
-  ///
-  /// In en, this message translates to:
-  /// **'Workforce'**
-  String get workforce;
-
-  /// No description provided for @workforceLandName.
-  ///
-  /// In en, this message translates to:
-  /// **'Workforce — {landName}'**
-  String workforceLandName(String landName);
 
   /// No description provided for @workforceUpper.
   ///
@@ -8491,12 +8575,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Post New Job'**
   String get postNewJob;
-
-  /// No description provided for @postJobDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Post a job request for this land'**
-  String get postJobDescription;
 
   /// No description provided for @requiredSkills.
   ///

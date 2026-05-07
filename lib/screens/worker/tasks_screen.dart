@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../services/auth_service.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/job_request_provider.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
 
 class WorkerTasksScreen extends StatefulWidget {
@@ -81,6 +82,13 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
           SnackBar(content: Text(AppLocalizations.of(context)!.taskCompletedSuccess), backgroundColor: Colors.green),
         );
         _fetchMyTasks(); // Refresh list
+        
+        // Refresh available jobs as finishing tasks might unlock new opportunities
+        if (mounted) {
+          final jobProvider = context.read<JobRequestProvider>();
+          jobProvider.fetchAllJobs();
+          jobProvider.fetchRecommendedJobs();
+        }
       } else {
         throw Exception(AppLocalizations.of(context)!.failedCompleteTask);
       }

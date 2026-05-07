@@ -1,3 +1,5 @@
+enum HiringSource { invitation, jobApplication, manual }
+
 class LandWorker {
   final String id;
   final String landId;
@@ -6,6 +8,7 @@ class LandWorker {
   final String role;
   final double salary;
   final String status; // active, inactive, suspended
+  final HiringSource hiringSource;
   final DateTime? startedAt;
   final DateTime? endedAt;
   final DateTime? createdAt;
@@ -29,6 +32,7 @@ class LandWorker {
     this.role = 'general',
     this.salary = 0.0,
     this.status = 'active',
+    this.hiringSource = HiringSource.manual,
     this.startedAt,
     this.endedAt,
     this.createdAt,
@@ -45,6 +49,15 @@ class LandWorker {
     final worker = json['worker'];
     final assigner = json['assigner'];
     final land = json['land'];
+    
+    HiringSource source = HiringSource.manual;
+    final sourceStr = json['hiring_source'] ?? 'manual';
+    if (sourceStr == 'invitation') {
+      source = HiringSource.invitation;
+    } else if (sourceStr == 'job_application') {
+      source = HiringSource.jobApplication;
+    }
+
     return LandWorker(
       id: json['id'] ?? '',
       landId: json['land_id'] ?? '',
@@ -53,6 +66,7 @@ class LandWorker {
       role: json['role'] ?? 'general',
       salary: double.tryParse(json['salary']?.toString() ?? '0') ?? 0.0,
       status: json['status'] ?? 'active',
+      hiringSource: source,
       startedAt: json['started_at'] != null
           ? DateTime.tryParse(json['started_at'])
           : null,

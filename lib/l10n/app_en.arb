@@ -110,6 +110,52 @@
       }
     }
   },
+  "activeWorkforce": "Active Workforce",
+  "applications": "Applications",
+  "jobRequests": "Job Requests",
+  "invitations": "Invitations",
+  "noActiveJobRequests": "No active job requests for this land.",
+  "noActiveJobRequestsTitle": "No Active Job Requests",
+  "postJobMarketplaceHint": "Post a job to find skilled workers for your land.",
+  "postAJob": "Post a Job",
+  "noPendingInvitations": "No Pending Invitations",
+  "noPendingInvitationsTitle": "No Pending Invitations",
+  "inviteMarketplaceHint": "Invite existing workers directly from the marketplace.",
+  "searchMarketplace": "Search Marketplace",
+  "waitingForWorkerResponse": "Waiting for worker to respond to your invitation.",
+  "activeLabel": "Active",
+  "totalLabel": "Total",
+  "suspendedLabel": "Suspended",
+  "monthlyCost": "Monthly Cost",
+  "productivity": "Productivity",
+  "addWorker": "Add Worker",
+  "openJobRequest": "Open Job Request",
+  "inviteExistingWorker": "Invite Existing Worker",
+  "searchWorkerMarketplace": "Search Worker Marketplace",
+  "postJobDescription": "Post a job request for workers to apply",
+  "workforce": "Workforce",
+  "noWorkersYet": "No workers yet",
+  "addWorkersMarketplaceHint": "Hiring workers is easy! Use the Job Requests or Invitations tabs to build your team.",
+  "workersSyncIssue": "Workers sync issue",
+  "retryLabel": "Retry",
+  "tndMo": "TND/mo",
+  "unknownWorker": "Unknown Worker",
+  "workforceLandName": "Workforce: {landName}",
+  "@workforceLandName": {
+    "placeholders": {
+      "landName": {
+        "type": "String"
+      }
+    }
+  },
+  "totalSuffix": "({count})",
+  "@totalSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "@balanceAmount": {
     "placeholders": {
       "amount": {

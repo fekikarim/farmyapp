@@ -9,6 +9,109 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get activeWorkforce => 'Active Workforce';
+
+  @override
+  String get applications => 'Applications';
+
+  @override
+  String get jobRequests => 'Job Requests';
+
+  @override
+  String get invitations => 'Invitations';
+
+  @override
+  String get noActiveJobRequests => 'No active job requests for this land.';
+
+  @override
+  String get noActiveJobRequestsTitle => 'No Active Job Requests';
+
+  @override
+  String get postJobMarketplaceHint =>
+      'Post a job to find skilled workers for your land.';
+
+  @override
+  String get postAJob => 'Post a Job';
+
+  @override
+  String get noPendingInvitations => 'No Pending Invitations';
+
+  @override
+  String get noPendingInvitationsTitle => 'No Pending Invitations';
+
+  @override
+  String get inviteMarketplaceHint =>
+      'Invite existing workers directly from the marketplace.';
+
+  @override
+  String get searchMarketplace => 'Search Marketplace';
+
+  @override
+  String get waitingForWorkerResponse => 'Waiting for worker response';
+
+  @override
+  String get activeLabel => 'Active';
+
+  @override
+  String get totalLabel => 'Total';
+
+  @override
+  String get suspendedLabel => 'Suspended';
+
+  @override
+  String get monthlyCost => 'Monthly Cost';
+
+  @override
+  String get productivity => 'Productivity';
+
+  @override
+  String get addWorker => 'Add Worker';
+
+  @override
+  String get openJobRequest => 'Open Job Request';
+
+  @override
+  String get inviteExistingWorker => 'Invite Existing Worker';
+
+  @override
+  String get searchWorkerMarketplace => 'Search the worker marketplace';
+
+  @override
+  String get postJobDescription => 'Post a job request for this land';
+
+  @override
+  String get workforce => 'Workforce';
+
+  @override
+  String get noWorkersYet => 'No workers yet';
+
+  @override
+  String get addWorkersMarketplaceHint =>
+      'Tap the + button to add workers from the marketplace';
+
+  @override
+  String get workersSyncIssue => 'Workers sync issue';
+
+  @override
+  String get retryLabel => 'Retry';
+
+  @override
+  String get tndMo => 'TND/mo';
+
+  @override
+  String get unknownWorker => 'Unknown Worker';
+
+  @override
+  String workforceLandName(String landName) {
+    return 'Workforce — $landName';
+  }
+
+  @override
+  String totalSuffix(int count) {
+    return '$count total';
+  }
+
+  @override
   String get about => 'About';
 
   @override
@@ -54,9 +157,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get activeContracts => 'Active Contracts';
-
-  @override
-  String get activeLabel => 'Active';
 
   @override
   String get activeLabelUpper => 'ACTIVE';
@@ -118,13 +218,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addToLand => 'Add to Land';
-
-  @override
-  String get addWorker => 'Add Worker';
-
-  @override
-  String get addWorkersMarketplaceHint =>
-      'Tap the + button to add workers from the marketplace';
 
   @override
   String addedToBasket(String title) {
@@ -1644,9 +1737,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invitationsUnavailable => 'Invitations unavailable';
 
   @override
-  String get inviteExistingWorker => 'Invite Existing Worker';
-
-  @override
   String get inviteToLand => 'Choose which land to invite workers to:';
 
   @override
@@ -1980,9 +2070,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get monthly => 'Monthly';
 
   @override
-  String get monthlyCost => 'Monthly Cost';
-
-  @override
   String get monthlyRent => 'Monthly Rent';
 
   @override
@@ -2268,9 +2355,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noWorkersFoundUpper => 'NO WORKERS FOUND';
 
   @override
-  String get noWorkersYet => 'No workers yet';
-
-  @override
   String get notYours => 'NOT YOURS';
 
   @override
@@ -2328,9 +2412,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openInvestmentAssistant => 'Open investment assistant';
-
-  @override
-  String get openJobRequest => 'Open Job Request';
 
   @override
   String get optimalSolarExposure => 'Optimal Solar Exposure';
@@ -2739,9 +2820,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Get a deep analysis of your current production overhead, potential yield, and profit-maximization strategies powered by AI.';
 
   @override
-  String get productivity => 'Productivity';
-
-  @override
   String get products => 'Products';
 
   @override
@@ -3127,9 +3205,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchProducts => 'Search products...';
 
   @override
-  String get searchWorkerMarketplace => 'Search the worker marketplace';
-
-  @override
   String get searchWorkers => 'Search workers...';
 
   @override
@@ -3366,9 +3441,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supervisor => 'Supervisor';
 
   @override
-  String get suspendedLabel => 'Suspended';
-
-  @override
   String get suspendedUpper => 'SUSPENDED';
 
   @override
@@ -3502,9 +3574,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get title => 'Title';
 
   @override
-  String get tndMo => 'TND/mo';
-
-  @override
   String get tndPerMeter => 'TND/m';
 
   @override
@@ -3539,9 +3608,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get totalEarningsWallet => 'Total Earnings (Wallet)';
 
   @override
-  String get totalLabel => 'Total';
-
-  @override
   String get totalOrdersLabel => 'Total Orders';
 
   @override
@@ -3549,11 +3615,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get totalSalesValue => 'Total Sales Value';
-
-  @override
-  String totalSuffix(int count) {
-    return '$count total';
-  }
 
   @override
   String totalWithCycle(String price, String cycle) {
@@ -3658,9 +3719,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String unknownRole(String role) {
     return 'Unknown role: $role';
   }
-
-  @override
-  String get unknownWorker => 'Unknown Worker';
 
   @override
   String get unlockDeepInsights => 'Unlock Deep Insights';
@@ -3879,9 +3937,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get waitUsernameCheck => 'Please wait for username availability check';
 
   @override
-  String get waitingForWorkerResponse => 'Waiting for worker response';
-
-  @override
   String get walletCards => 'Wallet & Cards';
 
   @override
@@ -3994,17 +4049,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String workersAvailable(String count) {
     return '$count Available';
-  }
-
-  @override
-  String get workersSyncIssue => 'Workers sync issue';
-
-  @override
-  String get workforce => 'Workforce';
-
-  @override
-  String workforceLandName(String landName) {
-    return 'Workforce — $landName';
   }
 
   @override
@@ -4589,9 +4633,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get postNewJob => 'Post New Job';
-
-  @override
-  String get postJobDescription => 'Post a job request for this land';
 
   @override
   String get requiredSkills => 'Required Skills';

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../providers/worker_provider.dart';
+import '../providers/job_request_provider.dart';
 import '../widgets/edge_panel.dart';
 
 // Customer Screens
@@ -58,6 +59,19 @@ class _MainScreenState extends State<MainScreen> {
 
   void _switchToTab(int index) {
     if (index == _currentIndex) return;
+    
+    // Auto-refresh data when switching to specific tabs for workers
+    final role = Provider.of<AuthProvider>(context, listen: false).user?.role.toLowerCase();
+    if (index == 1 && (role == 'worker' || role == 'customer')) {
+      // Find Jobs tab - refresh to catch availability changes
+      Future.microtask(() {
+        if (mounted) {
+          context.read<JobRequestProvider>().fetchAllJobs();
+          context.read<JobRequestProvider>().fetchRecommendedJobs();
+        }
+      });
+    }
+
     setState(() {
       _currentIndex = index;
     });
