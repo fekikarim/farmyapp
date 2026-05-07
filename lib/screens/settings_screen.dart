@@ -24,6 +24,7 @@ import 'customer/subscriptions_screen.dart';
 import 'settings/notifications_screen.dart';
 import 'investor/my_investments_screen.dart';
 import 'customer/my_orders_screen.dart';
+import 'farmer/manage_jobs_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -586,6 +587,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       gameProvider.setEdgePanelVisibility(value);
                     },
                     activeColor: Colors.red,
+                  ),
+                ),
+              ],
+
+              if (user?.role.toLowerCase() == 'farmer') ...[
+                const SizedBox(height: 24),
+                _buildSectionTitle(theme, 'Farmer Management'),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.assignment_ind_outlined,
+                  title: 'Manage Jobs',
+                  subtitle: 'Post new jobs and manage worker applications',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ManageJobsScreen(),
+                    ),
                   ),
                 ),
               ],
