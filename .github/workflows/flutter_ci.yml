@@ -3,9 +3,9 @@ name: Flutter CI
 # Trigger conditions: Push to main/develop or pull requests targeting these branches.
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, ci/cd ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop, ci/cd ]
 
 # Concurrency management: Cancel previous runs if a new commit is pushed to the same branch.
 concurrency:
