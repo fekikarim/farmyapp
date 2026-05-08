@@ -233,7 +233,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
 
                     // Escrow Balance Info
                     if (!lifecycle.balanceLoading &&
@@ -252,7 +252,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                             ) ??
                             0) >
                         0)
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
 
                     // Assigned Lands
                     _sectionHeader(AppLocalizations.of(context)!.assignedLands, Icons.landscape, isDark),
@@ -379,7 +379,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                             ...pendingInvitations.map(
                               (inv) => _buildInvitationActionCard(inv, isDark),
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 16),
                           ],
                         );
                       },
@@ -411,7 +411,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                                   (inv) =>
                                       _buildInvitationStatusCard(inv, isDark),
                                 ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 16),
                           ],
                         );
                       },
@@ -443,7 +443,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                               (contract) =>
                                   _buildContractActionCard(contract, isDark),
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 16),
                           ],
                         );
                       },
@@ -467,7 +467,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                             ...pendingProofs.map(
                               (proof) => _buildProofActionCard(proof, isDark),
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 16),
                           ],
                         );
                       },
@@ -502,7 +502,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                                   child: Text(AppLocalizations.of(context)!.viewAllHistory),
                                 ),
                               ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 16),
                           ],
                         );
                       },
@@ -528,7 +528,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                               (contract) =>
                                   _buildActiveContractCard(contract, isDark),
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 16),
                           ],
                         );
                       },
@@ -547,7 +547,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       ...tasks
                           .take(5)
                           .map((task) => _buildTaskCard(task, isDark)),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 30),
                   ],
                 ),
               ),
