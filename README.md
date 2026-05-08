@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo-app-no-bg.png" width="120" alt="Farmy Logo">
+</p>
+
 # Farmy Frontend Platform
 
 [![Flutter](https://img.shields.io/badge/Flutter-v3.10+-02569B?style=flat-square&logo=flutter&logoColor=white)](https://flutter.dev/)
