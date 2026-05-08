@@ -4,7 +4,7 @@ class AppTheme {
   // Brand Colors
   static const Color primaryColor = Color(0xFF90A53E); // Lime Green
   static const Color secondaryColor = Color(0xFF4F7035); // Olive Green
-  
+
   // Dark Theme Colors
   static const Color darkBackground = Color(0xFF252525);
   static const Color darkSurface = Color(0xFF2F2F2F);
@@ -44,8 +44,18 @@ class AppTheme {
         onSurface: textPrimary,
       ),
       textTheme: TextTheme(
-        headlineLarge: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: textPrimary, letterSpacing: -1),
-        headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: textPrimary, letterSpacing: -0.5),
+        headlineLarge: TextStyle(
+          fontSize: 36,
+          fontWeight: FontWeight.bold,
+          color: textPrimary,
+          letterSpacing: -1,
+        ),
+        headlineMedium: TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+          color: textPrimary,
+          letterSpacing: -0.5,
+        ),
         bodyLarge: TextStyle(fontSize: 16, color: textPrimary),
         bodyMedium: TextStyle(fontSize: 14, color: textSecondary),
       ),
@@ -54,7 +64,9 @@ class AppTheme {
           backgroundColor: primaryColor,
           foregroundColor: Colors.white,
           minimumSize: const Size(double.infinity, 56),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           elevation: 0,
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -76,7 +88,10 @@ class AppTheme {
         ),
         labelStyle: TextStyle(color: textSecondary),
         hintStyle: TextStyle(color: textSecondary),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 18,
+        ),
       ),
     );
   }

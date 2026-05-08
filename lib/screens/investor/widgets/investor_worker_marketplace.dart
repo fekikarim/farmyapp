@@ -492,7 +492,9 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                         children: [
                           Flexible(
                             child: Text(
-                              (worker.userName ?? AppLocalizations.of(context)!.worker).toUpperCase(),
+                              (worker.userName ??
+                                      AppLocalizations.of(context)!.worker)
+                                  .toUpperCase(),
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w900,
@@ -572,7 +574,9 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            AppLocalizations.of(context)!.nTasksUpper(worker.completedTasks),
+                            AppLocalizations.of(
+                              context,
+                            )!.nTasksUpper(worker.completedTasks),
                             style: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
@@ -590,7 +594,9 @@ class _MarketplaceWorkerCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.amountTND(worker.hourlyRate.toStringAsFixed(0)),
+                      AppLocalizations.of(
+                        context,
+                      )!.amountTND(worker.hourlyRate.toStringAsFixed(0)),
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w900,

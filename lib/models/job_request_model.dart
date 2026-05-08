@@ -43,8 +43,12 @@ class JobRequest {
           : null,
       duration: json['duration'],
       taskType: json['task_type'],
-      status: json['status'] == 'open' ? JobRequestStatus.open : JobRequestStatus.closed,
-      salary: json['salary'] != null ? double.tryParse(json['salary'].toString()) : null,
+      status: json['status'] == 'open'
+          ? JobRequestStatus.open
+          : JobRequestStatus.closed,
+      salary: json['salary'] != null
+          ? double.tryParse(json['salary'].toString())
+          : null,
       land: json['land'] != null ? Land.fromJson(json['land']) : null,
       matchScore: json['matchScore'],
     );

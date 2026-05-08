@@ -29,7 +29,7 @@ class _CropCalendarScreenState extends State<CropCalendarScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeData();
     });
@@ -44,18 +44,20 @@ class _CropCalendarScreenState extends State<CropCalendarScreen>
   Future<void> _initializeData() async {
     final cropProvider = context.read<CropCalendarProvider>();
     final landProvider = context.read<LandProvider>();
-    
+
     // Ensure lands are loaded
     if (landProvider.myLands.isEmpty) {
       await landProvider.fetchMyLands();
     }
-    
+
     // Set lands in crop provider
     cropProvider.setLands(landProvider.myLands);
-    
+
     // Load crop data for all lands or selected land
     if (landProvider.myLands.isNotEmpty) {
-      await cropProvider.loadCropData(cropProvider.selectedLandId ?? landProvider.myLands.first.id);
+      await cropProvider.loadCropData(
+        cropProvider.selectedLandId ?? landProvider.myLands.first.id,
+      );
     }
   }
 
@@ -63,7 +65,7 @@ class _CropCalendarScreenState extends State<CropCalendarScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final provider = context.watch<CropCalendarProvider>();
-    
+
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -150,10 +152,8 @@ class _CropCalendarScreenState extends State<CropCalendarScreen>
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => CropPlanSheet.show(
-          context,
-          initialLandId: provider.selectedLandId,
-        ),
+        onPressed: () =>
+            CropPlanSheet.show(context, initialLandId: provider.selectedLandId),
         icon: const Icon(Icons.add),
         label: Text(l10n.addCropPlan),
         backgroundColor: AppTheme.primaryColor,
@@ -163,13 +163,28 @@ class _CropCalendarScreenState extends State<CropCalendarScreen>
 
   Widget _buildStatsRow(CropCalendarProvider provider) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     // Show loading indicators while fetching data
     final stats = provider.isLoading && provider.allItems.isEmpty
         ? [
-            _StatItem(icon: Icons.local_florist, value: '...', label: l10n.loading, color: Colors.grey),
-            _StatItem(icon: Icons.event_available, value: '...', label: l10n.loading, color: Colors.grey),
-            _StatItem(icon: Icons.event_note, value: '...', label: l10n.loading, color: Colors.grey),
+            _StatItem(
+              icon: Icons.local_florist,
+              value: '...',
+              label: l10n.loading,
+              color: Colors.grey,
+            ),
+            _StatItem(
+              icon: Icons.event_available,
+              value: '...',
+              label: l10n.loading,
+              color: Colors.grey,
+            ),
+            _StatItem(
+              icon: Icons.event_note,
+              value: '...',
+              label: l10n.loading,
+              color: Colors.grey,
+            ),
           ]
         : [
             _StatItem(
@@ -195,7 +210,7 @@ class _CropCalendarScreenState extends State<CropCalendarScreen>
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 400;
-        
+
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: SingleChildScrollView(
@@ -203,7 +218,9 @@ class _CropCalendarScreenState extends State<CropCalendarScreen>
             physics: const BouncingScrollPhysics(),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: stats.map((stat) => _buildStatChip(stat, isCompact: isCompact)).toList(),
+              children: stats
+                  .map((stat) => _buildStatChip(stat, isCompact: isCompact))
+                  .toList(),
             ),
           ),
         );
@@ -215,7 +232,7 @@ class _CropCalendarScreenState extends State<CropCalendarScreen>
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4),
       padding: EdgeInsets.symmetric(
-        horizontal: isCompact ? 10 : 12, 
+        horizontal: isCompact ? 10 : 12,
         vertical: isCompact ? 8 : 10,
       ),
       decoration: BoxDecoration(
@@ -254,7 +271,7 @@ class _CropCalendarScreenState extends State<CropCalendarScreen>
     final provider = context.read<CropCalendarProvider>();
     final items = provider.getItemsForDate(date);
     final l10n = AppLocalizations.of(context)!;
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -279,7 +296,7 @@ class _CropCalendarScreenState extends State<CropCalendarScreen>
                 ),
               ),
             ),
-            
+
             // Date header
             Padding(
               padding: const EdgeInsets.all(20),
@@ -313,7 +330,8 @@ class _CropCalendarScreenState extends State<CropCalendarScreen>
                               ? 'No crops'
                               : '${items.length} crop${items.length > 1 ? 's' : ''}',
                           style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
                                 ? Colors.white.withOpacity(0.6)
                                 : Colors.black.withOpacity(0.6),
                           ),
@@ -328,9 +346,9 @@ class _CropCalendarScreenState extends State<CropCalendarScreen>
                 ],
               ),
             ),
-            
+
             const Divider(),
-            
+
             // Items list
             Expanded(
               child: items.isEmpty
@@ -348,8 +366,8 @@ class _CropCalendarScreenState extends State<CropCalendarScreen>
                           onAction: () {
                             if (item is CropCycle && item.isReadyForHarvest) {
                               // Mark as harvested
-                            } else if (item is CropPlan && 
-                                       item.status == CropPlanStatus.planned) {
+                            } else if (item is CropPlan &&
+                                item.status == CropPlanStatus.planned) {
                               // Activate plan
                               provider.activatePlan(item.id!);
                             }
@@ -358,7 +376,7 @@ class _CropCalendarScreenState extends State<CropCalendarScreen>
                       },
                     ),
             ),
-            
+
             // Add plan button
             Padding(
               padding: const EdgeInsets.all(16),
@@ -398,7 +416,7 @@ class _MonthViewTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CropCalendarProvider>();
-    
+
     return RefreshIndicator(
       onRefresh: () => provider.refreshData(),
       color: AppTheme.primaryColor,
@@ -413,7 +431,7 @@ class _MonthViewTab extends StatelessWidget {
               },
             ),
           ),
-          
+
           // Month header
           CalendarMonthHeader(
             focusedDate: provider.currentDate,
@@ -421,26 +439,26 @@ class _MonthViewTab extends StatelessWidget {
             onNext: () => provider.goToNext(),
             onToday: () => provider.goToToday(),
           ),
-          
+
           // Legend
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: CropLegend(compact: true),
           ),
-          
+
           // Calendar with proper scrolling for refresh
           Expanded(
             child: provider.isLoading && provider.allItems.isEmpty
                 ? _CalendarSkeleton()
                 : provider.error != null
-                    ? _ErrorState(
-                        message: provider.error!,
-                        onRetry: () => provider.refreshData(),
-                      )
-                    : CalendarMonthView(
-                        focusedDate: provider.currentDate,
-                        onDaySelected: onDaySelected,
-                      ),
+                ? _ErrorState(
+                    message: provider.error!,
+                    onRetry: () => provider.refreshData(),
+                  )
+                : CalendarMonthView(
+                    focusedDate: provider.currentDate,
+                    onDaySelected: onDaySelected,
+                  ),
           ),
         ],
       ),
@@ -456,7 +474,7 @@ class _YearViewTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CropCalendarProvider>();
-    
+
     return RefreshIndicator(
       onRefresh: () => provider.refreshData(),
       color: AppTheme.primaryColor,
@@ -471,7 +489,7 @@ class _YearViewTab extends StatelessWidget {
               },
             ),
           ),
-          
+
           // Year header
           CalendarYearHeader(
             year: provider.currentDate.year,
@@ -479,26 +497,26 @@ class _YearViewTab extends StatelessWidget {
             onNext: () => provider.goToNext(),
             onToday: () => provider.goToToday(),
           ),
-          
+
           // Legend
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: CropLegend(compact: true),
           ),
-          
+
           // Year timeline with proper scrolling for refresh
           Expanded(
             child: provider.isLoading && provider.allItems.isEmpty
                 ? _YearSkeleton()
                 : provider.error != null
-                    ? _ErrorState(
-                        message: provider.error!,
-                        onRetry: () => provider.refreshData(),
-                      )
-                    : CalendarYearView(
-                        year: provider.currentDate.year,
-                        onMonthSelected: onMonthSelected,
-                      ),
+                ? _ErrorState(
+                    message: provider.error!,
+                    onRetry: () => provider.refreshData(),
+                  )
+                : CalendarYearView(
+                    year: provider.currentDate.year,
+                    onMonthSelected: onMonthSelected,
+                  ),
           ),
         ],
       ),
@@ -559,7 +577,7 @@ class _ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return ListView(
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.3),
@@ -578,7 +596,9 @@ class _ErrorState extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white.withOpacity(0.8) : Colors.black.withOpacity(0.8),
+                  color: isDark
+                      ? Colors.white.withOpacity(0.8)
+                      : Colors.black.withOpacity(0.8),
                 ),
               ),
               const SizedBox(height: 8),
@@ -589,7 +609,9 @@ class _ErrorState extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
-                    color: isDark ? Colors.white.withOpacity(0.5) : Colors.black.withOpacity(0.5),
+                    color: isDark
+                        ? Colors.white.withOpacity(0.5)
+                        : Colors.black.withOpacity(0.5),
                   ),
                 ),
               ),
@@ -615,7 +637,7 @@ class _EmptyDayState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -623,14 +645,18 @@ class _EmptyDayState extends StatelessWidget {
           Icon(
             Icons.eco_outlined,
             size: 64,
-            color: isDark ? Colors.white.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            color: isDark
+                ? Colors.white.withOpacity(0.3)
+                : Colors.black.withOpacity(0.3),
           ),
           const SizedBox(height: 16),
           Text(
             'No crops for this day',
             style: TextStyle(
               fontSize: 16,
-              color: isDark ? Colors.white.withOpacity(0.5) : Colors.black.withOpacity(0.5),
+              color: isDark
+                  ? Colors.white.withOpacity(0.5)
+                  : Colors.black.withOpacity(0.5),
             ),
           ),
           const SizedBox(height: 8),
@@ -638,7 +664,9 @@ class _EmptyDayState extends StatelessWidget {
             'Tap "Add Crop Plan" to schedule one',
             style: TextStyle(
               fontSize: 14,
-              color: isDark ? Colors.white.withOpacity(0.4) : Colors.black.withOpacity(0.4),
+              color: isDark
+                  ? Colors.white.withOpacity(0.4)
+                  : Colors.black.withOpacity(0.4),
             ),
           ),
         ],

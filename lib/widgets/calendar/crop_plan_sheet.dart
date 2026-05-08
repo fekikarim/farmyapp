@@ -13,13 +13,10 @@ class CropPlanSheet extends StatefulWidget {
   final String? initialLandId;
   final DateTime? initialDate;
 
-  const CropPlanSheet({
-    super.key,
-    this.initialLandId,
-    this.initialDate,
-  });
+  const CropPlanSheet({super.key, this.initialLandId, this.initialDate});
 
-  static Future<void> show(BuildContext context, {
+  static Future<void> show(
+    BuildContext context, {
     String? initialLandId,
     DateTime? initialDate,
   }) {
@@ -27,10 +24,8 @@ class CropPlanSheet extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => CropPlanSheet(
-        initialLandId: initialLandId,
-        initialDate: initialDate,
-      ),
+      builder: (ctx) =>
+          CropPlanSheet(initialLandId: initialLandId, initialDate: initialDate),
     );
   }
 
@@ -41,7 +36,7 @@ class CropPlanSheet extends StatefulWidget {
 class _CropPlanSheetState extends State<CropPlanSheet> {
   final _formKey = GlobalKey<FormState>();
   final _notesController = TextEditingController();
-  
+
   String? _selectedLandId;
   String? _selectedVariantId;
   String? _selectedVariantName;
@@ -50,7 +45,7 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
   int? _cycleDays;
   int? _growthDays;
   bool _isPerennial = false;
-  
+
   List<ShopItemType> _availableCrops = [];
   bool _isLoading = true;
   bool _isSaving = false;
@@ -72,10 +67,10 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
 
   Future<void> _loadAvailableCrops() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final crops = await CropCalendarService.fetchAvailableCrops();
-      
+
       setState(() {
         _availableCrops = crops.map((c) => ShopItemType.fromJson(c)).toList();
         _isLoading = false;
@@ -118,7 +113,7 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
         );
       },
     );
-    
+
     if (picked != null) {
       setState(() {
         _plantingDate = picked;
@@ -133,13 +128,13 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
   Future<void> _savePlan() async {
     final l10n = AppLocalizations.of(context)!;
     if (_formKey.currentState?.validate() != true) return;
-    
+
     // Validate required fields
     setState(() {
       _landError = _selectedLandId == null ? l10n.pleaseSelectLand : null;
       _cropError = _selectedVariantId == null ? l10n.pleaseSelectCrop : null;
     });
-    
+
     if (_selectedLandId == null || _selectedVariantId == null) {
       // Show error snackbar
       ScaffoldMessenger.of(context).showSnackBar(
@@ -172,7 +167,7 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
 
     if (mounted) {
       setState(() => _isSaving = false);
-      
+
       if (success) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -197,7 +192,7 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final provider = context.watch<CropCalendarProvider>();
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: BoxDecoration(
@@ -218,7 +213,7 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
               ),
             ),
           ),
-          
+
           // Header
           Padding(
             padding: const EdgeInsets.all(20),
@@ -230,10 +225,7 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
                     color: AppTheme.primaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(
-                    Icons.event_note,
-                    color: AppTheme.primaryColor,
-                  ),
+                  child: Icon(Icons.event_note, color: AppTheme.primaryColor),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -251,7 +243,9 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
                         l10n.schedulePlanting,
                         style: TextStyle(
                           fontSize: 14,
-                          color: isDark ? Colors.white.withOpacity(0.6) : Colors.black.withOpacity(0.6),
+                          color: isDark
+                              ? Colors.white.withOpacity(0.6)
+                              : Colors.black.withOpacity(0.6),
                         ),
                       ),
                     ],
@@ -264,9 +258,9 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
               ],
             ),
           ),
-          
+
           const Divider(),
-          
+
           // Form
           Expanded(
             child: _isLoading
@@ -283,19 +277,19 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
                           const SizedBox(height: 8),
                           _buildLandDropdown(provider),
                           const SizedBox(height: 24),
-                          
+
                           // Crop Selector
                           _buildSectionTitle(l10n.selectCrop),
                           const SizedBox(height: 8),
                           _buildCropSelector(),
                           const SizedBox(height: 24),
-                          
+
                           // Planting Date
                           _buildSectionTitle(l10n.plantingDate),
                           const SizedBox(height: 8),
                           _buildDateSelector(),
                           const SizedBox(height: 24),
-                          
+
                           // Harvest Preview
                           if (_computedHarvestDate != null) ...[
                             _buildSectionTitle(l10n.expectedHarvest),
@@ -303,7 +297,7 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
                             _buildHarvestPreview(),
                             const SizedBox(height: 24),
                           ],
-                          
+
                           // Notes
                           _buildSectionTitle(l10n.notesOptional),
                           const SizedBox(height: 8),
@@ -313,7 +307,9 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
                             decoration: InputDecoration(
                               hintText: l10n.addNotesHint,
                               filled: true,
-                              fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.03),
+                              fillColor: isDark
+                                  ? Colors.white.withOpacity(0.05)
+                                  : Colors.black.withOpacity(0.03),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -321,7 +317,7 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
                             ),
                           ),
                           const SizedBox(height: 32),
-                          
+
                           // Save Button
                           SizedBox(
                             width: double.infinity,
@@ -333,15 +329,22 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
                                       height: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              Colors.white,
+                                            ),
                                       ),
                                     )
                                   : const Icon(Icons.save),
-                              label: Text(_isSaving ? l10n.saving : l10n.createPlan),
+                              label: Text(
+                                _isSaving ? l10n.saving : l10n.createPlan,
+                              ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppTheme.primaryColor,
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -387,10 +390,7 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
         ),
         hint: Text(l10n.selectALand),
         items: provider.lands.map((land) {
-          return DropdownMenuItem(
-            value: land.id,
-            child: Text(land.name),
-          );
+          return DropdownMenuItem(value: land.id, child: Text(land.name));
         }).toList(),
         onChanged: (value) {
           setState(() {
@@ -436,7 +436,7 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
     }
 
     // Show empty state with retry button
-    if (_availableCrops.isEmpty || 
+    if (_availableCrops.isEmpty ||
         _availableCrops.every((t) => (t.variants ?? []).isEmpty)) {
       return Container(
         padding: const EdgeInsets.all(16),
@@ -475,9 +475,7 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
               onPressed: _loadAvailableCrops,
               icon: const Icon(Icons.refresh, size: 18),
               label: Text(l10n.reload),
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.orange,
-              ),
+              style: TextButton.styleFrom(foregroundColor: Colors.orange),
             ),
           ],
         ),
@@ -518,14 +516,15 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
         final type = entry.key;
         final variant = entry.value;
         final isSelected = _selectedVariantId == variant.id;
-        
+
         return ChoiceChip(
-          avatar: type.iconUrl != null 
+          avatar: type.iconUrl != null
               ? Image.network(
                   type.iconUrl!,
                   width: 20,
                   height: 20,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.local_florist, size: 18),
+                  errorBuilder: (_, __, ___) =>
+                      const Icon(Icons.local_florist, size: 18),
                 )
               : const Icon(Icons.local_florist, size: 18),
           label: Text('${type.name} - ${variant.variantCode}'),
@@ -535,19 +534,19 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
               setState(() {
                 _selectedVariantId = variant.id;
                 _selectedVariantName = '${type.name} (${variant.variantCode})';
-                _selectedCategory = type.name.toLowerCase().contains('tree') 
-                    ? 'tree' 
+                _selectedCategory = type.name.toLowerCase().contains('tree')
+                    ? 'tree'
                     : 'vegetation';
                 _cropError = null;
-                
+
                 // Extract attributes
                 final attrs = variant.attributes ?? {};
-                _growthDays = attrs['growth_days'] != null 
+                _growthDays = attrs['growth_days'] != null
                     ? int.tryParse(attrs['growth_days'].toString())
                     : null;
                 _isPerennial = attrs['is_perennial'] == true;
               });
-              
+
               // Load production info
               _loadVariantProduction(variant.id);
             }
@@ -647,10 +646,7 @@ class _CropPlanSheetState extends State<CropPlanSheet> {
               children: [
                 Text(
                   l10n.expectedHarvestDate,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.green,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.green),
                 ),
                 Text(
                   '${_computedHarvestDate!.day}/${_computedHarvestDate!.month}/${_computedHarvestDate!.year}',

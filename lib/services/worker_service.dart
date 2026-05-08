@@ -190,7 +190,9 @@ class WorkerService {
     return {};
   }
 
-  static Future<Map<String, dynamic>> getWorkerPerformance(String workerId) async {
+  static Future<Map<String, dynamic>> getWorkerPerformance(
+    String workerId,
+  ) async {
     final response = await AuthService.authenticatedRequest(
       'GET',
       Uri.parse('$_baseUrl/api/v1/worker-performance/workers/$workerId/stats'),

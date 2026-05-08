@@ -213,7 +213,9 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                         children: [
                           Expanded(
                             child: Text(
-                              AppLocalizations.of(context)!.freshProductsFarmers,
+                              AppLocalizations.of(
+                                context,
+                              )!.freshProductsFarmers,
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: theme.colorScheme.onSurface.withOpacity(
                                   0.5,
@@ -293,7 +295,9 @@ class _CustomerMarketplaceScreenState extends State<CustomerMarketplaceScreen>
                           controller: _searchController,
                           onChanged: _onSearchChanged,
                           decoration: InputDecoration(
-                            hintText: AppLocalizations.of(context)!.searchProducts,
+                            hintText: AppLocalizations.of(
+                              context,
+                            )!.searchProducts,
                             prefixIcon: Icon(
                               Icons.search_rounded,
                               color: theme.colorScheme.onSurface.withOpacity(

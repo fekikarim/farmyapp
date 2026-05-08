@@ -13,9 +13,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 class PushNotificationService {
-  static final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  static final FirebaseMessaging _firebaseMessaging =
+      FirebaseMessaging.instance;
   static final DeviceInfoPlugin _deviceInfo = DeviceInfoPlugin();
-  static final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize() async {
     // Register background handler
@@ -24,11 +26,13 @@ class PushNotificationService {
     // Initialize local notifications
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    const DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings();
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings();
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsIOS,
+        );
     await _localNotifications.initialize(initializationSettings);
 
     // Create Android notification channel
@@ -40,7 +44,9 @@ class PushNotificationService {
     );
 
     await _localNotifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(channel);
 
     // Request permission
@@ -142,7 +148,7 @@ class PushNotificationService {
       String platform = getPlatformName();
 
       await AuthService.registerDevice(token, fingerprint, platform);
-      
+
       if (kDebugMode) {
         print('Device token synced with backend: $token');
       }

@@ -14,7 +14,10 @@ class ResetPasswordScreen extends StatefulWidget {
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
-  final List<TextEditingController> _codeControllers = List.generate(6, (_) => TextEditingController());
+  final List<TextEditingController> _codeControllers = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -44,27 +47,27 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     // Handle paste - if more than 1 character entered, distribute across fields
     if (value.length > 1) {
       final digits = value.replaceAll(RegExp(r'[^0-9]'), '');
-      
+
       // Clear all fields first
       for (int i = 0; i < 6; i++) {
         _codeControllers[i].text = '';
       }
-      
+
       // Distribute digits across fields starting from current index
       int fieldIndex = 0;
       for (int i = 0; i < digits.length && fieldIndex < 6; i++) {
         _codeControllers[fieldIndex].text = digits[i];
         fieldIndex++;
       }
-      
+
       // Focus the next empty field or the last filled field
       final nextEmptyIndex = fieldIndex < 6 ? fieldIndex : 5;
       _focusNodes[nextEmptyIndex].requestFocus();
-      
+
       setState(() => _errorMessage = '');
       return;
     }
-    
+
     // Normal single character handling
     if (value.length == 1 && index < 5) {
       _focusNodes[index + 1].requestFocus();
@@ -79,7 +82,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   Future<void> _submit(AuthProvider authProvider) async {
     if (_code.length < 6) {
-      setState(() => _errorMessage = AppLocalizations.of(context)!.pleaseEnterAll6Digits);
+      setState(
+        () =>
+            _errorMessage = AppLocalizations.of(context)!.pleaseEnterAll6Digits,
+      );
       return;
     }
     if (!_formKey.currentState!.validate()) return;
@@ -127,17 +133,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   children: [
                     const SizedBox(height: 10),
                     Center(
-                      child: Image.asset(
-                        'assets/logo-no-bg.png',
-                        height: 100,
-                      ),
+                      child: Image.asset('assets/logo-no-bg.png', height: 100),
                     ),
                     const SizedBox(height: 30),
-                    Text(AppLocalizations.of(context)!.resetPasswordTitle, style: Theme.of(context).textTheme.headlineMedium),
+                    Text(
+                      AppLocalizations.of(context)!.resetPasswordTitle,
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
                     const SizedBox(height: 16),
-                    Text(AppLocalizations.of(context)!.resettingPasswordFor(widget.email), style: Theme.of(context).textTheme.bodyMedium),
+                    Text(
+                      AppLocalizations.of(
+                        context,
+                      )!.resettingPasswordFor(widget.email),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                     const SizedBox(height: 48),
-                    
+
                     // Code input (Reused from VerifyScreen)
                     Center(
                       child: Row(
@@ -152,37 +163,55 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.done,
-                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                               decoration: InputDecoration(
                                 counterText: "",
                                 contentPadding: EdgeInsets.zero,
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: (isDark ? Colors.white : Colors.black).withOpacity(0.1)),
+                                  borderSide: BorderSide(
+                                    color:
+                                        (isDark ? Colors.white : Colors.black)
+                                            .withOpacity(0.1),
+                                  ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    width: 2,
+                                  ),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                                  borderSide: BorderSide(
+                                    color: Colors.redAccent.withOpacity(0.5),
+                                  ),
                                 ),
                                 focusedErrorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: Colors.redAccent, width: 2),
+                                  borderSide: BorderSide(
+                                    color: Colors.redAccent,
+                                    width: 2,
+                                  ),
                                 ),
                                 filled: true,
-                                fillColor: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+                                fillColor:
+                                    (isDark ? Colors.white : Colors.black)
+                                        .withOpacity(0.05),
                               ),
-                              onChanged: (value) => _onCodeChanged(value, index),
+                              onChanged: (value) =>
+                                  _onCodeChanged(value, index),
                             ),
                           );
                         }),
                       ),
                     ),
                     const SizedBox(height: 32),
-                    
+
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
@@ -190,34 +219,73 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       style: const TextStyle(fontSize: 14),
                       decoration: InputDecoration(
                         labelText: AppLocalizations.of(context)!.newPassword,
-                        labelStyle: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5)),
-                        prefixIcon: Icon(Icons.lock_outline_rounded, size: 18, color: Theme.of(context).colorScheme.primary.withOpacity(0.7)),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                        labelStyle: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.color?.withOpacity(0.5),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.lock_outline_rounded,
+                          size: 18,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withOpacity(0.7),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                          horizontal: 16,
+                        ),
                         filled: true,
-                        fillColor: (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white).withOpacity(0.3),
+                        fillColor:
+                            (Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.black
+                                    : Colors.white)
+                                .withOpacity(0.3),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black).withOpacity(0.1)),
+                          borderSide: BorderSide(
+                            color:
+                                (Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black)
+                                    .withOpacity(0.1),
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
+                          borderSide: BorderSide(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withOpacity(0.5),
+                          ),
                         ),
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                          borderSide: BorderSide(
+                            color: Colors.redAccent.withOpacity(0.5),
+                          ),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.redAccent, width: 2),
+                          borderSide: BorderSide(
+                            color: Colors.redAccent,
+                            width: 2,
+                          ),
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                             size: 16,
-                            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5),
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.color?.withOpacity(0.5),
                           ),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                       ),
                       validator: FieldValidators.password,
@@ -229,43 +297,95 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       textInputAction: TextInputAction.done,
                       style: const TextStyle(fontSize: 14),
                       decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context)!.confirmNewPassword,
-                        labelStyle: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5)),
-                        prefixIcon: Icon(Icons.lock_clock_outlined, size: 18, color: Theme.of(context).colorScheme.primary.withOpacity(0.7)),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                        labelText: AppLocalizations.of(
+                          context,
+                        )!.confirmNewPassword,
+                        labelStyle: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.color?.withOpacity(0.5),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.lock_clock_outlined,
+                          size: 18,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withOpacity(0.7),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                          horizontal: 16,
+                        ),
                         filled: true,
-                        fillColor: (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white).withOpacity(0.3),
+                        fillColor:
+                            (Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.black
+                                    : Colors.white)
+                                .withOpacity(0.3),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black).withOpacity(0.1)),
+                          borderSide: BorderSide(
+                            color:
+                                (Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black)
+                                    .withOpacity(0.1),
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
+                          borderSide: BorderSide(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withOpacity(0.5),
+                          ),
                         ),
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                          borderSide: BorderSide(
+                            color: Colors.redAccent.withOpacity(0.5),
+                          ),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.redAccent, width: 2),
+                          borderSide: BorderSide(
+                            color: Colors.redAccent,
+                            width: 2,
+                          ),
                         ),
                       ),
-                      validator: (value) => FieldValidators.confirmPassword(value, _passwordController.text),
+                      validator: (value) => FieldValidators.confirmPassword(
+                        value,
+                        _passwordController.text,
+                      ),
                     ),
-                    
+
                     if (_errorMessage.isNotEmpty) ...[
                       const SizedBox(height: 16),
-                      Text(_errorMessage, style: const TextStyle(color: Colors.redAccent)),
+                      Text(
+                        _errorMessage,
+                        style: const TextStyle(color: Colors.redAccent),
+                      ),
                     ],
-                    
+
                     const SizedBox(height: 32),
                     ElevatedButton(
-                      onPressed: authProvider.isLoading ? null : () => _submit(authProvider),
+                      onPressed: authProvider.isLoading
+                          ? null
+                          : () => _submit(authProvider),
                       child: authProvider.isLoading
-                          ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                          : Text(AppLocalizations.of(context)!.resetPasswordTitle),
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              AppLocalizations.of(context)!.resetPasswordTitle,
+                            ),
                     ),
                     const SizedBox(height: 40),
                   ],

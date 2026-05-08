@@ -13,7 +13,12 @@ class FarmerAgentScreen extends StatefulWidget {
   final String? initialMessage;
   final Map<String, dynamic>? initialContext;
 
-  const FarmerAgentScreen({super.key, this.landId, this.initialMessage, this.initialContext});
+  const FarmerAgentScreen({
+    super.key,
+    this.landId,
+    this.initialMessage,
+    this.initialContext,
+  });
 
   @override
   State<FarmerAgentScreen> createState() => _FarmerAgentScreenState();
@@ -33,7 +38,7 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
     super.initState();
     _loadHistory();
     if (widget.initialMessage != null) {
-       WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         _messageController.text = widget.initialMessage!;
         _sendMessage();
       });
@@ -44,7 +49,10 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
 
   Future<void> _loadHistory() async {
     try {
-      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final baseUrl = dotenv.get(
+        'API_BASE_URL',
+        fallback: 'http://192.168.0.133:3001',
+      );
       final response = await AuthService.authenticatedRequest(
         'GET',
         Uri.parse('$baseUrl/api/v1/farmer-agent/history'),
@@ -63,7 +71,10 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
   Future<void> _loadSession(String sessionId) async {
     setState(() => _isLoading = true);
     try {
-      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final baseUrl = dotenv.get(
+        'API_BASE_URL',
+        fallback: 'http://192.168.0.133:3001',
+      );
       final response = await AuthService.authenticatedRequest(
         'GET',
         Uri.parse('$baseUrl/api/v1/farmer-agent/session/$sessionId'),
@@ -73,7 +84,9 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
         final session = body['data'];
         setState(() {
           _sessionId = sessionId;
-          _messages = List<Map<String, dynamic>>.from(session['messages'] ?? []);
+          _messages = List<Map<String, dynamic>>.from(
+            session['messages'] ?? [],
+          );
           _context = session['context_data'];
         });
         Navigator.pop(context); // Close drawer
@@ -87,7 +100,10 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
 
   Future<void> _deleteSession(String sessionId) async {
     try {
-      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final baseUrl = dotenv.get(
+        'API_BASE_URL',
+        fallback: 'http://192.168.0.133:3001',
+      );
       final response = await AuthService.authenticatedRequest(
         'DELETE',
         Uri.parse('$baseUrl/api/v1/farmer-agent/session/$sessionId'),
@@ -110,7 +126,10 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
   Future<void> _fetchAnalysis() async {
     setState(() => _isLoading = true);
     try {
-      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final baseUrl = dotenv.get(
+        'API_BASE_URL',
+        fallback: 'http://192.168.0.133:3001',
+      );
       final response = await AuthService.authenticatedRequest(
         'POST',
         Uri.parse('$baseUrl/api/v1/farmer-agent/analyze'),
@@ -132,7 +151,10 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
           });
         });
         _loadHistory();
-        Future.delayed(const Duration(milliseconds: 100), () => _scrollToBottom());
+        Future.delayed(
+          const Duration(milliseconds: 100),
+          () => _scrollToBottom(),
+        );
       }
     } catch (e) {
       debugPrint('FarmerAgentScreen Error: $e');
@@ -156,7 +178,10 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
     });
 
     try {
-      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final baseUrl = dotenv.get(
+        'API_BASE_URL',
+        fallback: 'http://192.168.0.133:3001',
+      );
       final response = await AuthService.authenticatedRequest(
         'POST',
         Uri.parse('$baseUrl/api/v1/farmer-agent/analyze'),
@@ -178,7 +203,10 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
           });
         });
         _loadHistory();
-        Future.delayed(const Duration(milliseconds: 100), () => _scrollToBottom());
+        Future.delayed(
+          const Duration(milliseconds: 100),
+          () => _scrollToBottom(),
+        );
       }
     } finally {
       setState(() => _isLoading = false);
@@ -188,7 +216,7 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.productionGuruTitle),
@@ -217,13 +245,13 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
               _fetchAnalysis();
             },
             tooltip: AppLocalizations.of(context)!.newSessionTooltip,
-          )
+          ),
         ],
       ),
       endDrawer: _buildHistoryDrawer(),
       body: Column(
         children: [
-          if (_context != null) 
+          if (_context != null)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: _buildSummaryCards(),
@@ -237,31 +265,75 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
                 final msg = _messages[idx];
                 final isUser = msg['role'] == 'user';
                 return Align(
-                  alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: isUser
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
                   child: Container(
-                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.8,
+                    ),
                     padding: const EdgeInsets.all(14),
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     decoration: BoxDecoration(
                       color: isUser ? theme.primaryColor : theme.cardColor,
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 4,
+                        ),
+                      ],
                     ),
                     child: MarkdownBody(
                       data: msg['content'],
                       styleSheet: MarkdownStyleSheet(
-                        p: TextStyle(color: isUser ? Colors.white : theme.textTheme.bodyMedium?.color, fontSize: 13, height: 1.4),
-                        h1: TextStyle(color: isUser ? Colors.white : theme.textTheme.titleLarge?.color, fontWeight: FontWeight.bold),
-                        h2: TextStyle(color: isUser ? Colors.white : theme.textTheme.titleMedium?.color, fontWeight: FontWeight.bold),
-                        h3: TextStyle(color: isUser ? Colors.white : theme.textTheme.titleSmall?.color, fontWeight: FontWeight.bold),
-                        strong: TextStyle(color: isUser ? Colors.white : theme.textTheme.bodyLarge?.color, fontWeight: FontWeight.bold),
-                        listBullet: TextStyle(color: isUser ? Colors.white70 : theme.textTheme.bodySmall?.color, fontSize: 14),
+                        p: TextStyle(
+                          color: isUser
+                              ? Colors.white
+                              : theme.textTheme.bodyMedium?.color,
+                          fontSize: 13,
+                          height: 1.4,
+                        ),
+                        h1: TextStyle(
+                          color: isUser
+                              ? Colors.white
+                              : theme.textTheme.titleLarge?.color,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        h2: TextStyle(
+                          color: isUser
+                              ? Colors.white
+                              : theme.textTheme.titleMedium?.color,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        h3: TextStyle(
+                          color: isUser
+                              ? Colors.white
+                              : theme.textTheme.titleSmall?.color,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        strong: TextStyle(
+                          color: isUser
+                              ? Colors.white
+                              : theme.textTheme.bodyLarge?.color,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        listBullet: TextStyle(
+                          color: isUser
+                              ? Colors.white70
+                              : theme.textTheme.bodySmall?.color,
+                          fontSize: 14,
+                        ),
                         blockquoteDecoration: BoxDecoration(
-                          color: isUser ? Colors.white12 : theme.dividerColor.withOpacity(0.05),
+                          color: isUser
+                              ? Colors.white12
+                              : theme.dividerColor.withOpacity(0.05),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         code: TextStyle(
-                          backgroundColor: isUser ? Colors.black26 : theme.dividerColor.withOpacity(0.1),
+                          backgroundColor: isUser
+                              ? Colors.black26
+                              : theme.dividerColor.withOpacity(0.1),
                           color: isUser ? Colors.white : theme.primaryColor,
                           fontFamily: 'monospace',
                           fontSize: 12,
@@ -284,8 +356,10 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.scaffoldBackgroundColor, 
-        border: Border(top: BorderSide(color: theme.dividerColor.withOpacity(0.1)))
+        color: theme.scaffoldBackgroundColor,
+        border: Border(
+          top: BorderSide(color: theme.dividerColor.withOpacity(0.1)),
+        ),
       ),
       child: SafeArea(
         child: Row(
@@ -299,7 +373,10 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
                   hintStyle: TextStyle(color: theme.hintColor),
                   filled: true,
                   fillColor: theme.cardColor,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
                 onSubmitted: (_) => _sendMessage(),
               ),
@@ -336,11 +413,19 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.history_edu_rounded, color: Colors.white, size: 40),
+                  Icon(
+                    Icons.history_edu_rounded,
+                    color: Colors.white,
+                    size: 40,
+                  ),
                   SizedBox(height: 12),
                   Text(
                     AppLocalizations.of(context)!.harvestChroniclesTitle,
-                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -348,18 +433,32 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
           ),
           Expanded(
             child: _history.isEmpty
-                ? Center(child: Text(AppLocalizations.of(context)!.noHistoryYet))
+                ? Center(
+                    child: Text(AppLocalizations.of(context)!.noHistoryYet),
+                  )
                 : ListView.builder(
                     itemCount: _history.length,
                     itemBuilder: (context, index) {
                       final session = _history[index];
                       final date = DateTime.parse(session['createdAt']);
                       return ListTile(
-                        leading: const Icon(Icons.forum_outlined, color: Colors.green),
-                        title: Text(session['title'] ?? AppLocalizations.of(context)!.farmAnalysisDefault, maxLines: 1, overflow: TextOverflow.ellipsis),
+                        leading: const Icon(
+                          Icons.forum_outlined,
+                          color: Colors.green,
+                        ),
+                        title: Text(
+                          session['title'] ??
+                              AppLocalizations.of(context)!.farmAnalysisDefault,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         subtitle: Text(DateFormat('MMM d, HH:mm').format(date)),
                         trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.redAccent,
+                            size: 18,
+                          ),
                           onPressed: () => _deleteSession(session['id']),
                         ),
                         onTap: () => _loadSession(session['id']),
@@ -377,9 +476,19 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
   Widget _buildSummaryCards() {
     return Row(
       children: [
-        _statCard(AppLocalizations.of(context)!.creditsLabel, '${_context!['currentCredits'] ?? 0} TND', Icons.monetization_on, Colors.orange),
+        _statCard(
+          AppLocalizations.of(context)!.creditsLabel,
+          '${_context!['currentCredits'] ?? 0} TND',
+          Icons.monetization_on,
+          Colors.orange,
+        ),
         const SizedBox(width: 8),
-        _statCard(AppLocalizations.of(context)!.assetsLabel, '${_context!['activeAssetsCount'] ?? 0}', Icons.eco, Colors.green),
+        _statCard(
+          AppLocalizations.of(context)!.assetsLabel,
+          '${_context!['activeAssetsCount'] ?? 0}',
+          Icons.eco,
+          Colors.green,
+        ),
       ],
     );
   }
@@ -400,8 +509,17 @@ class _FarmerAgentScreenState extends State<FarmerAgentScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                Text(label, style: const TextStyle(fontSize: 9, color: Colors.grey)),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+                Text(
+                  label,
+                  style: const TextStyle(fontSize: 9, color: Colors.grey),
+                ),
               ],
             ),
           ],

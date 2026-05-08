@@ -22,8 +22,9 @@ class ApiErrorHandler {
     if (response.statusCode == 403) {
       final body = jsonDecode(response.body);
       throw UpgradeRequiredException(
-        body['message'] ?? 'UPGRADE_REQUIRED', // Use a sentinel or pass context if possible. 
-        // Actually, handleResponse is static and doesn't have context. 
+        body['message'] ??
+            'UPGRADE_REQUIRED', // Use a sentinel or pass context if possible.
+        // Actually, handleResponse is static and doesn't have context.
         // I'll keep the key or handle it in showUpgradeSnackbar.
       );
     }

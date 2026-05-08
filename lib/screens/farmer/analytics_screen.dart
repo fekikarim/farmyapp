@@ -91,7 +91,11 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      AppLocalizations.of(context)!.nItemsSold(productProvider.myProducts.where((p) => p.status == ProductStatus.sold).length),
+                      AppLocalizations.of(context)!.nItemsSold(
+                        productProvider.myProducts
+                            .where((p) => p.status == ProductStatus.sold)
+                            .length,
+                      ),
                       style: const TextStyle(color: Colors.grey),
                     ),
                   ],
@@ -105,7 +109,10 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
               children: [
                 Text(
                   AppLocalizations.of(context)!.advancedAnalytics,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(width: 8),
                 if (!hasAdvancedAnalytics)
@@ -164,7 +171,10 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
                 SizedBox(width: 12),
                 Text(
                   AppLocalizations.of(context)!.productionStrategy,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ],
             ),
@@ -186,7 +196,9 @@ class _FarmerAnalyticsScreenState extends State<FarmerAnalyticsScreen> {
                   );
                 },
                 icon: const Icon(Icons.psychology),
-                label: Text(AppLocalizations.of(context)!.consultProductionGuru),
+                label: Text(
+                  AppLocalizations.of(context)!.consultProductionGuru,
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green.shade700,
                   foregroundColor: Colors.white,

@@ -151,10 +151,14 @@ class _InvestorExploreLandScreenState extends State<InvestorExploreLandScreen> {
                             child: SubscriptionLimitBar(
                               limitKey: 'rental_limit',
                               currentCount: provider.myRentals.length,
-                              label: AppLocalizations.of(context)!.rentalSlotsUsage,
+                              label: AppLocalizations.of(
+                                context,
+                              )!.rentalSlotsUsage,
                               icon: Icons.vpn_key_rounded,
                               accentColor: Colors.blue,
-                              upgradePlanName: AppLocalizations.of(context)!.investorPlus,
+                              upgradePlanName: AppLocalizations.of(
+                                context,
+                              )!.investorPlus,
                             ),
                           );
                         }
@@ -750,7 +754,11 @@ class _InvestorLandCard extends StatelessWidget {
                               ),
                             ),
                           ),
-                          _buildStatusTag(context, land.isActive, isRented: land.isRented),
+                          _buildStatusTag(
+                            context,
+                            land.isActive,
+                            isRented: land.isRented,
+                          ),
                         ],
                       ),
                     ),
@@ -768,7 +776,9 @@ class _InvestorLandCard extends StatelessWidget {
                       _buildInfoItem(
                         context,
                         AppLocalizations.of(context)!.size,
-                        AppLocalizations.of(context)!.plotsCount(land.gridWidth, land.gridHeight),
+                        AppLocalizations.of(
+                          context,
+                        )!.plotsCount(land.gridWidth, land.gridHeight),
                         Icons.grid_3x3_rounded,
                       ),
                       _buildPriceInfo(context, land),
@@ -809,21 +819,25 @@ class _InvestorLandCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusTag(BuildContext context, bool isActive, {bool isRented = false}) {
+  Widget _buildStatusTag(
+    BuildContext context,
+    bool isActive, {
+    bool isRented = false,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: (isRented ? Colors.orange : Colors.green).withAlpha(50),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: (isRented ? Colors.orange : Colors.green).withOpacity(
-            0.5,
-          ),
+          color: (isRented ? Colors.orange : Colors.green).withOpacity(0.5),
           width: 0.5,
         ),
       ),
       child: Text(
-        land.isRented ? AppLocalizations.of(context)!.rentedUpper : AppLocalizations.of(context)!.availableUpper,
+        land.isRented
+            ? AppLocalizations.of(context)!.rentedUpper
+            : AppLocalizations.of(context)!.availableUpper,
         style: TextStyle(
           color: land.isRented ? Colors.orange : Colors.green,
           fontSize: 10,
@@ -881,7 +895,9 @@ class _InvestorLandCard extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          AppLocalizations.of(context)!.amountTND(NumberFormat('#,###').format(land.price)),
+          AppLocalizations.of(
+            context,
+          )!.amountTND(NumberFormat('#,###').format(land.price)),
           style: const TextStyle(
             color: Colors.green,
             fontSize: 15,

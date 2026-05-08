@@ -178,7 +178,9 @@ class BasketScreen extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: Text(
-                AppLocalizations.of(context)!.balanceWithCredits(wallet.credits.toStringAsFixed(2)),
+                AppLocalizations.of(
+                  context,
+                )!.balanceWithCredits(wallet.credits.toStringAsFixed(2)),
                 style: TextStyle(
                   color: theme.colorScheme.onSurface.withOpacity(0.4),
                   fontSize: 12,
@@ -227,7 +229,9 @@ class BasketScreen extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            AppLocalizations.of(context)!.checkoutWithItems(basket.itemCount),
+                            AppLocalizations.of(
+                              context,
+                            )!.checkoutWithItems(basket.itemCount),
                             style: const TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
@@ -269,7 +273,10 @@ class BasketScreen extends StatelessWidget {
         builder: (ctx) => AlertDialog(
           title: Text(AppLocalizations.of(context)!.insufficientFunds),
           content: Text(
-            AppLocalizations.of(context)!.insufficientFundsDescription(wallet.credits.toStringAsFixed(2), basket.totalTND.toStringAsFixed(2)),
+            AppLocalizations.of(context)!.insufficientFundsDescription(
+              wallet.credits.toStringAsFixed(2),
+              basket.totalTND.toStringAsFixed(2),
+            ),
           ),
           actions: [
             TextButton(
@@ -300,7 +307,9 @@ class BasketScreen extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              AppLocalizations.of(context)!.includingTva(basket.taxTND.toStringAsFixed(2)),
+              AppLocalizations.of(
+                context,
+              )!.includingTva(basket.taxTND.toStringAsFixed(2)),
               style: TextStyle(
                 color: Theme.of(ctx).colorScheme.onSurface.withOpacity(0.5),
                 fontSize: 12,
@@ -391,7 +400,9 @@ class BasketScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  AppLocalizations.of(context)!.itemsPurchasedSuccess(successCount),
+                  AppLocalizations.of(
+                    context,
+                  )!.itemsPurchasedSuccess(successCount),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurface.withOpacity(0.6),
@@ -475,7 +486,9 @@ class BasketScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            AppLocalizations.of(context)!.checkoutResultFeedback(successCount, failCount),
+            AppLocalizations.of(
+              context,
+            )!.checkoutResultFeedback(successCount, failCount),
           ),
           backgroundColor: Colors.orange.shade700,
           behavior: SnackBarBehavior.floating,

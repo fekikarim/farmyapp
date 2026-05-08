@@ -26,7 +26,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         SnackBar(content: Text(AppLocalizations.of(context)!.cardAddedSuccess)),
       );
     } else if (mounted) {
-       ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)!.failedAddCard)),
       );
     }
@@ -57,17 +57,17 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               children: [
                 Text(
                   AppLocalizations.of(context)!.addCreditsTitle,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
                 Text(
                   AppLocalizations.of(context)!.selectAmount,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: Colors.grey,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(color: Colors.grey),
                 ),
                 const SizedBox(height: 10),
                 Wrap(
@@ -84,7 +84,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                           customAmountController.clear();
                         });
                       },
-                      selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                      selectedColor: Theme.of(
+                        context,
+                      ).primaryColor.withOpacity(0.2),
                       checkmarkColor: Theme.of(context).primaryColor,
                     );
                   }).toList(),
@@ -92,7 +94,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                 const SizedBox(height: 20),
                 TextField(
                   controller: customAmountController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.customAmountLabel,
                     prefixText: '\$ ',
@@ -118,9 +122,10 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   ),
                 const SizedBox(height: 30),
                 ElevatedButton(
-                  onPressed: selectedAmount != null && 
-                             selectedAmount! > 0 && 
-                             selectedAmount! <= 999999.99
+                  onPressed:
+                      selectedAmount != null &&
+                          selectedAmount! > 0 &&
+                          selectedAmount! <= 999999.99
                       ? () {
                           Navigator.pop(context);
                           _processCharge(selectedAmount!);
@@ -134,7 +139,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   ),
                   child: Text(
                     selectedAmount != null
-                        ? AppLocalizations.of(context)!.payAmount(selectedAmount!.toStringAsFixed(2))
+                        ? AppLocalizations.of(
+                            context,
+                          )!.payAmount(selectedAmount!.toStringAsFixed(2))
                         : AppLocalizations.of(context)!.enterAmount,
                     style: const TextStyle(fontSize: 16),
                   ),
@@ -148,13 +155,18 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     );
   }
 
-
   Future<void> _processCharge(double amount) async {
     // Navigator.pop(context); // Already closed by caller
     final success = await context.read<WalletProvider>().chargeCredits(amount);
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.successfullyAddedCredits(amount.toStringAsFixed(2)))),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(
+              context,
+            )!.successfullyAddedCredits(amount.toStringAsFixed(2)),
+          ),
+        ),
       );
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -205,7 +217,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                           ElevatedButton.icon(
                             onPressed: _handleAddCredits,
                             icon: const Icon(Icons.add),
-                            label: Text(AppLocalizations.of(context)!.addCreditsTitle),
+                            label: Text(
+                              AppLocalizations.of(context)!.addCreditsTitle,
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                               foregroundColor: Theme.of(context).primaryColor,
@@ -219,10 +233,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   const SizedBox(height: 24),
                   Text(
                     AppLocalizations.of(context)!.paymentMethods,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
 
@@ -240,27 +251,37 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   ),
 
                   // List of saved cards would go here if we were listing them from backend custom endpoint
-                  // Since we rely on Stripe PaymentSheet to manage/show saved cards typically during payment flow, 
+                  // Since we rely on Stripe PaymentSheet to manage/show saved cards typically during payment flow,
                   // we might just show "Saved Cards" as a list if backend returns them.
                   if (wallet.paymentMethods.isNotEmpty)
                     Padding(
-                        padding: const EdgeInsets.only(top: 16.0),
-                        child: Column(
-                          children: wallet.paymentMethods.map((method) {
-                            return Card(
-                              margin: const EdgeInsets.only(bottom: 8),
-                              child: ListTile(
-                                leading: const Icon(Icons.credit_card),
-                                title: Text('${method.brand.toUpperCase()} **** ${method.last4}'),
-                                subtitle: Text(AppLocalizations.of(context)!.expiresLabel('${method.expiryMonth}/${method.expiryYear}')),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.delete, color: Colors.red),
-                                  onPressed: () => wallet.deletePaymentMethod(method.id),
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Column(
+                        children: wallet.paymentMethods.map((method) {
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            child: ListTile(
+                              leading: const Icon(Icons.credit_card),
+                              title: Text(
+                                '${method.brand.toUpperCase()} **** ${method.last4}',
+                              ),
+                              subtitle: Text(
+                                AppLocalizations.of(context)!.expiresLabel(
+                                  '${method.expiryMonth}/${method.expiryYear}',
                                 ),
                               ),
-                            );
-                          }).toList(),
-                        ),
+                              trailing: IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () =>
+                                    wallet.deletePaymentMethod(method.id),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ),
                 ],
               ),

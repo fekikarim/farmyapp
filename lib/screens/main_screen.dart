@@ -57,13 +57,17 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   late int _currentIndex;
-  final GlobalKey<NotificationsScreenState> _notificationsKey = GlobalKey<NotificationsScreenState>();
+  final GlobalKey<NotificationsScreenState> _notificationsKey =
+      GlobalKey<NotificationsScreenState>();
 
   void _switchToTab(int index) {
     if (index == _currentIndex) return;
-    
+
     // Auto-refresh data when switching to specific tabs for workers
-    final role = Provider.of<AuthProvider>(context, listen: false).user?.role.toLowerCase();
+    final role = Provider.of<AuthProvider>(
+      context,
+      listen: false,
+    ).user?.role.toLowerCase();
     if (index == 1 && (role == 'worker' || role == 'customer')) {
       // Find Jobs tab - refresh to catch availability changes
       Future.microtask(() {
@@ -248,7 +252,7 @@ class _MainScreenState extends State<MainScreen> {
         const WorkerTasksScreen(),
         const FindJobsScreen(),
         const WorkerWalletScreen(),
-        const SettingsScreen()
+        const SettingsScreen(),
       ];
       items = [
         BottomNavigationBarItem(
@@ -313,7 +317,8 @@ class _MainScreenState extends State<MainScreen> {
       floatingActionButton: Builder(
         builder: (context) {
           if (role == 'investor' || role == 'farmer') {
-            if ((role == 'farmer' || role == 'investor') && _currentIndex == 0) {
+            if ((role == 'farmer' || role == 'investor') &&
+                _currentIndex == 0) {
               return const SizedBox.shrink();
             }
 
@@ -386,10 +391,7 @@ class _MainScreenState extends State<MainScreen> {
 
     // Only wrap investors with the edge panel
     if (isInvestor) {
-      return GameEdgePanelOverlay(
-        forceHide: isRoiDashboard,
-        child: scaffold,
-      );
+      return GameEdgePanelOverlay(forceHide: isRoiDashboard, child: scaffold);
     }
 
     return scaffold;

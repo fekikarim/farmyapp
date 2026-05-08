@@ -223,9 +223,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
 
     if (!_voiceOutputEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.voiceOutputMuted),
-        ),
+        SnackBar(content: Text(AppLocalizations.of(context)!.voiceOutputMuted)),
       );
       return;
     }
@@ -233,7 +231,9 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
     final text = message.text.trim();
     if (text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.messageNoReadableText)),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.messageNoReadableText),
+        ),
       );
       return;
     }
@@ -244,7 +244,9 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
     } catch (_) {
       if (_isDisposed || !mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.unableToPlayVoiceOutput)),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.unableToPlayVoiceOutput),
+        ),
       );
     }
   }
@@ -389,7 +391,9 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.deleteChat),
-        content: Text(AppLocalizations.of(context)!.deleteChatConfirmation(chat.title)),
+        content: Text(
+          AppLocalizations.of(context)!.deleteChatConfirmation(chat.title),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -555,7 +559,10 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                   value: 'sync',
                   child: Text(AppLocalizations.of(context)!.syncBackend),
                 ),
-                PopupMenuItem<String>(value: 'new', child: Text(AppLocalizations.of(context)!.newChat)),
+                PopupMenuItem<String>(
+                  value: 'new',
+                  child: Text(AppLocalizations.of(context)!.newChat),
+                ),
               ],
             )
           else ...[
@@ -756,7 +763,11 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
             const Divider(height: 1),
             Expanded(
               child: state.chats.isEmpty
-                  ? Center(child: Text(AppLocalizations.of(context)!.noConversationsYet))
+                  ? Center(
+                      child: Text(
+                        AppLocalizations.of(context)!.noConversationsYet,
+                      ),
+                    )
                   : ListView.separated(
                       itemCount: state.chats.length,
                       separatorBuilder: (_, __) => const Divider(height: 1),
@@ -800,11 +811,15 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                             itemBuilder: (context) => [
                               PopupMenuItem(
                                 value: 'rename',
-                                child: Text(AppLocalizations.of(context)!.rename),
+                                child: Text(
+                                  AppLocalizations.of(context)!.rename,
+                                ),
                               ),
                               PopupMenuItem(
                                 value: 'delete',
-                                child: Text(AppLocalizations.of(context)!.delete),
+                                child: Text(
+                                  AppLocalizations.of(context)!.delete,
+                                ),
                               ),
                             ],
                           ),

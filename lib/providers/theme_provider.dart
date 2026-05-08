@@ -4,7 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ThemeProvider with ChangeNotifier {
   ThemeMode _themeMode;
 
-  ThemeProvider({ThemeMode initialThemeMode = ThemeMode.light}) : _themeMode = initialThemeMode;
+  ThemeProvider({ThemeMode initialThemeMode = ThemeMode.light})
+    : _themeMode = initialThemeMode;
 
   ThemeMode get themeMode => _themeMode;
 

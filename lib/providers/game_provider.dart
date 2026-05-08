@@ -461,7 +461,9 @@ class GameProvider with ChangeNotifier {
           // Fallback: place at center of land with minimum safe offset
           finalPos = _calculateEmergencySpawnPosition(gridWidth, gridHeight);
           if (finalPos == null) {
-            debugPrint('Emergency spawn also failed for worker ${lw.workerId}. Skipping.');
+            debugPrint(
+              'Emergency spawn also failed for worker ${lw.workerId}. Skipping.',
+            );
             continue;
           }
         }
@@ -477,7 +479,7 @@ class GameProvider with ChangeNotifier {
 
         _workers.add(workerState);
         debugPrint(
-          'Worker ${lw.workerId} loaded at (${workerState.x.toStringAsFixed(2)}, ${workerState.y.toStringAsFixed(2)})'
+          'Worker ${lw.workerId} loaded at (${workerState.x.toStringAsFixed(2)}, ${workerState.y.toStringAsFixed(2)})',
         );
       }
     } catch (e) {
@@ -648,10 +650,12 @@ class GameProvider with ChangeNotifier {
     final _ResolvedJoystickVector input = _resolveJoystickToIsometric(sx, sy);
     final bool hasIntent =
         input.intensity >= _kManualDeadZone && input.hasDirection;
-    
+
     // Debug: log input processing
     if (sx != 0 || sy != 0) {
-      debugPrint('[Input] sx=$sx, sy=$sy -> grid=(${input.gridX.toStringAsFixed(2)}, ${input.gridY.toStringAsFixed(2)}) intensity=${input.intensity.toStringAsFixed(2)}, hasIntent=$hasIntent');
+      debugPrint(
+        '[Input] sx=$sx, sy=$sy -> grid=(${input.gridX.toStringAsFixed(2)}, ${input.gridY.toStringAsFixed(2)}) intensity=${input.intensity.toStringAsFixed(2)}, hasIntent=$hasIntent',
+      );
     }
 
     final double targetSpeed = hasIntent
@@ -738,19 +742,27 @@ class GameProvider with ChangeNotifier {
       gridH: gridH,
     );
     // Check if position changed (collision detection)
-    final bool positionChanged = (resolved.nextX - prevX).abs() > 1e-6 || (resolved.nextY - prevY).abs() > 1e-6;
-    if (!positionChanged && (worker.manualVelocityX.abs() > 0.01 || worker.manualVelocityY.abs() > 0.01)) {
-      debugPrint('[Move] Blocked! velocity=(${worker.manualVelocityX.toStringAsFixed(2)}, ${worker.manualVelocityY.toStringAsFixed(2)}) but position did not change');
+    final bool positionChanged =
+        (resolved.nextX - prevX).abs() > 1e-6 ||
+        (resolved.nextY - prevY).abs() > 1e-6;
+    if (!positionChanged &&
+        (worker.manualVelocityX.abs() > 0.01 ||
+            worker.manualVelocityY.abs() > 0.01)) {
+      debugPrint(
+        '[Move] Blocked! velocity=(${worker.manualVelocityX.toStringAsFixed(2)}, ${worker.manualVelocityY.toStringAsFixed(2)}) but position did not change',
+      );
     }
 
     worker.x = resolved.nextX;
     worker.y = resolved.nextY;
-    
+
     // Debug: log position changes
     if ((worker.x - prevX).abs() > 1e-6 || (worker.y - prevY).abs() > 1e-6) {
-      debugPrint('[Move] Position: ($prevX, $prevY) -> (${worker.x.toStringAsFixed(4)}, ${worker.y.toStringAsFixed(4)}) velocity=(${worker.manualVelocityX}, ${worker.manualVelocityY})');
+      debugPrint(
+        '[Move] Position: ($prevX, $prevY) -> (${worker.x.toStringAsFixed(4)}, ${worker.y.toStringAsFixed(4)}) velocity=(${worker.manualVelocityX}, ${worker.manualVelocityY})',
+      );
     }
-    
+
     if (hasIntent) {
       // Worker is actively moving - set walking state and animate
       worker.direction = nextDir;
@@ -1024,7 +1036,10 @@ class GameProvider with ChangeNotifier {
       nextX: clampedX,
       nextY: clampedY,
       movedDistance: clampedXAxis || clampedYAxis
-          ? math.sqrt((clampedX - nextX) * (clampedX - nextX) + (clampedY - nextY) * (clampedY - nextY))
+          ? math.sqrt(
+              (clampedX - nextX) * (clampedX - nextX) +
+                  (clampedY - nextY) * (clampedY - nextY),
+            )
           : movedDistance,
       blockedX: blockedX || clampedXAxis,
       blockedY: blockedY || clampedYAxis,
@@ -1050,10 +1065,7 @@ class GameProvider with ChangeNotifier {
     final double minBound = adaptiveOffset;
     final double maxXBound = gridW - adaptiveOffset;
     final double maxYBound = gridH - adaptiveOffset;
-    if (x < minBound ||
-        y < minBound ||
-        x > maxXBound ||
-        y > maxYBound) {
+    if (x < minBound || y < minBound || x > maxXBound || y > maxYBound) {
       _logCollisionDebug(
         'Hard boundary blocked: worker at (${x.toStringAsFixed(2)}, ${y.toStringAsFixed(2)}) outside bounds [${minBound.toStringAsFixed(2)}, ${maxXBound.toStringAsFixed(2)}] x [${minBound.toStringAsFixed(2)}, ${maxYBound.toStringAsFixed(2)}]',
       );
@@ -1405,15 +1417,21 @@ class GameProvider with ChangeNotifier {
     return {
       'workerCount': _workers.length,
       'gridSize': '$_gridWidth x $_gridHeight',
-      'playableMask': _playableMask != null ? 'custom (${_playableMask!.length}x${_playableMask!.firstOrNull?.length ?? 0})' : 'null (full rectangular)',
+      'playableMask': _playableMask != null
+          ? 'custom (${_playableMask!.length}x${_playableMask!.firstOrNull?.length ?? 0})'
+          : 'null (full rectangular)',
       'collisionRadius': _kWorkerCollisionRadius,
       'boundaryOffset': _kBoundaryMinOffset,
       'manualControlActive': manualControlActive,
-      'workers': _workers.map((w) => {
-        'id': w.workerId,
-        'pos': '(${w.x.toStringAsFixed(2)}, ${w.y.toStringAsFixed(2)})',
-        'available': w.availability,
-      }).toList(),
+      'workers': _workers
+          .map(
+            (w) => {
+              'id': w.workerId,
+              'pos': '(${w.x.toStringAsFixed(2)}, ${w.y.toStringAsFixed(2)})',
+              'available': w.availability,
+            },
+          )
+          .toList(),
     };
   }
 
@@ -1452,7 +1470,12 @@ class GameProvider with ChangeNotifier {
     );
     if (preferred != null) {
       // Validate it's within safe bounds
-      if (_isPositionWithinSafeBounds(preferred.$1, preferred.$2, gridWidth, gridHeight)) {
+      if (_isPositionWithinSafeBounds(
+        preferred.$1,
+        preferred.$2,
+        gridWidth,
+        gridHeight,
+      )) {
         return preferred;
       }
     }
@@ -1460,9 +1483,19 @@ class GameProvider with ChangeNotifier {
     // Strategy 2: Try center of land
     final centerX = gridWidth / 2.0;
     final centerY = gridHeight / 2.0;
-    final center = _findNearestNavigableCell(centerX, centerY, gridWidth, gridHeight);
+    final center = _findNearestNavigableCell(
+      centerX,
+      centerY,
+      gridWidth,
+      gridHeight,
+    );
     if (center != null &&
-        _isPositionWithinSafeBounds(center.$1, center.$2, gridWidth, gridHeight)) {
+        _isPositionWithinSafeBounds(
+          center.$1,
+          center.$2,
+          gridWidth,
+          gridHeight,
+        )) {
       return center;
     }
 
@@ -1502,11 +1535,17 @@ class GameProvider with ChangeNotifier {
 
   /// Emergency spawn position when normal navigation fails.
   /// Uses minimum safe distance or center of land.
-  (double, double)? _calculateEmergencySpawnPosition(int gridWidth, int gridHeight) {
+  (double, double)? _calculateEmergencySpawnPosition(
+    int gridWidth,
+    int gridHeight,
+  ) {
     if (gridWidth <= 0 || gridHeight <= 0) return null;
 
     // Calculate safe bounds - use minimum of 0.3 if 0.70 is too large for small lands
-    final double minOffset = math.min(_kBoundaryMinOffset, math.min(gridWidth, gridHeight) * 0.25);
+    final double minOffset = math.min(
+      _kBoundaryMinOffset,
+      math.min(gridWidth, gridHeight) * 0.25,
+    );
     final double safeMin = math.max(0.3, minOffset);
     final double safeMaxX = gridWidth - safeMin;
     final double safeMaxY = gridHeight - safeMin;

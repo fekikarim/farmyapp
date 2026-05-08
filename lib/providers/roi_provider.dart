@@ -4,53 +4,51 @@ import '../models/roi_model.dart';
 import '../services/roi_service.dart';
 
 /// Loading state enum for granular UI control
-enum RoiLoadingState {
-  idle,
-  initial,
-  refreshing,
-  backgroundSync,
-}
+enum RoiLoadingState { idle, initial, refreshing, backgroundSync }
 
 /// Enhanced ROI Provider with caching, retry logic, and real-time sync
 class RoiProvider with ChangeNotifier {
   final RoiService _roiService = RoiService();
-  
+
   // State management
   RoiDashboardData? _dashboardData;
   RoiLoadingState _loadingState = RoiLoadingState.idle;
   String? _error;
   bool _hasInitialData = false;
-  
+
   // Caching
   DateTime? _lastFetchTime;
   static const Duration _cacheDuration = Duration(minutes: 5);
   static const Duration _staleDataThreshold = Duration(minutes: 15);
-  
+
   // Retry configuration
   static const int _maxRetries = 3;
   static const Duration _initialRetryDelay = Duration(seconds: 1);
-  
+
   // Background sync
   Timer? _syncTimer;
   static const Duration _syncInterval = Duration(minutes: 2);
-  
+
   // Getters
   RoiDashboardData? get dashboardData => _dashboardData;
   RoiLoadingState get loadingState => _loadingState;
   String? get error => _error;
-  bool get isLoading => _loadingState == RoiLoadingState.initial || 
-                        _loadingState == RoiLoadingState.refreshing;
-  bool get isBackgroundSyncing => _loadingState == RoiLoadingState.backgroundSync;
+  bool get isLoading =>
+      _loadingState == RoiLoadingState.initial ||
+      _loadingState == RoiLoadingState.refreshing;
+  bool get isBackgroundSyncing =>
+      _loadingState == RoiLoadingState.backgroundSync;
   bool get hasInitialData => _hasInitialData;
   bool get hasError => _error != null;
-  bool get hasData => _dashboardData != null && _dashboardData!.overview.isValid;
-  
+  bool get hasData =>
+      _dashboardData != null && _dashboardData!.overview.isValid;
+
   /// Check if cached data is still fresh
   bool get isCacheFresh {
     if (_lastFetchTime == null) return false;
     return DateTime.now().difference(_lastFetchTime!) < _cacheDuration;
   }
-  
+
   /// Check if data is stale (needs background refresh)
   bool get isDataStale {
     if (_lastFetchTime == null) return true;
@@ -61,7 +59,7 @@ class RoiProvider with ChangeNotifier {
   void initialize() {
     startAutoSync();
   }
-  
+
   /// Dispose and cleanup
   @override
   void dispose() {
@@ -78,7 +76,7 @@ class RoiProvider with ChangeNotifier {
       }
     });
   }
-  
+
   /// Stop automatic synchronization
   void stopAutoSync() {
     _syncTimer?.cancel();
@@ -91,7 +89,7 @@ class RoiProvider with ChangeNotifier {
     if (!forceRefresh && isCacheFresh && _dashboardData != null) {
       return;
     }
-    
+
     // Set appropriate loading state
     if (_dashboardData == null) {
       _loadingState = RoiLoadingState.initial;
@@ -129,14 +127,14 @@ class RoiProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-  
+
   /// Background sync (silent refresh)
   Future<void> syncBackground() async {
     if (_loadingState != RoiLoadingState.idle) return;
-    
+
     _loadingState = RoiLoadingState.backgroundSync;
     notifyListeners();
-    
+
     try {
       final data = await _fetchWithRetry();
       _dashboardData = data;
@@ -150,12 +148,12 @@ class RoiProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-  
+
   /// Fetch with exponential backoff retry
   Future<RoiDashboardData> _fetchWithRetry() async {
     int attempts = 0;
     Duration delay = _initialRetryDelay;
-    
+
     while (attempts < _maxRetries) {
       try {
         return await _roiService.getRoiDashboard();
@@ -164,17 +162,17 @@ class RoiProvider with ChangeNotifier {
         if (attempts >= _maxRetries) {
           throw e;
         }
-        
+
         // Don't retry on authentication errors
         if (e.isAuthenticationError) {
           throw e;
         }
-        
+
         await Future.delayed(delay);
         delay *= 2; // Exponential backoff
       }
     }
-    
+
     throw RoiException('Max retry attempts reached');
   }
 
@@ -187,17 +185,17 @@ class RoiProvider with ChangeNotifier {
     _lastFetchTime = null;
     notifyListeners();
   }
-  
+
   /// Clear error and retry
   Future<void> retry() async {
     _error = null;
     await fetchDashboardData(forceRefresh: true);
   }
-  
+
   /// Get profit summary with product revenue breakdown
   ProfitSummary? get profitSummary {
     if (_dashboardData == null) return null;
-    
+
     final overview = _dashboardData!.overview;
     return ProfitSummary(
       totalNetProfit: overview.netProfit,
@@ -242,13 +240,13 @@ class ProfitSummary {
 class RoiException implements Exception {
   final String message;
   final RoiErrorType type;
-  
+
   RoiException(this.message, {this.type = RoiErrorType.unknown});
-  
+
   bool get isNetworkError => type == RoiErrorType.network;
   bool get isAuthenticationError => type == RoiErrorType.authentication;
   bool get isServerError => type == RoiErrorType.server;
-  
+
   String get userFriendlyMessage {
     switch (type) {
       case RoiErrorType.network:
@@ -264,15 +262,9 @@ class RoiException implements Exception {
         return 'Something went wrong. Please try again.';
     }
   }
-  
+
   @override
   String toString() => 'RoiException: $message (type: $type)';
 }
 
-enum RoiErrorType {
-  network,
-  authentication,
-  server,
-  timeout,
-  unknown,
-}
+enum RoiErrorType { network, authentication, server, timeout, unknown }

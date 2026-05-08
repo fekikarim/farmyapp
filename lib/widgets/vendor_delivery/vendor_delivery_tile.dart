@@ -55,8 +55,11 @@ class VendorDeliveryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final color = _statusColor(delivery.deliveryStatus);
-    final customerName = delivery.customer?.name ?? AppLocalizations.of(context)!.unknownCustomer;
-    final productName = delivery.order?.productName ?? AppLocalizations.of(context)!.orderLabel;
+    final customerName =
+        delivery.customer?.name ??
+        AppLocalizations.of(context)!.unknownCustomer;
+    final productName =
+        delivery.order?.productName ?? AppLocalizations.of(context)!.orderLabel;
     final amount = delivery.order?.totalPrice ?? 0;
 
     return Container(
@@ -133,7 +136,9 @@ class VendorDeliveryTile extends StatelessWidget {
 
                     // Amount
                     Text(
-                      AppLocalizations.of(context)!.priceTnd(amount.toStringAsFixed(2)),
+                      AppLocalizations.of(
+                        context,
+                      )!.priceTnd(amount.toStringAsFixed(2)),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,

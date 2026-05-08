@@ -52,7 +52,9 @@ class _InvestorFarmingActivitiesScreenState
                     onPressed: () {
                       // Navigate to Explore
                     },
-                    child: Text(AppLocalizations.of(context)!.rentLandToStartUpper),
+                    child: Text(
+                      AppLocalizations.of(context)!.rentLandToStartUpper,
+                    ),
                   ),
                 ],
               ),
@@ -93,14 +95,22 @@ class _InvestorFarmingActivitiesScreenState
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  AppLocalizations.of(context)!.plotNumber(rental.landId.substring(0, 6)),
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.plotNumber(rental.landId.substring(0, 6)),
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
-                                  AppLocalizations.of(context)!.rentalExpires(rental.rentalEndDate?.toLocal().toString().split(' ')[0] ?? AppLocalizations.of(context)!.na),
+                                  AppLocalizations.of(context)!.rentalExpires(
+                                    rental.rentalEndDate
+                                            ?.toLocal()
+                                            .toString()
+                                            .split(' ')[0] ??
+                                        AppLocalizations.of(context)!.na,
+                                  ),
                                   style: TextStyle(color: Colors.grey[600]),
                                 ),
                               ],
@@ -128,7 +138,9 @@ class _InvestorFarmingActivitiesScreenState
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              AppLocalizations.of(context)!.readyForActivityHint,
+                              AppLocalizations.of(
+                                context,
+                              )!.readyForActivityHint,
                             ),
                           ),
                         ],

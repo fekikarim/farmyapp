@@ -71,8 +71,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Profile Header
-              if (user != null) _buildProfileHeader(context, user, workerProvider),
-              
+              if (user != null)
+                _buildProfileHeader(context, user, workerProvider),
+
               const SizedBox(height: 32),
 
               // 1. Account & Security
@@ -84,31 +85,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     context,
                     icon: Icons.person_outline_rounded,
                     title: AppLocalizations.of(context)!.editProfile,
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfileScreen())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const EditProfileScreen(),
+                      ),
+                    ),
                   ),
                   _buildSettingsTile(
                     context,
                     icon: Icons.lock_outline_rounded,
                     title: AppLocalizations.of(context)!.changePassword,
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChangePasswordScreen())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ChangePasswordScreen(),
+                      ),
+                    ),
                   ),
                   _buildSettingsTile(
                     context,
-                    icon: (user?.isTwoFactorEnabled ?? false) ? Icons.verified_user_rounded : Icons.verified_user_outlined,
-                    title: (user?.isTwoFactorEnabled ?? false) ? AppLocalizations.of(context)!.disable2fa : AppLocalizations.of(context)!.enable2fa,
+                    icon: (user?.isTwoFactorEnabled ?? false)
+                        ? Icons.verified_user_rounded
+                        : Icons.verified_user_outlined,
+                    title: (user?.isTwoFactorEnabled ?? false)
+                        ? AppLocalizations.of(context)!.disable2fa
+                        : AppLocalizations.of(context)!.enable2fa,
                     trailing: _buildBadge(
                       context,
-                      label: (user?.isTwoFactorEnabled ?? false) ? AppLocalizations.of(context)!.enabled : AppLocalizations.of(context)!.off,
+                      label: (user?.isTwoFactorEnabled ?? false)
+                          ? AppLocalizations.of(context)!.enabled
+                          : AppLocalizations.of(context)!.off,
                       isActive: user?.isTwoFactorEnabled ?? false,
                     ),
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Enable2FAScreen())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const Enable2FAScreen(),
+                      ),
+                    ),
                   ),
                 ],
               ),
 
               // 2. Commercial & Finances
               const SizedBox(height: 24),
-              _buildSectionTitle(theme, AppLocalizations.of(context)!.commercialFinances),
+              _buildSectionTitle(
+                theme,
+                AppLocalizations.of(context)!.commercialFinances,
+              ),
               _buildSettingsGroup(
                 context,
                 children: [
@@ -117,42 +142,70 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     context,
                     icon: Icons.account_balance_wallet_outlined,
                     title: AppLocalizations.of(context)!.walletCards,
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentMethodsScreen())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const PaymentMethodsScreen(),
+                      ),
+                    ),
                   ),
                   if (user?.role == 'customer')
                     _buildSettingsTile(
                       context,
                       icon: Icons.shopping_bag_outlined,
                       title: AppLocalizations.of(context)!.myOrders,
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyOrdersScreen())),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const MyOrdersScreen(),
+                        ),
+                      ),
                     ),
                   if (user?.role == 'investor')
                     _buildSettingsTile(
                       context,
                       icon: Icons.trending_up_rounded,
                       title: AppLocalizations.of(context)!.myInvestments,
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const InvestorMyInvestmentsScreen())),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const InvestorMyInvestmentsScreen(),
+                        ),
+                      ),
                     ),
                   _buildSettingsTile(
                     context,
                     icon: Icons.receipt_long_rounded,
                     title: AppLocalizations.of(context)!.invoiceGenerator,
                     trailing: _buildFormatBadge('PDF', Colors.red),
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const InvoiceGeneratorScreen())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const InvoiceGeneratorScreen(),
+                      ),
+                    ),
                   ),
                   _buildSettingsTile(
                     context,
                     icon: Icons.hub_outlined,
                     title: AppLocalizations.of(context)!.hederaRegistry,
                     trailing: _buildFormatBadge('HCS', Colors.deepPurple),
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HederaRegistryScreen())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const HederaRegistryScreen(),
+                      ),
+                    ),
                   ),
                 ],
               ),
 
               // 3. Role Management
               const SizedBox(height: 24),
-              _buildSectionTitle(theme, AppLocalizations.of(context)!.professionalTools),
+              _buildSectionTitle(
+                theme,
+                AppLocalizations.of(context)!.professionalTools,
+              ),
               _buildSettingsGroup(
                 context,
                 children: [
@@ -162,14 +215,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         context,
                         icon: Icons.engineering_outlined,
                         title: AppLocalizations.of(context)!.becomeWorker,
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BecomeWorkerScreen())).then((_) => workerProvider.loadMyProfile()),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const BecomeWorkerScreen(),
+                          ),
+                        ).then((_) => workerProvider.loadMyProfile()),
                       )
                     else
                       _buildSettingsTile(
                         context,
                         icon: Icons.dashboard_customize_outlined,
                         title: AppLocalizations.of(context)!.workerDashboard,
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkerDashboardScreen())),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const WorkerDashboardScreen(),
+                          ),
+                        ),
                       ),
                     _buildSettingsTile(
                       context,
@@ -189,27 +252,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       context,
                       icon: Icons.work_outline_rounded,
                       title: AppLocalizations.of(context)!.manageJobs,
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ManageJobsScreen())),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ManageJobsScreen(),
+                        ),
+                      ),
                     ),
-                  if (['farmer', 'investor', 'admin'].contains(user?.role.toLowerCase()))
+                  if ([
+                    'farmer',
+                    'investor',
+                    'admin',
+                  ].contains(user?.role.toLowerCase()))
                     _buildSettingsTile(
                       context,
                       icon: Icons.verified_user_outlined,
                       title: AppLocalizations.of(context)!.aiProofRequests,
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProofRequestsScreen())),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ProofRequestsScreen(),
+                        ),
+                      ),
                     ),
                 ],
               ),
 
               // 4. Preferences
               const SizedBox(height: 24),
-              _buildSectionTitle(theme, AppLocalizations.of(context)!.appearance),
+              _buildSectionTitle(
+                theme,
+                AppLocalizations.of(context)!.appearance,
+              ),
               _buildSettingsGroup(
                 context,
                 children: [
                   _buildSwitchTile(
                     context,
-                    icon: isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                    icon: isDark
+                        ? Icons.dark_mode_rounded
+                        : Icons.light_mode_rounded,
                     title: AppLocalizations.of(context)!.darkMode,
                     value: isDark,
                     onChanged: (val) => themeProvider.toggleTheme(val),
@@ -219,8 +301,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: Icons.translate_rounded,
                     title: AppLocalizations.of(context)!.language,
                     trailing: Text(
-                      _getLanguageName(localeProvider.locale?.languageCode ?? 'en'),
-                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+                      _getLanguageName(
+                        localeProvider.locale?.languageCode ?? 'en',
+                      ),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     onTap: () => _showLanguageDialog(context),
                   ),
@@ -228,7 +315,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     context,
                     icon: Icons.notifications_none_rounded,
                     title: AppLocalizations.of(context)!.notifications,
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationsScreen(),
+                      ),
+                    ),
                   ),
                   if (user?.role == 'investor')
                     _buildSwitchTile(
@@ -236,14 +328,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: Icons.videogame_asset_outlined,
                       title: AppLocalizations.of(context)!.enableGameEdgePanel,
                       value: gameProvider.showEdgePanel,
-                      onChanged: (val) => gameProvider.setEdgePanelVisibility(val),
+                      onChanged: (val) =>
+                          gameProvider.setEdgePanelVisibility(val),
                     ),
                 ],
               ),
 
               // 5. Support
               const SizedBox(height: 24),
-              _buildSectionTitle(theme, AppLocalizations.of(context)!.helpSupport),
+              _buildSectionTitle(
+                theme,
+                AppLocalizations.of(context)!.helpSupport,
+              ),
               _buildSettingsGroup(
                 context,
                 children: [
@@ -251,13 +347,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     context,
                     icon: Icons.support_agent_rounded,
                     title: AppLocalizations.of(context)!.helpCenterReports,
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FeedbackListScreen())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const FeedbackListScreen(),
+                      ),
+                    ),
                   ),
                   _buildSettingsTile(
                     context,
                     icon: Icons.info_outline_rounded,
                     title: AppLocalizations.of(context)!.aboutUs,
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutUsScreen())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AboutUsScreen()),
+                    ),
                   ),
                 ],
               ),
@@ -271,19 +375,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onPressed: () async {
                     await authProvider.logout();
                     if (context.mounted) {
-                      Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil('/', (route) => false);
                     }
                   },
                   icon: const Icon(Icons.logout_rounded),
-                  label: Text(AppLocalizations.of(context)!.logout.toUpperCase()),
+                  label: Text(
+                    AppLocalizations.of(context)!.logout.toUpperCase(),
+                  ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.error.withValues(alpha: 0.1),
+                    backgroundColor: theme.colorScheme.error.withValues(
+                      alpha: 0.1,
+                    ),
                     foregroundColor: theme.colorScheme.error,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: theme.colorScheme.error.withValues(alpha: 0.2)),
+                      side: BorderSide(
+                        color: theme.colorScheme.error.withValues(alpha: 0.2),
+                      ),
                     ),
                   ),
                 ),
@@ -295,12 +407,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     Text(
                       '© ${DateTime.now().year} Farmy Team',
-                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withValues(alpha: 0.4), fontWeight: FontWeight.bold),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.4,
+                        ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'v1.0.0 Stable',
-                      style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.3,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -313,7 +434,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, dynamic user, WorkerProvider workerProvider) {
+  Widget _buildProfileHeader(
+    BuildContext context,
+    dynamic user,
+    WorkerProvider workerProvider,
+  ) {
     final theme = Theme.of(context);
     return Center(
       child: Column(
@@ -322,20 +447,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.2), width: 2),
+              border: Border.all(
+                color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                width: 2,
+              ),
             ),
             child: CircleAvatar(
               radius: 50,
               backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
               backgroundImage: user.profilePicture != null
-                  ? NetworkImage(user.profilePicture!.startsWith('http') ? user.profilePicture! : '${AuthService.baseUrl}${user.profilePicture!}')
+                  ? NetworkImage(
+                      user.profilePicture!.startsWith('http')
+                          ? user.profilePicture!
+                          : '${AuthService.baseUrl}${user.profilePicture!}',
+                    )
                   : null,
-              child: user.profilePicture == null ? Icon(Icons.person_rounded, size: 50, color: theme.colorScheme.primary) : null,
+              child: user.profilePicture == null
+                  ? Icon(
+                      Icons.person_rounded,
+                      size: 50,
+                      color: theme.colorScheme.primary,
+                    )
+                  : null,
             ),
           ),
           const SizedBox(height: 16),
-          Text(user.name ?? 'Farmy User', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
-          Text(user.email, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface.withValues(alpha: 0.5))),
+          Text(
+            user.name ?? 'Farmy User',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          Text(
+            user.email,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
+          ),
           const SizedBox(height: 16),
           _buildRoleBadges(context, user, workerProvider),
         ],
@@ -343,26 +491,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildRoleBadges(BuildContext context, dynamic user, WorkerProvider workerProvider) {
+  Widget _buildRoleBadges(
+    BuildContext context,
+    dynamic user,
+    WorkerProvider workerProvider,
+  ) {
     final theme = Theme.of(context);
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       alignment: WrapAlignment.center,
       children: [
-        _buildRoleChip(context, label: _getRoleLabel(context, user.role).toUpperCase(), color: theme.colorScheme.primary),
-        if (workerProvider.myProfile != null && user.role == 'customer')
-          _buildRoleChip(context, label: AppLocalizations.of(context)!.worker.toUpperCase(), color: Colors.blue),
         _buildRoleChip(
           context,
-          label: user.isVerified ? AppLocalizations.of(context)!.verified : AppLocalizations.of(context)!.unverified,
+          label: _getRoleLabel(context, user.role).toUpperCase(),
+          color: theme.colorScheme.primary,
+        ),
+        if (workerProvider.myProfile != null && user.role == 'customer')
+          _buildRoleChip(
+            context,
+            label: AppLocalizations.of(context)!.worker.toUpperCase(),
+            color: Colors.blue,
+          ),
+        _buildRoleChip(
+          context,
+          label: user.isVerified
+              ? AppLocalizations.of(context)!.verified
+              : AppLocalizations.of(context)!.unverified,
           color: user.isVerified ? Colors.green : Colors.orange,
         ),
       ],
     );
   }
 
-  Widget _buildRoleChip(BuildContext context, {required String label, required Color color}) {
+  Widget _buildRoleChip(
+    BuildContext context, {
+    required String label,
+    required Color color,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -370,7 +536,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
-      child: Text(label, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 0.5,
+        ),
+      ),
     );
   }
 
@@ -379,103 +553,191 @@ class _SettingsScreenState extends State<SettingsScreen> {
       padding: const EdgeInsets.only(left: 8, bottom: 12),
       child: Text(
         title.toUpperCase(),
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.5, color: theme.colorScheme.primary.withValues(alpha: 0.8)),
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.5,
+          color: theme.colorScheme.primary.withValues(alpha: 0.8),
+        ),
       ),
     );
   }
 
-  Widget _buildSettingsGroup(BuildContext context, {required List<Widget> children}) {
+  Widget _buildSettingsGroup(
+    BuildContext context, {
+    required List<Widget> children,
+  }) {
     final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        ),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 15, offset: const Offset(0, 8)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
         ],
       ),
       child: Column(children: children),
     );
   }
 
-  Widget _buildSettingsTile(BuildContext context, {required IconData icon, required String title, Widget? trailing, required VoidCallback onTap}) {
+  Widget _buildSettingsTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    Widget? trailing,
+    required VoidCallback onTap,
+  }) {
     final theme = Theme.of(context);
     return ListTile(
       leading: Container(
         padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Icon(icon, color: theme.colorScheme.primary, size: 20),
       ),
-      title: Text(title, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
-      trailing: trailing ?? Icon(Icons.arrow_forward_ios_rounded, size: 14, color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
+      title: Text(
+        title,
+        style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+      ),
+      trailing:
+          trailing ??
+          Icon(
+            Icons.arrow_forward_ios_rounded,
+            size: 14,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+          ),
       onTap: onTap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
     );
   }
 
-  Widget _buildSwitchTile(BuildContext context, {required IconData icon, required String title, required bool value, required ValueChanged<bool> onChanged}) {
+  Widget _buildSwitchTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
     final theme = Theme.of(context);
     return SwitchListTile(
       secondary: Container(
         padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Icon(icon, color: theme.colorScheme.primary, size: 20),
       ),
-      title: Text(title, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
+      title: Text(
+        title,
+        style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+      ),
       value: value,
       onChanged: onChanged,
       activeColor: theme.colorScheme.primary,
     );
   }
 
-  Widget _buildSubscriptionTile(BuildContext context, SubscriptionProvider subProvider) {
+  Widget _buildSubscriptionTile(
+    BuildContext context,
+    SubscriptionProvider subProvider,
+  ) {
     final sub = subProvider.currentSubscription;
     final isFree = sub?.plan.planKey.contains('free') ?? true;
     return _buildSettingsTile(
       context,
       icon: Icons.auto_awesome_rounded,
       title: sub?.plan.name ?? 'Free Tier',
-      trailing: _buildBadge(context, label: isFree ? 'FREE' : 'PRO', isActive: !isFree, activeColor: Colors.amber),
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionsScreen())),
+      trailing: _buildBadge(
+        context,
+        label: isFree ? 'FREE' : 'PRO',
+        isActive: !isFree,
+        activeColor: Colors.amber,
+      ),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const SubscriptionsScreen()),
+      ),
     );
   }
 
-  Widget _buildBadge(BuildContext context, {required String label, required bool isActive, Color activeColor = Colors.green}) {
+  Widget _buildBadge(
+    BuildContext context, {
+    required String label,
+    required bool isActive,
+    Color activeColor = Colors.green,
+  }) {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: isActive ? activeColor.withValues(alpha: 0.1) : theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        color: isActive
+            ? activeColor.withValues(alpha: 0.1)
+            : theme.colorScheme.onSurface.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: isActive ? activeColor : Colors.transparent),
       ),
-      child: Text(label, style: TextStyle(color: isActive ? activeColor : Colors.grey, fontSize: 10, fontWeight: FontWeight.bold)),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: isActive ? activeColor : Colors.grey,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 
   Widget _buildFormatBadge(String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(6)),
-      child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 9,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 
   String _getLanguageName(String code) {
     switch (code) {
-      case 'en': return 'English';
-      case 'fr': return 'Français';
-      case 'es': return 'Español';
-      default: return code.toUpperCase();
+      case 'en':
+        return 'English';
+      case 'fr':
+        return 'Français';
+      case 'es':
+        return 'Español';
+      default:
+        return code.toUpperCase();
     }
   }
+
   String _getRoleLabel(BuildContext context, String role) {
     switch (role.toLowerCase()) {
-      case 'farmer': return AppLocalizations.of(context)!.farmer;
-      case 'investor': return AppLocalizations.of(context)!.investor;
-      case 'customer': return AppLocalizations.of(context)!.customerLabel;
-      default: return role;
+      case 'farmer':
+        return AppLocalizations.of(context)!.farmer;
+      case 'investor':
+        return AppLocalizations.of(context)!.investor;
+      case 'customer':
+        return AppLocalizations.of(context)!.customerLabel;
+      default:
+        return role;
     }
   }
 
@@ -494,18 +756,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
           title: Text(
             AppLocalizations.of(context)!.selectLanguage,
             textAlign: TextAlign.center,
-            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w900,
+            ),
           ),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(32),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 20,
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildLanguageOption(context, 'en', 'English', '🇺🇸', currentLocale == 'en'),
+              _buildLanguageOption(
+                context,
+                'en',
+                'English',
+                '🇺🇸',
+                currentLocale == 'en',
+              ),
               const SizedBox(height: 8),
-              _buildLanguageOption(context, 'fr', 'Français', '🇫🇷', currentLocale == 'fr'),
+              _buildLanguageOption(
+                context,
+                'fr',
+                'Français',
+                '🇫🇷',
+                currentLocale == 'fr',
+              ),
               const SizedBox(height: 8),
-              _buildLanguageOption(context, 'es', 'Español', '🇪🇸', currentLocale == 'es'),
+              _buildLanguageOption(
+                context,
+                'es',
+                'Español',
+                '🇪🇸',
+                currentLocale == 'es',
+              ),
             ],
           ),
         ),
@@ -513,14 +800,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildLanguageOption(BuildContext context, String code, String name, String flag, bool isSelected) {
+  Widget _buildLanguageOption(
+    BuildContext context,
+    String code,
+    String name,
+    String flag,
+    bool isSelected,
+  ) {
     final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.1) : Colors.transparent,
+        color: isSelected
+            ? theme.colorScheme.primary.withValues(alpha: 0.1)
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.3) : Colors.transparent,
+          color: isSelected
+              ? theme.colorScheme.primary.withValues(alpha: 0.3)
+              : Colors.transparent,
           width: 1.5,
         ),
       ),
@@ -530,10 +827,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           name,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-            color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface,
+            color: isSelected
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurface,
           ),
         ),
-        trailing: isSelected ? Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary) : null,
+        trailing: isSelected
+            ? Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary)
+            : null,
         onTap: () {
           context.read<LocaleProvider>().setLocale(Locale(code));
           Navigator.pop(context);
@@ -544,6 +845,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _handleKyc(BuildContext context, String targetRole) async {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => KycFlowScreen(role: targetRole)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => KycFlowScreen(role: targetRole)),
+    );
   }
 }

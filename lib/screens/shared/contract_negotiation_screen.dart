@@ -288,7 +288,10 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
   Future<void> _workerAccept() async {
     final confirmed = await _showConfirmationDialog(
       title: AppLocalizations.of(context)!.acceptThisOfferQuestion,
-      message: AppLocalizations.of(context)!.acceptOfferConfirmation(_liveContract.salaryAmount.toStringAsFixed(0), _translateSalaryTypeLabel(context, _liveContract.salaryTypeLabel)),
+      message: AppLocalizations.of(context)!.acceptOfferConfirmation(
+        _liveContract.salaryAmount.toStringAsFixed(0),
+        _translateSalaryTypeLabel(context, _liveContract.salaryTypeLabel),
+      ),
       confirmLabel: AppLocalizations.of(context)!.accept,
       confirmColor: Colors.green.shade600,
       icon: Icons.check_circle_outline,
@@ -307,7 +310,10 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
         _showSnack(AppLocalizations.of(context)!.contractApproved);
         if (mounted) Navigator.pop(context, true);
       } else {
-        _showSnack(provider.lastError ?? AppLocalizations.of(context)!.failedToAccept, isError: true);
+        _showSnack(
+          provider.lastError ?? AppLocalizations.of(context)!.failedToAccept,
+          isError: true,
+        );
       }
       setState(() => _actionLoading = false);
     }
@@ -317,7 +323,9 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
   Future<void> _workerDecline() async {
     final confirmed = await _showConfirmationDialog(
       title: AppLocalizations.of(context)!.declineThisOfferQuestion,
-      message: AppLocalizations.of(context)!.declineOfferConfirmation(_liveContract.investorName ?? AppLocalizations.of(context)!.theInvestor),
+      message: AppLocalizations.of(context)!.declineOfferConfirmation(
+        _liveContract.investorName ?? AppLocalizations.of(context)!.theInvestor,
+      ),
       confirmLabel: AppLocalizations.of(context)!.decline,
       confirmColor: Colors.red,
       icon: Icons.cancel_outlined,
@@ -336,7 +344,10 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
         _showSnack(AppLocalizations.of(context)!.contractDeclined);
         if (mounted) Navigator.pop(context, true);
       } else {
-        _showSnack(provider.lastError ?? AppLocalizations.of(context)!.failedToDecline, isError: true);
+        _showSnack(
+          provider.lastError ?? AppLocalizations.of(context)!.failedToDecline,
+          isError: true,
+        );
       }
       setState(() => _actionLoading = false);
     }
@@ -346,7 +357,10 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
   Future<void> _workerSendCounter() async {
     final comment = _commentController.text.trim();
     if (comment.isEmpty) {
-      _showSnack(AppLocalizations.of(context)!.pleaseEnterAMessage, isError: true);
+      _showSnack(
+        AppLocalizations.of(context)!.pleaseEnterAMessage,
+        isError: true,
+      );
       return;
     }
 
@@ -354,7 +368,10 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     if (_salaryController.text.isNotEmpty) {
       proposedSalary = double.tryParse(_salaryController.text);
       if (proposedSalary == null || proposedSalary <= 0) {
-        _showSnack(AppLocalizations.of(context)!.pleaseEnterValidSalary, isError: true);
+        _showSnack(
+          AppLocalizations.of(context)!.pleaseEnterValidSalary,
+          isError: true,
+        );
         return;
       }
     }
@@ -382,7 +399,8 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
         _showSnack(AppLocalizations.of(context)!.counterOfferSent);
       } else {
         _showSnack(
-          provider.lastError ?? AppLocalizations.of(context)!.failedToSendCounterOffer,
+          provider.lastError ??
+              AppLocalizations.of(context)!.failedToSendCounterOffer,
           isError: true,
         );
       }
@@ -417,7 +435,10 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
   Future<void> _submitEdit() async {
     final comment = _editCommentController.text.trim();
     if (comment.isEmpty) {
-      _showSnack(AppLocalizations.of(context)!.messageCannotBeEmpty, isError: true);
+      _showSnack(
+        AppLocalizations.of(context)!.messageCannotBeEmpty,
+        isError: true,
+      );
       return;
     }
 
@@ -425,7 +446,10 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     if (_editSalaryController.text.isNotEmpty) {
       proposedSalary = double.tryParse(_editSalaryController.text);
       if (proposedSalary == null || proposedSalary <= 0) {
-        _showSnack(AppLocalizations.of(context)!.pleaseEnterValidSalary, isError: true);
+        _showSnack(
+          AppLocalizations.of(context)!.pleaseEnterValidSalary,
+          isError: true,
+        );
         return;
       }
     }
@@ -448,7 +472,8 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
         _showSnack(AppLocalizations.of(context)!.messageUpdated);
       } else {
         _showSnack(
-          provider.lastError ?? AppLocalizations.of(context)!.failedToEditMessage,
+          provider.lastError ??
+              AppLocalizations.of(context)!.failedToEditMessage,
           isError: true,
         );
       }
@@ -482,7 +507,8 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
         _showSnack(AppLocalizations.of(context)!.messageWithdrawn);
       } else {
         _showSnack(
-          provider.lastError ?? AppLocalizations.of(context)!.failedToWithdrawMessage,
+          provider.lastError ??
+              AppLocalizations.of(context)!.failedToWithdrawMessage,
           isError: true,
         );
       }
@@ -496,7 +522,11 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
   Future<void> _investorAccept() async {
     final confirmed = await _showConfirmationDialog(
       title: AppLocalizations.of(context)!.acceptThisOfferQuestion,
-      message: AppLocalizations.of(context)!.investorAcceptOfferConfirmation(_liveContract.workerName ?? AppLocalizations.of(context)!.theWorker, _liveContract.salaryAmount.toStringAsFixed(0), _translateSalaryTypeLabel(context, _liveContract.salaryTypeLabel)),
+      message: AppLocalizations.of(context)!.investorAcceptOfferConfirmation(
+        _liveContract.workerName ?? AppLocalizations.of(context)!.theWorker,
+        _liveContract.salaryAmount.toStringAsFixed(0),
+        _translateSalaryTypeLabel(context, _liveContract.salaryTypeLabel),
+      ),
       confirmLabel: AppLocalizations.of(context)!.accept,
       confirmColor: Colors.green.shade600,
       icon: Icons.check_circle_outline,
@@ -516,7 +546,10 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
         _scrollToBottom();
         _showSnack(AppLocalizations.of(context)!.offerAcceptedProceedToPayment);
       } else {
-        _showSnack(provider.lastError ?? AppLocalizations.of(context)!.failedToAccept, isError: true);
+        _showSnack(
+          provider.lastError ?? AppLocalizations.of(context)!.failedToAccept,
+          isError: true,
+        );
       }
       setState(() => _actionLoading = false);
     }
@@ -526,7 +559,9 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
   Future<void> _investorDecline() async {
     final confirmed = await _showConfirmationDialog(
       title: AppLocalizations.of(context)!.declineNegotiationQuestion,
-      message: AppLocalizations.of(context)!.declineNegotiationConfirmation(_liveContract.workerName ?? AppLocalizations.of(context)!.thisWorker),
+      message: AppLocalizations.of(context)!.declineNegotiationConfirmation(
+        _liveContract.workerName ?? AppLocalizations.of(context)!.thisWorker,
+      ),
       confirmLabel: AppLocalizations.of(context)!.decline,
       confirmColor: Colors.red,
       icon: Icons.cancel_outlined,
@@ -546,7 +581,10 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
         _scrollToBottom();
         _showSnack(AppLocalizations.of(context)!.negotiationDeclined);
       } else {
-        _showSnack(provider.lastError ?? AppLocalizations.of(context)!.failedToDecline, isError: true);
+        _showSnack(
+          provider.lastError ?? AppLocalizations.of(context)!.failedToDecline,
+          isError: true,
+        );
       }
       setState(() => _actionLoading = false);
     }
@@ -556,7 +594,10 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
   Future<void> _investorSendCounter() async {
     final comment = _commentController.text.trim();
     if (comment.isEmpty) {
-      _showSnack(AppLocalizations.of(context)!.pleaseEnterAMessage, isError: true);
+      _showSnack(
+        AppLocalizations.of(context)!.pleaseEnterAMessage,
+        isError: true,
+      );
       return;
     }
 
@@ -564,7 +605,10 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     if (_salaryController.text.isNotEmpty) {
       proposedSalary = double.tryParse(_salaryController.text);
       if (proposedSalary == null || proposedSalary <= 0) {
-        _showSnack(AppLocalizations.of(context)!.pleaseEnterValidSalary, isError: true);
+        _showSnack(
+          AppLocalizations.of(context)!.pleaseEnterValidSalary,
+          isError: true,
+        );
         return;
       }
     }
@@ -592,7 +636,8 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
         _showSnack(AppLocalizations.of(context)!.counterOfferSent);
       } else {
         _showSnack(
-          provider.lastError ?? AppLocalizations.of(context)!.failedToSendCounterOffer,
+          provider.lastError ??
+              AppLocalizations.of(context)!.failedToSendCounterOffer,
           isError: true,
         );
       }
@@ -615,14 +660,20 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
 
       if (paymentData.isEmpty) {
         setState(() => _actionLoading = false);
-        _showSnack(AppLocalizations.of(context)!.failedToCreatePayment, isError: true);
+        _showSnack(
+          AppLocalizations.of(context)!.failedToCreatePayment,
+          isError: true,
+        );
         return;
       }
 
       final activated = paymentData['activated'] as bool? ?? false;
       if (activated) {
         setState(() => _actionLoading = false);
-        _showSnack(paymentData['message'] ?? AppLocalizations.of(context)!.contractActivated);
+        _showSnack(
+          paymentData['message'] ??
+              AppLocalizations.of(context)!.contractActivated,
+        );
         await _onRefresh();
         return;
       }
@@ -637,7 +688,10 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
           customerId == null ||
           publishableKey == null) {
         setState(() => _actionLoading = false);
-        _showSnack(AppLocalizations.of(context)!.invalidPaymentData, isError: true);
+        _showSnack(
+          AppLocalizations.of(context)!.invalidPaymentData,
+          isError: true,
+        );
         return;
       }
 
@@ -677,7 +731,9 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     } on StripeException catch (e) {
       if (mounted) {
         setState(() => _actionLoading = false);
-        final msg = e.error.localizedMessage ?? AppLocalizations.of(context)!.paymentCancelled;
+        final msg =
+            e.error.localizedMessage ??
+            AppLocalizations.of(context)!.paymentCancelled;
         if (e.error.code != FailureCode.Canceled) {
           _showSnack(msg, isError: true);
         }
@@ -687,7 +743,9 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
       if (mounted) {
         setState(() => _actionLoading = false);
         _showSnack(
-          AppLocalizations.of(context)!.paymentFailedWithError(e.toString().replaceAll('Exception: ', '')),
+          AppLocalizations.of(
+            context,
+          )!.paymentFailedWithError(e.toString().replaceAll('Exception: ', '')),
           isError: true,
         );
       }
@@ -726,7 +784,8 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              _liveContract.workerName ?? AppLocalizations.of(context)!.contract,
+              _liveContract.workerName ??
+                  AppLocalizations.of(context)!.contract,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -734,10 +793,15 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
               ),
             ),
             Text(
-              AppLocalizations.of(context)!.amountPrefix(_liveContract.salaryAmount.toStringAsFixed(0)) + 
-              _translateSalaryTypeLabel(context, _liveContract.salaryTypeLabel) + 
-              " \u2022 " + 
-              _translateContractStatus(context, _liveContract.statusLabel),
+              AppLocalizations.of(context)!.amountPrefix(
+                    _liveContract.salaryAmount.toStringAsFixed(0),
+                  ) +
+                  _translateSalaryTypeLabel(
+                    context,
+                    _liveContract.salaryTypeLabel,
+                  ) +
+                  " \u2022 " +
+                  _translateContractStatus(context, _liveContract.statusLabel),
               style: TextStyle(
                 fontSize: 12,
                 color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
@@ -855,7 +919,10 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.contractForWorker(_liveContract.workerName ?? AppLocalizations.of(context)!.worker),
+                  AppLocalizations.of(context)!.contractForWorker(
+                    _liveContract.workerName ??
+                        AppLocalizations.of(context)!.worker,
+                  ),
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
@@ -868,17 +935,24 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
                   children: [
                     _infoChip(
                       Icons.payments_outlined,
-                      AppLocalizations.of(context)!.amountPrefix(_liveContract.salaryAmount.toStringAsFixed(0)),
+                      AppLocalizations.of(context)!.amountPrefix(
+                        _liveContract.salaryAmount.toStringAsFixed(0),
+                      ),
                       isDark,
                     ),
                     _infoChip(
                       Icons.schedule,
-                      _translateSalaryTypeLabel(context, _liveContract.salaryTypeLabel),
+                      _translateSalaryTypeLabel(
+                        context,
+                        _liveContract.salaryTypeLabel,
+                      ),
                       isDark,
                     ),
                     _infoChip(
                       Icons.calendar_today,
-                      DateFormat.Md(Localizations.localeOf(context).toString()).format(_liveContract.contractStartDate),
+                      DateFormat.Md(
+                        Localizations.localeOf(context).toString(),
+                      ).format(_liveContract.contractStartDate),
                       isDark,
                     ),
                   ],
@@ -974,7 +1048,9 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
         break;
       default:
         icon = Icons.info_outline;
-        label = AppLocalizations.of(context)!.contractIsStatus(_liveContract.statusLabel);
+        label = AppLocalizations.of(
+          context,
+        )!.contractIsStatus(_liveContract.statusLabel);
         color = Colors.grey;
     }
 
@@ -1105,7 +1181,10 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
           Padding(
             padding: const EdgeInsets.only(bottom: 4, left: 4, right: 4),
             child: Text(
-              isMe ? AppLocalizations.of(context)!.you : (negotiation.senderName ?? AppLocalizations.of(context)!.otherParty),
+              isMe
+                  ? AppLocalizations.of(context)!.you
+                  : (negotiation.senderName ??
+                        AppLocalizations.of(context)!.otherParty),
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
@@ -1138,7 +1217,9 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    AppLocalizations.of(context)!.proposedSalaryAmount(negotiation.proposedSalaryAmount!.toStringAsFixed(0)),
+                    AppLocalizations.of(context)!.proposedSalaryAmount(
+                      negotiation.proposedSalaryAmount!.toStringAsFixed(0),
+                    ),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -1475,7 +1556,9 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
     if (diff.inMinutes < 1) return l10n.justNow;
     if (diff.inMinutes < 60) return l10n.minutesAgo(diff.inMinutes.toString());
     if (diff.inHours < 24) return l10n.hoursAgo(diff.inHours.toString());
-    return DateFormat.Md(Localizations.localeOf(context).toString()).add_Hm().format(dt);
+    return DateFormat.Md(
+      Localizations.localeOf(context).toString(),
+    ).add_Hm().format(dt);
   }
 
   // ─── Loading Bar ────────────────────────────────────────────────────
@@ -2281,7 +2364,9 @@ class _ContractNegotiationScreenState extends State<ContractNegotiationScreen> {
               const Icon(Icons.payment_rounded, color: Colors.white, size: 22),
               const SizedBox(width: 10),
               Text(
-                AppLocalizations.of(context)!.payAmountToActivate(_liveContract.salaryAmount.toStringAsFixed(0)),
+                AppLocalizations.of(context)!.payAmountToActivate(
+                  _liveContract.salaryAmount.toStringAsFixed(0),
+                ),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,

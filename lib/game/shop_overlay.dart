@@ -215,7 +215,10 @@ class _ShopOverlayState extends State<ShopOverlay>
           letterSpacing: 1,
         ),
         tabs: AssetCategory.values
-            .map((cat) => Tab(text: _translateCategory(context, cat).toUpperCase()))
+            .map(
+              (cat) =>
+                  Tab(text: _translateCategory(context, cat).toUpperCase()),
+            )
             .toList(),
       ),
     );
@@ -487,7 +490,10 @@ class _ShopOverlayState extends State<ShopOverlay>
                 ),
                 child: Text(
                   AppLocalizations.of(context)!.shopBuy,
-                  style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 11,
+                  ),
                 ),
               ),
             ],
@@ -561,7 +567,9 @@ class _ShopOverlayState extends State<ShopOverlay>
 
       // Use pre-selected land if available and valid
       if (widget.preSelectedLandId != null) {
-        final preMatch = rentals.where((r) => r.landId == widget.preSelectedLandId);
+        final preMatch = rentals.where(
+          (r) => r.landId == widget.preSelectedLandId,
+        );
         if (preMatch.isNotEmpty) {
           selectedRental = preMatch.first;
         }
@@ -574,34 +582,35 @@ class _ShopOverlayState extends State<ShopOverlay>
           selectedRental = await showDialog<LandRental>(
             context: context,
             builder: (context) => SimpleDialog(
-            backgroundColor: const Color(0xFF1E293B),
-            title: Text(
-              AppLocalizations.of(context)!.selectLand,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+              backgroundColor: const Color(0xFF1E293B),
+              title: Text(
+                AppLocalizations.of(context)!.selectLand,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            children: rentals
-                .map(
-                  (r) => SimpleDialogOption(
-                    onPressed: () => Navigator.pop(context, r),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(
-                        r.land?.name ?? AppLocalizations.of(context)!.unknownLand,
-                        style: const TextStyle(color: Colors.white70),
+              children: rentals
+                  .map(
+                    (r) => SimpleDialogOption(
+                      onPressed: () => Navigator.pop(context, r),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                          r.land?.name ??
+                              AppLocalizations.of(context)!.unknownLand,
+                          style: const TextStyle(color: Colors.white70),
+                        ),
                       ),
                     ),
-                  ),
-                )
-                .toList(),
-          ),
-        );
+                  )
+                  .toList(),
+            ),
+          );
+        }
       }
-    }
 
-    if (selectedRental == null) return;
+      if (selectedRental == null) return;
 
       setState(() => _isLoading = true);
 
@@ -639,7 +648,9 @@ class _ShopOverlayState extends State<ShopOverlay>
             ),
             backgroundColor: const Color(0xFF1B4332),
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
         context.read<WalletProvider>().fetchWalletStatus();
@@ -791,9 +802,9 @@ class _ShopOverlayState extends State<ShopOverlay>
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                      AppLocalizations.of(context)!.maximumAmount(
-                        _maxAmount.toStringAsFixed(2),
-                      ),
+                      AppLocalizations.of(
+                        context,
+                      )!.maximumAmount(_maxAmount.toStringAsFixed(2)),
                       style: const TextStyle(
                         color: Colors.redAccent,
                         fontSize: 12,
@@ -803,9 +814,10 @@ class _ShopOverlayState extends State<ShopOverlay>
                   ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: selectedAmount != null && 
-                             selectedAmount! > 0 && 
-                             selectedAmount! <= _maxAmount
+                  onPressed:
+                      selectedAmount != null &&
+                          selectedAmount! > 0 &&
+                          selectedAmount! <= _maxAmount
                       ? () {
                           Navigator.pop(context);
                           _processCharge(selectedAmount!);
@@ -822,9 +834,9 @@ class _ShopOverlayState extends State<ShopOverlay>
                   ),
                   child: Text(
                     selectedAmount != null
-                        ? AppLocalizations.of(context)!.payAmount(
-                            selectedAmount!.toStringAsFixed(2),
-                          )
+                        ? AppLocalizations.of(
+                            context,
+                          )!.payAmount(selectedAmount!.toStringAsFixed(2))
                         : AppLocalizations.of(context)!.enterAmount,
                     style: const TextStyle(
                       fontWeight: FontWeight.w900,
@@ -846,7 +858,9 @@ class _ShopOverlayState extends State<ShopOverlay>
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.creditsAdded(amount.toString())),
+          content: Text(
+            AppLocalizations.of(context)!.creditsAdded(amount.toString()),
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -859,6 +873,7 @@ class _ShopOverlayState extends State<ShopOverlay>
       );
     }
   }
+
   String _translateCategory(BuildContext context, AssetCategory category) {
     final l10n = AppLocalizations.of(context)!;
     switch (category) {

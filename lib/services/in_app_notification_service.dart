@@ -13,9 +13,7 @@ class InAppNotificationService {
     try {
       final response = await http.get(
         Uri.parse('$_baseUrl/api/v1/notifications'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
@@ -39,9 +37,7 @@ class InAppNotificationService {
     try {
       final response = await http.patch(
         Uri.parse('$_baseUrl/api/v1/notifications/$id/read'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
@@ -62,9 +58,7 @@ class InAppNotificationService {
     try {
       final response = await http.patch(
         Uri.parse('$_baseUrl/api/v1/notifications/read-all'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
@@ -85,9 +79,7 @@ class InAppNotificationService {
     try {
       final response = await http.delete(
         Uri.parse('$_baseUrl/api/v1/notifications/$id'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {

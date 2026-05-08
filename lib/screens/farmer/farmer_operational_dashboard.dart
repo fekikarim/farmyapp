@@ -94,10 +94,7 @@ class _FarmerOperationalDashboardState extends State<FarmerOperationalDashboard>
     provider.setVisibility(true, localeCode: localeCode);
     if (_lastLocaleCode != localeCode) {
       _lastLocaleCode = localeCode;
-      provider.syncIfStale(
-        localeCode: localeCode,
-        maxAge: Duration.zero,
-      );
+      provider.syncIfStale(localeCode: localeCode, maxAge: Duration.zero);
     }
   }
 
@@ -307,16 +304,12 @@ class _FarmerOperationalDashboardState extends State<FarmerOperationalDashboard>
     }
 
     if (withLoader) {
-      await _withQuickActionGuard(
-        loadingLabel: _l10n.loading,
-        action: action,
-      );
+      await _withQuickActionGuard(loadingLabel: _l10n.loading, action: action);
       return;
     }
 
     await action();
   }
-
 
   Future<void> _navigateToAIAssistant() async {
     await _withQuickActionGuard(
@@ -360,9 +353,7 @@ class _FarmerOperationalDashboardState extends State<FarmerOperationalDashboard>
       final provider = context.read<FarmerDashboardProvider>();
       final success = await provider.repairItem(alert.itemId!);
       if (!success && mounted) {
-        _showNavigationError(
-          _localizedErrorText(provider.error),
-        );
+        _showNavigationError(_localizedErrorText(provider.error));
       }
     }
   }
@@ -575,14 +566,19 @@ class _FarmerOperationalDashboardState extends State<FarmerOperationalDashboard>
                                   children: [
                                     Text(
                                       greeting,
-                                      style: theme.textTheme.bodyLarge?.copyWith(
-                                        color: theme.colorScheme.onSurface.withOpacity(0.6),
-                                      ),
+                                      style: theme.textTheme.bodyLarge
+                                          ?.copyWith(
+                                            color: theme.colorScheme.onSurface
+                                                .withOpacity(0.6),
+                                          ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       user?.name ?? user?.email ?? _l10n.user,
-                                      style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                                      style: theme.textTheme.headlineMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
@@ -606,7 +602,9 @@ class _FarmerOperationalDashboardState extends State<FarmerOperationalDashboard>
                               : null,
                         ),
                       ),
-                      SliverToBoxAdapter(child: _buildSoftErrorBanner(provider)),
+                      SliverToBoxAdapter(
+                        child: _buildSoftErrorBanner(provider),
+                      ),
                       SliverToBoxAdapter(
                         child: _buildEntryAnimation(
                           index: 0,
@@ -620,101 +618,107 @@ class _FarmerOperationalDashboardState extends State<FarmerOperationalDashboard>
                           ),
                         ),
                       ),
-                    SliverToBoxAdapter(
-                      child: _buildEntryAnimation(
-                        index: 1,
-                        child: SmartAlertsSection(
-                          onAlertTap: (alert) {
-                            _handleAlertTap(alert);
-                          },
-                          onRepairTap: (alert) {
-                            _handleRepairTap(alert);
-                          },
+                      SliverToBoxAdapter(
+                        child: _buildEntryAnimation(
+                          index: 1,
+                          child: SmartAlertsSection(
+                            onAlertTap: (alert) {
+                              _handleAlertTap(alert);
+                            },
+                            onRepairTap: (alert) {
+                              _handleRepairTap(alert);
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: _buildEntryAnimation(
-                        index: 2,
-                        child: QuickActionsGrid(
-                          onAddLand: () {
-                            _navigateToAddLand();
-                          },
-                          onReviewRequests: () {
-                            _navigateToReviewRequests();
-                          },
-                          onInviteWorker: () {
-                            _showLandSelectorForInviteWorker();
-                          },
-                          onAIAssistant: () {
-                            _navigateToAIAssistant();
-                          },
-                          onCropCalendar: () {
-                            _navigateToCropCalendar();
-                          },
-                          onManageJobs: () {
-                            _navigateToManageJobs();
-                          },
+                      SliverToBoxAdapter(
+                        child: _buildEntryAnimation(
+                          index: 2,
+                          child: QuickActionsGrid(
+                            onAddLand: () {
+                              _navigateToAddLand();
+                            },
+                            onReviewRequests: () {
+                              _navigateToReviewRequests();
+                            },
+                            onInviteWorker: () {
+                              _showLandSelectorForInviteWorker();
+                            },
+                            onAIAssistant: () {
+                              _navigateToAIAssistant();
+                            },
+                            onCropCalendar: () {
+                              _navigateToCropCalendar();
+                            },
+                            onManageJobs: () {
+                              _navigateToManageJobs();
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: _buildEntryAnimation(
-                        index: 3,
-                        child: LandsOperationalList(
-                          onLandTap: (land) {
-                            _navigateToWorkforce(land);
-                          },
+                      SliverToBoxAdapter(
+                        child: _buildEntryAnimation(
+                          index: 3,
+                          child: LandsOperationalList(
+                            onLandTap: (land) {
+                              _navigateToWorkforce(land);
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: _buildEntryAnimation(
-                        index: 4,
-                        child: ActiveWorkersStrip(
-                          onWorkerTap: (worker) {
-                            _navigateToWorkerPerformance();
-                          },
-                          onSeeAllTap: () {
-                            _navigateToWorkerPerformance();
-                          },
+                      SliverToBoxAdapter(
+                        child: _buildEntryAnimation(
+                          index: 4,
+                          child: ActiveWorkersStrip(
+                            onWorkerTap: (worker) {
+                              _navigateToWorkerPerformance();
+                            },
+                            onSeeAllTap: () {
+                              _navigateToWorkerPerformance();
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: _buildEntryAnimation(
-                        index: 5,
-                        child: AIAssistantStrip(
-                          onStartConversation: () {
-                            _navigateToAIAssistant();
-                          },
-                          onViewAllSessions: () {
-                            _navigateToAIAssistant();
-                          },
-                          onSessionTap: (session) {
-                            _navigateToAIAssistant();
-                          },
+                      SliverToBoxAdapter(
+                        child: _buildEntryAnimation(
+                          index: 5,
+                          child: AIAssistantStrip(
+                            onStartConversation: () {
+                              _navigateToAIAssistant();
+                            },
+                            onViewAllSessions: () {
+                              _navigateToAIAssistant();
+                            },
+                            onSessionTap: (session) {
+                              _navigateToAIAssistant();
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                    const SliverPadding(padding: EdgeInsets.only(bottom: 112)),
-                  ],
-                ),
-              );
-            },
-          ),
-          _buildQuickActionOverlay(),
-        ],
+                      const SliverPadding(
+                        padding: EdgeInsets.only(bottom: 112),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            _buildQuickActionOverlay(),
+          ],
+        ),
       ),
-    ),
-  );
+    );
   }
 
   // ==========================================
   // PROFILE AVATAR WITH LOADING & ERROR HANDLING
   // ==========================================
 
-  Widget _buildProfileAvatar(BuildContext context, User? user, ThemeData theme) {
+  Widget _buildProfileAvatar(
+    BuildContext context,
+    User? user,
+    ThemeData theme,
+  ) {
     final String? rawPictureUrl = user?.profilePicture;
     final String? resolvedUrl = _resolveProfileImageUrl(rawPictureUrl);
     final String displayName = user?.name ?? user?.email ?? 'User';
@@ -796,10 +800,7 @@ class _FarmerOperationalDashboardState extends State<FarmerOperationalDashboard>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primary,
-            theme.colorScheme.secondary,
-          ],
+          colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
         ),
         shape: BoxShape.circle,
         border: Border.all(
@@ -838,13 +839,17 @@ class _FarmerOperationalDashboardState extends State<FarmerOperationalDashboard>
 
     // If it's already a full URL with scheme, return as-is
     final uri = Uri.tryParse(rawPath);
-    if (uri != null && uri.hasScheme && (uri.scheme == 'http' || uri.scheme == 'https')) {
+    if (uri != null &&
+        uri.hasScheme &&
+        (uri.scheme == 'http' || uri.scheme == 'https')) {
       return rawPath;
     }
 
     // Otherwise, prepend the base URL
     final base = AuthService.baseUrl;
-    final cleanBase = base.endsWith('/') ? base.substring(0, base.length - 1) : base;
+    final cleanBase = base.endsWith('/')
+        ? base.substring(0, base.length - 1)
+        : base;
     final cleanPath = rawPath.startsWith('/') ? rawPath : '/$rawPath';
     return '$cleanBase$cleanPath';
   }

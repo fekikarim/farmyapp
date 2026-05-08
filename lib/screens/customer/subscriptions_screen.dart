@@ -188,7 +188,9 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                AppLocalizations.of(context)!.currentPlanLabel(subProvider.currentSubscription!.plan.name),
+                                AppLocalizations.of(context)!.currentPlanLabel(
+                                  subProvider.currentSubscription!.plan.name,
+                                ),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
@@ -222,7 +224,9 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                     else if (subProvider.error != null &&
                         subProvider.availablePlans.isEmpty)
                       _buildErrorState(
-                        title: AppLocalizations.of(context)!.failedToLoadSubscriptions,
+                        title: AppLocalizations.of(
+                          context,
+                        )!.failedToLoadSubscriptions,
                         message: _friendlyErrorMessage(subProvider.error!),
                         onRetry: _loadData,
                         isNetwork:
@@ -233,7 +237,9 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                         workerProvider.profileError != null &&
                         subProvider.availablePlans.isEmpty)
                       _buildErrorState(
-                        title: AppLocalizations.of(context)!.failedToLoadWorkerProfile,
+                        title: AppLocalizations.of(
+                          context,
+                        )!.failedToLoadWorkerProfile,
                         message: _friendlyErrorMessage(
                           workerProvider.profileError!,
                         ),
@@ -448,7 +454,9 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          AppLocalizations.of(context)!.activeOnCycle(currentSub?.billingCycle ?? 'monthly'),
+                          AppLocalizations.of(context)!.activeOnCycle(
+                            currentSub?.billingCycle ?? 'monthly',
+                          ),
                           style: const TextStyle(
                             color: Colors.blue,
                             fontWeight: FontWeight.bold,
@@ -497,7 +505,9 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                plan.isFree ? AppLocalizations.of(context)!.free : '\$${price.toStringAsFixed(2)}',
+                plan.isFree
+                    ? AppLocalizations.of(context)!.free
+                    : '\$${price.toStringAsFixed(2)}',
                 style: theme.textTheme.displaySmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: plan.accentColor,
@@ -718,94 +728,103 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
 
     context.read<WalletProvider>().fetchWalletStatus();
 
-    final selectedMethod = await showModalBottomSheet<_SubscriptionPaymentMethod>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) => Consumer<WalletProvider>(
-        builder: (ctx, walletProvider, _) {
-          final credits = walletProvider.credits;
-          final isSufficient = credits >= price;
-          final isWalletLoading = walletProvider.isLoading;
+    final selectedMethod =
+        await showModalBottomSheet<_SubscriptionPaymentMethod>(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (sheetContext) => Consumer<WalletProvider>(
+            builder: (ctx, walletProvider, _) {
+              final credits = walletProvider.credits;
+              final isSufficient = credits >= price;
+              final isWalletLoading = walletProvider.isLoading;
 
-          return Container(
-            padding: EdgeInsets.only(
-              left: 24,
-              right: 24,
-              top: 24,
-              bottom: MediaQuery.of(sheetContext).padding.bottom + 24,
-            ),
-            decoration: BoxDecoration(
-              color: Theme.of(sheetContext).colorScheme.surface,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+              return Container(
+                padding: EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  top: 24,
+                  bottom: MediaQuery.of(sheetContext).padding.bottom + 24,
+                ),
+                decoration: BoxDecoration(
+                  color: Theme.of(sheetContext).colorScheme.surface,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(24),
                   ),
                 ),
-                Text(
-                  AppLocalizations.of(context)!.selectPaymentMethod,
-                  style: Theme.of(
-                    sheetContext,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    Text(
+                      AppLocalizations.of(context)!.selectPaymentMethod,
+                      style: Theme.of(sheetContext).textTheme.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      AppLocalizations.of(context)!.totalWithCycle(
+                        price.toStringAsFixed(2),
+                        _selectedCycle == 'monthly'
+                            ? AppLocalizations.of(context)!.monthly
+                            : AppLocalizations.of(context)!.yearlySave,
+                      ),
+                      style: Theme.of(
+                        sheetContext,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    _buildPaymentOption(
+                      icon: Icons.monetization_on,
+                      title: AppLocalizations.of(context)!.payWithCredits,
+                      subtitle: isWalletLoading
+                          ? AppLocalizations.of(context)!.loadingBalance
+                          : AppLocalizations.of(
+                              context,
+                            )!.balanceValue(credits.toStringAsFixed(2)),
+                      onTap: () {
+                        Navigator.pop(
+                          sheetContext,
+                          _SubscriptionPaymentMethod.credits,
+                        );
+                      },
+                      isSufficient: !isWalletLoading && isSufficient,
+                      isLoading: isWalletLoading,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildPaymentOption(
+                      icon: Icons.credit_card,
+                      title: AppLocalizations.of(context)!.payWithStripe,
+                      subtitle: AppLocalizations.of(
+                        context,
+                      )!.secureCreditCardPayment,
+                      onTap: () {
+                        Navigator.pop(
+                          sheetContext,
+                          _SubscriptionPaymentMethod.stripe,
+                        );
+                      },
+                      isSufficient: !_isProcessing,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  AppLocalizations.of(context)!.totalWithCycle(price.toStringAsFixed(2), _selectedCycle == 'monthly' ? AppLocalizations.of(context)!.monthly : AppLocalizations.of(context)!.yearlySave),
-                  style: Theme.of(
-                    sheetContext,
-                  ).textTheme.bodySmall?.copyWith(color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                _buildPaymentOption(
-                  icon: Icons.monetization_on,
-                  title: AppLocalizations.of(context)!.payWithCredits,
-                  subtitle: isWalletLoading
-                      ? AppLocalizations.of(context)!.loadingBalance
-                      : AppLocalizations.of(context)!.balanceValue(credits.toStringAsFixed(2)),
-                  onTap: () {
-                    Navigator.pop(
-                      sheetContext,
-                      _SubscriptionPaymentMethod.credits,
-                    );
-                  },
-                  isSufficient: !isWalletLoading && isSufficient,
-                  isLoading: isWalletLoading,
-                ),
-                const SizedBox(height: 12),
-                _buildPaymentOption(
-                  icon: Icons.credit_card,
-                  title: AppLocalizations.of(context)!.payWithStripe,
-                  subtitle: AppLocalizations.of(context)!.secureCreditCardPayment,
-                  onTap: () {
-                    Navigator.pop(
-                      sheetContext,
-                      _SubscriptionPaymentMethod.stripe,
-                    );
-                  },
-                  isSufficient: !_isProcessing,
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
+              );
+            },
+          ),
+        );
 
     if (!mounted || selectedMethod == null) return;
 

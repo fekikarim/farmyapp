@@ -24,13 +24,17 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
   void _handleWithdraw() async {
     final amountText = _amountController.text;
     if (amountText.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter an amount')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please enter an amount')));
       return;
     }
 
     final amount = double.tryParse(amountText);
     if (amount == null || amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a valid amount')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid amount')),
+      );
       return;
     }
 
@@ -38,18 +42,22 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
     final available = provider.overviewData?['available_balance'] ?? 0.0;
 
     if (amount > available) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Insufficient funds')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Insufficient funds')));
       return;
     }
 
     final success = await provider.requestWithdrawal(amount);
-    
+
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Withdrawal of \$${amount.toStringAsFixed(2)} processed successfully!'),
+          content: Text(
+            'Withdrawal of \$${amount.toStringAsFixed(2)} processed successfully!',
+          ),
           backgroundColor: Colors.green,
-        )
+        ),
       );
       Navigator.pop(context);
     } else if (mounted) {
@@ -57,7 +65,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
         SnackBar(
           content: Text(provider.error ?? 'Withdrawal failed'),
           backgroundColor: Colors.red,
-        )
+        ),
       );
     }
   }
@@ -69,8 +77,15 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
     final available = walletProvider.overviewData?['available_balance'] ?? 0.0;
 
     // Check if worker has Plus plan or instant withdrawal entitlement
-    final hasWorkerPlus = subProvider.currentSubscription?.plan.name.toLowerCase().contains('plus') == true ||
-        (subProvider.currentSubscription?.entitlementsSnapshot?['instant_withdrawal'] == true);
+    final hasWorkerPlus =
+        subProvider.currentSubscription?.plan.name.toLowerCase().contains(
+              'plus',
+            ) ==
+            true ||
+        (subProvider
+                .currentSubscription
+                ?.entitlementsSnapshot?['instant_withdrawal'] ==
+            true);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -86,20 +101,47 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Available Balance', style: TextStyle(color: Colors.grey)),
+                  Text(
+                    'Available Balance',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                   const SizedBox(height: 8),
-                  Text('\$${available.toStringAsFixed(2)}', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                  Text(
+                    '\$${available.toStringAsFixed(2)}',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
                   const SizedBox(height: 32),
 
-                  Text('Withdrawal Amount', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                  Text(
+                    'Withdrawal Amount',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: _amountController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                     decoration: InputDecoration(
                       prefixText: '\$ ',
-                      prefixStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                      prefixStyle: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                       filled: true,
                       fillColor: Theme.of(context).colorScheme.surface,
                       border: OutlineInputBorder(
@@ -112,7 +154,14 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                   const SizedBox(height: 24),
 
                   // Withdrawal Options
-                  Text('Transfer Speed', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                  Text(
+                    'Transfer Speed',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
                   const SizedBox(height: 12),
 
                   // Standard Option
@@ -128,7 +177,9 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                   // Instant Option
                   _buildOptionCard(
                     title: 'Instant Transfer',
-                    subtitle: hasWorkerPlus ? 'Included with Worker Plus' : 'Requires Worker Plus',
+                    subtitle: hasWorkerPlus
+                        ? 'Included with Worker Plus'
+                        : 'Requires Worker Plus',
                     icon: Icons.flash_on,
                     isSelected: _isInstantSelected,
                     isLocked: !hasWorkerPlus,
@@ -149,9 +200,18 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                       onPressed: _handleWithdraw,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryColor,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                       ),
-                      child: const Text('Confirm Withdrawal', style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Confirm Withdrawal',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -175,7 +235,12 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          border: Border.all(color: isSelected ? AppTheme.primaryColor : Colors.grey.withValues(alpha: 0.2), width: isSelected ? 2 : 1),
+          border: Border.all(
+            color: isSelected
+                ? AppTheme.primaryColor
+                : Colors.grey.withValues(alpha: 0.2),
+            width: isSelected ? 2 : 1,
+          ),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -183,19 +248,36 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isSelected ? AppTheme.primaryColor.withOpacity(0.1) : Theme.of(context).scaffoldBackgroundColor,
+                color: isSelected
+                    ? AppTheme.primaryColor.withOpacity(0.1)
+                    : Theme.of(context).scaffoldBackgroundColor,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: isSelected ? AppTheme.primaryColor : Colors.grey),
+              child: Icon(
+                icon,
+                color: isSelected ? AppTheme.primaryColor : Colors.grey,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: TextStyle(color: isLocked ? Colors.orange : Colors.grey, fontSize: 12)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: isLocked ? Colors.orange : Colors.grey,
+                      fontSize: 12,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -204,7 +286,10 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
             else if (isSelected)
               const Icon(Icons.check_circle, color: AppTheme.primaryColor)
             else
-              Icon(Icons.circle_outlined, color: Colors.grey.withValues(alpha: 0.2)),
+              Icon(
+                Icons.circle_outlined,
+                color: Colors.grey.withValues(alpha: 0.2),
+              ),
           ],
         ),
       ),
@@ -220,7 +305,10 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
           children: [
             const Icon(Icons.star, color: Colors.amber),
             const SizedBox(width: 8),
-            Text('Upgrade to Worker Plus', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+            Text(
+              'Upgrade to Worker Plus',
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+            ),
           ],
         ),
         content: const Text(
@@ -230,7 +318,10 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Maybe Later', style: TextStyle(color: Colors.grey)),
+            child: const Text(
+              'Maybe Later',
+              style: TextStyle(color: Colors.grey),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -239,7 +330,13 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
               // Navigator.pushNamed(context, '/subscription');
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
-            child: const Text('Upgrade Now', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Upgrade Now',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),

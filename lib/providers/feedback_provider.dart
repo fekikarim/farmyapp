@@ -20,9 +20,9 @@ class FeedbackProvider with ChangeNotifier {
 
   void initSocketListeners() {
     if (_isSocketInitialized) return;
-    
+
     final socket = SocketService();
-    
+
     socket.on('feedback_created', (data) {
       debugPrint('[FeedbackProvider] Socket event: feedback_created');
       final newFeedback = FeedbackModel.fromJson(data);
@@ -68,14 +68,14 @@ class FeedbackProvider with ChangeNotifier {
       final token = await AuthService.getAccessToken();
       final response = await http.get(
         Uri.parse('$_baseUrl/api/v1/feedback/my'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        _myFeedbacks = data.map((json) => FeedbackModel.fromJson(json)).toList();
+        _myFeedbacks = data
+            .map((json) => FeedbackModel.fromJson(json))
+            .toList();
       } else {
         final errorBody = json.decode(response.body);
         _error = errorBody['message'] ?? 'Failed to load feedbacks';
@@ -138,9 +138,7 @@ class FeedbackProvider with ChangeNotifier {
       final token = await AuthService.getAccessToken();
       final response = await http.delete(
         Uri.parse('$_baseUrl/api/v1/feedback/$id'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 204) {

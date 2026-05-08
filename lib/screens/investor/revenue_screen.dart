@@ -50,11 +50,18 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => InvestmentAgentScreen(
-                    initialMessage: AppLocalizations.of(context)!.revenueAnalysisPrompt,
+                    initialMessage: AppLocalizations.of(
+                      context,
+                    )!.revenueAnalysisPrompt,
                     initialContext: {
                       'revenue': wallet.credits,
-                      'inventory_value': products.myProducts.fold(0.0, (sum, p) => sum + p.price),
-                      'sold_count': products.myProducts.where((p) => p.status == ProductStatus.sold).length,
+                      'inventory_value': products.myProducts.fold(
+                        0.0,
+                        (sum, p) => sum + p.price,
+                      ),
+                      'sold_count': products.myProducts
+                          .where((p) => p.status == ProductStatus.sold)
+                          .length,
                     },
                   ),
                 ),
@@ -188,7 +195,9 @@ class _InvestorRevenueScreenState extends State<InvestorRevenueScreen> {
                               ),
                             ),
                             Text(
-                              AppLocalizations.of(context)!.viewInvestmentBreakdown,
+                              AppLocalizations.of(
+                                context,
+                              )!.viewInvestmentBreakdown,
                               style: TextStyle(
                                 color: theme.textTheme.bodySmall?.color,
                                 fontSize: 12,

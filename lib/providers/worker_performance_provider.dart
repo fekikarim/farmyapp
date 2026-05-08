@@ -42,6 +42,7 @@ class WorkerPerformanceProvider extends ChangeNotifier {
           }).toList();
     return _sortWorkers(filtered);
   }
+
   PerformanceSummary get summary => _summary;
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -71,10 +72,14 @@ class WorkerPerformanceProvider extends ChangeNotifier {
         sorted.sort((a, b) => a.performanceScore.compareTo(b.performanceScore));
         break;
       case WorkerSortCriteria.tasksHighToLow:
-        sorted.sort((a, b) => b.totalTasksCompleted.compareTo(a.totalTasksCompleted));
+        sorted.sort(
+          (a, b) => b.totalTasksCompleted.compareTo(a.totalTasksCompleted),
+        );
         break;
       case WorkerSortCriteria.tasksLowToHigh:
-        sorted.sort((a, b) => a.totalTasksCompleted.compareTo(b.totalTasksCompleted));
+        sorted.sort(
+          (a, b) => a.totalTasksCompleted.compareTo(b.totalTasksCompleted),
+        );
         break;
       case WorkerSortCriteria.nameAZ:
         sorted.sort((a, b) => a.workerName.compareTo(b.workerName));
@@ -146,10 +151,7 @@ class WorkerPerformanceProvider extends ChangeNotifier {
 
   /// Load all data including insights
   Future<void> loadAll() async {
-    await Future.wait([
-      loadWorkerPerformance(),
-      loadInsights(),
-    ]);
+    await Future.wait([loadWorkerPerformance(), loadInsights()]);
   }
 
   /// Load farmer lands for filter dropdown
@@ -256,7 +258,9 @@ class WorkerPerformanceProvider extends ChangeNotifier {
 
   /// Get excellent performers
   List<WorkerPerformance> get excellentWorkers {
-    return _workers.where((w) => w.performanceTier == PerformanceTier.excellent).toList();
+    return _workers
+        .where((w) => w.performanceTier == PerformanceTier.excellent)
+        .toList();
   }
 
   /// Check if any filters are active

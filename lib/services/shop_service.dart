@@ -136,7 +136,10 @@ class ShopService {
     }
   }
 
-  static Future<String?> approveItemRequest(String requestId, {XFile? proofImage}) async {
+  static Future<String?> approveItemRequest(
+    String requestId, {
+    XFile? proofImage,
+  }) async {
     try {
       if (proofImage == null) {
         // Fallback for non-placement approvals (e.g. buying or if image is optional on backend)
@@ -146,14 +149,17 @@ class ShopService {
         );
         if (response.statusCode == 200) return null;
         final body = jsonDecode(response.body);
-        return body['message'] ?? 'Failed to approve request (Status: ${response.statusCode})';
+        return body['message'] ??
+            'Failed to approve request (Status: ${response.statusCode})';
       }
 
       // Handle Multipart request for placement with image
       final token = await AuthService.getAccessToken();
-      final uri = Uri.parse('$_baseUrl/api/v1/item-requests/$requestId/approve');
+      final uri = Uri.parse(
+        '$_baseUrl/api/v1/item-requests/$requestId/approve',
+      );
       final request = http.MultipartRequest('POST', uri);
-      
+
       if (token != null) {
         request.headers['Authorization'] = 'Bearer $token';
       }
@@ -166,7 +172,7 @@ class ShopService {
           bytes,
           filename: proofImage.name,
           contentType: MediaType.parse(mimeType),
-        )
+        ),
       );
 
       final streamedResponse = await request.send();
@@ -176,8 +182,11 @@ class ShopService {
         return null;
       }
       final body = jsonDecode(response.body);
-      print('approveItemRequest Failed: ${response.statusCode} - ${response.body}');
-      return body['message'] ?? 'Failed to approve request (Status: ${response.statusCode})';
+      print(
+        'approveItemRequest Failed: ${response.statusCode} - ${response.body}',
+      );
+      return body['message'] ??
+          'Failed to approve request (Status: ${response.statusCode})';
     } catch (e) {
       print('approveItemRequest Error: $e');
       return 'Network error: $e';
@@ -252,7 +261,9 @@ class ShopService {
     try {
       final response = await AuthService.authenticatedRequest(
         'GET',
-        Uri.parse('$_baseUrl/api/v1/land-grid/assets/$category/variants/$variantId/footprint'),
+        Uri.parse(
+          '$_baseUrl/api/v1/land-grid/assets/$category/variants/$variantId/footprint',
+        ),
       );
 
       if (response.statusCode == 200) {
@@ -261,7 +272,9 @@ class ShopService {
           return data['data'];
         }
       }
-      print('getAssetFootprint Failed: ${response.statusCode} - ${response.body}');
+      print(
+        'getAssetFootprint Failed: ${response.statusCode} - ${response.body}',
+      );
       return null;
     } catch (e) {
       print('getAssetFootprint Error: $e');

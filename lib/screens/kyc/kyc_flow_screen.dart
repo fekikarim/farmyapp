@@ -199,7 +199,9 @@ class _KycFlowScreenState extends State<KycFlowScreen>
         // Show success and navigate to main screen
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.kycSuccess(widget.role)),
+            content: Text(
+              AppLocalizations.of(context)!.kycSuccess(widget.role),
+            ),
             backgroundColor: Colors.green,
           ),
         );

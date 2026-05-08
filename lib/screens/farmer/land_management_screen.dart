@@ -266,7 +266,9 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
             ),
             const SizedBox(height: 10),
             Text(
-              AppLocalizations.of(context)!.landLimitReachedDescription(planName),
+              AppLocalizations.of(
+                context,
+              )!.landLimitReachedDescription(planName),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: isDark ? Colors.white60 : Colors.black54,
@@ -472,7 +474,9 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                     borderColor: Colors.orange.withOpacity(0.6),
                     borderStrokeWidth: 2,
                     isFilled: true,
-                    label: AppLocalizations.of(context)!.owner(land.ownerId.substring(0, 8)),
+                    label: AppLocalizations.of(
+                      context,
+                    )!.owner(land.ownerId.substring(0, 8)),
                     labelStyle: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
@@ -701,7 +705,8 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
               ),
               const SizedBox(height: 12),
               Text(
-                land.description ?? AppLocalizations.of(context)!.noDescriptionProvided,
+                land.description ??
+                    AppLocalizations.of(context)!.noDescriptionProvided,
                 style: TextStyle(
                   color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                   height: 1.6,
@@ -788,9 +793,7 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const CropCalendarScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const CropCalendarScreen()),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -925,7 +928,11 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
                           Navigator.pop(context); // Close details sheet
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(AppLocalizations.of(context)!.landDeletedSuccess),
+                              content: Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.landDeletedSuccess,
+                              ),
                               backgroundColor: Colors.redAccent,
                             ),
                           );
@@ -979,7 +986,9 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppLocalizations.of(context)!.featureOptimizedDescription(feature),
+              AppLocalizations.of(
+                context,
+              )!.featureOptimizedDescription(feature),
               style: TextStyle(color: Colors.white70, fontSize: 14),
             ),
             SizedBox(height: 16),
@@ -1028,8 +1037,8 @@ class _FarmerLandManagementScreenState extends State<FarmerLandManagementScreen>
     final status = !isActive
         ? AppLocalizations.of(context)!.inactive
         : isRented
-            ? AppLocalizations.of(context)!.rented
-            : AppLocalizations.of(context)!.live;
+        ? AppLocalizations.of(context)!.rented
+        : AppLocalizations.of(context)!.live;
 
     Color color;
     if (!isActive) {

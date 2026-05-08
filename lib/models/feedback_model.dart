@@ -12,31 +12,51 @@ enum FeedbackCategory {
 
   String get displayName {
     switch (this) {
-      case bug: return 'Bug Report';
-      case featureRequest: return 'Feature Request';
-      case productReport: return 'Product Report';
-      case landReport: return 'Land Report';
-      case workerReport: return 'Worker Report';
-      case paymentIssue: return 'Payment Issue';
-      case walletIssue: return 'Wallet Issue';
-      case marketplaceIssue: return 'Marketplace Issue';
-      case abuse: return 'Abuse/Inappropriate Content';
-      case general: return 'General Feedback';
+      case bug:
+        return 'Bug Report';
+      case featureRequest:
+        return 'Feature Request';
+      case productReport:
+        return 'Product Report';
+      case landReport:
+        return 'Land Report';
+      case workerReport:
+        return 'Worker Report';
+      case paymentIssue:
+        return 'Payment Issue';
+      case walletIssue:
+        return 'Wallet Issue';
+      case marketplaceIssue:
+        return 'Marketplace Issue';
+      case abuse:
+        return 'Abuse/Inappropriate Content';
+      case general:
+        return 'General Feedback';
     }
   }
 
   String get backendValue {
     switch (this) {
-      case bug: return 'bug';
-      case featureRequest: return 'feature_request';
-      case productReport: return 'product_report';
-      case landReport: return 'land_report';
-      case workerReport: return 'worker_report';
-      case paymentIssue: return 'payment_issue';
-      case walletIssue: return 'wallet_issue';
-      case marketplaceIssue: return 'marketplace_issue';
-      case abuse: return 'abuse';
-      case general: return 'general';
+      case bug:
+        return 'bug';
+      case featureRequest:
+        return 'feature_request';
+      case productReport:
+        return 'product_report';
+      case landReport:
+        return 'land_report';
+      case workerReport:
+        return 'worker_report';
+      case paymentIssue:
+        return 'payment_issue';
+      case walletIssue:
+        return 'wallet_issue';
+      case marketplaceIssue:
+        return 'marketplace_issue';
+      case abuse:
+        return 'abuse';
+      case general:
+        return 'general';
     }
   }
 }
@@ -49,10 +69,14 @@ enum FeedbackStatus {
 
   String get displayName {
     switch (this) {
-      case pending: return 'Pending';
-      case inReview: return 'In Review';
-      case resolved: return 'Resolved';
-      case rejected: return 'Rejected';
+      case pending:
+        return 'Pending';
+      case inReview:
+        return 'In Review';
+      case resolved:
+        return 'Resolved';
+      case rejected:
+        return 'Rejected';
     }
   }
 }
@@ -65,10 +89,14 @@ enum FeedbackPriority {
 
   String get displayName {
     switch (this) {
-      case low: return 'Low';
-      case medium: return 'Medium';
-      case high: return 'High';
-      case critical: return 'Critical';
+      case low:
+        return 'Low';
+      case medium:
+        return 'Medium';
+      case high:
+        return 'High';
+      case critical:
+        return 'Critical';
     }
   }
 }
@@ -123,7 +151,9 @@ class FeedbackModel {
       relatedEntityId: json['related_entity_id'],
       relatedEntityType: json['related_entity_type'],
       adminNotes: json['admin_notes'],
-      attachments: json['attachments'] != null ? List<String>.from(json['attachments']) : null,
+      attachments: json['attachments'] != null
+          ? List<String>.from(json['attachments'])
+          : null,
       createdAt: DateTime.parse(json['createdAt']),
     );
   }

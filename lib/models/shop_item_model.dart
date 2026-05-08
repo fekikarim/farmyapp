@@ -24,8 +24,8 @@ class ShopItemType {
       isActive: json['is_active'] ?? true,
       variants: json['variants'] != null
           ? (json['variants'] as List)
-              .map((v) => ShopItemVariant.fromJson(v))
-              .toList()
+                .map((v) => ShopItemVariant.fromJson(v))
+                .toList()
           : null,
     );
   }
@@ -68,8 +68,8 @@ class ShopItemVariant {
       id: json['id'],
       typeId: json['type_id'],
       variantCode: json['variant_code'],
-      basePrice: (json['base_price'] is num) 
-          ? (json['base_price'] as num).toDouble() 
+      basePrice: (json['base_price'] is num)
+          ? (json['base_price'] as num).toDouble()
           : double.tryParse(json['base_price'].toString()) ?? 0.0,
       attributes: json['attributes'],
       imageUrl: json['image_url'],
@@ -90,13 +90,16 @@ class ShopItemVariant {
   Map<String, String> get formattedAttributes {
     if (attributes == null) return {};
     final Map<String, String> formatted = {};
-    
+
     attributes!.forEach((key, value) {
-      final String label = key.split('_').map((word) {
-        if (word.isEmpty) return '';
-        return word[0].toUpperCase() + word.substring(1);
-      }).join(' ');
-      
+      final String label = key
+          .split('_')
+          .map((word) {
+            if (word.isEmpty) return '';
+            return word[0].toUpperCase() + word.substring(1);
+          })
+          .join(' ');
+
       String displayValue = value.toString();
       if (key.contains('price') || key.contains('cost')) {
         displayValue = '\$$displayValue';
@@ -105,10 +108,10 @@ class ShopItemVariant {
       } else if (key.contains('days') || key.contains('years')) {
         displayValue = '$displayValue ${key.split('_').last}';
       }
-      
+
       formatted[label] = displayValue;
     });
-    
+
     return formatted;
   }
 }

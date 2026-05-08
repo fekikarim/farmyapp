@@ -31,9 +31,9 @@ class WorkerPerformanceService {
       queryParams['endDate'] = endDate.toIso8601String();
     }
 
-    final uri = Uri.parse('$_baseUrl/api/v1/workers/performance').replace(
-      queryParameters: queryParams.isNotEmpty ? queryParams : null,
-    );
+    final uri = Uri.parse(
+      '$_baseUrl/api/v1/workers/performance',
+    ).replace(queryParameters: queryParams.isNotEmpty ? queryParams : null);
 
     final response = await AuthService.authenticatedRequest('GET', uri);
 
@@ -55,9 +55,7 @@ class WorkerPerformanceService {
     DateTime? endDate,
     int limit = 3,
   }) async {
-    final queryParams = <String, String>{
-      'limit': limit.toString(),
-    };
+    final queryParams = <String, String>{'limit': limit.toString()};
 
     if (landIds != null && landIds.isNotEmpty) {
       for (int i = 0; i < landIds.length; i++) {
@@ -73,9 +71,9 @@ class WorkerPerformanceService {
       queryParams['endDate'] = endDate.toIso8601String();
     }
 
-    final uri = Uri.parse('$_baseUrl/api/v1/workers/performance/top').replace(
-      queryParameters: queryParams,
-    );
+    final uri = Uri.parse(
+      '$_baseUrl/api/v1/workers/performance/top',
+    ).replace(queryParameters: queryParams);
 
     final response = await AuthService.authenticatedRequest('GET', uri);
 
@@ -88,9 +86,7 @@ class WorkerPerformanceService {
     }
 
     final errorBody = jsonDecode(response.body);
-    throw Exception(
-      errorBody['message'] ?? 'Failed to load top performers',
-    );
+    throw Exception(errorBody['message'] ?? 'Failed to load top performers');
   }
 
   /// Get underperforming workers (needs attention)
@@ -100,9 +96,7 @@ class WorkerPerformanceService {
     DateTime? endDate,
     int limit = 3,
   }) async {
-    final queryParams = <String, String>{
-      'limit': limit.toString(),
-    };
+    final queryParams = <String, String>{'limit': limit.toString()};
 
     if (landIds != null && landIds.isNotEmpty) {
       for (int i = 0; i < landIds.length; i++) {
@@ -118,9 +112,9 @@ class WorkerPerformanceService {
       queryParams['endDate'] = endDate.toIso8601String();
     }
 
-    final uri = Uri.parse('$_baseUrl/api/v1/workers/performance/underperformers').replace(
-      queryParameters: queryParams,
-    );
+    final uri = Uri.parse(
+      '$_baseUrl/api/v1/workers/performance/underperformers',
+    ).replace(queryParameters: queryParams);
 
     final response = await AuthService.authenticatedRequest('GET', uri);
 
@@ -133,8 +127,6 @@ class WorkerPerformanceService {
     }
 
     final errorBody = jsonDecode(response.body);
-    throw Exception(
-      errorBody['message'] ?? 'Failed to load underperformers',
-    );
+    throw Exception(errorBody['message'] ?? 'Failed to load underperformers');
   }
 }

@@ -31,8 +31,12 @@ class _EditJobModalState extends State<EditJobModal> {
     super.initState();
     _selectedLandId = widget.job.landId;
     _titleController = TextEditingController(text: widget.job.title);
-    _descriptionController = TextEditingController(text: widget.job.description);
-    _salaryController = TextEditingController(text: widget.job.salary?.toString());
+    _descriptionController = TextEditingController(
+      text: widget.job.description,
+    );
+    _salaryController = TextEditingController(
+      text: widget.job.salary?.toString(),
+    );
     _durationController = TextEditingController(text: widget.job.duration);
     _taskTypeController = TextEditingController(text: widget.job.taskType);
     _skills = List.from(widget.job.requiredSkills ?? []);
@@ -61,7 +65,7 @@ class _EditJobModalState extends State<EditJobModal> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => _isSubmitting = true);
 
     try {
@@ -75,8 +79,11 @@ class _EditJobModalState extends State<EditJobModal> {
         'task_type': _taskTypeController.text.trim(),
       };
 
-      final success = await context.read<JobRequestProvider>().updateJobRequest(widget.job.id, updatedData);
-      
+      final success = await context.read<JobRequestProvider>().updateJobRequest(
+        widget.job.id,
+        updatedData,
+      );
+
       if (!mounted) return;
 
       if (success) {
@@ -168,10 +175,7 @@ class _EditJobModalState extends State<EditJobModal> {
                 children: [
                   const Text(
                     'Edit Job Request',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w800,
-                    ),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
                   ),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
@@ -180,7 +184,7 @@ class _EditJobModalState extends State<EditJobModal> {
                 ],
               ),
               const SizedBox(height: 24),
-              
+
               _buildSectionTitle('Location (Land)'),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
@@ -193,7 +197,10 @@ class _EditJobModalState extends State<EditJobModal> {
                 items: landProvider.myLands.map((land) {
                   return DropdownMenuItem(
                     value: land.id,
-                    child: Text(land.name, style: const TextStyle(fontSize: 15)),
+                    child: Text(
+                      land.name,
+                      style: const TextStyle(fontSize: 15),
+                    ),
                   );
                 }).toList(),
                 validator: (val) => val == null ? 'Please select a land' : null,
@@ -227,7 +234,8 @@ class _EditJobModalState extends State<EditJobModal> {
                 ),
                 style: const TextStyle(fontSize: 15),
                 validator: (val) {
-                  if (val == null || val.isEmpty) return 'Please enter a description';
+                  if (val == null || val.isEmpty)
+                    return 'Please enter a description';
                   return null;
                 },
               ),
@@ -252,7 +260,8 @@ class _EditJobModalState extends State<EditJobModal> {
                           validator: (val) {
                             if (val != null && val.isNotEmpty) {
                               final price = double.tryParse(val);
-                              if (price == null || price <= 0) return 'Invalid amount';
+                              if (price == null || price <= 0)
+                                return 'Invalid amount';
                             }
                             return null;
                           },
@@ -301,9 +310,7 @@ class _EditJobModalState extends State<EditJobModal> {
                   Expanded(
                     child: TextField(
                       controller: _skillController,
-                      decoration: _buildInputDecoration(
-                        hint: 'Add a skill...',
-                      ),
+                      decoration: _buildInputDecoration(hint: 'Add a skill...'),
                       onSubmitted: (_) => _addSkill(),
                     ),
                   ),
@@ -326,14 +333,26 @@ class _EditJobModalState extends State<EditJobModal> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: _skills.map((skill) => Chip(
-                  label: Text(skill, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
-                  onDeleted: () => setState(() => _skills.remove(skill)),
-                  backgroundColor: Colors.green.withOpacity(0.1),
-                  deleteIconColor: Colors.redAccent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  side: BorderSide(color: Colors.green.withOpacity(0.2)),
-                )).toList(),
+                children: _skills
+                    .map(
+                      (skill) => Chip(
+                        label: Text(
+                          skill,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        onDeleted: () => setState(() => _skills.remove(skill)),
+                        backgroundColor: Colors.green.withOpacity(0.1),
+                        deleteIconColor: Colors.redAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        side: BorderSide(color: Colors.green.withOpacity(0.2)),
+                      ),
+                    )
+                    .toList(),
               ),
               const SizedBox(height: 40),
 
@@ -345,7 +364,9 @@ class _EditJobModalState extends State<EditJobModal> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
                     elevation: 0,
                   ),
                   child: _isSubmitting
@@ -359,7 +380,10 @@ class _EditJobModalState extends State<EditJobModal> {
                         )
                       : const Text(
                           'Save Changes',
-                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                 ),
               ),
@@ -382,11 +406,16 @@ class _EditJobModalState extends State<EditJobModal> {
     );
   }
 
-  InputDecoration _buildInputDecoration({required String hint, IconData? prefixIcon}) {
+  InputDecoration _buildInputDecoration({
+    required String hint,
+    IconData? prefixIcon,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return InputDecoration(
       hintText: hint,
-      prefixIcon: prefixIcon != null ? Icon(prefixIcon, size: 20, color: Colors.green) : null,
+      prefixIcon: prefixIcon != null
+          ? Icon(prefixIcon, size: 20, color: Colors.green)
+          : null,
       filled: true,
       fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
       border: OutlineInputBorder(

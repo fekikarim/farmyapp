@@ -27,7 +27,7 @@ class JobRequestProvider with ChangeNotifier {
 
     try {
       final token = await AuthService.getAccessToken();
-      
+
       String queryString = '';
       if (filters != null && filters.isNotEmpty) {
         final queryParams = filters.entries
@@ -41,9 +41,7 @@ class JobRequestProvider with ChangeNotifier {
 
       final response = await http.get(
         Uri.parse('$_baseUrl/api/v1/job-requests$queryString'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
@@ -69,9 +67,7 @@ class JobRequestProvider with ChangeNotifier {
       final token = await AuthService.getAccessToken();
       final response = await http.get(
         Uri.parse('$_baseUrl/api/v1/job-requests/recommended'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
@@ -97,9 +93,7 @@ class JobRequestProvider with ChangeNotifier {
       final token = await AuthService.getAccessToken();
       final response = await http.get(
         Uri.parse('$_baseUrl/api/v1/job-requests/my'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {

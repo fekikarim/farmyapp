@@ -44,7 +44,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
   XFile? _pendingCover;
   User? _currentUser;
   String _originalUsername = '';
-  
+
   // Store original values to detect actual changes vs focus changes
   final Map<String, String> _originalValues = {};
 
@@ -148,8 +148,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
           _currentUser = updatedUser;
           _completenessScore =
               updatedUser.profile?.completenessScore ?? _estimateCompleteness();
-          _syncWarning =
-              AppLocalizations.of(context)!.latestProfileSynced;
+          _syncWarning = AppLocalizations.of(context)!.latestProfileSynced;
           _isLoadingProfile = false;
         });
       } else {
@@ -280,12 +279,14 @@ class _EditProfileScreenState extends State<EditProfileScreen>
       });
     }
   }
-  
+
   bool _detectActualChanges() {
     // Compare current controller values with original saved values
-    if (_discoverable != (_currentUser?.profile?.discoverable ?? true)) return true;
-    if (_showContactInfo != (_currentUser?.profile?.showContactInfo ?? false)) return true;
-    
+    if (_discoverable != (_currentUser?.profile?.discoverable ?? true))
+      return true;
+    if (_showContactInfo != (_currentUser?.profile?.showContactInfo ?? false))
+      return true;
+
     for (final controller in _allControllers) {
       final key = controller.hashCode.toString();
       final originalValue = _originalValues[key] ?? '';
@@ -294,7 +295,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     }
     return false;
   }
-  
+
   void _updateOriginalValues() {
     // Store current values as the new "original" baseline
     _originalValues.clear();
@@ -389,7 +390,8 @@ class _EditProfileScreenState extends State<EditProfileScreen>
       // Update completeness score from server response after save
       setState(() {
         _isSaving = false;
-        _completenessScore = updatedUser.profile?.completenessScore ?? _completenessScore;
+        _completenessScore =
+            updatedUser.profile?.completenessScore ?? _completenessScore;
         _savedCompletenessScore = _completenessScore;
       });
       _showSnack(l10n.profileUpdatedSuccess, isError: false);
@@ -496,7 +498,9 @@ class _EditProfileScreenState extends State<EditProfileScreen>
       await _syncAfterMediaUpload();
       if (!mounted) return;
       _showSnack(
-        cover ? AppLocalizations.of(context)!.updateCoverImage : AppLocalizations.of(context)!.profilePictureUpdated,
+        cover
+            ? AppLocalizations.of(context)!.updateCoverImage
+            : AppLocalizations.of(context)!.profilePictureUpdated,
         isError: false,
       );
     } catch (e) {
@@ -626,7 +630,10 @@ class _EditProfileScreenState extends State<EditProfileScreen>
                               height: 20,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : Icon(Icons.save_rounded, color: theme.colorScheme.primary),
+                          : Icon(
+                              Icons.save_rounded,
+                              color: theme.colorScheme.primary,
+                            ),
                       tooltip: l10n.saveChangesTooltip,
                     )
                   : const SizedBox.shrink(key: ValueKey('empty-action')),
@@ -723,7 +730,9 @@ class _EditProfileScreenState extends State<EditProfileScreen>
               top: 14,
               right: 14,
               child: _mediaButton(
-                label: _isUploadingCover ? AppLocalizations.of(context)!.uploading : AppLocalizations.of(context)!.changeCover,
+                label: _isUploadingCover
+                    ? AppLocalizations.of(context)!.uploading
+                    : AppLocalizations.of(context)!.changeCover,
                 icon: Icons.wallpaper_rounded,
                 busy: _isUploadingCover,
                 onTap: () => _pickAndUploadImage(cover: true),
@@ -789,10 +798,12 @@ class _EditProfileScreenState extends State<EditProfileScreen>
                           ),
                         ),
                         const SizedBox(height: 5),
-                          Text(
-                            _headlineController.text.trim().isEmpty
-                                ? AppLocalizations.of(context)!.buildTrustProfileHint
-                                : _headlineController.text.trim(),
+                        Text(
+                          _headlineController.text.trim().isEmpty
+                              ? AppLocalizations.of(
+                                  context,
+                                )!.buildTrustProfileHint
+                              : _headlineController.text.trim(),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -973,9 +984,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
                 alpha: 0.14,
               ),
               valueColor: AlwaysStoppedAnimation(
-                displayScore >= 90
-                    ? Colors.green
-                    : theme.colorScheme.primary,
+                displayScore >= 90 ? Colors.green : theme.colorScheme.primary,
               ),
             ),
           ),

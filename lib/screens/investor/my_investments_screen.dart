@@ -42,13 +42,19 @@ class _InvestorMyInvestmentsScreenState
                 context,
                 MaterialPageRoute(
                   builder: (context) => InvestmentAgentScreen(
-                    initialMessage: AppLocalizations.of(context)!.aiPortfolioAnalysisHint,
+                    initialMessage: AppLocalizations.of(
+                      context,
+                    )!.aiPortfolioAnalysisHint,
                     initialContext: {
-                      'portfolio': provider.myRentals.map((r) => {
-                        'landName': r.land?.name,
-                        'monthlyRent': r.monthlyRent,
-                        'status': r.paymentStatus.name,
-                      }).toList(),
+                      'portfolio': provider.myRentals
+                          .map(
+                            (r) => {
+                              'landName': r.land?.name,
+                              'monthlyRent': r.monthlyRent,
+                              'status': r.paymentStatus.name,
+                            },
+                          )
+                          .toList(),
                     },
                   ),
                 ),
@@ -65,7 +71,9 @@ class _InvestorMyInvestmentsScreenState
           }
 
           if (provider.myRentals.isEmpty) {
-            return Center(child: Text(AppLocalizations.of(context)!.noInvestmentsYet));
+            return Center(
+              child: Text(AppLocalizations.of(context)!.noInvestmentsYet),
+            );
           }
 
           return Column(
@@ -105,7 +113,9 @@ class _InvestorMyInvestmentsScreenState
                         ),
                         title: Text(
                           rental.land?.name ??
-                              AppLocalizations.of(context)!.landPlotNumber(rental.landId.substring(0, 8)),
+                              AppLocalizations.of(
+                                context,
+                              )!.landPlotNumber(rental.landId.substring(0, 8)),
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
@@ -113,11 +123,19 @@ class _InvestorMyInvestmentsScreenState
                           children: [
                             const SizedBox(height: 4),
                             Text(
-                              AppLocalizations.of(context)!.rentAmountMonthly(NumberFormat('#,###').format(rental.monthlyRent)),
+                              AppLocalizations.of(context)!.rentAmountMonthly(
+                                NumberFormat(
+                                  '#,###',
+                                ).format(rental.monthlyRent),
+                              ),
                             ),
                             if (rental.rentalEndDate != null)
                               Text(
-                                AppLocalizations.of(context)!.endsDate(DateFormat('MMM dd, yyyy').format(rental.rentalEndDate!)),
+                                AppLocalizations.of(context)!.endsDate(
+                                  DateFormat(
+                                    'MMM dd, yyyy',
+                                  ).format(rental.rentalEndDate!),
+                                ),
                                 style: TextStyle(
                                   color:
                                       (rental.rentalEndDate!
@@ -142,11 +160,16 @@ class _InvestorMyInvestmentsScreenState
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                                  _translatePaymentStatus(context, rental.paymentStatus.name).toUpperCase(),
-                                style: TextStyle(
-                                  color: rental.paymentStatus.name == 'paid'
-                                      ? Colors.green
-                                      : (rental.paymentStatus.name == 'pending' ? Colors.orange : Colors.red),
+                            _translatePaymentStatus(
+                              context,
+                              rental.paymentStatus.name,
+                            ).toUpperCase(),
+                            style: TextStyle(
+                              color: rental.paymentStatus.name == 'paid'
+                                  ? Colors.green
+                                  : (rental.paymentStatus.name == 'pending'
+                                        ? Colors.orange
+                                        : Colors.red),
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
@@ -226,7 +249,9 @@ class _InvestorMyInvestmentsScreenState
           ),
           const SizedBox(height: 8),
           Text(
-            AppLocalizations.of(context)!.amountTND(totalCapital.toStringAsFixed(0)),
+            AppLocalizations.of(
+              context,
+            )!.amountTND(totalCapital.toStringAsFixed(0)),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 32,
@@ -237,8 +262,14 @@ class _InvestorMyInvestmentsScreenState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildMetric(AppLocalizations.of(context)!.activeLands, activeLands.toString()),
-              _buildMetric(AppLocalizations.of(context)!.expiringSoon, expiringSoon.toString()),
+              _buildMetric(
+                AppLocalizations.of(context)!.activeLands,
+                activeLands.toString(),
+              ),
+              _buildMetric(
+                AppLocalizations.of(context)!.expiringSoon,
+                expiringSoon.toString(),
+              ),
               _buildMetric(AppLocalizations.of(context)!.roiEst, '12%'),
             ],
           ),
@@ -266,6 +297,7 @@ class _InvestorMyInvestmentsScreenState
       ],
     );
   }
+
   String _translatePaymentStatus(BuildContext context, String status) {
     final l10n = AppLocalizations.of(context)!;
     switch (status.toLowerCase()) {

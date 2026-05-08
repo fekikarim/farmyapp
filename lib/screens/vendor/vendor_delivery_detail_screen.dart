@@ -56,7 +56,10 @@ class _VendorDeliveryDetailScreenState
 
           final detail = provider.selectedDetail;
           if (detail == null) {
-            return _buildError(theme, AppLocalizations.of(context)!.deliveryNotFound);
+            return _buildError(
+              theme,
+              AppLocalizations.of(context)!.deliveryNotFound,
+            );
           }
 
           return RefreshIndicator(
@@ -234,7 +237,9 @@ class _StatusHeader extends StatelessWidget {
                     !detail.isTerminal) ...[
                   const SizedBox(height: 4),
                   Text(
-                    AppLocalizations.of(context)!.etaLabel(_formatTime(context, detail.estimatedDeliveryTime!)),
+                    AppLocalizations.of(context)!.etaLabel(
+                      _formatTime(context, detail.estimatedDeliveryTime!),
+                    ),
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.85),
                       fontSize: 13,
@@ -255,7 +260,9 @@ class _StatusHeader extends StatelessWidget {
     final m = dt.minute.toString().padLeft(2, '0');
     final day = dt.day.toString().padLeft(2, '0');
     final mon = dt.month.toString().padLeft(2, '0');
-    return AppLocalizations.of(context)!.dateTimeAt('$day/$mon/${dt.year}', '$h:$m');
+    return AppLocalizations.of(
+      context,
+    )!.dateTimeAt('$day/$mon/${dt.year}', '$h:$m');
   }
 }
 
@@ -320,7 +327,9 @@ class _OrderInfoCard extends StatelessWidget {
           _InfoRow(
             label: AppLocalizations.of(context)!.totalLabel,
             value: order != null
-                ? AppLocalizations.of(context)!.priceTnd(order.totalPrice.toStringAsFixed(2))
+                ? AppLocalizations.of(
+                    context,
+                  )!.priceTnd(order.totalPrice.toStringAsFixed(2))
                 : 'N/A',
             theme: theme,
             valueColor: theme.colorScheme.primary,
@@ -547,7 +556,9 @@ class _DeliveryDetailsCard extends StatelessWidget {
     final m = dt.month.toString().padLeft(2, '0');
     final h = dt.hour.toString().padLeft(2, '0');
     final min = dt.minute.toString().padLeft(2, '0');
-    return AppLocalizations.of(context)!.dateTimeAt('$d/$m/${dt.year}', '$h:$min');
+    return AppLocalizations.of(
+      context,
+    )!.dateTimeAt('$d/$m/${dt.year}', '$h:$min');
   }
 }
 
@@ -626,7 +637,9 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
                 child: Text(
                   isCancellation
                       ? AppLocalizations.of(context)!.cancelDeliveryQuestion
-                      : AppLocalizations.of(context)!.updateToStatusQuestion(newStatus.label),
+                      : AppLocalizations.of(
+                          context,
+                        )!.updateToStatusQuestion(newStatus.label),
                   style: const TextStyle(fontSize: 17),
                 ),
               ),
@@ -638,7 +651,9 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
               Text(
                 isCancellation
                     ? AppLocalizations.of(context)!.cancelNotifyCustomer
-                    : AppLocalizations.of(context)!.advanceNotifyCustomer(newStatus.label),
+                    : AppLocalizations.of(
+                        context,
+                      )!.advanceNotifyCustomer(newStatus.label),
                 style: TextStyle(
                   color: widget.theme.colorScheme.onSurface.withOpacity(0.6),
                   fontSize: 13,
@@ -649,7 +664,9 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
                 TextField(
                   controller: _cancelReasonController,
                   decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context)!.cancellationReasonHint,
+                    hintText: AppLocalizations.of(
+                      context,
+                    )!.cancellationReasonHint,
                     hintStyle: TextStyle(
                       color: widget.theme.colorScheme.onSurface.withOpacity(
                         0.35,
@@ -689,7 +706,11 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: Text(isCancellation ? AppLocalizations.of(context)!.cancelDeliveryAction : AppLocalizations.of(context)!.confirmUpdate),
+              child: Text(
+                isCancellation
+                    ? AppLocalizations.of(context)!.cancelDeliveryAction
+                    : AppLocalizations.of(context)!.confirmUpdate,
+              ),
             ),
           ],
         );
@@ -725,7 +746,9 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
                 size: 18,
               ),
               const SizedBox(width: 8),
-              Text(AppLocalizations.of(context)!.statusUpdatedTo(newStatus.label)),
+              Text(
+                AppLocalizations.of(context)!.statusUpdatedTo(newStatus.label),
+              ),
             ],
           ),
           backgroundColor: color,
@@ -747,7 +770,10 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(provider.updateError ?? AppLocalizations.of(context)!.failedUpdateStatus),
+                child: Text(
+                  provider.updateError ??
+                      AppLocalizations.of(context)!.failedUpdateStatus,
+                ),
               ),
             ],
           ),
@@ -803,7 +829,9 @@ class _StatusUpdateControlsState extends State<_StatusUpdateControls> {
                       ),
                     )
                   : Icon(_transitionIcon(status), size: 18),
-              label: Text(AppLocalizations.of(context)!.moveToStatus(status.label)),
+              label: Text(
+                AppLocalizations.of(context)!.moveToStatus(status.label),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: _transitionColor(status),
                 foregroundColor: Colors.white,
@@ -884,7 +912,9 @@ class _TerminalBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isDelivered ? AppLocalizations.of(context)!.successfullyDelivered : AppLocalizations.of(context)!.deliveryCancelled,
+                  isDelivered
+                      ? AppLocalizations.of(context)!.successfullyDelivered
+                      : AppLocalizations.of(context)!.deliveryCancelled,
                   style: TextStyle(
                     color: color,
                     fontWeight: FontWeight.w700,
@@ -893,7 +923,9 @@ class _TerminalBanner extends StatelessWidget {
                 ),
                 if (detail.deliveredAt != null && isDelivered)
                   Text(
-                    AppLocalizations.of(context)!.completedOn(_fmt(detail.deliveredAt!)),
+                    AppLocalizations.of(
+                      context,
+                    )!.completedOn(_fmt(detail.deliveredAt!)),
                     style: TextStyle(
                       color: color.withOpacity(0.7),
                       fontSize: 12,

@@ -185,8 +185,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     children: [
                       _InfoChip(
                         icon: Icons.inventory_2_outlined,
-                        label:
-                            AppLocalizations.of(context)!.availableCount(product.quantity.toInt(), product.unit),
+                        label: AppLocalizations.of(context)!.availableCount(
+                          product.quantity.toInt(),
+                          product.unit,
+                        ),
                         color: product.quantity > 5
                             ? theme.colorScheme.primary
                             : Colors.orange.shade700,
@@ -290,7 +292,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                        AppLocalizations.of(context)!.subtotalLabel((product.price * _selectedQuantity).toStringAsFixed(2)),
+                        AppLocalizations.of(context)!.subtotalLabel(
+                          (product.price * _selectedQuantity).toStringAsFixed(
+                            2,
+                          ),
+                        ),
                         style: TextStyle(
                           color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w700,
@@ -365,7 +371,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     ),
                                   ),
                                   Text(
-                                    AppLocalizations.of(context)!.verifiedSeller,
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.verifiedSeller,
                                     style: TextStyle(
                                       color: theme.colorScheme.primary,
                                       fontSize: 12,
@@ -457,7 +465,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             const Icon(Icons.shopping_basket_rounded, size: 20),
                             const SizedBox(width: 8),
                             Text(
-                              inBasket ? AppLocalizations.of(context)!.updateBasket : AppLocalizations.of(context)!.addToBasket,
+                              inBasket
+                                  ? AppLocalizations.of(context)!.updateBasket
+                                  : AppLocalizations.of(context)!.addToBasket,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 15,
@@ -534,7 +544,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             const SizedBox(width: 8),
             Text(
               basket.isInBasket(product.id)
-                  ? AppLocalizations.of(context)!.qtySetTo(product.title, _selectedQuantity)
+                  ? AppLocalizations.of(
+                      context,
+                    )!.qtySetTo(product.title, _selectedQuantity)
                   : AppLocalizations.of(context)!.addedToBasket(product.title),
             ),
           ],
@@ -551,10 +563,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   Widget _buildProductOrigin(BuildContext context, ThemeData theme) {
     final isFarmerOwned = product.land != null;
-    final landName = isFarmerOwned ? product.land!.name : (product.landRental!.land?.name ?? 'Unknown Land');
+    final landName = isFarmerOwned
+        ? product.land!.name
+        : (product.landRental!.land?.name ?? 'Unknown Land');
     final ownershipType = isFarmerOwned ? 'Farmer-owned' : 'Investor-managed';
-    final icon = isFarmerOwned ? Icons.landscape_rounded : Icons.real_estate_agent_rounded;
-    final color = isFarmerOwned ? theme.colorScheme.primary : Colors.orange.shade600;
+    final icon = isFarmerOwned
+        ? Icons.landscape_rounded
+        : Icons.real_estate_agent_rounded;
+    final color = isFarmerOwned
+        ? theme.colorScheme.primary
+        : Colors.orange.shade600;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -572,9 +590,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           decoration: BoxDecoration(
             color: color.withOpacity(0.05),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: color.withOpacity(0.2),
-            ),
+            border: Border.all(color: color.withOpacity(0.2)),
           ),
           child: Row(
             children: [
@@ -600,7 +616,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     const SizedBox(height: 4),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: color.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),

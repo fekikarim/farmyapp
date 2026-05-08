@@ -11,27 +11,23 @@ class CalendarYearView extends StatelessWidget {
   final int year;
   final Function(DateTime)? onMonthSelected;
 
-  const CalendarYearView({
-    super.key,
-    required this.year,
-    this.onMonthSelected,
-  });
+  const CalendarYearView({super.key, required this.year, this.onMonthSelected});
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CropCalendarProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // Group items by month
     final monthlyItems = _groupItemsByMonth(provider.allItems, year);
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: 12,
       itemBuilder: (context, index) {
         final month = index + 1;
         final items = monthlyItems[month] ?? [];
-        
+
         return _MonthTimelineCard(
           month: month,
           year: year,
@@ -47,17 +43,17 @@ class CalendarYearView extends StatelessWidget {
 
   Map<int, List<dynamic>> _groupItemsByMonth(List<dynamic> items, int year) {
     final Map<int, List<dynamic>> result = {};
-    
+
     for (final item in items) {
       // Get relevant months for this item
       final months = _getActiveMonths(item, year);
-      
+
       for (final month in months) {
         result.putIfAbsent(month, () => []);
         result[month]!.add(item);
       }
     }
-    
+
     return result;
   }
 
@@ -65,7 +61,7 @@ class CalendarYearView extends StatelessWidget {
     final List<int> months = [];
     DateTime? startDate;
     DateTime? endDate;
-    
+
     if (item is CropCycle) {
       startDate = item.placedAt;
       if (item.upcomingHarvests?.isNotEmpty == true) {
@@ -75,23 +71,23 @@ class CalendarYearView extends StatelessWidget {
       startDate = item.plannedPlantingDate;
       endDate = item.expectedHarvestDate;
     }
-    
+
     if (startDate == null) return months;
-    
+
     // Add months from start to end
     var current = DateTime(startDate.year, startDate.month, 1);
-    final end = endDate != null 
+    final end = endDate != null
         ? DateTime(endDate.year, endDate.month, 1)
         : DateTime(year, 12, 1);
-    
-    while (current.isBefore(end) || 
-           (current.year == end.year && current.month == end.month)) {
+
+    while (current.isBefore(end) ||
+        (current.year == end.year && current.month == end.month)) {
       if (current.year == year) {
         months.add(current.month);
       }
       current = DateTime(current.year, current.month + 1, 1);
     }
-    
+
     return months.toSet().toList(); // Remove duplicates
   }
 }
@@ -114,17 +110,20 @@ class _MonthTimelineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final monthName = _getMonthName(month);
-    final isCurrentMonth = DateTime.now().year == year && DateTime.now().month == month;
-    
+    final isCurrentMonth =
+        DateTime.now().year == year && DateTime.now().month == month;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: isCurrentMonth 
-              ? AppTheme.primaryColor 
-              : isDark ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.12),
+          color: isCurrentMonth
+              ? AppTheme.primaryColor
+              : isDark
+              ? Colors.white.withOpacity(0.12)
+              : Colors.black.withOpacity(0.12),
           width: isCurrentMonth ? 2 : 1,
         ),
       ),
@@ -140,11 +139,16 @@ class _MonthTimelineCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
-                      color: isCurrentMonth 
-                          ? AppTheme.primaryColor 
-                          : isDark ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.05),
+                      color: isCurrentMonth
+                          ? AppTheme.primaryColor
+                          : isDark
+                          ? Colors.white.withOpacity(0.12)
+                          : Colors.black.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -160,28 +164,32 @@ class _MonthTimelineCard extends StatelessWidget {
                     Text(
                       AppLocalizations.of(context)!.cropCount(items.length),
                       style: TextStyle(
-                        color: isDark ? Colors.white.withOpacity(0.6) : Colors.black.withOpacity(0.6),
+                        color: isDark
+                            ? Colors.white.withOpacity(0.6)
+                            : Colors.black.withOpacity(0.6),
                         fontSize: 14,
                       ),
                     ),
                 ],
               ),
-              
+
               if (items.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 const Divider(),
                 const SizedBox(height: 8),
-                
+
                 // Crop list for this month
                 ...items.take(3).map((item) => _buildItemRow(item, context)),
-                
+
                 if (items.length > 3)
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
                       '+ ${items.length - 3} more',
                       style: TextStyle(
-                        color: isDark ? Colors.white.withOpacity(0.4) : Colors.black.withOpacity(0.4),
+                        color: isDark
+                            ? Colors.white.withOpacity(0.4)
+                            : Colors.black.withOpacity(0.4),
                         fontSize: 12,
                       ),
                     ),
@@ -193,13 +201,17 @@ class _MonthTimelineCard extends StatelessWidget {
                     Icon(
                       Icons.eco_outlined,
                       size: 16,
-                      color: isDark ? Colors.white.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                      color: isDark
+                          ? Colors.white.withOpacity(0.3)
+                          : Colors.black.withOpacity(0.3),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       AppLocalizations.of(context)!.noCropsThisMonth,
                       style: TextStyle(
-                        color: isDark ? Colors.white.withOpacity(0.4) : Colors.black.withOpacity(0.4),
+                        color: isDark
+                            ? Colors.white.withOpacity(0.4)
+                            : Colors.black.withOpacity(0.4),
                         fontSize: 14,
                       ),
                     ),
@@ -218,14 +230,14 @@ class _MonthTimelineCard extends StatelessWidget {
     String subtitle;
     Color color;
     IconData icon;
-    
+
     if (item is CropCycle) {
       name = item.variantName;
       final daysUntil = item.daysUntilHarvest;
-      subtitle = daysUntil != null 
-          ? daysUntil <= 0 
-              ? AppLocalizations.of(context)!.readyToHarvestStatus
-              : AppLocalizations.of(context)!.daysUntilHarvest(daysUntil)
+      subtitle = daysUntil != null
+          ? daysUntil <= 0
+                ? AppLocalizations.of(context)!.readyToHarvestStatus
+                : AppLocalizations.of(context)!.daysUntilHarvest(daysUntil)
           : AppLocalizations.of(context)!.growingStatusShort;
       color = item.getStatusColor(context);
       icon = Icons.local_florist;
@@ -233,11 +245,11 @@ class _MonthTimelineCard extends StatelessWidget {
       name = item.variantName;
       if (item.status == CropPlanStatus.planned) {
         final days = item.daysUntilPlanting;
-        subtitle = days < 0 
+        subtitle = days < 0
             ? AppLocalizations.of(context)!.overdueByDays(-days)
-            : days == 0 
-                ? AppLocalizations.of(context)!.plantToday
-                : AppLocalizations.of(context)!.plantInDays(days);
+            : days == 0
+            ? AppLocalizations.of(context)!.plantToday
+            : AppLocalizations.of(context)!.plantInDays(days);
       } else {
         subtitle = item.status.getLabel();
       }
@@ -249,7 +261,7 @@ class _MonthTimelineCard extends StatelessWidget {
       color = Colors.grey;
       icon = Icons.help;
     }
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -257,10 +269,7 @@ class _MonthTimelineCard extends StatelessWidget {
           Container(
             width: 8,
             height: 8,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 12),
           Icon(icon, size: 16, color: color),
@@ -278,13 +287,7 @@ class _MonthTimelineCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: color,
-                  ),
-                ),
+                Text(subtitle, style: TextStyle(fontSize: 12, color: color)),
               ],
             ),
           ),
@@ -295,8 +298,18 @@ class _MonthTimelineCard extends StatelessWidget {
 
   String _getMonthName(int month) {
     final months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return months[month - 1];
   }
@@ -320,7 +333,7 @@ class CalendarYearHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -336,19 +349,17 @@ class CalendarYearHeader extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Today button
           TextButton.icon(
             onPressed: onToday,
             icon: const Icon(Icons.today, size: 18),
             label: Text(AppLocalizations.of(context)!.today),
-            style: TextButton.styleFrom(
-              foregroundColor: AppTheme.primaryColor,
-            ),
+            style: TextButton.styleFrom(foregroundColor: AppTheme.primaryColor),
           ),
-          
+
           const SizedBox(width: 8),
-          
+
           // Navigation arrows
           Row(
             children: [
@@ -356,7 +367,9 @@ class CalendarYearHeader extends StatelessWidget {
                 onPressed: onPrevious,
                 icon: const Icon(Icons.chevron_left),
                 style: IconButton.styleFrom(
-                  backgroundColor: isDark ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.05),
+                  backgroundColor: isDark
+                      ? Colors.white.withOpacity(0.12)
+                      : Colors.black.withOpacity(0.05),
                 ),
               ),
               const SizedBox(width: 8),
@@ -364,7 +377,9 @@ class CalendarYearHeader extends StatelessWidget {
                 onPressed: onNext,
                 icon: const Icon(Icons.chevron_right),
                 style: IconButton.styleFrom(
-                  backgroundColor: isDark ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.05),
+                  backgroundColor: isDark
+                      ? Colors.white.withOpacity(0.12)
+                      : Colors.black.withOpacity(0.05),
                 ),
               ),
             ],

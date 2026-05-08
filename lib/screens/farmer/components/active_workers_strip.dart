@@ -41,10 +41,7 @@ class ActiveWorkersStrip extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                TextButton(
-                  onPressed: onSeeAllTap,
-                  child: Text(l10n.seeAll),
-                ),
+                TextButton(onPressed: onSeeAllTap, child: Text(l10n.seeAll)),
               ],
             ),
           ),

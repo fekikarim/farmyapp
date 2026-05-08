@@ -48,7 +48,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           content: Text(AppLocalizations.of(context)!.passwordChangedSuccess),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       Navigator.pop(context);
@@ -118,7 +120,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     Text(
                       AppLocalizations.of(context)!.passwordPolicyHint,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.5,
+                        ),
                         height: 1.4,
                       ),
                     ),
@@ -130,8 +134,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       controller: _oldPasswordController,
                       label: AppLocalizations.of(context)!.currentPassword,
                       obscureText: _obscureOld,
-                      onToggle: () => setState(() => _obscureOld = !_obscureOld),
-                      validator: (val) => (val == null || val.isEmpty) ? AppLocalizations.of(context)!.enterCurrentPasswordError : null,
+                      onToggle: () =>
+                          setState(() => _obscureOld = !_obscureOld),
+                      validator: (val) => (val == null || val.isEmpty)
+                          ? AppLocalizations.of(
+                              context,
+                            )!.enterCurrentPasswordError
+                          : null,
                     ),
                     const SizedBox(height: 20),
                     _buildPasswordField(
@@ -139,7 +148,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       controller: _newPasswordController,
                       label: AppLocalizations.of(context)!.newPassword,
                       obscureText: _obscureNew,
-                      onToggle: () => setState(() => _obscureNew = !_obscureNew),
+                      onToggle: () =>
+                          setState(() => _obscureNew = !_obscureNew),
                       validator: FieldValidators.password,
                     ),
                     const SizedBox(height: 20),
@@ -148,8 +158,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       controller: _confirmPasswordController,
                       label: AppLocalizations.of(context)!.confirmNewPassword,
                       obscureText: _obscureConfirm,
-                      onToggle: () => setState(() => _obscureConfirm = !_obscureConfirm),
-                      validator: (val) => FieldValidators.confirmPassword(val, _newPasswordController.text),
+                      onToggle: () =>
+                          setState(() => _obscureConfirm = !_obscureConfirm),
+                      validator: (val) => FieldValidators.confirmPassword(
+                        val,
+                        _newPasswordController.text,
+                      ),
                     ),
 
                     if (_errorMessage.isNotEmpty) ...[
@@ -164,22 +178,34 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       width: double.infinity,
                       height: 60,
                       child: ElevatedButton(
-                        onPressed: authProvider.isLoading ? null : () => _submit(authProvider),
+                        onPressed: authProvider.isLoading
+                            ? null
+                            : () => _submit(authProvider),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: theme.colorScheme.primary,
                           foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                           elevation: 0,
                         ),
                         child: authProvider.isLoading
                             ? const SizedBox(
                                 width: 24,
                                 height: 24,
-                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
                               )
                             : Text(
-                                AppLocalizations.of(context)!.updatePassword.toUpperCase(),
-                                style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1),
+                                AppLocalizations.of(
+                                  context,
+                                )!.updatePassword.toUpperCase(),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 1,
+                                ),
                               ),
                       ),
                     ),
@@ -223,9 +249,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           validator: validator,
           style: const TextStyle(fontWeight: FontWeight.w600),
           decoration: InputDecoration(
-            prefixIcon: Icon(Icons.lock_person_outlined, size: 20, color: theme.colorScheme.primary),
+            prefixIcon: Icon(
+              Icons.lock_person_outlined,
+              size: 20,
+              color: theme.colorScheme.primary,
+            ),
             suffixIcon: IconButton(
-              icon: Icon(obscureText ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20),
+              icon: Icon(
+                obscureText
+                    ? Icons.visibility_off_rounded
+                    : Icons.visibility_rounded,
+                size: 20,
+              ),
               onPressed: onToggle,
             ),
             filled: true,
@@ -236,15 +271,22 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(color: theme.colorScheme.onSurface.withValues(alpha: 0.05)),
+              borderSide: BorderSide(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.3), width: 2),
+              borderSide: BorderSide(
+                color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                width: 2,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(color: theme.colorScheme.error.withValues(alpha: 0.3)),
+              borderSide: BorderSide(
+                color: theme.colorScheme.error.withValues(alpha: 0.3),
+              ),
             ),
           ),
         ),
@@ -258,11 +300,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.error.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: theme.colorScheme.error.withValues(alpha: 0.2),
+        ),
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline_rounded, color: theme.colorScheme.error, size: 20),
+          Icon(
+            Icons.error_outline_rounded,
+            color: theme.colorScheme.error,
+            size: 20,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(

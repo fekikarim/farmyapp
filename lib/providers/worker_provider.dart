@@ -332,7 +332,9 @@ class WorkerProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _performanceStats = await WorkerService.getWorkerPerformance(workerUserId);
+      _performanceStats = await WorkerService.getWorkerPerformance(
+        workerUserId,
+      );
     } catch (e) {
       _performanceStats = {};
     } finally {

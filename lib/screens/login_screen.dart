@@ -33,10 +33,15 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
   String _formatErrorMessage(String error) {
     final lowerError = error.toLowerCase();
     final l10n = AppLocalizations.of(context)!;
-    if (error.contains('AuthorizationError error 1001') || lowerError.contains('canceled')) return l10n.signInWasCancelled;
-    if (lowerError.contains('connection refused') || lowerError.contains('failed to connect')) return l10n.unableToConnect;
+    if (error.contains('AuthorizationError error 1001') ||
+        lowerError.contains('canceled'))
+      return l10n.signInWasCancelled;
+    if (lowerError.contains('connection refused') ||
+        lowerError.contains('failed to connect'))
+      return l10n.unableToConnect;
     if (lowerError.contains('timeout')) return l10n.connectionTimeout;
-    if (error.contains('401') || lowerError.contains('unauthorized')) return l10n.authFailed;
+    if (error.contains('401') || lowerError.contains('unauthorized'))
+      return l10n.authFailed;
     return error.length > 100 ? '${error.substring(0, 100)}...' : error;
   }
 
@@ -83,19 +88,25 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
     }
   }
 
-  Future<void> _handleSocialLogin(AuthProvider authProvider, SocialProvider provider) async {
+  Future<void> _handleSocialLogin(
+    AuthProvider authProvider,
+    SocialProvider provider,
+  ) async {
     if (_loadingProvider != SocialProvider.none) return;
     setState(() {
       _loadingProvider = provider;
       _errorMessage = null;
     });
     _dismissKeyboard();
-    
+
     String? result;
     try {
-      if (provider == SocialProvider.google) result = await authProvider.signInWithGoogle();
-      if (provider == SocialProvider.github) result = await authProvider.signInWithGithub();
-      if (provider == SocialProvider.apple) result = await authProvider.signInWithApple();
+      if (provider == SocialProvider.google)
+        result = await authProvider.signInWithGoogle();
+      if (provider == SocialProvider.github)
+        result = await authProvider.signInWithGithub();
+      if (provider == SocialProvider.apple)
+        result = await authProvider.signInWithApple();
 
       if (!mounted) return;
       if (result == 'requires_2fa') {
@@ -108,19 +119,26 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
     }
   }
 
-  void _showModernErrorDialog(BuildContext context, SocialProvider provider, String message) {
+  void _showModernErrorDialog(
+    BuildContext context,
+    SocialProvider provider,
+    String message,
+  ) {
     final theme = Theme.of(context);
-    final providerName = provider.name[0].toUpperCase() + provider.name.substring(1);
-    
+    final providerName =
+        provider.name[0].toUpperCase() + provider.name.substring(1);
+
     // Brand Colors
     final primaryColor = theme.colorScheme.primary;
     final errorColor = theme.colorScheme.error;
-    
+
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
       barrierLabel: '',
-      barrierColor: Colors.black.withValues(alpha: 0.8), // Keep it dark for both modes
+      barrierColor: Colors.black.withValues(
+        alpha: 0.8,
+      ), // Keep it dark for both modes
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, anim1, anim2) => const SizedBox(),
       transitionBuilder: (context, anim1, anim2, child) {
@@ -140,7 +158,9 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                   child: Container(
                     padding: const EdgeInsets.all(32),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1A1C19).withValues(alpha: 0.9), // Dark glass for both modes
+                      color: const Color(
+                        0xFF1A1C19,
+                      ).withValues(alpha: 0.9), // Dark glass for both modes
                       borderRadius: BorderRadius.circular(35),
                       border: Border.all(
                         color: Colors.white.withValues(alpha: 0.15),
@@ -191,10 +211,12 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                           ),
                         ),
                         const SizedBox(height: 32),
-                        
+
                         // Title
                         Text(
-                          AppLocalizations.of(context)!.loginFailedWithProvider(providerName),
+                          AppLocalizations.of(
+                            context,
+                          )!.loginFailedWithProvider(providerName),
                           style: const TextStyle(
                             fontWeight: FontWeight.w900,
                             letterSpacing: -1.5,
@@ -204,12 +226,14 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 18),
-                        
+
                         // Message
                         Text(
                           message,
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.9), // White for both modes
+                            color: Colors.white.withValues(
+                              alpha: 0.9,
+                            ), // White for both modes
                             height: 1.5,
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
@@ -217,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 44),
-                        
+
                         // Action Button with Brand Gradient
                         Container(
                           width: double.infinity,
@@ -284,15 +308,28 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
         onTap: _dismissKeyboard,
         child: Stack(
           children: [
-            Positioned(top: -100, right: -100, child: _buildBlob(theme.colorScheme.primary, 300, 0.08)),
-            Positioned(bottom: -150, left: -100, child: _buildBlob(theme.colorScheme.secondary, 400, 0.05)),
+            Positioned(
+              top: -100,
+              right: -100,
+              child: _buildBlob(theme.colorScheme.primary, 300, 0.08),
+            ),
+            Positioned(
+              bottom: -150,
+              left: -100,
+              child: _buildBlob(theme.colorScheme.secondary, 400, 0.05),
+            ),
 
             SafeArea(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: Container(
                   width: double.infinity,
-                  constraints: BoxConstraints(minHeight: size.height - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom),
+                  constraints: BoxConstraints(
+                    minHeight:
+                        size.height -
+                        MediaQuery.of(context).padding.top -
+                        MediaQuery.of(context).padding.bottom,
+                  ),
                   padding: const EdgeInsets.symmetric(horizontal: 28),
                   child: Center(
                     child: AnimationLimiter(
@@ -306,16 +343,31 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                           ),
                           children: [
                             const SizedBox(height: 20),
-                            Hero(tag: 'app_logo', child: Image.asset('assets/logo-no-bg.png', height: 90)),
+                            Hero(
+                              tag: 'app_logo',
+                              child: Image.asset(
+                                'assets/logo-no-bg.png',
+                                height: 90,
+                              ),
+                            ),
                             const SizedBox(height: 30),
                             Text(
                               AppLocalizations.of(context)!.welcomeBack,
-                              style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w900, letterSpacing: -1),
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -1,
+                              ),
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              AppLocalizations.of(context)!.signInToFarmyAccount,
-                              style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                              AppLocalizations.of(
+                                context,
+                              )!.signInToFarmyAccount,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
                             ),
                             const SizedBox(height: 40),
 
@@ -335,27 +387,54 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                   _buildInputField(
                                     context,
                                     controller: _passwordController,
-                                    label: AppLocalizations.of(context)!.password,
+                                    label: AppLocalizations.of(
+                                      context,
+                                    )!.password,
                                     icon: Icons.lock_outline_rounded,
                                     obscureText: _obscurePassword,
                                     suffixIcon: IconButton(
-                                      icon: Icon(_obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20),
-                                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                      icon: Icon(
+                                        _obscurePassword
+                                            ? Icons.visibility_off_rounded
+                                            : Icons.visibility_rounded,
+                                        size: 20,
+                                      ),
+                                      onPressed: () => setState(
+                                        () => _obscurePassword =
+                                            !_obscurePassword,
+                                      ),
                                     ),
-                                    validator: (val) => FieldValidators.required(val, AppLocalizations.of(context)!.password),
+                                    validator: (val) =>
+                                        FieldValidators.required(
+                                          val,
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.password,
+                                        ),
                                   ),
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: TextButton(
-                                      onPressed: () => Navigator.pushNamed(context, '/forgot-password'),
+                                      onPressed: () => Navigator.pushNamed(
+                                        context,
+                                        '/forgot-password',
+                                      ),
                                       style: TextButton.styleFrom(
-                                        foregroundColor: theme.colorScheme.primary,
-                                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                                        foregroundColor:
+                                            theme.colorScheme.primary,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                        ),
                                         minimumSize: const Size(0, 30),
                                       ),
                                       child: Text(
-                                        AppLocalizations.of(context)!.forgotPassword,
-                                        style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11),
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.forgotPassword,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 11,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -397,18 +476,38 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(color: color.withValues(alpha: alpha), shape: BoxShape.circle),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: alpha),
+        shape: BoxShape.circle,
+      ),
     );
   }
 
-  Widget _buildInputField(BuildContext context, {required TextEditingController controller, required String label, required IconData icon, bool obscureText = false, Widget? suffixIcon, String? Function(String?)? validator, TextInputType? keyboardType}) {
+  Widget _buildInputField(
+    BuildContext context, {
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool obscureText = false,
+    Widget? suffixIcon,
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+  }) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 6),
-          child: Text(label.toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1, color: theme.colorScheme.primary.withValues(alpha: 0.7))),
+          child: Text(
+            label.toUpperCase(),
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1,
+              color: theme.colorScheme.primary.withValues(alpha: 0.7),
+            ),
+          ),
         ),
         TextFormField(
           controller: controller,
@@ -421,10 +520,27 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
             suffixIcon: suffixIcon,
             filled: true,
             fillColor: theme.colorScheme.onSurface.withValues(alpha: 0.05),
-            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: theme.colorScheme.onSurface.withValues(alpha: 0.05))),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.3), width: 2.5)),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 16,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(
+                color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                width: 2.5,
+              ),
+            ),
           ),
         ),
       ],
@@ -437,16 +553,33 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
       width: double.infinity,
       height: 52,
       child: ElevatedButton(
-        onPressed: authProvider.isLoading ? null : () => _handleLogin(authProvider),
+        onPressed: authProvider.isLoading
+            ? null
+            : () => _handleLogin(authProvider),
         style: ElevatedButton.styleFrom(
           backgroundColor: theme.colorScheme.primary,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
           elevation: 0,
         ),
         child: authProvider.isLoading
-            ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-            : Text(AppLocalizations.of(context)!.signIn.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : Text(
+                AppLocalizations.of(context)!.signIn.toUpperCase(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                ),
+              ),
       ),
     );
   }
@@ -455,12 +588,28 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
     final theme = Theme.of(context);
     return Row(
       children: [
-        Expanded(child: Divider(color: theme.colorScheme.onSurface.withValues(alpha: 0.1))),
+        Expanded(
+          child: Divider(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(AppLocalizations.of(context)!.orContinueWith.toUpperCase(), style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1, color: theme.colorScheme.onSurface.withValues(alpha: 0.3))),
+          child: Text(
+            AppLocalizations.of(context)!.orContinueWith.toUpperCase(),
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+            ),
+          ),
         ),
-        Expanded(child: Divider(color: theme.colorScheme.onSurface.withValues(alpha: 0.1))),
+        Expanded(
+          child: Divider(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+          ),
+        ),
       ],
     );
   }
@@ -502,9 +651,18 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
           child: RichText(
             text: TextSpan(
               text: "${AppLocalizations.of(context)!.dontHaveAccount} ",
-              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                fontSize: 13,
+              ),
               children: [
-                TextSpan(text: AppLocalizations.of(context)!.signup, style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w900)),
+                TextSpan(
+                  text: AppLocalizations.of(context)!.signup,
+                  style: TextStyle(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
               ],
             ),
           ),
@@ -520,7 +678,10 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
       decoration: BoxDecoration(
         color: theme.colorScheme.error.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.2), width: 1.5),
+        border: Border.all(
+          color: theme.colorScheme.error.withValues(alpha: 0.2),
+          width: 1.5,
+        ),
       ),
       child: Row(
         children: [
@@ -530,7 +691,11 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
               color: theme.colorScheme.error.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.error_outline_rounded, color: theme.colorScheme.error, size: 20),
+            child: Icon(
+              Icons.error_outline_rounded,
+              color: theme.colorScheme.error,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -554,7 +719,11 @@ class _SocialButton extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onTap;
 
-  const _SocialButton({required this.icon, required this.isLoading, required this.onTap});
+  const _SocialButton({
+    required this.icon,
+    required this.isLoading,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -584,8 +753,10 @@ class _SocialButton extends StatelessWidget {
               )
             : Image.asset(
                 icon,
-                color: icon.contains('github') || icon.contains('apple') 
-                    ? (theme.brightness == Brightness.dark ? Colors.white : Colors.black) 
+                color: icon.contains('github') || icon.contains('apple')
+                    ? (theme.brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black)
                     : null,
               ),
       ),

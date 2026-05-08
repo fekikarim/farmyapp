@@ -48,7 +48,9 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
         color: theme.colorScheme.primary,
         backgroundColor: theme.colorScheme.surface,
         child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
           slivers: [
             // Modern Translucent AppBar
             SliverAppBar(
@@ -91,7 +93,9 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
                       child: Icon(
                         Icons.support_agent_rounded,
                         size: 150,
-                        color: theme.colorScheme.primary.withValues(alpha: 0.05),
+                        color: theme.colorScheme.primary.withValues(
+                          alpha: 0.05,
+                        ),
                       ),
                     ),
                   ],
@@ -104,7 +108,7 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               sliver: _buildBody(context, feedbackProvider),
             ),
-            
+
             // Bottom Spacing for FAB
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
@@ -135,22 +139,19 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
     }
 
     return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final feedback = provider.myFeedbacks[index];
-          return AnimationConfiguration.staggeredList(
-            position: index,
-            duration: const Duration(milliseconds: 400),
-            child: SlideAnimation(
-              verticalOffset: 30.0,
-              child: FadeInAnimation(
-                child: _buildFeedbackCard(context, feedback),
-              ),
+      delegate: SliverChildBuilderDelegate((context, index) {
+        final feedback = provider.myFeedbacks[index];
+        return AnimationConfiguration.staggeredList(
+          position: index,
+          duration: const Duration(milliseconds: 400),
+          child: SlideAnimation(
+            verticalOffset: 30.0,
+            child: FadeInAnimation(
+              child: _buildFeedbackCard(context, feedback),
             ),
-          );
-        },
-        childCount: provider.myFeedbacks.length,
-      ),
+          ),
+        );
+      }, childCount: provider.myFeedbacks.length),
     );
   }
 
@@ -186,12 +187,18 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
               color: theme.colorScheme.error.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.error_outline_rounded, size: 64, color: theme.colorScheme.error),
+            child: Icon(
+              Icons.error_outline_rounded,
+              size: 64,
+              color: theme.colorScheme.error,
+            ),
           ),
           const SizedBox(height: 24),
           Text(
             'Sync Failed',
-            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w900,
+            ),
           ),
           const SizedBox(height: 12),
           Padding(
@@ -206,12 +213,15 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
           ),
           const SizedBox(height: 32),
           ElevatedButton.icon(
-            onPressed: () => context.read<FeedbackProvider>().fetchMyFeedbacks(),
+            onPressed: () =>
+                context.read<FeedbackProvider>().fetchMyFeedbacks(),
             icon: const Icon(Icons.refresh_rounded),
             label: const Text('RETRY CONNECTION'),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
           ),
         ],
@@ -265,7 +275,9 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
         color: isDark ? Colors.grey[900]?.withValues(alpha: 0.6) : Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: theme.colorScheme.primary.withValues(alpha: isDark ? 0.05 : 0.1),
+          color: theme.colorScheme.primary.withValues(
+            alpha: isDark ? 0.05 : 0.1,
+          ),
           width: 1.5,
         ),
         boxShadow: [
@@ -295,9 +307,13 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
                       _buildStatusChip(context, feedback.status),
                       const Spacer(),
                       Text(
-                        DateFormat('MMM dd, hh:mm a').format(feedback.createdAt),
+                        DateFormat(
+                          'MMM dd, hh:mm a',
+                        ).format(feedback.createdAt),
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.3,
+                          ),
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -326,7 +342,9 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                color: theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.6,
+                                ),
                                 height: 1.5,
                                 fontSize: 13,
                               ),
@@ -441,14 +459,20 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.1)),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.1),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.stars_rounded, size: 16, color: theme.colorScheme.primary),
+              Icon(
+                Icons.stars_rounded,
+                size: 16,
+                color: theme.colorScheme.primary,
+              ),
               const SizedBox(width: 8),
               Text(
                 'OFFICIAL RESOLUTION',
@@ -490,12 +514,18 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
           icon: const Icon(Icons.add_rounded, size: 28),
           label: Text(
             'SUBMIT NEW REPORT'.toUpperCase(),
-            style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1, fontSize: 14),
+            style: const TextStyle(
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1,
+              fontSize: 14,
+            ),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: theme.colorScheme.primary,
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
             elevation: 8,
             shadowColor: theme.colorScheme.primary.withValues(alpha: 0.3),
           ),

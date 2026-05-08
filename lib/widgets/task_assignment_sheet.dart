@@ -80,10 +80,12 @@ class _TaskAssignmentSheetContent extends StatefulWidget {
   });
 
   @override
-  State<_TaskAssignmentSheetContent> createState() => _TaskAssignmentSheetContentState();
+  State<_TaskAssignmentSheetContent> createState() =>
+      _TaskAssignmentSheetContentState();
 }
 
-class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent> {
+class _TaskAssignmentSheetContentState
+    extends State<_TaskAssignmentSheetContent> {
   bool _isLoading = true;
   List<dynamic> _tasks = [];
   String? _error;
@@ -96,7 +98,10 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
 
   Future<void> _fetchTasks() async {
     try {
-      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final baseUrl = dotenv.get(
+        'API_BASE_URL',
+        fallback: 'http://192.168.0.133:3001',
+      );
       final response = await AuthService.authenticatedRequest(
         'GET',
         Uri.parse('$baseUrl/api/v1/asset-tasks/variant/${widget.variantId}'),
@@ -131,12 +136,18 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
     double targetX = ox + (fw - 1) / 2.0;
     double targetY = oy + (fh - 1) / 2.0;
 
-    final String? workerId = gameProvider.getClosestAvailableWorkerId(targetX, targetY);
+    final String? workerId = gameProvider.getClosestAvailableWorkerId(
+      targetX,
+      targetY,
+    );
 
     if (workerId == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.noAvailableWorkers), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.noAvailableWorkers),
+            backgroundColor: Colors.red,
+          ),
         );
       }
       return;
@@ -150,8 +161,11 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
     );
 
     try {
-      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
-      final landId = widget.landId;  // Use the explicitly passed landId
+      final baseUrl = dotenv.get(
+        'API_BASE_URL',
+        fallback: 'http://192.168.0.133:3001',
+      );
+      final landId = widget.landId; // Use the explicitly passed landId
       final placedItemId = widget.itemData['id'] ?? '';
 
       final response = await AuthService.authenticatedRequest(
@@ -186,7 +200,10 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.taskAssigned), backgroundColor: Colors.green),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.taskAssigned),
+              backgroundColor: Colors.green,
+            ),
           );
           Navigator.pop(context);
         }
@@ -204,7 +221,11 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
     }
   }
 
-  Widget _buildTaskRow(dynamic task, int availableCount, GameProvider gameProvider) {
+  Widget _buildTaskRow(
+    dynamic task,
+    int availableCount,
+    GameProvider gameProvider,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
       decoration: BoxDecoration(
@@ -219,8 +240,14 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  _translateAction(context, task['action'] as String? ?? 'task').toUpperCase(),
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  _translateAction(
+                    context,
+                    task['action'] as String? ?? 'task',
+                  ).toUpperCase(),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -240,10 +267,16 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber,
                 foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 10,
+                ),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: Text(AppLocalizations.of(context)!.assignButton, style: const TextStyle(fontSize: 13)),
+              child: Text(
+                AppLocalizations.of(context)!.assignButton,
+                style: const TextStyle(fontSize: 13),
+              ),
             ),
           ),
         ],
@@ -254,7 +287,9 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
   @override
   Widget build(BuildContext context) {
     final gameProvider = Provider.of<GameProvider>(context);
-    final availableCount = gameProvider.workers.where((w) => w.availability == 'available').length;
+    final availableCount = gameProvider.workers
+        .where((w) => w.availability == 'available')
+        .length;
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
@@ -287,10 +322,16 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
                   children: [
                     Text(
                       AppLocalizations.of(context)!.assignTaskTitle,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: availableCount > 0
                             ? Colors.green.withOpacity(0.12)
@@ -298,9 +339,13 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        AppLocalizations.of(context)!.workersAvailable(availableCount.toString()),
+                        AppLocalizations.of(
+                          context,
+                        )!.workersAvailable(availableCount.toString()),
                         style: TextStyle(
-                          color: availableCount > 0 ? Colors.green.shade700 : Colors.red.shade700,
+                          color: availableCount > 0
+                              ? Colors.green.shade700
+                              : Colors.red.shade700,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -320,13 +365,18 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24),
                     child: Center(
-                      child: Text(_error!, style: const TextStyle(color: Colors.red)),
+                      child: Text(
+                        _error!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
                     ),
                   )
                 else if (_tasks.isEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24),
-                    child: Center(child: Text(AppLocalizations.of(context)!.noTasksDefined)),
+                    child: Center(
+                      child: Text(AppLocalizations.of(context)!.noTasksDefined),
+                    ),
                   )
                 else
                   // Use a simple Column for the tasks list, no ListView scrolling issues
@@ -346,6 +396,7 @@ class _TaskAssignmentSheetContentState extends State<_TaskAssignmentSheetContent
       ),
     );
   }
+
   String _translateAction(BuildContext context, String action) {
     final l10n = AppLocalizations.of(context)!;
     switch (action.toLowerCase()) {

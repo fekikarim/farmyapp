@@ -18,10 +18,7 @@ class BannedScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Colors.red.shade900,
-              Colors.black,
-            ],
+            colors: [Colors.red.shade900, Colors.black],
           ),
         ),
         child: SafeArea(
@@ -30,18 +27,14 @@ class BannedScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.block,
-                  size: 80,
-                  color: Colors.white,
-                ),
+                const Icon(Icons.block, size: 80, color: Colors.white),
                 const SizedBox(height: 24),
                 Text(
                   AppLocalizations.of(context)!.accountBanned,
                   style: TextStyle(
-                    fontSize: 28, 
-                    fontWeight: FontWeight.bold, 
-                    color: Colors.white
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                   textAlign: TextAlign.center,
                 ),

@@ -21,7 +21,7 @@ class _JobFilterModalState extends State<JobFilterModal> {
     'Irrigation',
     'Packaging',
     'Driving',
-    'Other'
+    'Other',
   ];
 
   final List<String> _durations = [
@@ -30,7 +30,7 @@ class _JobFilterModalState extends State<JobFilterModal> {
     '1 Week',
     '2 Weeks',
     '1 Month',
-    'Flexible'
+    'Flexible',
   ];
 
   @override
@@ -74,7 +74,9 @@ class _JobFilterModalState extends State<JobFilterModal> {
               children: [
                 Text(
                   'Filter Jobs',
-                  style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 TextButton(
                   onPressed: () {
@@ -84,14 +86,20 @@ class _JobFilterModalState extends State<JobFilterModal> {
                       _maxSalaryController.clear();
                     });
                   },
-                  child: const Text('Reset', style: TextStyle(color: Colors.redAccent)),
+                  child: const Text(
+                    'Reset',
+                    style: TextStyle(color: Colors.redAccent),
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-            
+
             // Task Type
-            const Text('Task Type', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text(
+              'Task Type',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
@@ -108,8 +116,12 @@ class _JobFilterModalState extends State<JobFilterModal> {
                   },
                   selectedColor: Colors.green,
                   labelStyle: TextStyle(
-                    color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: isSelected
+                        ? Colors.white
+                        : (isDark ? Colors.white70 : Colors.black87),
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                 );
               }).toList(),
@@ -117,7 +129,10 @@ class _JobFilterModalState extends State<JobFilterModal> {
             const SizedBox(height: 24),
 
             // Salary Range
-            const Text('Salary Range (TND)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text(
+              'Salary Range (TND)',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -127,10 +142,16 @@ class _JobFilterModalState extends State<JobFilterModal> {
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       hintText: 'Min',
-                      prefixIcon: const Icon(Icons.remove_circle_outline, size: 20),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      prefixIcon: const Icon(
+                        Icons.remove_circle_outline,
+                        size: 20,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    onChanged: (val) => _filters['min_salary'] = val.isEmpty ? null : val,
+                    onChanged: (val) =>
+                        _filters['min_salary'] = val.isEmpty ? null : val,
                   ),
                 ),
                 const Padding(
@@ -143,10 +164,16 @@ class _JobFilterModalState extends State<JobFilterModal> {
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       hintText: 'Max',
-                      prefixIcon: const Icon(Icons.add_circle_outline, size: 20),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      prefixIcon: const Icon(
+                        Icons.add_circle_outline,
+                        size: 20,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    onChanged: (val) => _filters['max_salary'] = val.isEmpty ? null : val,
+                    onChanged: (val) =>
+                        _filters['max_salary'] = val.isEmpty ? null : val,
                   ),
                 ),
               ],
@@ -154,7 +181,10 @@ class _JobFilterModalState extends State<JobFilterModal> {
             const SizedBox(height: 24),
 
             // Duration
-            const Text('Duration', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text(
+              'Duration',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
@@ -171,8 +201,12 @@ class _JobFilterModalState extends State<JobFilterModal> {
                   },
                   selectedColor: Colors.green,
                   labelStyle: TextStyle(
-                    color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: isSelected
+                        ? Colors.white
+                        : (isDark ? Colors.white70 : Colors.black87),
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                 );
               }).toList(),
@@ -188,7 +222,9 @@ class _JobFilterModalState extends State<JobFilterModal> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   elevation: 0,
                 ),
                 child: const Text(

@@ -33,7 +33,9 @@ class HederaEntry {
       id: json['id'] ?? '',
       label: json['label'] ?? '',
       sublabel: json['sublabel'] ?? '',
-      amount: json['amount'] != null ? double.tryParse(json['amount'].toString()) : null,
+      amount: json['amount'] != null
+          ? double.tryParse(json['amount'].toString())
+          : null,
       currency: json['currency'] ?? 'usd',
       paymentMethod: json['payment_method'] ?? '',
       status: json['status'] ?? '',
@@ -62,8 +64,9 @@ class HederaService {
       if (from != null) params['from'] = _formatDate(from);
       if (to != null) params['to'] = _formatDate(to);
 
-      final uri = Uri.parse('$_baseUrl/api/v1/hedera/my-registry')
-          .replace(queryParameters: params.isNotEmpty ? params : null);
+      final uri = Uri.parse(
+        '$_baseUrl/api/v1/hedera/my-registry',
+      ).replace(queryParameters: params.isNotEmpty ? params : null);
 
       final response = await AuthService.authenticatedRequest('GET', uri);
       if (response.statusCode == 200) {

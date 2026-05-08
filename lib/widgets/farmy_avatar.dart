@@ -38,7 +38,8 @@ class FarmyAvatar extends StatefulWidget {
   State<FarmyAvatar> createState() => _FarmyAvatarState();
 }
 
-class _FarmyAvatarState extends State<FarmyAvatar> with SingleTickerProviderStateMixin {
+class _FarmyAvatarState extends State<FarmyAvatar>
+    with SingleTickerProviderStateMixin {
   bool _localError = false;
   bool _hasTimedOut = false;
   bool _isReachable = true;
@@ -78,7 +79,9 @@ class _FarmyAvatarState extends State<FarmyAvatar> with SingleTickerProviderStat
     // Aggressive Protection: If localhost on physical device, skip immediately
     if (!kIsWeb && (Platform.isIOS || Platform.isAndroid)) {
       if (url.contains('localhost') || url.contains('127.0.0.1')) {
-        debugPrint('FarmyAvatar: Localhost detected on mobile. Showing fallback immediately.');
+        debugPrint(
+          'FarmyAvatar: Localhost detected on mobile. Showing fallback immediately.',
+        );
         if (mounted) setState(() => _isReachable = false);
         return;
       }
@@ -102,11 +105,16 @@ class _FarmyAvatarState extends State<FarmyAvatar> with SingleTickerProviderStat
     }
 
     final resolvedUrl = _resolveUrl(widget.imageUrl);
-    
+
     // Advanced UI: Show pulsing fallback if loading, or static fallback if error/timeout
-    if (_localError || _hasTimedOut || !_isReachable || resolvedUrl == null || 
+    if (_localError ||
+        _hasTimedOut ||
+        !_isReachable ||
+        resolvedUrl == null ||
         FarmyAvatar._globallyFailedUrls.contains(resolvedUrl)) {
-      return _buildFinalContainer(child: _buildFallback(theme, isDark, isError: true));
+      return _buildFinalContainer(
+        child: _buildFallback(theme, isDark, isError: true),
+      );
     }
 
     final double devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
@@ -155,13 +163,13 @@ class _FarmyAvatarState extends State<FarmyAvatar> with SingleTickerProviderStat
         shape: widget.shape,
         border: widget.border,
         boxShadow: widget.boxShadow,
-        borderRadius: widget.shape == BoxShape.rectangle 
-            ? BorderRadius.circular(widget.radius * 0.4) 
+        borderRadius: widget.shape == BoxShape.rectangle
+            ? BorderRadius.circular(widget.radius * 0.4)
             : null,
       ),
       child: ClipRRect(
-        borderRadius: widget.shape == BoxShape.circle 
-            ? BorderRadius.circular(widget.radius) 
+        borderRadius: widget.shape == BoxShape.circle
+            ? BorderRadius.circular(widget.radius)
             : BorderRadius.circular(widget.radius * 0.4),
         child: child,
       ),
@@ -178,15 +186,20 @@ class _FarmyAvatarState extends State<FarmyAvatar> with SingleTickerProviderStat
         decoration: BoxDecoration(
           color: Colors.white,
           shape: widget.shape,
-          borderRadius: widget.shape == BoxShape.rectangle 
-              ? BorderRadius.circular(widget.radius * 0.4) 
+          borderRadius: widget.shape == BoxShape.rectangle
+              ? BorderRadius.circular(widget.radius * 0.4)
               : null,
         ),
       ),
     );
   }
 
-  Widget _buildFallback(ThemeData theme, bool isDark, {bool isLoading = false, bool isError = false}) {
+  Widget _buildFallback(
+    ThemeData theme,
+    bool isDark, {
+    bool isLoading = false,
+    bool isError = false,
+  }) {
     final initials = _getInitials(widget.displayName ?? '');
     final primaryColor = theme.colorScheme.primary;
     final secondaryColor = theme.colorScheme.secondary;
@@ -238,21 +251,23 @@ class _FarmyAvatarState extends State<FarmyAvatar> with SingleTickerProviderStat
       debugPrint('FarmyAvatar: Path is null or empty');
       return null;
     }
-    
+
     if (path.startsWith('http')) {
       debugPrint('FarmyAvatar: Using absolute URL: $path');
       return path;
     }
-    
+
     final base = AuthService.baseUrl.trim();
     if (base.isEmpty) {
       debugPrint('FarmyAvatar: Error - AuthService.baseUrl is empty');
       return null;
     }
 
-    final cleanBase = base.endsWith('/') ? base.substring(0, base.length - 1) : base;
+    final cleanBase = base.endsWith('/')
+        ? base.substring(0, base.length - 1)
+        : base;
     final cleanPath = path.startsWith('/') ? path : '/$path';
-    
+
     final resolved = '$cleanBase$cleanPath';
     debugPrint('FarmyAvatar: Resolved relative path to: $resolved');
     return resolved;
@@ -264,8 +279,8 @@ class _FarmyAvatarState extends State<FarmyAvatar> with SingleTickerProviderStat
     if (parts.isEmpty) return '';
     if (parts.length == 1) {
       final part = parts[0];
-      return part.length > 1 
-          ? part.substring(0, 1).toUpperCase() 
+      return part.length > 1
+          ? part.substring(0, 1).toUpperCase()
           : part.toUpperCase();
     }
     return '${parts[0][0]}${parts[parts.length - 1][0]}'.toUpperCase();

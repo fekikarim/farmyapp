@@ -11,7 +11,8 @@ class WorkerPerformanceDashboard extends StatefulWidget {
   const WorkerPerformanceDashboard({super.key});
 
   @override
-  State<WorkerPerformanceDashboard> createState() => _WorkerPerformanceDashboardState();
+  State<WorkerPerformanceDashboard> createState() =>
+      _WorkerPerformanceDashboardState();
 }
 
 class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
@@ -104,10 +105,7 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
               ),
             )
           else
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: _refresh,
-            ),
+            IconButton(icon: const Icon(Icons.refresh), onPressed: _refresh),
         ],
       ),
       body: RefreshIndicator(
@@ -146,7 +144,7 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
             children: [
               // Filter Bar
               _buildFilterBar(context, provider, l10n, isSmallScreen),
-              
+
               if (provider.error != null && provider.workers.isNotEmpty)
                 _buildSyncErrorBanner(provider, theme, l10n),
 
@@ -189,9 +187,18 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
                   child: Column(
-                    key: ValueKey('workers_${provider.sortCriteria}_${provider.currentDatePreset}_${provider.selectedLandIds.join(",")}_${provider.workers.length}'),
+                    key: ValueKey(
+                      'workers_${provider.sortCriteria}_${provider.currentDatePreset}_${provider.selectedLandIds.join(",")}_${provider.workers.length}',
+                    ),
                     children: provider.workers
-                        .map((worker) => _buildWorkerCard(worker, l10n, theme, isSmallScreen))
+                        .map(
+                          (worker) => _buildWorkerCard(
+                            worker,
+                            l10n,
+                            theme,
+                            isSmallScreen,
+                          ),
+                        )
                         .toList(),
                   ),
                 ),
@@ -234,22 +241,28 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
               childAspectRatio: 1.5,
-              children: List.generate(4, (_) => Container(
-                decoration: BoxDecoration(
-                  color: cardColor,
-                  borderRadius: BorderRadius.circular(20),
+              children: List.generate(
+                4,
+                (_) => Container(
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
-              )),
+              ),
             ),
             const SizedBox(height: 24),
-            ...List.generate(3, (_) => Container(
-              height: 180,
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: BorderRadius.circular(24),
+            ...List.generate(
+              3,
+              (_) => Container(
+                height: 180,
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: cardColor,
+                  borderRadius: BorderRadius.circular(24),
+                ),
               ),
-            )),
+            ),
           ],
         ),
       ),
@@ -271,10 +284,16 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: isDark ? Colors.red.withValues(alpha: 0.1) : Colors.red.shade50,
+                color: isDark
+                    ? Colors.red.withValues(alpha: 0.1)
+                    : Colors.red.shade50,
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.error_outline, size: 64, color: Colors.red.shade400),
+              child: Icon(
+                Icons.error_outline,
+                size: 64,
+                color: Colors.red.shade400,
+              ),
             ),
             const SizedBox(height: 24),
             Text(
@@ -295,7 +314,10 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
               ),
               child: Text(
                 provider.error!,
-                style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600, fontSize: 14),
+                style: TextStyle(
+                  color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                  fontSize: 14,
+                ),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -305,8 +327,13 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
               icon: const Icon(Icons.refresh),
               label: Text(l10n.retry),
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
             ),
           ],
@@ -315,7 +342,11 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
     );
   }
 
-  Widget _buildSyncErrorBanner(WorkerPerformanceProvider provider, ThemeData theme, AppLocalizations l10n) {
+  Widget _buildSyncErrorBanner(
+    WorkerPerformanceProvider provider,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
     return Container(
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -326,7 +357,11 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
       ),
       child: Row(
         children: [
-          Icon(Icons.sync_problem_rounded, color: Colors.red.shade400, size: 20),
+          Icon(
+            Icons.sync_problem_rounded,
+            color: Colors.red.shade400,
+            size: 20,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -365,18 +400,29 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
                 color: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.people_outline, size: 64, color: isDark ? Colors.grey.shade500 : Colors.grey.shade400),
+              child: Icon(
+                Icons.people_outline,
+                size: 64,
+                color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+              ),
             ),
             const SizedBox(height: 16),
             Text(
               l10n.noWorkersFound,
-              style: TextStyle(fontSize: 18, color: isDark ? Colors.grey.shade300 : Colors.grey.shade600, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontSize: 18,
+                color: isDark ? Colors.grey.shade300 : Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               'Add workers to your land to see their performance metrics',
-              style: TextStyle(fontSize: 14, color: isDark ? Colors.grey.shade500 : Colors.grey.shade500),
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark ? Colors.grey.shade500 : Colors.grey.shade500,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -395,9 +441,13 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade800.withValues(alpha: 0.5) : Colors.white,
+        color: isDark
+            ? Colors.grey.shade800.withValues(alpha: 0.5)
+            : Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isDark ? Colors.grey.shade700 : Colors.grey.shade200),
+        border: Border.all(
+          color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
@@ -423,11 +473,21 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
               : Row(
                   children: [
                     Expanded(
-                      child: _buildDateFilter(provider, l10n, isSmallScreen, isDark),
+                      child: _buildDateFilter(
+                        provider,
+                        l10n,
+                        isSmallScreen,
+                        isDark,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: _buildSortDropdown(provider, l10n, isSmallScreen, isDark),
+                      child: _buildSortDropdown(
+                        provider,
+                        l10n,
+                        isSmallScreen,
+                        isDark,
+                      ),
                     ),
                   ],
                 ),
@@ -436,10 +496,21 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
     );
   }
 
-  InputDecoration _buildDropdownDecoration(String hint, IconData? prefixIcon, bool isSmallScreen, bool isDark) {
+  InputDecoration _buildDropdownDecoration(
+    String hint,
+    IconData? prefixIcon,
+    bool isSmallScreen,
+    bool isDark,
+  ) {
     return InputDecoration(
       hintText: hint,
-      prefixIcon: prefixIcon != null && !isSmallScreen ? Icon(prefixIcon, size: 18, color: isDark ? Colors.grey.shade400 : Colors.grey.shade600) : null,
+      prefixIcon: prefixIcon != null && !isSmallScreen
+          ? Icon(
+              prefixIcon,
+              size: 18,
+              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+            )
+          : null,
       filled: true,
       fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
       border: OutlineInputBorder(
@@ -448,24 +519,36 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: isDark ? Colors.grey.shade700 : Colors.grey.shade200),
+        borderSide: BorderSide(
+          color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
       ),
-      contentPadding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 12 : 16, vertical: isSmallScreen ? 10 : 14),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 12 : 16,
+        vertical: isSmallScreen ? 10 : 14,
+      ),
       isDense: true,
     );
   }
 
-  Widget _buildLandFilter(WorkerPerformanceProvider provider, AppLocalizations l10n, bool isSmallScreen, bool isDark) {
+  Widget _buildLandFilter(
+    WorkerPerformanceProvider provider,
+    AppLocalizations l10n,
+    bool isSmallScreen,
+    bool isDark,
+  ) {
     final bool hasFilter = provider.selectedLandIds.isNotEmpty;
     final String? selectedLandName = hasFilter
-        ? provider.farmerLands.firstWhere(
-            (l) => l.id == provider.selectedLandIds.first,
-            orElse: () => provider.farmerLands.first,
-          ).name
+        ? provider.farmerLands
+              .firstWhere(
+                (l) => l.id == provider.selectedLandIds.first,
+                orElse: () => provider.farmerLands.first,
+              )
+              .name
         : null;
 
     return Row(
@@ -476,40 +559,58 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
             isExpanded: true,
             dropdownColor: isDark ? Colors.grey.shade800 : Colors.white,
             borderRadius: BorderRadius.circular(16),
-            icon: Icon(Icons.keyboard_arrow_down_rounded, size: 20, color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
-            decoration: _buildDropdownDecoration(l10n.filterByLand, Icons.landscape, isSmallScreen, isDark).copyWith(
-              suffixIcon: hasFilter
-                  ? Tooltip(
-                      message: 'Filtered by: $selectedLandName',
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        margin: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    )
-                  : null,
+            icon: Icon(
+              Icons.keyboard_arrow_down_rounded,
+              size: 20,
+              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
             ),
+            decoration:
+                _buildDropdownDecoration(
+                  l10n.filterByLand,
+                  Icons.landscape,
+                  isSmallScreen,
+                  isDark,
+                ).copyWith(
+                  suffixIcon: hasFilter
+                      ? Tooltip(
+                          message: 'Filtered by: $selectedLandName',
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            margin: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        )
+                      : null,
+                ),
             items: [
               DropdownMenuItem<String?>(
                 value: null,
                 child: Text(
                   l10n.allLands,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: isSmallScreen ? 13 : 14, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                    fontSize: isSmallScreen ? 13 : 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-              ...provider.farmerLands.map((land) => DropdownMenuItem<String?>(
-                value: land.id,
-                child: Text(
-                  land.name,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: isSmallScreen ? 13 : 14, fontWeight: FontWeight.w500),
+              ...provider.farmerLands.map(
+                (land) => DropdownMenuItem<String?>(
+                  value: land.id,
+                  child: Text(
+                    land.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 13 : 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
-              )),
+              ),
             ],
             onChanged: (landId) {
               if (landId == null) {
@@ -533,7 +634,11 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
                   color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(Icons.clear, size: 20, color: isDark ? Colors.grey.shade300 : Colors.grey.shade700),
+                child: Icon(
+                  Icons.clear,
+                  size: 20,
+                  color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
+                ),
               ),
             ),
           ),
@@ -542,7 +647,12 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
     );
   }
 
-  Widget _buildDateFilter(WorkerPerformanceProvider provider, AppLocalizations l10n, bool isSmallScreen, bool isDark) {
+  Widget _buildDateFilter(
+    WorkerPerformanceProvider provider,
+    AppLocalizations l10n,
+    bool isSmallScreen,
+    bool isDark,
+  ) {
     final Map<String, String> labels = {
       'all': isSmallScreen ? 'All Time' : l10n.allTime,
       'today': isSmallScreen ? 'Today' : l10n.today,
@@ -555,13 +665,62 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
       isExpanded: true,
       dropdownColor: isDark ? Colors.grey.shade800 : Colors.white,
       borderRadius: BorderRadius.circular(16),
-      icon: Icon(Icons.keyboard_arrow_down_rounded, size: 20, color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
-      decoration: _buildDropdownDecoration(l10n.filterByDate, Icons.calendar_today, isSmallScreen, isDark),
+      icon: Icon(
+        Icons.keyboard_arrow_down_rounded,
+        size: 20,
+        color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+      ),
+      decoration: _buildDropdownDecoration(
+        l10n.filterByDate,
+        Icons.calendar_today,
+        isSmallScreen,
+        isDark,
+      ),
       items: [
-        DropdownMenuItem(value: 'all', child: Text(labels['all']!, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: isSmallScreen ? 13 : 14, fontWeight: FontWeight.w500))),
-        DropdownMenuItem(value: 'today', child: Text(labels['today']!, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: isSmallScreen ? 13 : 14, fontWeight: FontWeight.w500))),
-        DropdownMenuItem(value: 'week', child: Text(labels['week']!, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: isSmallScreen ? 13 : 14, fontWeight: FontWeight.w500))),
-        DropdownMenuItem(value: 'month', child: Text(labels['month']!, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: isSmallScreen ? 13 : 14, fontWeight: FontWeight.w500))),
+        DropdownMenuItem(
+          value: 'all',
+          child: Text(
+            labels['all']!,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: isSmallScreen ? 13 : 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        DropdownMenuItem(
+          value: 'today',
+          child: Text(
+            labels['today']!,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: isSmallScreen ? 13 : 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        DropdownMenuItem(
+          value: 'week',
+          child: Text(
+            labels['week']!,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: isSmallScreen ? 13 : 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        DropdownMenuItem(
+          value: 'month',
+          child: Text(
+            labels['month']!,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: isSmallScreen ? 13 : 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
       ],
       onChanged: (preset) {
         if (preset != null) {
@@ -571,7 +730,12 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
     );
   }
 
-  Widget _buildSortDropdown(WorkerPerformanceProvider provider, AppLocalizations l10n, bool isSmallScreen, bool isDark) {
+  Widget _buildSortDropdown(
+    WorkerPerformanceProvider provider,
+    AppLocalizations l10n,
+    bool isSmallScreen,
+    bool isDark,
+  ) {
     final Map<String, String> labels = {
       'scoreHighToLow': isSmallScreen ? 'Score ↓' : 'Score: High → Low',
       'scoreLowToHigh': isSmallScreen ? 'Score ↑' : 'Score: Low → High',
@@ -584,13 +748,62 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
       isExpanded: true,
       dropdownColor: isDark ? Colors.grey.shade800 : Colors.white,
       borderRadius: BorderRadius.circular(16),
-      icon: Icon(Icons.keyboard_arrow_down_rounded, size: 20, color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
-      decoration: _buildDropdownDecoration(l10n.sortBy, Icons.sort, isSmallScreen, isDark),
+      icon: Icon(
+        Icons.keyboard_arrow_down_rounded,
+        size: 20,
+        color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+      ),
+      decoration: _buildDropdownDecoration(
+        l10n.sortBy,
+        Icons.sort,
+        isSmallScreen,
+        isDark,
+      ),
       items: [
-        DropdownMenuItem(value: WorkerSortCriteria.scoreHighToLow, child: Text(labels['scoreHighToLow']!, style: TextStyle(fontSize: isSmallScreen ? 13 : 14, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis)),
-        DropdownMenuItem(value: WorkerSortCriteria.scoreLowToHigh, child: Text(labels['scoreLowToHigh']!, style: TextStyle(fontSize: isSmallScreen ? 13 : 14, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis)),
-        DropdownMenuItem(value: WorkerSortCriteria.tasksHighToLow, child: Text(labels['tasksHighToLow']!, style: TextStyle(fontSize: isSmallScreen ? 13 : 14, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis)),
-        DropdownMenuItem(value: WorkerSortCriteria.nameAZ, child: Text(labels['nameAZ']!, style: TextStyle(fontSize: isSmallScreen ? 13 : 14, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis)),
+        DropdownMenuItem(
+          value: WorkerSortCriteria.scoreHighToLow,
+          child: Text(
+            labels['scoreHighToLow']!,
+            style: TextStyle(
+              fontSize: isSmallScreen ? 13 : 14,
+              fontWeight: FontWeight.w500,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        DropdownMenuItem(
+          value: WorkerSortCriteria.scoreLowToHigh,
+          child: Text(
+            labels['scoreLowToHigh']!,
+            style: TextStyle(
+              fontSize: isSmallScreen ? 13 : 14,
+              fontWeight: FontWeight.w500,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        DropdownMenuItem(
+          value: WorkerSortCriteria.tasksHighToLow,
+          child: Text(
+            labels['tasksHighToLow']!,
+            style: TextStyle(
+              fontSize: isSmallScreen ? 13 : 14,
+              fontWeight: FontWeight.w500,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        DropdownMenuItem(
+          value: WorkerSortCriteria.nameAZ,
+          child: Text(
+            labels['nameAZ']!,
+            style: TextStyle(
+              fontSize: isSmallScreen ? 13 : 14,
+              fontWeight: FontWeight.w500,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ],
       onChanged: (criteria) {
         if (criteria != null) {
@@ -599,7 +812,6 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
       },
     );
   }
-
 
   Widget _buildSummaryCards(
     WorkerPerformanceProvider provider,
@@ -665,7 +877,9 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
       decoration: BoxDecoration(
-        color: isDark ? color.withValues(alpha: 0.05) : color.withValues(alpha: 0.05),
+        color: isDark
+            ? color.withValues(alpha: 0.05)
+            : color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: color.withValues(alpha: 0.15), width: 1.5),
         boxShadow: [
@@ -745,15 +959,17 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
         if (uniqueTopPerformers.isNotEmpty) ...[
           _buildSectionHeader(l10n.topPerformers, Colors.green),
           const SizedBox(height: 12),
-          ...uniqueTopPerformers
-              .map((w) => _buildInsightCard(w, l10n, theme, isTop: true)),
+          ...uniqueTopPerformers.map(
+            (w) => _buildInsightCard(w, l10n, theme, isTop: true),
+          ),
           const SizedBox(height: 24),
         ],
         if (realUnderperformers.isNotEmpty) ...[
           _buildSectionHeader(l10n.needsAttention, Colors.orange),
           const SizedBox(height: 12),
-          ...realUnderperformers
-              .map((w) => _buildInsightCard(w, l10n, theme, isTop: false)),
+          ...realUnderperformers.map(
+            (w) => _buildInsightCard(w, l10n, theme, isTop: false),
+          ),
           const SizedBox(height: 24),
         ],
       ],
@@ -792,11 +1008,13 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
   }) {
     final isDark = theme.brightness == Brightness.dark;
     final baseColor = isTop ? Colors.green : Colors.orange;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isDark ? baseColor.withValues(alpha: 0.05) : baseColor.withValues(alpha: 0.05),
+        color: isDark
+            ? baseColor.withValues(alpha: 0.05)
+            : baseColor.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: baseColor.withValues(alpha: 0.2)),
       ),
@@ -817,12 +1035,18 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
         title: Text(
           worker.workerName,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontWeight: FontWeight.w700, color: isDark ? Colors.white : Colors.black87),
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
         ),
         subtitle: Text(
           worker.landNames.join(', '),
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 13, color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
+          style: TextStyle(
+            fontSize: 13,
+            color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+          ),
         ),
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -850,7 +1074,12 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
     );
   }
 
-  Widget _buildWorkerCard(WorkerPerformance worker, AppLocalizations l10n, ThemeData theme, bool isSmallScreen) {
+  Widget _buildWorkerCard(
+    WorkerPerformance worker,
+    AppLocalizations l10n,
+    ThemeData theme,
+    bool isSmallScreen,
+  ) {
     final scoreColor = _getScoreColor(worker.performanceScore);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -861,7 +1090,9 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
       decoration: BoxDecoration(
         color: isDark ? Colors.grey.shade900 : Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
+        border: Border.all(
+          color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
@@ -888,7 +1119,7 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
-                     crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         worker.workerName,
@@ -902,7 +1133,9 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
                       Text(
                         worker.landNames.join(', '),
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade600,
                           fontSize: isSmallScreen ? 12 : 13,
                         ),
                         maxLines: 1,
@@ -941,7 +1174,10 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
               ],
             ),
             const SizedBox(height: 20),
-            Divider(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200, height: 1),
+            Divider(
+              color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+              height: 1,
+            ),
             const SizedBox(height: 20),
 
             LayoutBuilder(
@@ -958,21 +1194,39 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
                       isSmallScreen: isSmallScreen,
                       isDark: isDark,
                     ),
-                    Container(height: 30, width: 1, color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
+                    Container(
+                      height: 30,
+                      width: 1,
+                      color: isDark
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade200,
+                    ),
                     _buildStatColumn(
-                      label: useCompactLayout ? 'Verified' : l10n.verifiedProofs,
+                      label: useCompactLayout
+                          ? 'Verified'
+                          : l10n.verifiedProofs,
                       value: worker.verifiedProofs.toString(),
                       icon: Icons.verified_rounded,
                       valueColor: Colors.green.shade500,
                       isSmallScreen: isSmallScreen,
                       isDark: isDark,
                     ),
-                    Container(height: 30, width: 1, color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
+                    Container(
+                      height: 30,
+                      width: 1,
+                      color: isDark
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade200,
+                    ),
                     _buildStatColumn(
-                      label: useCompactLayout ? 'Rejected' : l10n.rejectedProofs,
+                      label: useCompactLayout
+                          ? 'Rejected'
+                          : l10n.rejectedProofs,
                       value: worker.rejectedProofs.toString(),
                       icon: Icons.cancel_rounded,
-                      valueColor: worker.rejectedProofs > 0 ? Colors.red.shade500 : Colors.grey.shade500,
+                      valueColor: worker.rejectedProofs > 0
+                          ? Colors.red.shade500
+                          : Colors.grey.shade500,
                       isSmallScreen: isSmallScreen,
                       isDark: isDark,
                     ),
@@ -991,7 +1245,9 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
                     style: theme.textTheme.bodySmall?.copyWith(
                       fontSize: isSmallScreen ? 12 : 13,
                       fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
+                      color: isDark
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade700,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -1011,13 +1267,15 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
               borderRadius: BorderRadius.circular(8),
               child: LinearProgressIndicator(
                 value: worker.verificationSuccessRate / 100,
-                backgroundColor: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+                backgroundColor: isDark
+                    ? Colors.grey.shade800
+                    : Colors.grey.shade200,
                 valueColor: AlwaysStoppedAnimation<Color>(
                   worker.verificationSuccessRate >= 80
                       ? Colors.green.shade500
                       : worker.verificationSuccessRate >= 50
-                          ? Colors.orange.shade500
-                          : Colors.red.shade500,
+                      ? Colors.orange.shade500
+                      : Colors.red.shade500,
                 ),
                 minHeight: 6,
               ),
@@ -1044,7 +1302,13 @@ class _WorkerPerformanceDashboardState extends State<WorkerPerformanceDashboard>
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: isSmallScreen ? 16 : 18, color: valueColor ?? (isDark ? Colors.grey.shade400 : Colors.grey.shade600)),
+              Icon(
+                icon,
+                size: isSmallScreen ? 16 : 18,
+                color:
+                    valueColor ??
+                    (isDark ? Colors.grey.shade400 : Colors.grey.shade600),
+              ),
               const SizedBox(width: 6),
               Text(
                 value,

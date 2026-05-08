@@ -20,7 +20,7 @@ class CropCycleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     if (item is CropCycle) {
       return _CropCycleCardContent(
         cycle: item as CropCycle,
@@ -36,7 +36,7 @@ class CropCycleCard extends StatelessWidget {
         onAction: onAction,
       );
     }
-    
+
     return const SizedBox.shrink();
   }
 }
@@ -58,16 +58,13 @@ class _CropCycleCardContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final statusColor = cycle.getStatusColor(context);
     final daysUntil = cycle.daysUntilHarvest;
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: statusColor.withOpacity(0.3),
-          width: 1,
-        ),
+        side: BorderSide(color: statusColor.withOpacity(0.3), width: 1),
       ),
       child: InkWell(
         onTap: onTap,
@@ -96,7 +93,7 @@ class _CropCycleCardContent extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  
+
                   // Icon
                   Container(
                     padding: const EdgeInsets.all(8),
@@ -105,15 +102,15 @@ class _CropCycleCardContent extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
-                      cycle.assetCategory == 'tree' 
-                          ? Icons.forest 
+                      cycle.assetCategory == 'tree'
+                          ? Icons.forest
                           : Icons.local_florist,
                       size: 20,
                       color: statusColor,
                     ),
                   ),
                   const SizedBox(width: 12),
-                  
+
                   // Name and status
                   Expanded(
                     child: Column(
@@ -140,7 +137,7 @@ class _CropCycleCardContent extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   // Action button
                   if (cycle.isReadyForHarvest && onAction != null)
                     ElevatedButton.icon(
@@ -150,18 +147,21 @@ class _CropCycleCardContent extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: statusColor,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
               const Divider(),
               const SizedBox(height: 12),
-              
+
               // Progress bar
               Row(
                 children: [
@@ -170,7 +170,9 @@ class _CropCycleCardContent extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
                         value: cycle.progressPercentage,
-                        backgroundColor: isDark ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.12),
+                        backgroundColor: isDark
+                            ? Colors.white.withOpacity(0.12)
+                            : Colors.black.withOpacity(0.12),
                         valueColor: AlwaysStoppedAnimation<Color>(statusColor),
                         minHeight: 8,
                       ),
@@ -187,9 +189,9 @@ class _CropCycleCardContent extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Dates info
               Row(
                 children: [
@@ -203,10 +205,10 @@ class _CropCycleCardContent extends StatelessWidget {
                   if (daysUntil != null)
                     _InfoChip(
                       icon: Icons.event_outlined,
-                      label: daysUntil <= 0 
-                          ? AppLocalizations.of(context)!.readyLabel 
+                      label: daysUntil <= 0
+                          ? AppLocalizations.of(context)!.readyLabel
                           : AppLocalizations.of(context)!.harvestLabel,
-                      value: daysUntil <= 0 
+                      value: daysUntil <= 0
                           ? AppLocalizations.of(context)!.nowLabel
                           : '$daysUntil ${AppLocalizations.of(context)!.days}',
                       color: statusColor,
@@ -214,7 +216,7 @@ class _CropCycleCardContent extends StatelessWidget {
                     ),
                 ],
               ),
-              
+
               // Production info
               if (cycle.productName != null) ...[
                 const SizedBox(height: 12),
@@ -223,14 +225,18 @@ class _CropCycleCardContent extends StatelessWidget {
                     Icon(
                       Icons.inventory_2_outlined,
                       size: 14,
-                      color: isDark ? Colors.white.withOpacity(0.5) : Colors.black.withOpacity(0.5),
+                      color: isDark
+                          ? Colors.white.withOpacity(0.5)
+                          : Colors.black.withOpacity(0.5),
                     ),
                     const SizedBox(width: 6),
                     Text(
                       '${AppLocalizations.of(context)!.producesLabel}: ${cycle.productName}',
                       style: TextStyle(
                         fontSize: 12,
-                        color: isDark ? Colors.white.withOpacity(0.6) : Colors.black.withOpacity(0.6),
+                        color: isDark
+                            ? Colors.white.withOpacity(0.6)
+                            : Colors.black.withOpacity(0.6),
                       ),
                     ),
                     if (cycle.ratePerCycle != null) ...[
@@ -239,7 +245,9 @@ class _CropCycleCardContent extends StatelessWidget {
                         '(${cycle.ratePerCycle} ${AppLocalizations.of(context)!.perCycle})',
                         style: TextStyle(
                           fontSize: 12,
-                          color: isDark ? Colors.white.withOpacity(0.4) : Colors.black.withOpacity(0.4),
+                          color: isDark
+                              ? Colors.white.withOpacity(0.4)
+                              : Colors.black.withOpacity(0.4),
                         ),
                       ),
                     ],
@@ -276,7 +284,7 @@ class _CropPlanCardContent extends StatelessWidget {
     final statusColor = plan.getStatusColor(context);
     final daysUntil = plan.daysUntilPlanting;
     final isOverdue = plan.isOverdue;
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       elevation: 0,
@@ -285,8 +293,8 @@ class _CropPlanCardContent extends StatelessWidget {
         side: BorderSide(
           color: statusColor.withOpacity(0.3),
           width: 1,
-          style: plan.status == CropPlanStatus.planned 
-              ? BorderStyle.solid 
+          style: plan.status == CropPlanStatus.planned
+              ? BorderStyle.solid
               : BorderStyle.solid,
         ),
       ),
@@ -313,7 +321,7 @@ class _CropPlanCardContent extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  
+
                   // Icon
                   Container(
                     padding: const EdgeInsets.all(8),
@@ -324,14 +332,10 @@ class _CropPlanCardContent extends StatelessWidget {
                           ? Border.all(color: statusColor.withOpacity(0.3))
                           : null,
                     ),
-                    child: Icon(
-                      Icons.event_note,
-                      size: 20,
-                      color: statusColor,
-                    ),
+                    child: Icon(Icons.event_note, size: 20, color: statusColor),
                   ),
                   const SizedBox(width: 12),
-                  
+
                   // Name and status
                   Expanded(
                     child: Column(
@@ -351,7 +355,7 @@ class _CropPlanCardContent extends StatelessWidget {
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 8, 
+                                horizontal: 8,
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
@@ -380,7 +384,7 @@ class _CropPlanCardContent extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   // Action button
                   if (plan.status == CropPlanStatus.planned && onAction != null)
                     ElevatedButton.icon(
@@ -390,18 +394,21 @@ class _CropPlanCardContent extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: statusColor,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
               const Divider(),
               const SizedBox(height: 12),
-              
+
               // Dates info
               Row(
                 children: [
@@ -422,16 +429,21 @@ class _CropPlanCardContent extends StatelessWidget {
                     ),
                 ],
               ),
-              
+
               // Days indicator
               if (plan.status == CropPlanStatus.planned) ...[
                 const SizedBox(height: 12),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: isOverdue 
-                        ? Colors.red.withOpacity(0.1) 
-                        : isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.03),
+                    color: isOverdue
+                        ? Colors.red.withOpacity(0.1)
+                        : isDark
+                        ? Colors.white.withOpacity(0.05)
+                        : Colors.black.withOpacity(0.03),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -440,26 +452,38 @@ class _CropPlanCardContent extends StatelessWidget {
                       Icon(
                         isOverdue ? Icons.warning_amber : Icons.schedule,
                         size: 16,
-                        color: isOverdue ? Colors.red : isDark ? Colors.white.withOpacity(0.6) : Colors.black.withOpacity(0.6),
+                        color: isOverdue
+                            ? Colors.red
+                            : isDark
+                            ? Colors.white.withOpacity(0.6)
+                            : Colors.black.withOpacity(0.6),
                       ),
                       const SizedBox(width: 8),
                       Text(
                         isOverdue
-                            ? AppLocalizations.of(context)!.overdueByDays(-daysUntil)
+                            ? AppLocalizations.of(
+                                context,
+                              )!.overdueByDays(-daysUntil)
                             : daysUntil == 0
-                                ? AppLocalizations.of(context)!.plantToday
-                                : AppLocalizations.of(context)!.plantInDays(daysUntil),
+                            ? AppLocalizations.of(context)!.plantToday
+                            : AppLocalizations.of(
+                                context,
+                              )!.plantInDays(daysUntil),
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          color: isOverdue ? Colors.red : isDark ? Colors.white.withOpacity(0.8) : Colors.black.withOpacity(0.87),
+                          color: isOverdue
+                              ? Colors.red
+                              : isDark
+                              ? Colors.white.withOpacity(0.8)
+                              : Colors.black.withOpacity(0.87),
                         ),
                       ),
                     ],
                   ),
                 ),
               ],
-              
+
               // Notes
               if (plan.notes != null && plan.notes!.isNotEmpty) ...[
                 const SizedBox(height: 12),
@@ -472,18 +496,16 @@ class _CropPlanCardContent extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.notes,
-                        size: 16,
-                        color: AppTheme.primaryColor,
-                      ),
+                      Icon(Icons.notes, size: 16, color: AppTheme.primaryColor),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           plan.notes!,
                           style: TextStyle(
                             fontSize: 13,
-                            color: isDark ? Colors.white.withOpacity(0.7) : Colors.black.withOpacity(0.87),
+                            color: isDark
+                                ? Colors.white.withOpacity(0.7)
+                                : Colors.black.withOpacity(0.87),
                           ),
                         ),
                       ),
@@ -521,15 +543,17 @@ class _InfoChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: isHighlighted 
-            ? color.withOpacity(0.15) 
-            : isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.03),
+        color: isHighlighted
+            ? color.withOpacity(0.15)
+            : isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.black.withOpacity(0.03),
         borderRadius: BorderRadius.circular(8),
-        border: isHighlighted 
+        border: isHighlighted
             ? Border.all(color: color.withOpacity(0.3))
             : null,
       ),
@@ -545,7 +569,9 @@ class _InfoChip extends StatelessWidget {
                 label,
                 style: TextStyle(
                   fontSize: 10,
-                  color: isDark ? Colors.white.withOpacity(0.5) : Colors.black.withOpacity(0.5),
+                  color: isDark
+                      ? Colors.white.withOpacity(0.5)
+                      : Colors.black.withOpacity(0.5),
                 ),
               ),
               Text(
@@ -553,7 +579,11 @@ class _InfoChip extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: isHighlighted ? color : (isDark ? Colors.white : Colors.black.withOpacity(0.87)),
+                  color: isHighlighted
+                      ? color
+                      : (isDark
+                            ? Colors.white
+                            : Colors.black.withOpacity(0.87)),
                 ),
               ),
             ],

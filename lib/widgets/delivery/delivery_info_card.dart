@@ -123,7 +123,9 @@ class _DeliveryInfoCardState extends State<DeliveryInfoCard> {
                     t.cancellationReason!.isNotEmpty)
                   _InfoRow(
                     icon: Icons.info_outline_rounded,
-                    label: AppLocalizations.of(context)!.cancellationReasonLabel,
+                    label: AppLocalizations.of(
+                      context,
+                    )!.cancellationReasonLabel,
                     value: t.cancellationReason!,
                     theme: theme,
                     valueColor: Colors.red.shade400,
@@ -191,7 +193,9 @@ class _DeliveryInfoCardState extends State<DeliveryInfoCard> {
                     const SizedBox(height: 8),
                     _SummaryRow(
                       label: AppLocalizations.of(context)!.totalLabel,
-                      value: AppLocalizations.of(context)!.priceTnd(t.order!.totalPrice.toStringAsFixed(2)),
+                      value: AppLocalizations.of(
+                        context,
+                      )!.priceTnd(t.order!.totalPrice.toStringAsFixed(2)),
                       theme: theme,
                       isBold: true,
                     ),
@@ -250,7 +254,10 @@ class _DeliveryInfoCardState extends State<DeliveryInfoCard> {
     if (diff.isNegative) return l10n.arrivingSoon;
     if (diff.inMinutes < 60) return l10n.etaMinutes(diff.inMinutes.toString());
     if (diff.inHours < 24) {
-      return l10n.etaHours(diff.inHours.toString(), diff.inMinutes.remainder(60).toString());
+      return l10n.etaHours(
+        diff.inHours.toString(),
+        diff.inMinutes.remainder(60).toString(),
+      );
     }
 
     final day = eta.day.toString().padLeft(2, '0');

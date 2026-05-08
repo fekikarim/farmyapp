@@ -49,7 +49,7 @@ class LandWorker {
     final worker = json['worker'];
     final assigner = json['assigner'];
     final land = json['land'];
-    
+
     HiringSource source = HiringSource.manual;
     final sourceStr = json['hiring_source'] ?? 'manual';
     if (sourceStr == 'invitation') {

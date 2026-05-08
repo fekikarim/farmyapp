@@ -155,8 +155,10 @@ class _EditLandSheetState extends State<EditLandSheet> {
                   if (value == null || value.trim().isEmpty)
                     return AppLocalizations.of(context)!.priceCannotBeEmpty;
                   final val = double.tryParse(value.trim());
-                  if (val == null) return AppLocalizations.of(context)!.invalidNumericAmount;
-                  if (val <= 0) return AppLocalizations.of(context)!.priceGreaterThanZero;
+                  if (val == null)
+                    return AppLocalizations.of(context)!.invalidNumericAmount;
+                  if (val <= 0)
+                    return AppLocalizations.of(context)!.priceGreaterThanZero;
                   if (val > 1000000)
                     return AppLocalizations.of(context)!.priceExceedsLimit;
                   return null;

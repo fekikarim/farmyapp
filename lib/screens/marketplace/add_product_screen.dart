@@ -124,7 +124,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedProductTypeId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseSelectProductType)),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.pleaseSelectProductType),
+        ),
       );
       return;
     }
@@ -187,7 +189,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.product != null ? AppLocalizations.of(context)!.editProduct : AppLocalizations.of(context)!.addProduct),
+        title: Text(
+          widget.product != null
+              ? AppLocalizations.of(context)!.editProduct
+              : AppLocalizations.of(context)!.addProduct,
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -238,14 +244,20 @@ class _AddProductScreenState extends State<AddProductScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _titleController,
-                decoration: InputDecoration(labelText: AppLocalizations.of(context)!.title),
-                validator: (v) => v!.isEmpty ? AppLocalizations.of(context)!.pleaseEnterTitle : null,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.title,
+                ),
+                validator: (v) => v!.isEmpty
+                    ? AppLocalizations.of(context)!.pleaseEnterTitle
+                    : null,
               ),
               const SizedBox(height: 16),
               _buildSelectionTile(
                 label: AppLocalizations.of(context)!.productType,
                 value: _selectedProductTypeId != null
-                    ? productTypes.firstWhere((t) => t.id == _selectedProductTypeId).name
+                    ? productTypes
+                          .firstWhere((t) => t.id == _selectedProductTypeId)
+                          .name
                     : 'Select Type',
                 icon: Icons.category_outlined,
                 onTap: () => _showProductTypeSheet(productTypes),
@@ -253,7 +265,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: InputDecoration(labelText: AppLocalizations.of(context)!.description),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.description,
+                ),
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
@@ -273,7 +287,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _quantityController,
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.quantity),
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context)!.quantity,
+                      ),
                       keyboardType: TextInputType.number,
                       validator: (v) => v!.isEmpty ? 'Required' : null,
                     ),
@@ -286,7 +302,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.unitHint,
                 ),
-                validator: (v) => v!.isEmpty ? AppLocalizations.of(context)!.pleaseEnterUnit : null,
+                validator: (v) => v!.isEmpty
+                    ? AppLocalizations.of(context)!.pleaseEnterUnit
+                    : null,
               ),
               const SizedBox(height: 24),
               _buildProductOriginSection(),
@@ -314,19 +332,21 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Widget _buildProductOriginSection() {
     final authProvider = context.watch<AuthProvider>();
     final role = authProvider.user?.role;
-    
+
     if (role != 'farmer' && role != 'investor') {
       return const SizedBox.shrink();
     }
 
     final theme = Theme.of(context);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Product Origin (Optional)',
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 8),
         if (role == 'farmer')
@@ -339,14 +359,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   Widget _buildFarmerOriginDropdown() {
     final landProvider = context.watch<LandProvider>();
-    
+
     if (landProvider.isLoading) {
       return const Center(child: LinearProgressIndicator());
     }
 
     final lands = landProvider.myLands;
     if (lands.isEmpty) {
-      return const Text('No owned lands found to link.', style: TextStyle(color: Colors.grey));
+      return const Text(
+        'No owned lands found to link.',
+        style: TextStyle(color: Colors.grey),
+      );
     }
 
     return _buildSelectionTile(
@@ -361,14 +384,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   Widget _buildInvestorOriginDropdown() {
     final roiProvider = context.watch<RoiProvider>();
-    
+
     if (roiProvider.isLoading) {
       return const Center(child: LinearProgressIndicator());
     }
 
     final rentals = roiProvider.dashboardData?.rentals ?? [];
     if (rentals.isEmpty) {
-      return const Text('No rented lands found to link.', style: TextStyle(color: Colors.grey));
+      return const Text(
+        'No rented lands found to link.',
+        style: TextStyle(color: Colors.grey),
+      );
     }
 
     return _buildSelectionTile(
@@ -446,7 +472,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
   void _showProductTypeSheet(List<ProductType> types) {
     _showModernSelectionSheet(
       title: 'Product Type',
-      items: types.map((t) => _SelectionItem(id: t.id, title: t.name, icon: Icons.grass_rounded)).toList(),
+      items: types
+          .map(
+            (t) => _SelectionItem(
+              id: t.id,
+              title: t.name,
+              icon: Icons.grass_rounded,
+            ),
+          )
+          .toList(),
       selectedId: _selectedProductTypeId,
       onSelected: (id) {
         final type = types.firstWhere((t) => t.id == id);
@@ -459,8 +493,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
     _showModernSelectionSheet(
       title: 'Owned Land',
       items: [
-        _SelectionItem(id: null, title: 'Not Linked', icon: Icons.link_off_rounded),
-        ...lands.map((l) => _SelectionItem(id: l.id, title: l.name, icon: Icons.landscape_rounded)),
+        _SelectionItem(
+          id: null,
+          title: 'Not Linked',
+          icon: Icons.link_off_rounded,
+        ),
+        ...lands.map(
+          (l) => _SelectionItem(
+            id: l.id,
+            title: l.name,
+            icon: Icons.landscape_rounded,
+          ),
+        ),
       ],
       selectedId: _selectedLandId,
       onSelected: (id) {
@@ -476,8 +520,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
     _showModernSelectionSheet(
       title: 'Rented Land',
       items: [
-        _SelectionItem(id: null, title: 'Not Linked', icon: Icons.link_off_rounded),
-        ...rentals.map((r) => _SelectionItem(id: r.id, title: r.landName, icon: Icons.real_estate_agent_rounded)),
+        _SelectionItem(
+          id: null,
+          title: 'Not Linked',
+          icon: Icons.link_off_rounded,
+        ),
+        ...rentals.map(
+          (r) => _SelectionItem(
+            id: r.id,
+            title: r.landName,
+            icon: Icons.real_estate_agent_rounded,
+          ),
+        ),
       ],
       selectedId: _selectedLandRentalId,
       onSelected: (id) {
@@ -523,11 +577,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
               const SizedBox(height: 24),
               Text(
                 title,
-                style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 24),
               ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.6,
+                ),
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: items.length,
@@ -547,7 +605,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? theme.colorScheme.primary.withOpacity(0.1)
-                              : isDark ? Colors.white.withOpacity(0.05) : Colors.grey[100],
+                              : isDark
+                              ? Colors.white.withOpacity(0.05)
+                              : Colors.grey[100],
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: isSelected
@@ -559,20 +619,29 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           children: [
                             Icon(
                               item.icon,
-                              color: isSelected ? theme.colorScheme.primary : (isDark ? Colors.white38 : Colors.black26),
+                              color: isSelected
+                                  ? theme.colorScheme.primary
+                                  : (isDark ? Colors.white38 : Colors.black26),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Text(
                                 item.title,
                                 style: theme.textTheme.bodyLarge?.copyWith(
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                  color: isSelected ? theme.colorScheme.primary : null,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  color: isSelected
+                                      ? theme.colorScheme.primary
+                                      : null,
                                 ),
                               ),
                             ),
                             if (isSelected)
-                              Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary),
+                              Icon(
+                                Icons.check_circle_rounded,
+                                color: theme.colorScheme.primary,
+                              ),
                           ],
                         ),
                       ),

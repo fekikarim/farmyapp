@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/socket_service.dart';
 import 'package:farmyapp/l10n/app_localizations.dart';
-import '../customer/home_screen.dart'; 
+import '../customer/home_screen.dart';
 import 'dart:math';
 
 class NotificationsScreen extends StatefulWidget {
@@ -18,7 +18,8 @@ class NotificationsScreen extends StatefulWidget {
   State<NotificationsScreen> createState() => NotificationsScreenState();
 }
 
-class NotificationsScreenState extends State<NotificationsScreen> with SingleTickerProviderStateMixin {
+class NotificationsScreenState extends State<NotificationsScreen>
+    with SingleTickerProviderStateMixin {
   bool _isLoading = true;
   List<AppNotification> _notifications = [];
   String? _error;
@@ -45,11 +46,13 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
           // Add to top and keep only latest if needed, or just append
           _notifications.insert(0, newNotif);
         });
-        
+
         // Haptic feedback for new notification
-        // HapticFeedback.lightImpact(); 
+        // HapticFeedback.lightImpact();
       } catch (e) {
-        debugPrint('[NotificationsScreen] Error parsing socket notification: $e');
+        debugPrint(
+          '[NotificationsScreen] Error parsing socket notification: $e',
+        );
       }
     });
   }
@@ -104,7 +107,9 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.allNotificationsMarkedRead),
+            content: Text(
+              AppLocalizations.of(context)!.allNotificationsMarkedRead,
+            ),
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.green.shade600,
           ),
@@ -142,7 +147,9 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.failedToDeleteNotification),
+            content: Text(
+              AppLocalizations.of(context)!.failedToDeleteNotification,
+            ),
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.red.shade600,
           ),
@@ -202,16 +209,25 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
                           width: 80,
                           height: 80,
                           decoration: BoxDecoration(
-                            color: _getColorForType(notif.type, Theme.of(context)).withValues(alpha: 0.2),
+                            color: _getColorForType(
+                              notif.type,
+                              Theme.of(context),
+                            ).withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: _getColorForType(notif.type, Theme.of(context)).withValues(alpha: 0.4),
+                              color: _getColorForType(
+                                notif.type,
+                                Theme.of(context),
+                              ).withValues(alpha: 0.4),
                               width: 3,
                             ),
                           ),
                           child: Icon(
                             _getIconForType(notif.type),
-                            color: _getColorForType(notif.type, Theme.of(context)),
+                            color: _getColorForType(
+                              notif.type,
+                              Theme.of(context),
+                            ),
                             size: 40,
                           ),
                         ),
@@ -259,7 +275,9 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               elevation: 8,
-                              shadowColor: Theme.of(context).primaryColor.withValues(alpha: 0.5),
+                              shadowColor: Theme.of(
+                                context,
+                              ).primaryColor.withValues(alpha: 0.5),
                             ),
                             child: Text(
                               AppLocalizations.of(context)!.close.toUpperCase(),
@@ -284,27 +302,43 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
 
   IconData _getIconForType(String type) {
     switch (type) {
-      case 'rental': return Icons.real_estate_agent_rounded;
-      case 'purchase': return Icons.shopping_cart_rounded;
-      case 'item_request': return Icons.inventory_2_rounded;
-      case 'proof': return Icons.verified_rounded;
-      case 'invitation': return Icons.calendar_month_rounded;
-      case 'contract': return Icons.handshake_rounded;
-      case 'wallet': return Icons.account_balance_wallet_rounded;
-      default: return Icons.notifications_rounded;
+      case 'rental':
+        return Icons.real_estate_agent_rounded;
+      case 'purchase':
+        return Icons.shopping_cart_rounded;
+      case 'item_request':
+        return Icons.inventory_2_rounded;
+      case 'proof':
+        return Icons.verified_rounded;
+      case 'invitation':
+        return Icons.calendar_month_rounded;
+      case 'contract':
+        return Icons.handshake_rounded;
+      case 'wallet':
+        return Icons.account_balance_wallet_rounded;
+      default:
+        return Icons.notifications_rounded;
     }
   }
 
   Color _getColorForType(String type, ThemeData theme) {
     switch (type) {
-      case 'rental': return Colors.green.shade400;
-      case 'purchase': return Colors.blue.shade400;
-      case 'item_request': return Colors.orange.shade400;
-      case 'proof': return Colors.teal.shade400;
-      case 'invitation': return Colors.purple.shade400;
-      case 'contract': return Colors.indigo.shade400;
-      case 'wallet': return Colors.amber.shade400;
-      default: return theme.colorScheme.primary;
+      case 'rental':
+        return Colors.green.shade400;
+      case 'purchase':
+        return Colors.blue.shade400;
+      case 'item_request':
+        return Colors.orange.shade400;
+      case 'proof':
+        return Colors.teal.shade400;
+      case 'invitation':
+        return Colors.purple.shade400;
+      case 'contract':
+        return Colors.indigo.shade400;
+      case 'wallet':
+        return Colors.amber.shade400;
+      default:
+        return theme.colorScheme.primary;
     }
   }
 
@@ -327,69 +361,75 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
               parent: BouncingScrollPhysics(),
             ),
             slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.stayUpdated,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                            fontWeight: FontWeight.w600,
-                          ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.stayUpdated,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.6,
+                                ),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              AppLocalizations.of(context)!.alerts,
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -1.5,
+                                color: theme.colorScheme.onSurface,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          AppLocalizations.of(context)!.alerts,
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: -1.5,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                      _buildHeaderActions(context, theme),
+                    ],
                   ),
-                  _buildHeaderActions(context, theme),
-                ],
+                ),
               ),
-            ),
-          ),
 
-          // Content
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            sliver: _isLoading 
-                ? SliverToBoxAdapter(child: _buildShimmerLoading())
-                : _error != null
+              // Content
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                sliver: _isLoading
+                    ? SliverToBoxAdapter(child: _buildShimmerLoading())
+                    : _error != null
                     ? SliverToBoxAdapter(child: _buildErrorState())
                     : _notifications.isEmpty
-                        ? SliverToBoxAdapter(child: _buildEmptyState(theme))
-                        : SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                                final notif = _notifications[index];
-                                return _buildNotificationTile(notif, index, theme);
-                              },
-                              childCount: _notifications.length,
-                            ),
-                          ),
+                    ? SliverToBoxAdapter(child: _buildEmptyState(theme))
+                    : SliverList(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          final notif = _notifications[index];
+                          return _buildNotificationTile(notif, index, theme);
+                        }, childCount: _notifications.length),
+                      ),
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+            ],
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
-        ],
+        ),
       ),
-    ),
-  ),
-);
-}
+    );
+  }
 
-  Widget _buildNotificationTile(AppNotification notif, int index, ThemeData theme) {
+  Widget _buildNotificationTile(
+    AppNotification notif,
+    int index,
+    ThemeData theme,
+  ) {
     final isDark = theme.brightness == Brightness.dark;
     final isUnread = !notif.isRead;
     final typeColor = _getColorForType(notif.type, theme);
@@ -410,7 +450,11 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
                 color: Colors.red.shade400,
                 borderRadius: BorderRadius.circular(24),
               ),
-              child: const Icon(Icons.delete_outline_rounded, color: Colors.white, size: 28),
+              child: const Icon(
+                Icons.delete_outline_rounded,
+                color: Colors.white,
+                size: 28,
+              ),
             ),
             onDismissed: (_) => _deleteNotification(notif, index),
             child: InkWell(
@@ -418,14 +462,18 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: isUnread 
-                      ? theme.primaryColor.withValues(alpha: isDark ? 0.08 : 0.05)
+                  color: isUnread
+                      ? theme.primaryColor.withValues(
+                          alpha: isDark ? 0.08 : 0.05,
+                        )
                       : theme.cardColor.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: isUnread 
+                    color: isUnread
                         ? theme.primaryColor.withValues(alpha: 0.2)
-                        : (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
+                        : (isDark ? Colors.white : Colors.black).withValues(
+                            alpha: 0.05,
+                          ),
                     width: 1.5,
                   ),
                 ),
@@ -438,9 +486,16 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
                       decoration: BoxDecoration(
                         color: typeColor.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
-                        border: Border.all(color: typeColor.withValues(alpha: 0.2), width: 1),
+                        border: Border.all(
+                          color: typeColor.withValues(alpha: 0.2),
+                          width: 1,
+                        ),
                       ),
-                      child: Icon(_getIconForType(notif.type), color: typeColor, size: 26),
+                      child: Icon(
+                        _getIconForType(notif.type),
+                        color: typeColor,
+                        size: 26,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -455,7 +510,9 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
                                   notif.title,
                                   style: TextStyle(
                                     fontSize: 16,
-                                    fontWeight: isUnread ? FontWeight.w900 : FontWeight.w700,
+                                    fontWeight: isUnread
+                                        ? FontWeight.w900
+                                        : FontWeight.w700,
                                     color: theme.colorScheme.onSurface,
                                     letterSpacing: -0.5,
                                   ),
@@ -472,7 +529,9 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: theme.primaryColor.withValues(alpha: 0.5),
+                                        color: theme.primaryColor.withValues(
+                                          alpha: 0.5,
+                                        ),
                                         blurRadius: 4,
                                         spreadRadius: 2,
                                       ),
@@ -486,7 +545,9 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
                             notif.message,
                             style: TextStyle(
                               fontSize: 14,
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.7,
+                              ),
                               height: 1.4,
                               fontWeight: FontWeight.w500,
                             ),
@@ -498,7 +559,9 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
                             timeago.format(notif.createdAt),
                             style: TextStyle(
                               fontSize: 12,
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.4,
+                              ),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -517,21 +580,24 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
 
   Widget _buildShimmerLoading() {
     return Column(
-      children: List.generate(6, (index) => Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        height: 120,
-        width: double.infinity,
-        child: Shimmer.fromColors(
-          baseColor: Colors.grey.withValues(alpha: 0.1),
-          highlightColor: Colors.grey.withValues(alpha: 0.05),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
+      children: List.generate(
+        6,
+        (index) => Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          height: 120,
+          width: double.infinity,
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey.withValues(alpha: 0.1),
+            highlightColor: Colors.grey.withValues(alpha: 0.05),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+              ),
             ),
           ),
         ),
-      )),
+      ),
     );
   }
 
@@ -540,7 +606,11 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
       child: Column(
         children: [
           const SizedBox(height: 60),
-          Icon(Icons.error_outline_rounded, size: 64, color: Colors.red.shade300),
+          Icon(
+            Icons.error_outline_rounded,
+            size: 64,
+            color: Colors.red.shade300,
+          ),
           const SizedBox(height: 16),
           Text(_error!, style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 24),
@@ -575,26 +645,29 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
       ),
     );
   }
+
   Widget _buildHeaderActions(BuildContext context, ThemeData theme) {
     final hasUnread = _notifications.any((n) => !n.isRead);
-    
+
     return IconButton(
       icon: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: hasUnread 
+          color: hasUnread
               ? theme.primaryColor.withValues(alpha: 0.1)
               : theme.colorScheme.onSurface.withValues(alpha: 0.05),
           shape: BoxShape.circle,
           border: Border.all(
-            color: hasUnread 
+            color: hasUnread
                 ? theme.primaryColor.withValues(alpha: 0.2)
                 : theme.colorScheme.onSurface.withValues(alpha: 0.1),
           ),
         ),
         child: Icon(
-          Icons.done_all_rounded, 
-          color: hasUnread ? theme.primaryColor : theme.colorScheme.onSurface.withValues(alpha: 0.3), 
+          Icons.done_all_rounded,
+          color: hasUnread
+              ? theme.primaryColor
+              : theme.colorScheme.onSurface.withValues(alpha: 0.3),
           size: 24,
         ),
       ),
@@ -602,5 +675,4 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
       tooltip: AppLocalizations.of(context)!.markAllAsReadTooltip,
     );
   }
-
 }

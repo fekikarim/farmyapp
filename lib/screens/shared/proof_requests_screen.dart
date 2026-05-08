@@ -58,18 +58,20 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context)!.aiVerifyingProof))
+      SnackBar(content: Text(AppLocalizations.of(context)!.aiVerifyingProof)),
     );
 
     final errorOrRejectMsg = await ProofService.submitProof(id, image);
-    
+
     if (mounted) {
       if (errorOrRejectMsg == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.proofVerifiedSuccessfully),
+            content: Text(
+              AppLocalizations.of(context)!.proofVerifiedSuccessfully,
+            ),
             backgroundColor: Colors.green.shade600,
-          )
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -77,7 +79,7 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
             content: Text(errorOrRejectMsg),
             backgroundColor: Colors.red.shade600,
             duration: const Duration(seconds: 4),
-          )
+          ),
         );
       }
       _loadData(); // Refresh UI
@@ -126,7 +128,7 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
               fontWeight: FontWeight.bold,
               fontSize: 12,
             ),
-          )
+          ),
         ],
       ),
     );
@@ -136,7 +138,9 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: Text(AppLocalizations.of(context)!.aiProofRequests)),
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.aiProofRequests),
+        ),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -145,109 +149,134 @@ class _ProofRequestsScreenState extends State<ProofRequestsScreen> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.aiProofRequests),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadData,
-          )
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadData),
         ],
       ),
       body: _error != null
           ? Center(child: Text(_error!))
           : _proofs.isEmpty
-               ? Center(child: Text(AppLocalizations.of(context)!.noProofRequestsFound))
-               : ListView.builder(
-                   padding: const EdgeInsets.all(16),
-                   itemCount: _proofs.length,
-                   itemBuilder: (context, index) {
-                     final proof = _proofs[index];
-                     final isFarmer = proof['farmer_id'] == _currentUserId;
-                     final isPending = proof['status'] == 'pending';
-                     final expiresAt = DateTime.parse(proof['expires_at']);
-                     final isExpiredLocal = isPending && expiresAt.isBefore(DateTime.now());
+          ? Center(
+              child: Text(AppLocalizations.of(context)!.noProofRequestsFound),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _proofs.length,
+              itemBuilder: (context, index) {
+                final proof = _proofs[index];
+                final isFarmer = proof['farmer_id'] == _currentUserId;
+                final isPending = proof['status'] == 'pending';
+                final expiresAt = DateTime.parse(proof['expires_at']);
+                final isExpiredLocal =
+                    isPending && expiresAt.isBefore(DateTime.now());
 
-                     return Card(
-                       margin: const EdgeInsets.only(bottom: 16),
-                       child: Padding(
-                         padding: const EdgeInsets.all(16),
-                         child: Column(
-                           crossAxisAlignment: CrossAxisAlignment.start,
-                           children: [
-                             Row(
-                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                               children: [
-                                 Text(
-                                   isFarmer 
-                                     ? AppLocalizations.of(context)!.fromLabel(proof['investor_name'] ?? AppLocalizations.of(context)!.investor)
-                                     : AppLocalizations.of(context)!.toLabel(proof['farmer_name'] ?? AppLocalizations.of(context)!.worker),
-                                   style: const TextStyle(
-                                     fontWeight: FontWeight.bold,
-                                     fontSize: 16,
-                                   ),
-                                 ),
-                                 _buildStatusBadge(
-                                   isExpiredLocal ? 'expired' : proof['status']
-                                 ),
-                               ],
-                             ),
-                             const SizedBox(height: 12),
-                             if (isPending && !isExpiredLocal) ...[
-                               Text(
-                                 AppLocalizations.of(context)!.mustSubmitBefore(DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_jm().format(expiresAt)),
-                                 style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
-                               ),
-                               const SizedBox(height: 12),
-                             ],
-                             if (proof['ai_reasoning'] != null) ...[
-                               Container(
-                                 padding: const EdgeInsets.all(12),
-                                 decoration: BoxDecoration(
-                                   color: Colors.blue.withOpacity(0.05),
-                                   borderRadius: BorderRadius.circular(8),
-                                 ),
-                                 child: Text(AppLocalizations.of(context)!.aiNotes(proof['ai_reasoning'] ?? '')),
-                               ),
-                               const SizedBox(height: 12),
-                             ],
-                             if (proof['image_url'] != null) ...[
-                               ClipRRect(
-                                 borderRadius: BorderRadius.circular(12),
-                                 child: Image.network(
-                                   '${AuthService.baseUrl}${proof['image_url']}',
-                                   height: 200,
-                                   width: double.infinity,
-                                   fit: BoxFit.cover,
-                                   errorBuilder: (_, __, ___) => Container(
-                                     height: 100,
-                                     width: double.infinity,
-                                     color: Colors.grey.withOpacity(0.1),
-                                     child: const Icon(Icons.broken_image_outlined, color: Colors.grey),
-                                   ),
-                                 ),
-                               ),
-                               const SizedBox(height: 12),
-                             ],
-                             if (isFarmer && isPending && !isExpiredLocal) ...[
-                               SizedBox(
-                                 width: double.infinity,
-                                 child: ElevatedButton.icon(
-                                   onPressed: () => _handleSubmitProof(proof['id']),
-                                   icon: const Icon(Icons.camera_alt),
-                                   label: Text(AppLocalizations.of(context)!.submitPhotoProof),
-                                   style: ElevatedButton.styleFrom(
-                                     backgroundColor: Colors.blueAccent,
-                                     foregroundColor: Colors.white,
-                                   ),
-                                 ),
-                               )
-                             ]
-                           ],
-                         ),
-                       ),
-                     );
-                   },
-                 ),
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              isFarmer
+                                  ? AppLocalizations.of(context)!.fromLabel(
+                                      proof['investor_name'] ??
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.investor,
+                                    )
+                                  : AppLocalizations.of(context)!.toLabel(
+                                      proof['farmer_name'] ??
+                                          AppLocalizations.of(context)!.worker,
+                                    ),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            _buildStatusBadge(
+                              isExpiredLocal ? 'expired' : proof['status'],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        if (isPending && !isExpiredLocal) ...[
+                          Text(
+                            AppLocalizations.of(context)!.mustSubmitBefore(
+                              DateFormat.yMMMd(
+                                Localizations.localeOf(context).toString(),
+                              ).add_jm().format(expiresAt),
+                            ),
+                            style: const TextStyle(
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        if (proof['ai_reasoning'] != null) ...[
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              AppLocalizations.of(
+                                context,
+                              )!.aiNotes(proof['ai_reasoning'] ?? ''),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        if (proof['image_url'] != null) ...[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(
+                              '${AuthService.baseUrl}${proof['image_url']}',
+                              height: 200,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                height: 100,
+                                width: double.infinity,
+                                color: Colors.grey.withOpacity(0.1),
+                                child: const Icon(
+                                  Icons.broken_image_outlined,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        if (isFarmer && isPending && !isExpiredLocal) ...[
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () => _handleSubmitProof(proof['id']),
+                              icon: const Icon(Icons.camera_alt),
+                              label: Text(
+                                AppLocalizations.of(context)!.submitPhotoProof,
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blueAccent,
+                                foregroundColor: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
+
   String _translateStatus(BuildContext context, String status) {
     final l10n = AppLocalizations.of(context)!;
     switch (status.toLowerCase()) {

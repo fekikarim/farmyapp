@@ -189,8 +189,10 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               hint: AppLocalizations.of(context)!.landNameHint,
               icon: Icons.landscape_rounded,
               validator: (v) {
-                if (v == null || v.isEmpty) return AppLocalizations.of(context)!.landNameRequired;
-                if (v.length < 5) return AppLocalizations.of(context)!.landNameTooShort;
+                if (v == null || v.isEmpty)
+                  return AppLocalizations.of(context)!.landNameRequired;
+                if (v.length < 5)
+                  return AppLocalizations.of(context)!.landNameTooShort;
                 return null;
               },
             ),
@@ -202,7 +204,8 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
               icon: Icons.description_rounded,
               maxLines: 4,
               validator: (v) {
-                if (v == null || v.isEmpty) return AppLocalizations.of(context)!.descriptionRequired;
+                if (v == null || v.isEmpty)
+                  return AppLocalizations.of(context)!.descriptionRequired;
                 if (v.length < 20)
                   return AppLocalizations.of(context)!.descriptionTooShort;
                 return null;
@@ -221,9 +224,12 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                 if (v == null || v.trim().isEmpty)
                   return AppLocalizations.of(context)!.priceCannotBeEmpty;
                 final val = double.tryParse(v.trim());
-                if (val == null) return AppLocalizations.of(context)!.invalidNumericAmount;
-                if (val <= 0) return AppLocalizations.of(context)!.priceGreaterThanZero;
-                if (val > 1000000) return AppLocalizations.of(context)!.priceExceedsLimit;
+                if (val == null)
+                  return AppLocalizations.of(context)!.invalidNumericAmount;
+                if (val <= 0)
+                  return AppLocalizations.of(context)!.priceGreaterThanZero;
+                if (val > 1000000)
+                  return AppLocalizations.of(context)!.priceExceedsLimit;
                 return null;
               },
             ),
@@ -360,10 +366,18 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                             _hasInvalidGeometry
                                 ? AppLocalizations.of(context)!.invalidGeometry
                                 : (_hasConflict
-                                      ? AppLocalizations.of(context)!.conflictDetected
+                                      ? AppLocalizations.of(
+                                          context,
+                                        )!.conflictDetected
                                       : (_selectedPoints.isEmpty
-                                            ? AppLocalizations.of(context)!.perimeterNotSet
-                                            : AppLocalizations.of(context)!.pointsDefined(_selectedPoints.length))),
+                                            ? AppLocalizations.of(
+                                                context,
+                                              )!.perimeterNotSet
+                                            : AppLocalizations.of(
+                                                context,
+                                              )!.pointsDefined(
+                                                _selectedPoints.length,
+                                              ))),
                             style: TextStyle(
                               color: _hasShapeIssue
                                   ? Colors.red
@@ -377,12 +391,20 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
                           const SizedBox(height: 4),
                           Text(
                             _hasInvalidGeometry
-                                ? AppLocalizations.of(context)!.invalidGeometryHint
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.invalidGeometryHint
                                 : (_hasConflict
-                                      ? AppLocalizations.of(context)!.overlapsExistingLand
+                                      ? AppLocalizations.of(
+                                          context,
+                                        )!.overlapsExistingLand
                                       : (_selectedPoints.length < 3
-                                            ? AppLocalizations.of(context)!.tapToDrawBoundaries
-                                            : AppLocalizations.of(context)!.geometryVerified)),
+                                            ? AppLocalizations.of(
+                                                context,
+                                              )!.tapToDrawBoundaries
+                                            : AppLocalizations.of(
+                                                context,
+                                              )!.geometryVerified)),
                             style: TextStyle(
                               color: _hasShapeIssue
                                   ? Colors.red.withOpacity(0.7)
@@ -729,10 +751,26 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildToolButton(0, Icons.edit_location_alt_rounded, AppLocalizations.of(context)!.draw),
-                _buildToolButton(1, Icons.open_with_rounded, AppLocalizations.of(context)!.movePoint),
-                _buildToolButton(2, Icons.drag_indicator_rounded, AppLocalizations.of(context)!.moveAll),
-                _buildToolButton(3, Icons.delete_outline_rounded, AppLocalizations.of(context)!.delete),
+                _buildToolButton(
+                  0,
+                  Icons.edit_location_alt_rounded,
+                  AppLocalizations.of(context)!.draw,
+                ),
+                _buildToolButton(
+                  1,
+                  Icons.open_with_rounded,
+                  AppLocalizations.of(context)!.movePoint,
+                ),
+                _buildToolButton(
+                  2,
+                  Icons.drag_indicator_rounded,
+                  AppLocalizations.of(context)!.moveAll,
+                ),
+                _buildToolButton(
+                  3,
+                  Icons.delete_outline_rounded,
+                  AppLocalizations.of(context)!.delete,
+                ),
               ],
             ),
           ),
@@ -907,7 +945,9 @@ class _FarmerAddLandScreenState extends State<FarmerAddLandScreen> {
       return;
     }
     if (_hasConflict) {
-      _showErrorSnackBar(AppLocalizations.of(context)!.cannotPublishBoundaryConflicts);
+      _showErrorSnackBar(
+        AppLocalizations.of(context)!.cannotPublishBoundaryConflicts,
+      );
       return;
     }
 

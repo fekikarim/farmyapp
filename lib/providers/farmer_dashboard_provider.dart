@@ -65,10 +65,7 @@ class FarmerDashboardProvider extends ChangeNotifier {
       .length;
 
   /// Load dashboard data (initial load)
-  Future<void> loadDashboard({
-    String? localeCode,
-    bool force = false,
-  }) async {
+  Future<void> loadDashboard({String? localeCode, bool force = false}) async {
     if (localeCode != null && localeCode.isNotEmpty) {
       _localeCode = localeCode;
     }
@@ -101,10 +98,7 @@ class FarmerDashboardProvider extends ChangeNotifier {
   }
 
   /// Refresh dashboard data (silent refresh)
-  Future<void> refresh({
-    String? localeCode,
-    bool force = false,
-  }) async {
+  Future<void> refresh({String? localeCode, bool force = false}) async {
     if (localeCode != null && localeCode.isNotEmpty) {
       _localeCode = localeCode;
     }
@@ -153,7 +147,8 @@ class FarmerDashboardProvider extends ChangeNotifier {
     }
 
     final referenceTime = _lastSuccessfulSync ?? _lastUpdated;
-    if (referenceTime == null || DateTime.now().difference(referenceTime) > maxAge) {
+    if (referenceTime == null ||
+        DateTime.now().difference(referenceTime) > maxAge) {
       try {
         await refresh(localeCode: _localeCode);
       } catch (_) {
@@ -240,7 +235,10 @@ class FarmerDashboardProvider extends ChangeNotifier {
 
     _cancelRetry();
     const retryDelaysInSec = [5, 10, 20, 30];
-    final idx = (_consecutiveFailures - 1).clamp(0, retryDelaysInSec.length - 1);
+    final idx = (_consecutiveFailures - 1).clamp(
+      0,
+      retryDelaysInSec.length - 1,
+    );
     final delaySeconds = retryDelaysInSec[idx];
 
     _retryTimer = Timer(Duration(seconds: delaySeconds), () {

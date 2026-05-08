@@ -3,13 +3,13 @@ class RoiOverview {
   final double totalRevenue;
   final double netProfit;
   final double roiPercentage;
-  
+
   // Product revenue breakdown
   final double productRevenue;
   final double rentalRevenue;
   final int totalProductsSold;
   final double averageProductMargin;
-  
+
   // Profit calculation metadata
   final DateTime? lastCalculated;
   final String calculationVersion;
@@ -36,39 +36,40 @@ class RoiOverview {
       productRevenue: (json['productRevenue'] as num?)?.toDouble() ?? 0.0,
       rentalRevenue: (json['rentalRevenue'] as num?)?.toDouble() ?? 0.0,
       totalProductsSold: (json['totalProductsSold'] as num?)?.toInt() ?? 0,
-      averageProductMargin: (json['averageProductMargin'] as num?)?.toDouble() ?? 0.0,
-      lastCalculated: json['lastCalculated'] != null 
+      averageProductMargin:
+          (json['averageProductMargin'] as num?)?.toDouble() ?? 0.0,
+      lastCalculated: json['lastCalculated'] != null
           ? DateTime.tryParse(json['lastCalculated'] as String)
           : null,
       calculationVersion: json['calculationVersion'] as String? ?? '1.0',
     );
   }
-  
+
   /// Calculate net profit dynamically including product revenue
   /// Formula: (Product Revenue + Rental Revenue) - Total Investment
   double calculateNetProfit() {
     return (productRevenue + rentalRevenue) - totalInvestment;
   }
-  
+
   /// Calculate ROI percentage with precision
   /// Formula: ((Total Revenue - Investment) / Investment) * 100
   double calculateRoiPercentage() {
     if (totalInvestment <= 0) return 0.0;
     return ((totalRevenue - totalInvestment) / totalInvestment) * 100;
   }
-  
+
   /// Get product revenue contribution percentage
   double get productRevenueContribution {
     if (totalRevenue <= 0) return 0.0;
     return (productRevenue / totalRevenue) * 100;
   }
-  
+
   /// Validate data integrity
   bool get isValid {
-    return totalInvestment >= 0 && 
-           totalRevenue >= 0 && 
-           productRevenue >= 0 && 
-           rentalRevenue >= 0;
+    return totalInvestment >= 0 &&
+        totalRevenue >= 0 &&
+        productRevenue >= 0 &&
+        rentalRevenue >= 0;
   }
 }
 
@@ -122,7 +123,9 @@ class ProductRevenue {
       unitPrice: (json['unitPrice'] as num?)?.toDouble() ?? 0.0,
       totalRevenue: (json['totalRevenue'] as num?)?.toDouble() ?? 0.0,
       profitMargin: (json['profitMargin'] as num?)?.toDouble() ?? 0.0,
-      saleDate: DateTime.tryParse(json['saleDate'] as String? ?? '') ?? DateTime.now(),
+      saleDate:
+          DateTime.tryParse(json['saleDate'] as String? ?? '') ??
+          DateTime.now(),
     );
   }
 }
@@ -135,7 +138,7 @@ class RoiRentalBreakdown {
   final double revenue;
   final double netProfit;
   final double roiPercentage;
-  
+
   // Product revenue details for this land
   final double productRevenue;
   final List<ProductRevenue> productBreakdown;
@@ -164,20 +167,21 @@ class RoiRentalBreakdown {
       netProfit: (json['netProfit'] as num?)?.toDouble() ?? 0.0,
       roiPercentage: (json['roiPercentage'] as num?)?.toDouble() ?? 0.0,
       productRevenue: (json['productRevenue'] as num?)?.toDouble() ?? 0.0,
-      productBreakdown: (json['productBreakdown'] as List<dynamic>?)
+      productBreakdown:
+          (json['productBreakdown'] as List<dynamic>?)
               ?.map((e) => ProductRevenue.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
       productsSoldCount: (json['productsSoldCount'] as num?)?.toInt() ?? 0,
     );
   }
-  
+
   /// Calculate total revenue including products
   double get totalRevenueWithProducts => revenue + productRevenue;
-  
+
   /// Calculate net profit with product revenue
   double get adjustedNetProfit => totalRevenueWithProducts - costs.total;
-  
+
   /// Get profit contribution from products
   double get productContributionPercentage {
     final total = totalRevenueWithProducts;
@@ -190,16 +194,18 @@ class RoiDashboardData {
   final RoiOverview overview;
   final List<RoiRentalBreakdown> rentals;
 
-  RoiDashboardData({
-    required this.overview,
-    required this.rentals,
-  });
+  RoiDashboardData({required this.overview, required this.rentals});
 
   factory RoiDashboardData.fromJson(Map<String, dynamic> json) {
     return RoiDashboardData(
-      overview: RoiOverview.fromJson(json['overview'] as Map<String, dynamic>? ?? {}),
-      rentals: (json['rentals'] as List<dynamic>?)
-              ?.map((e) => RoiRentalBreakdown.fromJson(e as Map<String, dynamic>))
+      overview: RoiOverview.fromJson(
+        json['overview'] as Map<String, dynamic>? ?? {},
+      ),
+      rentals:
+          (json['rentals'] as List<dynamic>?)
+              ?.map(
+                (e) => RoiRentalBreakdown.fromJson(e as Map<String, dynamic>),
+              )
               .toList() ??
           [],
     );

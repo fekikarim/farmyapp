@@ -123,17 +123,17 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
       final user = await AuthService.fetchPublicProfile(
         widget.userId,
       ).timeout(const Duration(seconds: 14));
-      
+
       _timeoutTimer?.cancel();
       if (_isDisposed || !mounted) return;
-      
+
       setState(() {
         _user = user;
         _isLoading = false;
         _isRefreshing = false;
         _failedImageUrls.clear();
-        _error = user == null 
-            ? (l10n?.profileNotFound ?? fallbackNotFound) 
+        _error = user == null
+            ? (l10n?.profileNotFound ?? fallbackNotFound)
             : null;
         _errorType = user == null
             ? _ProfilePreviewErrorType.notFound
@@ -142,10 +142,13 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
     } catch (e) {
       _timeoutTimer?.cancel();
       if (_isDisposed || !mounted) return;
-      
+
       final errorType = _classifyError(e);
-      final errorMessage = _friendlyError(e, l10n?.profileLoadError ?? fallbackLoadError);
-      
+      final errorMessage = _friendlyError(
+        e,
+        l10n?.profileLoadError ?? fallbackLoadError,
+      );
+
       setState(() {
         _isLoading = false;
         _isRefreshing = false;
@@ -260,7 +263,7 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
     if (user == null) return _buildErrorView(theme);
 
     final profile = user.profile;
-    
+
     // Check if profile is discoverable - if not, show restricted view
     final isDiscoverable = profile?.discoverable ?? true;
     if (!isDiscoverable) {
@@ -1097,8 +1100,10 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
   Widget _buildFooter(ThemeData theme, User user) {
     return Center(
       child: Text(
-        AppLocalizations.of(context)?.farmyMemberSince(_memberSince(user.createdAt)) 
-            ?? 'Farmy member since ${_memberSince(user.createdAt)}',
+        AppLocalizations.of(
+              context,
+            )?.farmyMemberSince(_memberSince(user.createdAt)) ??
+            'Farmy member since ${_memberSince(user.createdAt)}',
         textAlign: TextAlign.center,
         style: theme.textTheme.labelMedium?.copyWith(
           color: theme.colorScheme.onSurface.withValues(alpha: 0.48),
@@ -1219,7 +1224,9 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
             ),
             const SizedBox(height: 10),
             Text(
-              _error ?? AppLocalizations.of(context)?.profileLoadError ?? 'Failed to load profile',
+              _error ??
+                  AppLocalizations.of(context)?.profileLoadError ??
+                  'Failed to load profile',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.62),
@@ -1243,7 +1250,7 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
     final name = _displayName(user);
     final profile = user.profile;
     final l10n = AppLocalizations.of(context);
-    
+
     return Center(
       key: const ValueKey('profile-preview-restricted'),
       child: SingleChildScrollView(
@@ -1281,9 +1288,14 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
             if (profile?.completenessScore != null) ...[
               const SizedBox(height: 26),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                  color: theme.colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.5,
+                  ),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -1358,7 +1370,7 @@ class _ProfilePreviewSheetState extends State<ProfilePreviewSheet> {
         _optional(profile?.website) != null ||
         _optional(profile?.farmPage) != null;
   }
-  
+
   bool _shouldShowEmail(User user) {
     final profile = user.profile;
     final showContact = profile?.showContactInfo ?? false;

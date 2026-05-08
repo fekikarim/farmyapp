@@ -262,7 +262,10 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                     ),
                   ),
                   Text(
-                    AppLocalizations.of(context)!.organicPlotGrid(widget.land.gridWidth, widget.land.gridHeight),
+                    AppLocalizations.of(context)!.organicPlotGrid(
+                      widget.land.gridWidth,
+                      widget.land.gridHeight,
+                    ),
                     style: TextStyle(
                       color: isDark ? Colors.white70 : Colors.black54,
                       fontSize: 14,
@@ -318,7 +321,9 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    DateFormat.yMMMMd(Localizations.localeOf(context).toString()).format(_startDate),
+                    DateFormat.yMMMMd(
+                      Localizations.localeOf(context).toString(),
+                    ).format(_startDate),
                     style: TextStyle(
                       color: theme.textTheme.titleMedium?.color,
                       fontWeight: FontWeight.bold,
@@ -396,7 +401,11 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(
-                  m == 1 ? AppLocalizations.of(context)!.monthAbbreviation : AppLocalizations.of(context)!.monthsAbbreviation(m.toString()),
+                  m == 1
+                      ? AppLocalizations.of(context)!.monthAbbreviation
+                      : AppLocalizations.of(
+                          context,
+                        )!.monthsAbbreviation(m.toString()),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: isSelected
@@ -485,7 +494,9 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         child: Column(
           children: [
             Text(
-              AppLocalizations.of(context)!.insufficientCredits(NumberFormat('#,###').format(walletProvider.credits)),
+              AppLocalizations.of(context)!.insufficientCredits(
+                NumberFormat('#,###').format(walletProvider.credits),
+              ),
               style: TextStyle(
                 color: Colors.redAccent,
                 fontWeight: FontWeight.bold,
@@ -566,7 +577,11 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                   const SizedBox(height: 4),
                   Text(
                     isCredits
-                        ? AppLocalizations.of(context)!.balanceAmount(NumberFormat('#,###').format(walletProvider.credits))
+                        ? AppLocalizations.of(context)!.balanceAmount(
+                            NumberFormat(
+                              '#,###',
+                            ).format(walletProvider.credits),
+                          )
                         : (_selectedPaymentMethod?.isDefault == true
                               ? AppLocalizations.of(context)!.defaultMethod
                               : AppLocalizations.of(context)!.savedCard),
@@ -722,7 +737,9 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                                 children: [
                                   Text(
                                     isCredit
-                                        ? AppLocalizations.of(context)!.walletCredits
+                                        ? AppLocalizations.of(
+                                            context,
+                                          )!.walletCredits
                                         : '${method.brand.toUpperCase()} •••• ${method.last4}',
                                     style: const TextStyle(
                                       color: Colors.white,
@@ -732,7 +749,9 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                                   ),
                                   if (isCredit)
                                     Text(
-                                      AppLocalizations.of(context)!.availableInstantPayment,
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.availableInstantPayment,
                                       style: TextStyle(
                                         color: Colors.white54,
                                         fontSize: 12,
@@ -777,10 +796,15 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
         children: [
           _buildRow(
             AppLocalizations.of(context)!.monthlyRent,
-            AppLocalizations.of(context)!.amountTND(NumberFormat('#,###').format(_monthlyRent)),
+            AppLocalizations.of(
+              context,
+            )!.amountTND(NumberFormat('#,###').format(_monthlyRent)),
           ),
           const SizedBox(height: 16),
-          _buildRow(AppLocalizations.of(context)!.duration, AppLocalizations.of(context)!.nMonths(_months.toString())),
+          _buildRow(
+            AppLocalizations.of(context)!.duration,
+            AppLocalizations.of(context)!.nMonths(_months.toString()),
+          ),
           const SizedBox(height: 16),
           Divider(
             color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
@@ -798,7 +822,9 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                 ),
               ),
               Text(
-                AppLocalizations.of(context)!.amountTND(NumberFormat('#,###').format(_monthlyRent * _months)),
+                AppLocalizations.of(context)!.amountTND(
+                  NumberFormat('#,###').format(_monthlyRent * _months),
+                ),
                 style: const TextStyle(
                   color: Colors.green,
                   fontSize: 20,
@@ -930,7 +956,9 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                AppLocalizations.of(context)!.amountTND(NumberFormat('#,###').format(_monthlyRent * _months)),
+                AppLocalizations.of(context)!.amountTND(
+                  NumberFormat('#,###').format(_monthlyRent * _months),
+                ),
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -969,7 +997,9 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
                           SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              AppLocalizations.of(context)!.pleaseSelectPaymentMethod,
+                              AppLocalizations.of(
+                                context,
+                              )!.pleaseSelectPaymentMethod,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -1187,7 +1217,9 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
       final success = await context.read<WalletProvider>().addCard();
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.cardAddedSuccessfully)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.cardAddedSuccessfully),
+          ),
         );
         // Auto-select the new card (logic relies on provider list update)
         // We can assume the last added card is the one we want, or just let the user pick it.
@@ -1209,7 +1241,9 @@ class _RentalCheckoutScreenState extends State<RentalCheckoutScreen> {
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.cancelledOrFailedToAddCard),
+            content: Text(
+              AppLocalizations.of(context)!.cancelledOrFailedToAddCard,
+            ),
             backgroundColor: Colors.orange,
           ),
         );

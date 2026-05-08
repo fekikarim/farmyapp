@@ -58,7 +58,9 @@ class Product {
       landId: json['land_id']?.toString(),
       landRentalId: json['land_rental_id']?.toString(),
       land: json['land'] != null ? Land.fromJson(json['land']) : null,
-      landRental: json['land_rental'] != null ? LandRental.fromJson(json['land_rental']) : null,
+      landRental: json['land_rental'] != null
+          ? LandRental.fromJson(json['land_rental'])
+          : null,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : json['createdAt'] != null

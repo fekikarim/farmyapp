@@ -29,7 +29,10 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
   }
 
   Future<void> _startSetup() async {
-    final result = await Provider.of<AuthProvider>(context, listen: false).setup2fa();
+    final result = await Provider.of<AuthProvider>(
+      context,
+      listen: false,
+    ).setup2fa();
     if (result != null) {
       setState(() {
         _secret = result['secret'];
@@ -38,7 +41,9 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.failedInitiate2FA)),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.failedInitiate2FA),
+        ),
       );
     }
   }
@@ -48,13 +53,15 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
     final error = await authProvider.confirm2fa(_codeController.text);
     if (error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.twoFAEnabledSuccess)),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.twoFAEnabledSuccess),
+        ),
       );
       Navigator.pop(context);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
     }
   }
 
@@ -63,13 +70,15 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
     final error = await authProvider.disable2fa(_codeController.text);
     if (error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.twoFADisabledSuccess)),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.twoFADisabledSuccess),
+        ),
       );
       Navigator.pop(context);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
     }
   }
 
@@ -92,7 +101,11 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isDisabling ? AppLocalizations.of(context)!.disable2FA : AppLocalizations.of(context)!.enable2FA),
+        title: Text(
+          _isDisabling
+              ? AppLocalizations.of(context)!.disable2FA
+              : AppLocalizations.of(context)!.enable2FA,
+        ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -101,9 +114,12 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
         child: Column(
           children: [
-            if (_isDisabling) _buildDisableUI(theme, isLoading)
-            else if (_step == 1) _buildStep1(theme, isLoading)
-            else _buildStep2(theme, isLoading),
+            if (_isDisabling)
+              _buildDisableUI(theme, isLoading)
+            else if (_step == 1)
+              _buildStep1(theme, isLoading)
+            else
+              _buildStep2(theme, isLoading),
           ],
         ),
       ),
@@ -120,12 +136,18 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
             color: theme.colorScheme.primary.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(Icons.security_outlined, size: 80, color: theme.colorScheme.primary),
+          child: Icon(
+            Icons.security_outlined,
+            size: 80,
+            color: theme.colorScheme.primary,
+          ),
         ),
         const SizedBox(height: 32),
         Text(
           AppLocalizations.of(context)!.secureYourAccount,
-          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 16),
         Text(
@@ -140,16 +162,27 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
             onPressed: isLoading ? null : _startSetup,
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 18),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               elevation: 2,
             ),
-            child: isLoading 
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                ) 
-              : Text(AppLocalizations.of(context)!.startSetup, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            child: isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(
+                    AppLocalizations.of(context)!.startSetup,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
           ),
         ),
       ],
@@ -181,7 +214,7 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
                   color: Colors.black.withOpacity(0.05),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
-                )
+                ),
               ],
             ),
             child: _otpUri != null
@@ -200,7 +233,11 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
                       color: Colors.black,
                     ),
                   )
-                : const SizedBox(height: 200, width: 200, child: Center(child: CircularProgressIndicator())),
+                : const SizedBox(
+                    height: 200,
+                    width: 200,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
           ),
         ),
         const SizedBox(height: 40),
@@ -214,7 +251,9 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
           decoration: BoxDecoration(
             color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
+            border: Border.all(
+              color: theme.colorScheme.outline.withOpacity(0.2),
+            ),
           ),
           child: Row(
             children: [
@@ -279,15 +318,22 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
               fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+                borderSide: BorderSide(
+                  color: theme.colorScheme.outline.withOpacity(0.2),
+                ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+                borderSide: BorderSide(
+                  color: theme.colorScheme.outline.withOpacity(0.2),
+                ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                borderSide: BorderSide(
+                  color: theme.colorScheme.primary,
+                  width: 2,
+                ),
               ),
             ),
           ),
@@ -299,23 +345,39 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
             onPressed: isLoading ? null : _confirmSetup,
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 18),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               elevation: 2,
             ),
-            child: isLoading 
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                ) 
-              : Text(AppLocalizations.of(context)!.enable2FA, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            child: isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(
+                    AppLocalizations.of(context)!.enable2FA,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
           ),
         ),
         const SizedBox(height: 12),
         Center(
           child: TextButton(
             onPressed: () => setState(() => _step = 1),
-            child: Text(AppLocalizations.of(context)!.backButton, style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
+            child: Text(
+              AppLocalizations.of(context)!.backButton,
+              style: TextStyle(
+                color: theme.colorScheme.onSurface.withOpacity(0.5),
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 40),
@@ -333,18 +395,26 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
             color: theme.colorScheme.error.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(Icons.gpp_maybe_outlined, size: 80, color: theme.colorScheme.error),
+          child: Icon(
+            Icons.gpp_maybe_outlined,
+            size: 80,
+            color: theme.colorScheme.error,
+          ),
         ),
         const SizedBox(height: 32),
         Text(
           AppLocalizations.of(context)!.disable2FA,
-          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 16),
         Text(
           AppLocalizations.of(context)!.enter6DigitCodeDisable,
           textAlign: TextAlign.center,
-          style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.6)),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: theme.colorScheme.onSurface.withOpacity(0.6),
+          ),
         ),
         const SizedBox(height: 48),
         Theme(
@@ -377,15 +447,22 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
               fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+                borderSide: BorderSide(
+                  color: theme.colorScheme.outline.withOpacity(0.2),
+                ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+                borderSide: BorderSide(
+                  color: theme.colorScheme.outline.withOpacity(0.2),
+                ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: theme.colorScheme.error, width: 2),
+                borderSide: BorderSide(
+                  color: theme.colorScheme.error,
+                  width: 2,
+                ),
               ),
             ),
           ),
@@ -399,16 +476,27 @@ class _Enable2FAScreenState extends State<Enable2FAScreen> {
               backgroundColor: theme.colorScheme.error,
               foregroundColor: theme.colorScheme.onError,
               padding: const EdgeInsets.symmetric(vertical: 18),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               elevation: 2,
             ),
-            child: isLoading 
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                ) 
-              : Text(AppLocalizations.of(context)!.disable2FA, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            child: isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(
+                    AppLocalizations.of(context)!.disable2FA,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
           ),
         ),
       ],

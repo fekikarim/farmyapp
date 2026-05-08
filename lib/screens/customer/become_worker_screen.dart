@@ -79,9 +79,7 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.workerProfileCreated,
-            ),
+            content: Text(AppLocalizations.of(context)!.workerProfileCreated),
             backgroundColor: Colors.green.shade700,
           ),
         );
@@ -89,7 +87,10 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(provider.profileError ?? AppLocalizations.of(context)!.failedToCreateProfile),
+            content: Text(
+              provider.profileError ??
+                  AppLocalizations.of(context)!.failedToCreateProfile,
+            ),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -162,8 +163,8 @@ class _BecomeWorkerScreenState extends State<BecomeWorkerScreen>
                         ),
                       ),
                       const SizedBox(height: 16),
-                        Text(
-                          AppLocalizations.of(context)!.joinTheWorkforce,
+                      Text(
+                        AppLocalizations.of(context)!.joinTheWorkforce,
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w800,

@@ -69,7 +69,10 @@ class _SignupScreenState extends State<SignupScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: isDark ? Colors.white : Colors.black),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: isDark ? Colors.white : Colors.black,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -138,7 +141,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         Text(
                           AppLocalizations.of(context)!.startJourneyWithFarmy,
                           style: theme.textTheme.bodyLarge?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.5,
+                            ),
                             height: 1.4,
                           ),
                         ),
@@ -161,10 +166,14 @@ class _SignupScreenState extends State<SignupScreen> {
                           obscureText: _obscurePassword,
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                              _obscurePassword
+                                  ? Icons.visibility_off_rounded
+                                  : Icons.visibility_rounded,
                               size: 20,
                             ),
-                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                            onPressed: () => setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            ),
                           ),
                           validator: FieldValidators.password,
                         ),
@@ -175,7 +184,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           label: AppLocalizations.of(context)!.confirmPassword,
                           icon: Icons.lock_clock_outlined,
                           obscureText: _obscurePassword,
-                          validator: (val) => FieldValidators.confirmPassword(val, _passwordController.text),
+                          validator: (val) => FieldValidators.confirmPassword(
+                            val,
+                            _passwordController.text,
+                          ),
                         ),
 
                         if (_errorMessage != null) ...[
@@ -189,22 +201,34 @@ class _SignupScreenState extends State<SignupScreen> {
                           width: double.infinity,
                           height: 56,
                           child: ElevatedButton(
-                            onPressed: authProvider.isLoading ? null : _handleSignup,
+                            onPressed: authProvider.isLoading
+                                ? null
+                                : _handleSignup,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: theme.colorScheme.primary,
                               foregroundColor: Colors.white,
                               elevation: 0,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                             ),
                             child: authProvider.isLoading
                                 ? const SizedBox(
                                     width: 24,
                                     height: 24,
-                                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
                                   )
                                 : Text(
-                                    AppLocalizations.of(context)!.createAccount.toUpperCase(),
-                                    style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1),
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.createAccount.toUpperCase(),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1,
+                                    ),
                                   ),
                           ),
                         ),
@@ -218,13 +242,17 @@ class _SignupScreenState extends State<SignupScreen> {
                               padding: const EdgeInsets.all(8.0),
                               child: RichText(
                                 text: TextSpan(
-                                  text: "${AppLocalizations.of(context)!.alreadyHaveAccount} ",
+                                  text:
+                                      "${AppLocalizations.of(context)!.alreadyHaveAccount} ",
                                   style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.6),
                                   ),
                                   children: [
                                     TextSpan(
-                                      text: AppLocalizations.of(context)!.signIn,
+                                      text: AppLocalizations.of(
+                                        context,
+                                      )!.signIn,
                                       style: TextStyle(
                                         color: theme.colorScheme.primary,
                                         fontWeight: FontWeight.w900,
@@ -284,7 +312,10 @@ class _SignupScreenState extends State<SignupScreen> {
           decoration: InputDecoration(
             prefixIcon: Icon(icon, size: 18, color: theme.colorScheme.primary),
             suffixIcon: suffixIcon,
-            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 16,
+            ),
             filled: true,
             fillColor: theme.colorScheme.onSurface.withValues(alpha: 0.05),
             border: OutlineInputBorder(
@@ -293,15 +324,22 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(color: theme.colorScheme.onSurface.withValues(alpha: 0.05)),
+              borderSide: BorderSide(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.3), width: 2),
+              borderSide: BorderSide(
+                color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                width: 2,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(color: theme.colorScheme.error.withValues(alpha: 0.2)),
+              borderSide: BorderSide(
+                color: theme.colorScheme.error.withValues(alpha: 0.2),
+              ),
             ),
           ),
         ),
@@ -316,11 +354,17 @@ class _SignupScreenState extends State<SignupScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.error.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: theme.colorScheme.error.withValues(alpha: 0.2),
+        ),
       ),
       child: Row(
         children: [
-          Icon(Icons.warning_amber_rounded, color: theme.colorScheme.error, size: 20),
+          Icon(
+            Icons.warning_amber_rounded,
+            color: theme.colorScheme.error,
+            size: 20,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(

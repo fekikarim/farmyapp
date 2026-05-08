@@ -21,10 +21,11 @@ class RoiDashboardScreen extends StatefulWidget {
   State<RoiDashboardScreen> createState() => _RoiDashboardScreenState();
 }
 
-class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBindingObserver {
+class _RoiDashboardScreenState extends State<RoiDashboardScreen>
+    with WidgetsBindingObserver {
   DateTime? _lastRefreshTime;
   static const Duration _minRefreshInterval = Duration(seconds: 3);
-  
+
   @override
   void initState() {
     super.initState();
@@ -33,7 +34,7 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
     provider.initialize();
     _initialLoad();
   }
-  
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // Refresh data when app resumes (user returns to app)
@@ -41,7 +42,7 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
       _refreshIfNeeded();
     }
   }
-  
+
   void _initialLoad() {
     final provider = context.read<RoiProvider>();
     Future.microtask(() async {
@@ -49,20 +50,20 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
       _lastRefreshTime = DateTime.now();
     });
   }
-  
+
   void _refreshIfNeeded() {
     if (_lastRefreshTime == null) return;
-    
+
     final timeSinceLastRefresh = DateTime.now().difference(_lastRefreshTime!);
     if (timeSinceLastRefresh < _minRefreshInterval) return;
-    
+
     final provider = context.read<RoiProvider>();
     if (!provider.isLoading) {
       provider.fetchDashboardData(forceRefresh: true);
       _lastRefreshTime = DateTime.now();
     }
   }
-  
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -79,23 +80,25 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      body: SafeArea(
-        child: _buildBody(theme, roiProvider, user),
-      ),
+      body: SafeArea(child: _buildBody(theme, roiProvider, user)),
     );
   }
-  
+
   Widget _buildBody(ThemeData theme, RoiProvider roiProvider, User? user) {
     // Show full skeleton during initial load
     if (roiProvider.loadingState == RoiLoadingState.initial) {
       return _buildSkeletonLoading(theme);
     }
-    
+
     // Show error state
     if (roiProvider.hasError && !roiProvider.hasData) {
-      return _buildErrorState(theme, roiProvider.error!, onRetry: () => roiProvider.retry());
+      return _buildErrorState(
+        theme,
+        roiProvider.error!,
+        onRetry: () => roiProvider.retry(),
+      );
     }
-    
+
     // Show main content with optional refresh indicator
     return RefreshIndicator(
       onRefresh: () => roiProvider.fetchDashboardData(forceRefresh: true),
@@ -109,33 +112,41 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
           children: [
             _buildHeader(context, user, theme),
             const SizedBox(height: 32),
-            
+
             // Overview with loading overlay if refreshing
             Stack(
               children: [
                 if (roiProvider.hasData)
-                  _buildOverviewHeader(context, theme, roiProvider.dashboardData!.overview),
+                  _buildOverviewHeader(
+                    context,
+                    theme,
+                    roiProvider.dashboardData!.overview,
+                  ),
                 if (roiProvider.loadingState == RoiLoadingState.refreshing)
                   Positioned.fill(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: theme.scaffoldBackgroundColor.withValues(alpha: 0.7),
+                        color: theme.scaffoldBackgroundColor.withValues(
+                          alpha: 0.7,
+                        ),
                         borderRadius: BorderRadius.circular(24),
                       ),
-                      child: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      child: const Center(child: CircularProgressIndicator()),
                     ),
                   ),
               ],
             ),
-            
+
             const SizedBox(height: 32),
             _buildQuickActions(context, theme),
             const SizedBox(height: 32),
-            
+
             if (roiProvider.hasData) ...[
-              _buildSimpleChart(context, theme, roiProvider.dashboardData!.overview),
+              _buildSimpleChart(
+                context,
+                theme,
+                roiProvider.dashboardData!.overview,
+              ),
               const SizedBox(height: 32),
               _buildLandBreakdownsSection(context, theme, roiProvider),
             ],
@@ -144,12 +155,12 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
       ),
     );
   }
-  
+
   Widget _buildSkeletonLoading(ThemeData theme) {
     final isDark = theme.brightness == Brightness.dark;
     final baseColor = isDark ? Colors.grey[800]! : Colors.grey[300]!;
     final highlightColor = isDark ? Colors.grey[700]! : Colors.grey[200]!;
-    
+
     return Shimmer.fromColors(
       baseColor: baseColor,
       highlightColor: highlightColor,
@@ -171,7 +182,14 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
                     ],
                   ),
                 ),
-                Container(width: 56, height: 56, decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle)),
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 32),
@@ -193,12 +211,15 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
               childAspectRatio: 2.5,
-              children: List.generate(4, (index) => Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+              children: List.generate(
+                4,
+                (index) => Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
-              )),
+              ),
             ),
             const SizedBox(height: 32),
             // Chart skeleton
@@ -215,8 +236,12 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
       ),
     );
   }
-  
-  Widget _buildLandBreakdownsSection(BuildContext context, ThemeData theme, RoiProvider roiProvider) {
+
+  Widget _buildLandBreakdownsSection(
+    BuildContext context,
+    ThemeData theme,
+    RoiProvider roiProvider,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -225,7 +250,9 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
           children: [
             Text(
               'Land Breakdowns',
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             if (roiProvider.isBackgroundSyncing)
               SizedBox(
@@ -253,7 +280,9 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
                   const SizedBox(height: 16),
                   Text(
                     'No active rentals found.',
-                    style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -285,31 +314,30 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
     );
   }
 
-  Widget _buildOverviewHeader(BuildContext context, ThemeData theme, RoiOverview overview) {
+  Widget _buildOverviewHeader(
+    BuildContext context,
+    ThemeData theme,
+    RoiOverview overview,
+  ) {
     final isProfitable = overview.netProfit >= 0;
     final profitSummary = context.read<RoiProvider>().profitSummary;
-    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: isProfitable 
-            ? [
-                theme.colorScheme.primary,
-                theme.colorScheme.secondary,
-              ]
-            : [
-                Colors.red.shade400,
-                Colors.orange.shade400,
-              ],
+          colors: isProfitable
+              ? [theme.colorScheme.primary, theme.colorScheme.secondary]
+              : [Colors.red.shade400, Colors.orange.shade400],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: (isProfitable ? theme.colorScheme.primary : Colors.red).withValues(alpha: 0.3),
+            color: (isProfitable ? theme.colorScheme.primary : Colors.red)
+                .withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -372,14 +400,22 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
                   '${overview.totalInvestment.toStringAsFixed(0)} TND',
                 ),
               ),
-              Container(width: 1, height: 40, color: Colors.white.withValues(alpha: 0.2)),
+              Container(
+                width: 1,
+                height: 40,
+                color: Colors.white.withValues(alpha: 0.2),
+              ),
               Expanded(
                 child: _buildHeaderMetric(
                   'Revenue',
                   '${overview.totalRevenue.toStringAsFixed(0)} TND',
                 ),
               ),
-              Container(width: 1, height: 40, color: Colors.white.withValues(alpha: 0.2)),
+              Container(
+                width: 1,
+                height: 40,
+                color: Colors.white.withValues(alpha: 0.2),
+              ),
               Expanded(
                 child: _buildHeaderMetric(
                   'ROI',
@@ -396,9 +432,7 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
               decoration: BoxDecoration(
                 color: Colors.green.shade50,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Colors.green.shade200,
-                ),
+                border: Border.all(color: Colors.green.shade200),
               ),
               child: Column(
                 children: [
@@ -432,7 +466,10 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
                   ),
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
-                    value: (overview.productRevenueContribution / 100).clamp(0.0, 1.0),
+                    value: (overview.productRevenueContribution / 100).clamp(
+                      0.0,
+                      1.0,
+                    ),
                     backgroundColor: Colors.green.shade200,
                     valueColor: AlwaysStoppedAnimation<Color>(
                       Colors.green.shade600,
@@ -492,7 +529,11 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
     );
   }
 
-  Widget _buildSimpleChart(BuildContext context, ThemeData theme, RoiOverview overview) {
+  Widget _buildSimpleChart(
+    BuildContext context,
+    ThemeData theme,
+    RoiOverview overview,
+  ) {
     final maxVal = max(overview.totalInvestment, overview.totalRevenue);
     if (maxVal == 0) return const SizedBox.shrink();
 
@@ -516,7 +557,9 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
         children: [
           Text(
             'Revenue vs Costs',
-            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 30),
           Row(
@@ -544,7 +587,13 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
     );
   }
 
-  Widget _buildBar({required String label, required double height, required Color color, required double value, required ThemeData theme}) {
+  Widget _buildBar({
+    required String label,
+    required double height,
+    required Color color,
+    required double value,
+    required ThemeData theme,
+  }) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -580,7 +629,11 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
     );
   }
 
-  Widget _buildErrorState(ThemeData theme, String error, {required VoidCallback onRetry}) {
+  Widget _buildErrorState(
+    ThemeData theme,
+    String error, {
+    required VoidCallback onRetry,
+  }) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -594,8 +647,8 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.error_outline, 
-                size: 48, 
+                Icons.error_outline,
+                size: 48,
                 color: theme.colorScheme.error,
               ),
             ),
@@ -633,7 +686,10 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
                   icon: const Icon(Icons.refresh),
                   label: const Text('Try Again'),
                   style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                   ),
                 ),
               ],
@@ -652,7 +708,7 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
       builder: (context) {
         final theme = Theme.of(context);
         final isProfitable = rental.netProfit >= 0;
-        
+
         return Container(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.85,
@@ -703,15 +759,22 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
-                        color: isProfitable ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
+                        color: isProfitable
+                            ? Colors.green.withValues(alpha: 0.1)
+                            : Colors.red.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         '${isProfitable ? '+' : ''}${rental.netProfit.toStringAsFixed(2)} TND',
                         style: TextStyle(
-                          color: isProfitable ? Colors.green.shade700 : Colors.red.shade700,
+                          color: isProfitable
+                              ? Colors.green.shade700
+                              : Colors.red.shade700,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -720,203 +783,239 @@ class _RoiDashboardScreenState extends State<RoiDashboardScreen> with WidgetsBin
                   ],
                 ),
                 const SizedBox(height: 32),
-              
-              // Costs Section
-              Text(
-                'Operational Costs',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.05)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.02),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    _buildPremiumDetailRow(
-                      context, 
-                      icon: Icons.home_work_outlined, 
-                      iconColor: Colors.orange.shade500,
-                      label: 'Rent Paid', 
-                      value: '${rental.costs.rent.toStringAsFixed(2)} TND',
-                    ),
-                    Divider(height: 1, indent: 64, endIndent: 24, color: theme.colorScheme.onSurface.withValues(alpha: 0.05)),
-                    _buildPremiumDetailRow(
-                      context, 
-                      icon: Icons.shopping_basket_outlined, 
-                      iconColor: Colors.purple.shade500,
-                      label: 'Item Purchases', 
-                      value: '${rental.costs.items.toStringAsFixed(2)} TND',
-                    ),
-                    Divider(height: 1, indent: 64, endIndent: 24, color: theme.colorScheme.onSurface.withValues(alpha: 0.05)),
-                    _buildPremiumDetailRow(
-                      context, 
-                      icon: Icons.people_outline, 
-                      iconColor: Colors.red.shade400,
-                      label: 'Worker Salaries', 
-                      value: '${rental.costs.workers.toStringAsFixed(2)} TND',
-                    ),
-                  ],
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Revenue Section
-              Text(
-                'Generated Income',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      theme.colorScheme.primary.withValues(alpha: 0.05),
-                      theme.colorScheme.primary.withValues(alpha: 0.15),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.2)),
-                ),
-                child: Column(
-                  children: [
-                    _buildPremiumDetailRow(
-                      context, 
-                      icon: Icons.monetization_on_outlined, 
-                      iconColor: theme.colorScheme.primary,
-                      label: 'Base Revenue', 
-                      value: '${rental.revenue.toStringAsFixed(2)} TND',
-                    ),
-                    // Product Revenue Row
-                    if (rental.productRevenue > 0) ...[
-                      Divider(height: 1, indent: 64, endIndent: 24, color: theme.colorScheme.onSurface.withValues(alpha: 0.05)),
-                      _buildPremiumDetailRow(
-                        context, 
-                        icon: Icons.shopping_bag_outlined, 
-                        iconColor: Colors.green.shade500,
-                        label: 'Product Sales (${rental.productsSoldCount})', 
-                        value: '+${rental.productRevenue.toStringAsFixed(2)} TND',
-                        valueColor: Colors.green.shade600,
-                      ),
-                    ],
-                    Divider(height: 1, indent: 64, endIndent: 24, color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
-                    _buildPremiumDetailRow(
-                      context, 
-                      icon: Icons.account_balance_wallet_outlined, 
-                      iconColor: theme.colorScheme.primary,
-                      label: 'Total Revenue', 
-                      value: '${rental.totalRevenueWithProducts.toStringAsFixed(2)} TND',
-                      isBold: true,
-                      valueColor: theme.colorScheme.primary,
-                    ),
-                  ],
-                ),
-              ),
-              
-              // Product Breakdown List
-              if (rental.productBreakdown.isNotEmpty) ...[
-                const SizedBox(height: 24),
+
+                // Costs Section
                 Text(
-                  'Product Sales Breakdown',
+                  'Operational Costs',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 Container(
-                  constraints: const BoxConstraints(maxHeight: 200),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const ClampingScrollPhysics(),
-                    itemCount: rental.productBreakdown.length,
-                    itemBuilder: (context, index) {
-                      final product = rental.productBreakdown[index];
-                      return _buildProductRow(context, product);
-                    },
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.05,
+                      ),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.02),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      _buildPremiumDetailRow(
+                        context,
+                        icon: Icons.home_work_outlined,
+                        iconColor: Colors.orange.shade500,
+                        label: 'Rent Paid',
+                        value: '${rental.costs.rent.toStringAsFixed(2)} TND',
+                      ),
+                      Divider(
+                        height: 1,
+                        indent: 64,
+                        endIndent: 24,
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.05,
+                        ),
+                      ),
+                      _buildPremiumDetailRow(
+                        context,
+                        icon: Icons.shopping_basket_outlined,
+                        iconColor: Colors.purple.shade500,
+                        label: 'Item Purchases',
+                        value: '${rental.costs.items.toStringAsFixed(2)} TND',
+                      ),
+                      Divider(
+                        height: 1,
+                        indent: 64,
+                        endIndent: 24,
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.05,
+                        ),
+                      ),
+                      _buildPremiumDetailRow(
+                        context,
+                        icon: Icons.people_outline,
+                        iconColor: Colors.red.shade400,
+                        label: 'Worker Salaries',
+                        value: '${rental.costs.workers.toStringAsFixed(2)} TND',
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Revenue Section
+                Text(
+                  'Generated Income',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        theme.colorScheme.primary.withValues(alpha: 0.05),
+                        theme.colorScheme.primary.withValues(alpha: 0.15),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildPremiumDetailRow(
+                        context,
+                        icon: Icons.monetization_on_outlined,
+                        iconColor: theme.colorScheme.primary,
+                        label: 'Base Revenue',
+                        value: '${rental.revenue.toStringAsFixed(2)} TND',
+                      ),
+                      // Product Revenue Row
+                      if (rental.productRevenue > 0) ...[
+                        Divider(
+                          height: 1,
+                          indent: 64,
+                          endIndent: 24,
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.05,
+                          ),
+                        ),
+                        _buildPremiumDetailRow(
+                          context,
+                          icon: Icons.shopping_bag_outlined,
+                          iconColor: Colors.green.shade500,
+                          label: 'Product Sales (${rental.productsSoldCount})',
+                          value:
+                              '+${rental.productRevenue.toStringAsFixed(2)} TND',
+                          valueColor: Colors.green.shade600,
+                        ),
+                      ],
+                      Divider(
+                        height: 1,
+                        indent: 64,
+                        endIndent: 24,
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.1,
+                        ),
+                      ),
+                      _buildPremiumDetailRow(
+                        context,
+                        icon: Icons.account_balance_wallet_outlined,
+                        iconColor: theme.colorScheme.primary,
+                        label: 'Total Revenue',
+                        value:
+                            '${rental.totalRevenueWithProducts.toStringAsFixed(2)} TND',
+                        isBold: true,
+                        valueColor: theme.colorScheme.primary,
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Product Breakdown List
+                if (rental.productBreakdown.isNotEmpty) ...[
+                  const SizedBox(height: 24),
+                  Text(
+                    'Product Sales Breakdown',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    constraints: const BoxConstraints(maxHeight: 200),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const ClampingScrollPhysics(),
+                      itemCount: rental.productBreakdown.length,
+                      itemBuilder: (context, index) {
+                        final product = rental.productBreakdown[index];
+                        return _buildProductRow(context, product);
+                      },
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildProductRow(BuildContext context, ProductRevenue product) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.green.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              Icons.local_offer_outlined,
+              color: Colors.green.shade600,
+              size: 16,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  product.productName,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  '${product.quantitySold} × ${product.unitPrice.toStringAsFixed(2)} TND',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
               ],
-            ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
-
-Widget _buildProductRow(BuildContext context, ProductRevenue product) {
-  final theme = Theme.of(context);
-  return Container(
-    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-    child: Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.green.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            Icons.local_offer_outlined,
-            color: Colors.green.shade600,
-            size: 16,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                product.productName,
+                '${product.totalRevenue.toStringAsFixed(2)} TND',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green.shade700,
                 ),
               ),
               Text(
-                '${product.quantitySold} × ${product.unitPrice.toStringAsFixed(2)} TND',
+                '${product.profitMargin.toStringAsFixed(1)}% margin',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  fontSize: 11,
                 ),
-              ),
-            ],
-          ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              '${product.totalRevenue.toStringAsFixed(2)} TND',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.green.shade700,
-              ),
-            ),
-            Text(
-              '${product.profitMargin.toStringAsFixed(1)}% margin',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                fontSize: 11,
-              ),
               ),
             ],
           ),
@@ -974,7 +1073,9 @@ Widget _buildProductRow(BuildContext context, ProductRevenue product) {
       children: [
         Text(
           'Quick Actions',
-          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 16),
         GridView.count(
@@ -990,7 +1091,10 @@ Widget _buildProductRow(BuildContext context, ProductRevenue product) {
               title: 'Strategic AI',
               icon: Icons.smart_toy_rounded,
               color: theme.colorScheme.primary,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => InvestmentAgentScreen())),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => InvestmentAgentScreen()),
+              ),
             ),
             _buildActionCard(
               context,
@@ -1011,14 +1115,20 @@ Widget _buildProductRow(BuildContext context, ProductRevenue product) {
               title: 'Subscriptions',
               icon: Icons.subscriptions_rounded,
               color: Colors.blue.shade500,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionsScreen())),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SubscriptionsScreen()),
+              ),
             ),
             _buildActionCard(
               context,
               title: 'Wallet',
               icon: Icons.account_balance_wallet_rounded,
               color: Colors.purple.shade500,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkerWalletScreen())),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const WorkerWalletScreen()),
+              ),
             ),
           ],
         ),
@@ -1026,7 +1136,13 @@ Widget _buildProductRow(BuildContext context, ProductRevenue product) {
     );
   }
 
-  Widget _buildActionCard(BuildContext context, {required String title, required IconData icon, required Color color, required VoidCallback onTap}) {
+  Widget _buildActionCard(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     final theme = Theme.of(context);
     return InkWell(
       onTap: onTap,
@@ -1075,7 +1191,7 @@ Widget _buildProductRow(BuildContext context, ProductRevenue product) {
   // ==========================================
   // HEADER
   // ==========================================
-  
+
   Widget _buildHeader(BuildContext context, User? user, ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
     final hour = DateTime.now().hour;
@@ -1104,7 +1220,9 @@ Widget _buildProductRow(BuildContext context, ProductRevenue product) {
               const SizedBox(height: 4),
               Text(
                 user?.name ?? user?.email ?? l10n.user,
-                style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ],
@@ -1119,11 +1237,15 @@ Widget _buildProductRow(BuildContext context, ProductRevenue product) {
   // PROFILE AVATAR WITH LOADING & ERROR HANDLING
   // ==========================================
 
-  Widget _buildProfileAvatar(BuildContext context, User? user, ThemeData theme) {
+  Widget _buildProfileAvatar(
+    BuildContext context,
+    User? user,
+    ThemeData theme,
+  ) {
     final String? rawPictureUrl = user?.profilePicture;
     final String? resolvedUrl = _resolveProfileImageUrl(rawPictureUrl);
     final String displayName = user?.name ?? user?.email ?? 'User';
-    
+
     if (resolvedUrl == null) {
       return _buildAvatarFallback(theme, displayName);
     }
@@ -1192,7 +1314,7 @@ Widget _buildProductRow(BuildContext context, ProductRevenue product) {
 
   Widget _buildAvatarFallback(ThemeData theme, String name) {
     final initials = _getInitials(name);
-    
+
     return Container(
       width: 56,
       height: 56,
@@ -1200,10 +1322,7 @@ Widget _buildProductRow(BuildContext context, ProductRevenue product) {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primary,
-            theme.colorScheme.secondary,
-          ],
+          colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
         ),
         shape: BoxShape.circle,
         border: Border.all(
@@ -1239,14 +1358,18 @@ Widget _buildProductRow(BuildContext context, ProductRevenue product) {
 
   String? _resolveProfileImageUrl(String? rawPath) {
     if (rawPath == null || rawPath.isEmpty) return null;
-    
+
     final uri = Uri.tryParse(rawPath);
-    if (uri != null && uri.hasScheme && (uri.scheme == 'http' || uri.scheme == 'https')) {
+    if (uri != null &&
+        uri.hasScheme &&
+        (uri.scheme == 'http' || uri.scheme == 'https')) {
       return rawPath;
     }
-    
+
     final base = AuthService.baseUrl;
-    final cleanBase = base.endsWith('/') ? base.substring(0, base.length - 1) : base;
+    final cleanBase = base.endsWith('/')
+        ? base.substring(0, base.length - 1)
+        : base;
     final cleanPath = rawPath.startsWith('/') ? rawPath : '/$rawPath';
     return '$cleanBase$cleanPath';
   }

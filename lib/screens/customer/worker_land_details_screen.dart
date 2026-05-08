@@ -96,7 +96,9 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.unableToOpenFarmerProfile),
+          content: Text(
+            AppLocalizations.of(context)!.unableToOpenFarmerProfile,
+          ),
           backgroundColor: Colors.red.shade700,
         ),
       );
@@ -112,7 +114,10 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
       return Scaffold(
         backgroundColor: isDark ? const Color(0xFF121212) : Colors.grey.shade50,
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.landDetails, style: const TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(
+            AppLocalizations.of(context)!.landDetails,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
@@ -126,7 +131,9 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                 child: CircularProgressIndicator(
                   strokeWidth: 3,
                   color: Colors.green.shade600,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green.shade400),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Colors.green.shade400,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -229,8 +236,13 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
       backgroundColor: isDark ? const Color(0xFF121212) : Colors.grey.shade50,
       appBar: AppBar(
         title: Text(
-          land?.name ?? widget.assignment.landName ?? AppLocalizations.of(context)!.landDetails,
-          style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: -0.5),
+          land?.name ??
+              widget.assignment.landName ??
+              AppLocalizations.of(context)!.landDetails,
+          style: const TextStyle(
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.5,
+          ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -375,7 +387,9 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
         color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade200,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.grey.shade200,
           width: 1.5,
         ),
         boxShadow: [
@@ -406,18 +420,25 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                              color: theme.colorScheme.primary.withValues(
+                                alpha: 0.2,
+                              ),
                               width: 2,
                             ),
                           ),
                           child: CircleAvatar(
                             radius: 26,
-                            backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
+                            backgroundColor: theme.colorScheme.primary
+                                .withValues(alpha: 0.1),
                             backgroundImage: farmerPicture != null
                                 ? NetworkImage(farmerPicture)
                                 : null,
                             child: farmerPicture == null
-                                ? Icon(Icons.person_rounded, color: theme.colorScheme.primary, size: 28)
+                                ? Icon(
+                                    Icons.person_rounded,
+                                    color: theme.colorScheme.primary,
+                                    size: 28,
+                                  )
                                 : null,
                           ),
                         ),
@@ -431,7 +452,9 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                               color: Colors.green,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: isDark ? const Color(0xFF1F1F1F) : Colors.white,
+                                color: isDark
+                                    ? const Color(0xFF1F1F1F)
+                                    : Colors.white,
                                 width: 2,
                               ),
                             ),
@@ -455,9 +478,13 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            AppLocalizations.of(context)!.farmerInfoSyncedFromAssignment,
+                            AppLocalizations.of(
+                              context,
+                            )!.farmerInfoSyncedFromAssignment,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.5,
+                              ),
                               fontWeight: FontWeight.w600,
                             ),
                             maxLines: 1,
@@ -480,13 +507,19 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: statusColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
-                            _translateContractStatus(context, relationStatus).toUpperCase(),
+                            _translateContractStatus(
+                              context,
+                              relationStatus,
+                            ).toUpperCase(),
                             style: TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.w900,
@@ -498,7 +531,9 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                         const SizedBox(height: 10),
                         Icon(
                           Icons.chevron_right_rounded,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.3,
+                          ),
                           size: 20,
                         ),
                       ],
@@ -524,7 +559,9 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
         color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade200,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.grey.shade200,
           width: 1.5,
         ),
       ),
@@ -539,15 +576,35 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
               runSpacing: 10,
               alignment: WrapAlignment.center,
               children: [
-                _chip(Icons.work_rounded, _translateRole(context, role).toUpperCase(), isDark, theme.colorScheme.primary),
+                _chip(
+                  Icons.work_rounded,
+                  _translateRole(context, role).toUpperCase(),
+                  isDark,
+                  theme.colorScheme.primary,
+                ),
                 _chip(
                   Icons.payments_rounded,
-                  AppLocalizations.of(context)!.amountPerMonth(salary.toStringAsFixed(0)),
+                  AppLocalizations.of(
+                    context,
+                  )!.amountPerMonth(salary.toStringAsFixed(0)),
                   isDark,
                   Colors.green,
                 ),
-                _chip(Icons.bolt_rounded, _translateAssignmentStatus(context, status).toUpperCase(), isDark, Colors.orange),
-                _chip(Icons.link_rounded, _translateContractStatus(context, relationStatus).toUpperCase(), isDark, Colors.blue),
+                _chip(
+                  Icons.bolt_rounded,
+                  _translateAssignmentStatus(context, status).toUpperCase(),
+                  isDark,
+                  Colors.orange,
+                ),
+                _chip(
+                  Icons.link_rounded,
+                  _translateContractStatus(
+                    context,
+                    relationStatus,
+                  ).toUpperCase(),
+                  isDark,
+                  Colors.blue,
+                ),
               ],
             ),
           ),
@@ -562,10 +619,7 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
       decoration: BoxDecoration(
         color: accentColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: accentColor.withValues(alpha: 0.2),
-          width: 1,
-        ),
+        border: Border.all(color: accentColor.withValues(alpha: 0.2), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -577,7 +631,9 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w900,
-              color: isDark ? accentColor.withValues(alpha: 0.9) : accentColor.withValues(alpha: 0.8),
+              color: isDark
+                  ? accentColor.withValues(alpha: 0.9)
+                  : accentColor.withValues(alpha: 0.8),
               letterSpacing: 0.5,
             ),
           ),
@@ -598,7 +654,9 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
         color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade200,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.grey.shade200,
           width: 1.5,
         ),
       ),
@@ -612,19 +670,38 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
             ),
             children: [
               TileLayer(
-                urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlTemplate:
+                    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.farmy.app',
-                tileBuilder: isDark ? (context, tileWidget, tile) {
-                  return ColorFiltered(
-                    colorFilter: const ColorFilter.matrix([
-                      -1.0, 0.0, 0.0, 0.0, 255.0,
-                      0.0, -1.0, 0.0, 0.0, 255.0,
-                      0.0, 0.0, -1.0, 0.0, 255.0,
-                      0.0, 0.0, 0.0, 1.0, 0.0,
-                    ]),
-                    child: tileWidget,
-                  );
-                } : null,
+                tileBuilder: isDark
+                    ? (context, tileWidget, tile) {
+                        return ColorFiltered(
+                          colorFilter: const ColorFilter.matrix([
+                            -1.0,
+                            0.0,
+                            0.0,
+                            0.0,
+                            255.0,
+                            0.0,
+                            -1.0,
+                            0.0,
+                            0.0,
+                            255.0,
+                            0.0,
+                            0.0,
+                            -1.0,
+                            0.0,
+                            255.0,
+                            0.0,
+                            0.0,
+                            0.0,
+                            1.0,
+                            0.0,
+                          ]),
+                          child: tileWidget,
+                        );
+                      }
+                    : null,
               ),
               if (boundaries != null && boundaries.isNotEmpty)
                 PolygonLayer(
@@ -648,7 +725,10 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(20),
@@ -659,10 +739,16 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.map_rounded, color: Colors.green.shade400, size: 14),
+                      Icon(
+                        Icons.map_rounded,
+                        color: Colors.green.shade400,
+                        size: 14,
+                      ),
                       const SizedBox(width: 8),
                       Text(
-                        AppLocalizations.of(context)!.landBoundary.toUpperCase(),
+                        AppLocalizations.of(
+                          context,
+                        )!.landBoundary.toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w900,
@@ -692,7 +778,9 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
         color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade200,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.grey.shade200,
           width: 1.5,
         ),
       ),
@@ -713,7 +801,11 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                         color: theme.colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Icon(Icons.info_outline_rounded, color: theme.colorScheme.primary, size: 20),
+                      child: Icon(
+                        Icons.info_outline_rounded,
+                        color: theme.colorScheme.primary,
+                        size: 20,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Text(
@@ -726,10 +818,15 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                _detailRow(AppLocalizations.of(context)!.name, land?.name ?? assignment.landName ?? '-', theme),
+                _detailRow(
+                  AppLocalizations.of(context)!.name,
+                  land?.name ?? assignment.landName ?? '-',
+                  theme,
+                ),
                 _detailRow(
                   AppLocalizations.of(context)!.description,
-                  land?.description ?? AppLocalizations.of(context)!.noDescriptionAvailable,
+                  land?.description ??
+                      AppLocalizations.of(context)!.noDescriptionAvailable,
                   theme,
                 ),
                 _detailRow(
@@ -740,17 +837,29 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
                 _detailRow(
                   AppLocalizations.of(context)!.area,
                   land != null
-                      ? AppLocalizations.of(context)!.squareMeters((land.gridWidth * land.gridHeight).toInt())
+                      ? AppLocalizations.of(context)!.squareMeters(
+                          (land.gridWidth * land.gridHeight).toInt(),
+                        )
                       : '-',
                   theme,
                 ),
-                _detailRow(AppLocalizations.of(context)!.assignmentRole, _translateRole(context, assignment.role), theme),
                 _detailRow(
-                  AppLocalizations.of(context)!.salary,
-                  AppLocalizations.of(context)!.salaryPerMonth(assignment.salary.toStringAsFixed(0)),
+                  AppLocalizations.of(context)!.assignmentRole,
+                  _translateRole(context, assignment.role),
                   theme,
                 ),
-                _detailRow(AppLocalizations.of(context)!.assignmentStatus, _translateAssignmentStatus(context, assignment.status), theme),
+                _detailRow(
+                  AppLocalizations.of(context)!.salary,
+                  AppLocalizations.of(
+                    context,
+                  )!.salaryPerMonth(assignment.salary.toStringAsFixed(0)),
+                  theme,
+                ),
+                _detailRow(
+                  AppLocalizations.of(context)!.assignmentStatus,
+                  _translateAssignmentStatus(context, assignment.status),
+                  theme,
+                ),
               ],
             ),
           ),
@@ -793,37 +902,56 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
   String _translateRole(BuildContext context, String role) {
     final l10n = AppLocalizations.of(context)!;
     switch (role.toLowerCase()) {
-      case 'worker': return l10n.worker;
-      case 'supervisor': return l10n.supervisor;
-      case 'manager': return l10n.manager;
-      default: return role;
+      case 'worker':
+        return l10n.worker;
+      case 'supervisor':
+        return l10n.supervisor;
+      case 'manager':
+        return l10n.manager;
+      default:
+        return role;
     }
   }
 
   String _translateAssignmentStatus(BuildContext context, String status) {
     final l10n = AppLocalizations.of(context)!;
     switch (status.toLowerCase()) {
-      case 'active': return l10n.activeLabel;
-      case 'pending': return l10n.pendingLabel;
-      case 'inactive': return l10n.inactiveLabel;
-      default: return status;
+      case 'active':
+        return l10n.activeLabel;
+      case 'pending':
+        return l10n.pendingLabel;
+      case 'inactive':
+        return l10n.inactiveLabel;
+      default:
+        return status;
     }
   }
 
   String _translateContractStatus(BuildContext context, String status) {
     final l10n = AppLocalizations.of(context)!;
     switch (status.toLowerCase()) {
-      case 'active': return l10n.activeLabel;
-      case 'suspended': return l10n.suspendedLabel;
-      case 'terminated': return l10n.terminatedLabel;
-      case 'hiring_pending': return l10n.hiringPending;
-      case 'negotiation_pending': return l10n.negotiating;
-      case 'payment_pending': return l10n.awaitingPayment;
-      case 'invitation approved': return l10n.invitationApproved;
-      case 'invitation pending': return l10n.invitationPending;
-      case 'invitation declined': return l10n.invitationDeclined;
-      case 'invitation expired': return l10n.invitationExpired;
-      default: return status;
+      case 'active':
+        return l10n.activeLabel;
+      case 'suspended':
+        return l10n.suspendedLabel;
+      case 'terminated':
+        return l10n.terminatedLabel;
+      case 'hiring_pending':
+        return l10n.hiringPending;
+      case 'negotiation_pending':
+        return l10n.negotiating;
+      case 'payment_pending':
+        return l10n.awaitingPayment;
+      case 'invitation approved':
+        return l10n.invitationApproved;
+      case 'invitation pending':
+        return l10n.invitationPending;
+      case 'invitation declined':
+        return l10n.invitationDeclined;
+      case 'invitation expired':
+        return l10n.invitationExpired;
+      default:
+        return status;
     }
   }
 }

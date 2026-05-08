@@ -200,7 +200,8 @@ class _OrderCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    delivery.order?.productName ?? AppLocalizations.of(context)!.order,
+                    delivery.order?.productName ??
+                        AppLocalizations.of(context)!.order,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,

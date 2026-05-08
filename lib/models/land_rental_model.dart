@@ -46,8 +46,12 @@ class LandRental {
       paymentDate: json['payment_date'] != null
           ? DateTime.parse(json['payment_date'])
           : null,
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
+          : null,
       land: json['land'] != null ? Land.fromJson(json['land']) : null,
     );
   }

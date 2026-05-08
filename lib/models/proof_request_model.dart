@@ -54,11 +54,13 @@ class ProofRequest {
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'])
           : null,
-      investorName: json['investor_name'] ?? 
-          json['investor']?['profile']?['name'] ?? 
+      investorName:
+          json['investor_name'] ??
+          json['investor']?['profile']?['name'] ??
           json['investor']?['email'],
-      farmerName: json['farmer_name'] ?? 
-          json['farmer']?['profile']?['name'] ?? 
+      farmerName:
+          json['farmer_name'] ??
+          json['farmer']?['profile']?['name'] ??
           json['farmer']?['email'],
       landName: json['land_name'] ?? json['land']?['name'],
       targetType: json['target_type'] ?? 'land',
@@ -71,7 +73,8 @@ class ProofRequest {
   bool get isPending => status == 'pending';
   bool get isVerified => status == 'verified';
   bool get isRejected => status == 'rejected';
-  bool get isExpired => status == 'expired' || DateTime.now().isAfter(expiresAt);
+  bool get isExpired =>
+      status == 'expired' || DateTime.now().isAfter(expiresAt);
 
   String get timeRemaining {
     final now = DateTime.now();

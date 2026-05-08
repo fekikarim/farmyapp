@@ -21,15 +21,19 @@ class CalendarMonthView extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<CropCalendarProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // Calculate days for this month
-    final daysInMonth = DateTime(focusedDate.year, focusedDate.month + 1, 0).day;
+    final daysInMonth = DateTime(
+      focusedDate.year,
+      focusedDate.month + 1,
+      0,
+    ).day;
     final firstDayOfMonth = DateTime(focusedDate.year, focusedDate.month, 1);
     final firstWeekday = firstDayOfMonth.weekday % 7; // 0 = Sunday
-    
+
     // Day names
     final dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    
+
     return Column(
       children: [
         // Day headers
@@ -52,9 +56,9 @@ class CalendarMonthView extends StatelessWidget {
             );
           }).toList(),
         ),
-        
+
         const Divider(height: 1),
-        
+
         // Calendar grid
         Expanded(
           child: GridView.builder(
@@ -69,10 +73,10 @@ class CalendarMonthView extends StatelessWidget {
               if (index < firstWeekday) {
                 return const SizedBox.shrink();
               }
-              
+
               final day = index - firstWeekday + 1;
               final date = DateTime(focusedDate.year, focusedDate.month, day);
-              
+
               return _DayCell(
                 date: date,
                 isToday: _isSameDay(date, DateTime.now()),
@@ -113,7 +117,7 @@ class _DayCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // Get colors for items
     final itemColors = items.map((item) {
       if (item is CropCycle) {
@@ -123,26 +127,26 @@ class _DayCell extends StatelessWidget {
       }
       return Colors.grey;
     }).toList();
-    
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.all(2),
         decoration: BoxDecoration(
-          color: isSelected 
+          color: isSelected
               ? AppTheme.primaryColor.withOpacity(0.15)
               : isToday
-                  ? AppTheme.primaryColor.withOpacity(0.1)
-                  : null,
+              ? AppTheme.primaryColor.withOpacity(0.1)
+              : null,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected 
+            color: isSelected
                 ? AppTheme.primaryColor
                 : isToday
-                    ? AppTheme.primaryColor.withOpacity(0.5)
-                    : isDark 
-                        ? Colors.white12 
-                        : Colors.black12,
+                ? AppTheme.primaryColor.withOpacity(0.5)
+                : isDark
+                ? Colors.white12
+                : Colors.black12,
             width: isSelected || isToday ? 2 : 0.5,
           ),
         ),
@@ -157,13 +161,15 @@ class _DayCell extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                  color: isToday 
-                      ? AppTheme.primaryColor 
-                      : isDark ? Colors.white : Colors.black87,
+                  color: isToday
+                      ? AppTheme.primaryColor
+                      : isDark
+                      ? Colors.white
+                      : Colors.black87,
                 ),
               ),
             ),
-            
+
             // Crop indicators (dots)
             if (items.isNotEmpty)
               Expanded(
@@ -190,7 +196,7 @@ class _DayCell extends StatelessWidget {
                   ),
                 ),
               ),
-            
+
             // More indicator
             if (items.length > 6)
               Text(
@@ -226,7 +232,7 @@ class CalendarMonthHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final monthYear = _formatMonthYear(focusedDate);
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -242,19 +248,17 @@ class CalendarMonthHeader extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Today button
           TextButton.icon(
             onPressed: onToday,
             icon: const Icon(Icons.today, size: 18),
             label: const Text('Today'),
-            style: TextButton.styleFrom(
-              foregroundColor: AppTheme.primaryColor,
-            ),
+            style: TextButton.styleFrom(foregroundColor: AppTheme.primaryColor),
           ),
-          
+
           const SizedBox(width: 8),
-          
+
           // Navigation arrows
           Row(
             children: [
@@ -262,7 +266,9 @@ class CalendarMonthHeader extends StatelessWidget {
                 onPressed: onPrevious,
                 icon: const Icon(Icons.chevron_left),
                 style: IconButton.styleFrom(
-                  backgroundColor: isDark ? Colors.white12 : Colors.black.withOpacity(0.05),
+                  backgroundColor: isDark
+                      ? Colors.white12
+                      : Colors.black.withOpacity(0.05),
                 ),
               ),
               const SizedBox(width: 8),
@@ -270,7 +276,9 @@ class CalendarMonthHeader extends StatelessWidget {
                 onPressed: onNext,
                 icon: const Icon(Icons.chevron_right),
                 style: IconButton.styleFrom(
-                  backgroundColor: isDark ? Colors.white12 : Colors.black.withOpacity(0.05),
+                  backgroundColor: isDark
+                      ? Colors.white12
+                      : Colors.black.withOpacity(0.05),
                 ),
               ),
             ],
@@ -282,8 +290,18 @@ class CalendarMonthHeader extends StatelessWidget {
 
   String _formatMonthYear(DateTime date) {
     final months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return '${months[date.month - 1]} ${date.year}';
   }

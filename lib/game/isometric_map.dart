@@ -79,7 +79,7 @@ class IsometricMapState extends State<IsometricMap> {
 
   // Smooth camera interpolation constants - 60fps with responsive 0.20 lerp
   static const double _kCameraLerpFactor = 0.20; // Fast but smooth (60fps)
-  static const double _kCameraLerpFast = 0.30;   // For initial catch-up
+  static const double _kCameraLerpFast = 0.30; // For initial catch-up
 
   @override
   void initState() {
@@ -128,7 +128,11 @@ class IsometricMapState extends State<IsometricMap> {
 
   /// Smoothly center camera on target position with delta-time lerp interpolation
   /// [dt] is elapsed seconds since last frame for frame-rate independent smoothing
-  void _centerCameraOn(Offset targetPos, {double? lerpFactor, double dt = 0.016}) {
+  void _centerCameraOn(
+    Offset targetPos, {
+    double? lerpFactor,
+    double dt = 0.016,
+  }) {
     final Matrix4 current = _cameraController.value;
     final Vector3 translation = current.getTranslation();
     final double currentX = translation.x;
@@ -240,31 +244,31 @@ class IsometricMapState extends State<IsometricMap> {
                       showCollisionDebug: gameProvider.collisionDebugEnabled,
                     ),
                   ),
-            if (_menuGridX != null &&
-                _menuGridY != null &&
-                _menuPixelX != null &&
-                _menuPixelY != null)
-              Positioned(
-                // canvasR = radius(75) + btnRadius(24) + 6 = 105
-                left: _menuPixelX! - 105,
-                top: _menuPixelY! - 105,
-                child: RadialActionMenu(
-                  actions: _getActionsFor(_menuItemData),
-                  radius: 75,
-                  onActionSelected: (actionId) {
-                    if (widget.onItemAction != null) {
-                      widget.onItemAction!(
-                        actionId,
-                        _menuGridX!,
-                        _menuGridY!,
-                        _menuItemData,
-                      );
-                    }
-                    _closeMenu();
-                  },
-                  onDismiss: _closeMenu,
-                ),
-              ),
+                  if (_menuGridX != null &&
+                      _menuGridY != null &&
+                      _menuPixelX != null &&
+                      _menuPixelY != null)
+                    Positioned(
+                      // canvasR = radius(75) + btnRadius(24) + 6 = 105
+                      left: _menuPixelX! - 105,
+                      top: _menuPixelY! - 105,
+                      child: RadialActionMenu(
+                        actions: _getActionsFor(_menuItemData),
+                        radius: 75,
+                        onActionSelected: (actionId) {
+                          if (widget.onItemAction != null) {
+                            widget.onItemAction!(
+                              actionId,
+                              _menuGridX!,
+                              _menuGridY!,
+                              _menuItemData,
+                            );
+                          }
+                          _closeMenu();
+                        },
+                        onDismiss: _closeMenu,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -1103,7 +1107,8 @@ class IsometricMapPainter extends CustomPainter {
     // These are duplicated here for debug visualization
     const double collisionRadius = 0.35; // _kWorkerCollisionRadius
     const double padding = 0.60; // _kOffLandCollisionPadding
-    const double boundaryOffset = collisionRadius + padding; // _kBoundaryMinOffset = 0.95
+    const double boundaryOffset =
+        collisionRadius + padding; // _kBoundaryMinOffset = 0.95
 
     final Paint boundaryPaint = Paint()
       ..color = Colors.red.withOpacity(0.6)

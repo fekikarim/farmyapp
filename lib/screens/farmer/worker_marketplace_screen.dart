@@ -43,8 +43,8 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<WorkerProvider>().loadMarketplace(
-            excludeLandId: widget.landId,
-          );
+        excludeLandId: widget.landId,
+      );
     });
   }
 
@@ -56,10 +56,10 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
 
   void _applyFilters() {
     context.read<WorkerProvider>().loadMarketplace(
-          skill: _selectedSkillFilter == 'All' ? null : _selectedSkillFilter,
-          minRating: _minRating,
-          excludeLandId: widget.landId,
-        );
+      skill: _selectedSkillFilter == 'All' ? null : _selectedSkillFilter,
+      minRating: _minRating,
+      excludeLandId: widget.landId,
+    );
   }
 
   Widget _buildWorkerCard(WorkerProfile profile) {
@@ -90,7 +90,9 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
         decoration: BoxDecoration(
           color: isDark ? Colors.grey.shade900 : Colors.white,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
+          border: Border.all(
+            color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
@@ -108,7 +110,10 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                 imageUrl: profile.userProfilePicture,
                 radius: 26,
                 displayName: profile.userName,
-                border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3), width: 1.5),
+                border: Border.all(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                  width: 1.5,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -121,9 +126,11 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                     children: [
                       Flexible(
                         child: InkWell(
-                          onTap: () => ProfilePreviewSheet.show(context, profile.userId),
+                          onTap: () =>
+                              ProfilePreviewSheet.show(context, profile.userId),
                           child: Text(
-                            profile.userName ?? AppLocalizations.of(context)!.worker,
+                            profile.userName ??
+                                AppLocalizations.of(context)!.worker,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -135,7 +142,11 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                       ),
                       if (profile.isVerified) ...[
                         const SizedBox(width: 6),
-                        Icon(Icons.verified, color: Colors.blue.shade500, size: 16),
+                        Icon(
+                          Icons.verified,
+                          color: Colors.blue.shade500,
+                          size: 16,
+                        ),
                       ],
                     ],
                   ),
@@ -145,18 +156,33 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                     runSpacing: 6,
                     children: (profile.skills.take(3)).map((skill) {
                       return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: isDark ? theme.colorScheme.primary.withValues(alpha: 0.15) : theme.colorScheme.primary.withValues(alpha: 0.1),
+                          color: isDark
+                              ? theme.colorScheme.primary.withValues(
+                                  alpha: 0.15,
+                                )
+                              : theme.colorScheme.primary.withValues(
+                                  alpha: 0.1,
+                                ),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.2)),
+                          border: Border.all(
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.2,
+                            ),
+                          ),
                         ),
                         child: Text(
                           _translateSkill(context, skill),
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
-                            color: isDark ? theme.colorScheme.primary : theme.colorScheme.primary,
+                            color: isDark
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.primary,
                           ),
                         ),
                       );
@@ -165,7 +191,11 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(Icons.star_rounded, color: Colors.amber.shade500, size: 16),
+                      Icon(
+                        Icons.star_rounded,
+                        color: Colors.amber.shade500,
+                        size: 16,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         profile.rating.toStringAsFixed(1),
@@ -176,14 +206,22 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Icon(Icons.check_circle_outline_rounded, color: Colors.grey.shade500, size: 16),
+                      Icon(
+                        Icons.check_circle_outline_rounded,
+                        color: Colors.grey.shade500,
+                        size: 16,
+                      ),
                       const SizedBox(width: 4),
                       Text(
-                        AppLocalizations.of(context)!.tasksCount(profile.completedTasks),
+                        AppLocalizations.of(
+                          context,
+                        )!.tasksCount(profile.completedTasks),
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade600,
                         ),
                       ),
                     ],
@@ -196,14 +234,23 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: isDark ? theme.colorScheme.primary.withValues(alpha: 0.1) : theme.colorScheme.primary.withValues(alpha: 0.1),
+                    color: isDark
+                        ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                        : theme.colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Text(
-                    AppLocalizations.of(context)!.amountTND(profile.hourlyRate.toStringAsFixed(0)),
+                    AppLocalizations.of(
+                      context,
+                    )!.amountTND(profile.hourlyRate.toStringAsFixed(0)),
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 14,
@@ -237,7 +284,10 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
     return Scaffold(
       backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.workerMarketplace, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          AppLocalizations.of(context)!.workerMarketplace,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: isDark ? Colors.grey.shade900 : Colors.white,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
@@ -266,7 +316,10 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                     color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
                     fontWeight: FontWeight.w500,
                   ),
-                  prefixIcon: Icon(Icons.search_rounded, color: isDark ? Colors.grey.shade400 : Colors.grey.shade500),
+                  prefixIcon: Icon(
+                    Icons.search_rounded,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
+                  ),
                   filled: true,
                   fillColor: isDark ? Colors.grey.shade800 : Colors.white,
                   border: OutlineInputBorder(
@@ -275,7 +328,10 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.primary,
+                      width: 2,
+                    ),
                   ),
                   contentPadding: const EdgeInsets.symmetric(vertical: 14),
                 ),
@@ -299,35 +355,58 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                   child: InkWell(
                     onTap: () {
                       setState(
-                        () => _selectedSkillFilter = skill == 'All' ? null : skill,
+                        () => _selectedSkillFilter = skill == 'All'
+                            ? null
+                            : skill,
                       );
                       _applyFilters();
                     },
                     borderRadius: BorderRadius.circular(20),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
-                        color: selected ? theme.colorScheme.primary : (isDark ? Colors.grey.shade800 : Colors.white),
+                        color: selected
+                            ? theme.colorScheme.primary
+                            : (isDark ? Colors.grey.shade800 : Colors.white),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: selected ? theme.colorScheme.primary : (isDark ? Colors.grey.shade700 : Colors.grey.shade200),
+                          color: selected
+                              ? theme.colorScheme.primary
+                              : (isDark
+                                    ? Colors.grey.shade700
+                                    : Colors.grey.shade200),
                         ),
-                        boxShadow: selected ? [
-                          BoxShadow(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          )
-                        ] : [],
+                        boxShadow: selected
+                            ? [
+                                BoxShadow(
+                                  color: theme.colorScheme.primary.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : [],
                       ),
                       child: Center(
                         child: Text(
-                          skill == 'All' ? AppLocalizations.of(context)!.all : _translateSkill(context, skill),
+                          skill == 'All'
+                              ? AppLocalizations.of(context)!.all
+                              : _translateSkill(context, skill),
                           style: TextStyle(
                             fontSize: 13,
-                            fontWeight: selected ? FontWeight.bold : FontWeight.w600,
-                            color: selected ? Colors.white : (isDark ? Colors.grey.shade300 : Colors.grey.shade600),
+                            fontWeight: selected
+                                ? FontWeight.bold
+                                : FontWeight.w600,
+                            color: selected
+                                ? Colors.white
+                                : (isDark
+                                      ? Colors.grey.shade300
+                                      : Colors.grey.shade600),
                           ),
                         ),
                       ),
@@ -351,30 +430,50 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                         Container(
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
+                            color: isDark
+                                ? Colors.grey.shade800
+                                : Colors.grey.shade100,
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(Icons.person_search_rounded, size: 64, color: isDark ? Colors.grey.shade500 : Colors.grey.shade400),
+                          child: Icon(
+                            Icons.person_search_rounded,
+                            size: 64,
+                            color: isDark
+                                ? Colors.grey.shade500
+                                : Colors.grey.shade400,
+                          ),
                         ),
                         const SizedBox(height: 16),
                         Text(
                           AppLocalizations.of(context)!.noVerifiedWorkersFound,
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? Colors.grey.shade400
+                                : Colors.grey.shade600,
+                          ),
                         ),
                       ],
                     ),
                   )
                 : RefreshIndicator(
                     onRefresh: () => workerProvider.loadMarketplace(
-                      skill: _selectedSkillFilter == 'All' ? null : _selectedSkillFilter,
+                      skill: _selectedSkillFilter == 'All'
+                          ? null
+                          : _selectedSkillFilter,
                       minRating: _minRating,
                       excludeLandId: widget.landId,
                     ),
                     color: theme.colorScheme.primary,
                     child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
                       itemCount: workerProvider.marketplace.length,
-                      itemBuilder: (ctx, i) => _buildWorkerCard(workerProvider.marketplace[i]),
+                      itemBuilder: (ctx, i) =>
+                          _buildWorkerCard(workerProvider.marketplace[i]),
                     ),
                   ),
           ),
@@ -407,16 +506,23 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
   String _translateSkill(BuildContext context, String skill) {
     final l10n = AppLocalizations.of(context)!;
     switch (skill.toLowerCase()) {
-      case 'watering': return l10n.watering;
-      case 'harvesting': return l10n.harvesting;
-      case 'planting': return l10n.planting;
+      case 'watering':
+        return l10n.watering;
+      case 'harvesting':
+        return l10n.harvesting;
+      case 'planting':
+        return l10n.planting;
       case 'animal care':
-      case 'animal_care': return l10n.animalCare;
+      case 'animal_care':
+        return l10n.animalCare;
       case 'machine operation':
-      case 'machine_operation': return l10n.machineOperation;
+      case 'machine_operation':
+        return l10n.machineOperation;
       case 'soil management':
-      case 'soil_management': return l10n.soilManagement;
-      default: return skill;
+      case 'soil_management':
+        return l10n.soilManagement;
+      default:
+        return skill;
     }
   }
 }

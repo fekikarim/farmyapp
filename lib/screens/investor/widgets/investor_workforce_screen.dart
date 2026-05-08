@@ -204,7 +204,9 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(AppLocalizations.of(context)!.negotiationsUpper),
+                            Text(
+                              AppLocalizations.of(context)!.negotiationsUpper,
+                            ),
                             if (lifecycle.negotiatingContracts.isNotEmpty) ...[
                               const SizedBox(width: 6),
                               _buildTabBadge(
@@ -331,7 +333,10 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
             side: BorderSide(color: Colors.white.withOpacity(0.08)),
           ),
           title: Text(
-            AppLocalizations.of(context)!.hireWorkerUpper((worker.userName ?? AppLocalizations.of(context)!.worker).toUpperCase()),
+            AppLocalizations.of(context)!.hireWorkerUpper(
+              (worker.userName ?? AppLocalizations.of(context)!.worker)
+                  .toUpperCase(),
+            ),
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w900,
@@ -358,7 +363,9 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                   controller: salaryController,
                   keyboardType: TextInputType.number,
                   style: const TextStyle(color: Colors.white),
-                  decoration: _inputDecoration(AppLocalizations.of(context)!.egSalaryHint),
+                  decoration: _inputDecoration(
+                    AppLocalizations.of(context)!.egSalaryHint,
+                  ),
                 ),
                 const SizedBox(height: 16),
 
@@ -395,9 +402,15 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                           ),
                           child: Center(
                             child: Text(
-                                type == 'per_task'
+                              type == 'per_task'
                                   ? AppLocalizations.of(context)!.perTaskUpper
-                                  : (type == 'monthly' ? AppLocalizations.of(context)!.monthlyUpper : AppLocalizations.of(context)!.hourlyUpper),
+                                  : (type == 'monthly'
+                                        ? AppLocalizations.of(
+                                            context,
+                                          )!.monthlyUpper
+                                        : AppLocalizations.of(
+                                            context,
+                                          )!.hourlyUpper),
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
@@ -472,7 +485,9 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                                 ),
                               ),
                               child: Text(
-                                DateFormat.yMd(Localizations.localeOf(context).toString()).format(startDate),
+                                DateFormat.yMd(
+                                  Localizations.localeOf(context).toString(),
+                                ).format(startDate),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   color: Colors.white,
@@ -539,7 +554,9 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                                 ),
                               ),
                               child: Text(
-                                DateFormat.yMd(Localizations.localeOf(context).toString()).format(endDate),
+                                DateFormat.yMd(
+                                  Localizations.localeOf(context).toString(),
+                                ).format(endDate),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   color: Colors.white,
@@ -570,7 +587,9 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                   controller: messageController,
                   maxLines: 2,
                   style: const TextStyle(color: Colors.white),
-                  decoration: _inputDecoration(AppLocalizations.of(context)!.optionalMessageHint),
+                  decoration: _inputDecoration(
+                    AppLocalizations.of(context)!.optionalMessageHint,
+                  ),
                 ),
               ],
             ),
@@ -593,7 +612,9 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                 if (salary == null || salary <= 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(AppLocalizations.of(context)!.pleaseEnterValidSalary),
+                      content: Text(
+                        AppLocalizations.of(context)!.pleaseEnterValidSalary,
+                      ),
                       backgroundColor: Colors.redAccent,
                     ),
                   );
@@ -619,7 +640,9 @@ class _InvestorWorkforceScreenState extends State<InvestorWorkforceScreen>
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        error == null ? AppLocalizations.of(context)!.hiringProposalSent : error,
+                        error == null
+                            ? AppLocalizations.of(context)!.hiringProposalSent
+                            : error,
                       ),
                       backgroundColor: error == null
                           ? Colors.greenAccent
@@ -702,7 +725,12 @@ class _ApprovedWorkersTab extends StatelessWidget {
     if (isLoading) return _shimmerList(true); // Always dark
 
     if (error != null) {
-      return _errorView(context: context, isDark: true, message: error!, onRetry: onRefresh);
+      return _errorView(
+        context: context,
+        isDark: true,
+        message: error!,
+        onRetry: onRefresh,
+      );
     }
 
     if (workers.isEmpty) {
@@ -814,7 +842,8 @@ class _ApprovedWorkersTab extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            (w.userName ?? AppLocalizations.of(context)!.worker).toUpperCase(),
+                            (w.userName ?? AppLocalizations.of(context)!.worker)
+                                .toUpperCase(),
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w900,
@@ -839,9 +868,14 @@ class _ApprovedWorkersTab extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                w.skills.isEmpty 
-                                  ? AppLocalizations.of(context)!.noSpecialSkillsUpper
-                                  : _translateSkill(context, w.skills.first).toUpperCase(),
+                                w.skills.isEmpty
+                                    ? AppLocalizations.of(
+                                        context,
+                                      )!.noSpecialSkillsUpper
+                                    : _translateSkill(
+                                        context,
+                                        w.skills.first,
+                                      ).toUpperCase(),
                                 style: const TextStyle(
                                   fontSize: 9,
                                   fontWeight: FontWeight.bold,
@@ -854,7 +888,9 @@ class _ApprovedWorkersTab extends StatelessWidget {
                             )
                           else
                             Text(
-                              AppLocalizations.of(context)!.noSpecialSkillsUpper,
+                              AppLocalizations.of(
+                                context,
+                              )!.noSpecialSkillsUpper,
                               style: TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold,
@@ -921,7 +957,12 @@ class _NegotiationsTab extends StatelessWidget {
     if (isLoading) return _shimmerList(true); // Always dark
 
     if (error != null) {
-      return _errorView(context: context, isDark: true, message: error!, onRetry: onRefresh);
+      return _errorView(
+        context: context,
+        isDark: true,
+        message: error!,
+        onRetry: onRefresh,
+      );
     }
 
     if (contracts.isEmpty) {
@@ -1027,7 +1068,10 @@ class _NegotiationCard extends StatelessWidget {
         break;
       default:
         statusColor = Colors.white54;
-        statusText = _translateContractStatus(context, contract.status).toUpperCase();
+        statusText = _translateContractStatus(
+          context,
+          contract.status,
+        ).toUpperCase();
     }
 
     return Container(
@@ -1095,7 +1139,9 @@ class _NegotiationCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            (contract.workerName ?? AppLocalizations.of(context)!.worker).toUpperCase(),
+                            (contract.workerName ??
+                                    AppLocalizations.of(context)!.worker)
+                                .toUpperCase(),
                             style: const TextStyle(
                               fontWeight: FontWeight.w900,
                               fontSize: 13,
@@ -1120,7 +1166,13 @@ class _NegotiationCard extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              AppLocalizations.of(context)!.salaryAmountType(contract.salaryAmount.toInt(), _translateSalaryTypeLabel(context, contract.salaryTypeLabel)),
+                              AppLocalizations.of(context)!.salaryAmountType(
+                                contract.salaryAmount.toInt(),
+                                _translateSalaryTypeLabel(
+                                  context,
+                                  contract.salaryTypeLabel,
+                                ),
+                              ),
                               style: const TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold,
@@ -1183,8 +1235,12 @@ class _NegotiationCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             contract.status == 'payment_pending'
-                                ? AppLocalizations.of(context)!.paymentRequiredToActivate
-                                : AppLocalizations.of(context)!.workerRespondedReviewCounterOffer,
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.paymentRequiredToActivate
+                                : AppLocalizations.of(
+                                    context,
+                                  )!.workerRespondedReviewCounterOffer,
                             style: TextStyle(
                               fontSize: 9,
                               color: Colors.amberAccent.shade100,
@@ -1229,7 +1285,12 @@ class _ActiveWorkersTab extends StatelessWidget {
     if (isLoading) return _shimmerList(true); // Always dark
 
     if (error != null) {
-      return _errorView(context: context, isDark: true, message: error!, onRetry: onRefresh);
+      return _errorView(
+        context: context,
+        isDark: true,
+        message: error!,
+        onRetry: onRefresh,
+      );
     }
 
     if (contracts.isEmpty) {
@@ -1284,7 +1345,9 @@ class _ActiveWorkersTab extends StatelessWidget {
           final badgeColor = isSuspended
               ? Colors.orangeAccent
               : Colors.greenAccent;
-          final badgeText = isSuspended ? AppLocalizations.of(context)!.suspendedUpper : AppLocalizations.of(context)!.activeUpper;
+          final badgeText = isSuspended
+              ? AppLocalizations.of(context)!.suspendedUpper
+              : AppLocalizations.of(context)!.activeUpper;
           final dotColor = isSuspended
               ? Colors.orangeAccent
               : Colors.greenAccent;
@@ -1367,7 +1430,9 @@ class _ActiveWorkersTab extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            (c.workerName ?? AppLocalizations.of(context)!.worker).toUpperCase(),
+                            (c.workerName ??
+                                    AppLocalizations.of(context)!.worker)
+                                .toUpperCase(),
                             style: const TextStyle(
                               fontWeight: FontWeight.w900,
                               fontSize: 13,
@@ -1392,7 +1457,13 @@ class _ActiveWorkersTab extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              AppLocalizations.of(context)!.salaryAmountType(c.salaryAmount.toInt(), _translateSalaryTypeLabel(context, c.salaryTypeLabel)),
+                              AppLocalizations.of(context)!.salaryAmountType(
+                                c.salaryAmount.toInt(),
+                                _translateSalaryTypeLabel(
+                                  context,
+                                  c.salaryTypeLabel,
+                                ),
+                              ),
                               style: TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold,
@@ -1434,7 +1505,11 @@ class _ActiveWorkersTab extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          AppLocalizations.of(context)!.untilDateUpper(DateFormat.MMMd(Localizations.localeOf(context).toString()).format(c.contractEndDate).toUpperCase()),
+                          AppLocalizations.of(context)!.untilDateUpper(
+                            DateFormat.MMMd(
+                              Localizations.localeOf(context).toString(),
+                            ).format(c.contractEndDate).toUpperCase(),
+                          ),
                           style: const TextStyle(
                             fontSize: 8,
                             fontWeight: FontWeight.bold,
@@ -1647,9 +1722,7 @@ class _RequestProofButtonState extends State<_RequestProofButton> {
       if (errorMsg == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.proofRequestedHint,
-            ),
+            content: Text(AppLocalizations.of(context)!.proofRequestedHint),
             backgroundColor: Colors.green.shade600,
           ),
         );
@@ -1834,7 +1907,14 @@ class _ProofsTab extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            AppLocalizations.of(context)!.requestedDateUpper(DateFormat.MMMd(Localizations.localeOf(context).toString()).add_Hm().format(p.createdAt ?? DateTime.now()).toUpperCase()),
+                            AppLocalizations.of(context)!.requestedDateUpper(
+                              DateFormat.MMMd(
+                                    Localizations.localeOf(context).toString(),
+                                  )
+                                  .add_Hm()
+                                  .format(p.createdAt ?? DateTime.now())
+                                  .toUpperCase(),
+                            ),
                             style: const TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
@@ -1846,7 +1926,9 @@ class _ProofsTab extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(top: 4),
                               child: Text(
-                                AppLocalizations.of(context)!.itemIdUpper(p.targetId?.substring(0, 8) ?? ''),
+                                AppLocalizations.of(context)!.itemIdUpper(
+                                  p.targetId?.substring(0, 8) ?? '',
+                                ),
                                 style: const TextStyle(
                                   fontSize: 8,
                                   fontWeight: FontWeight.bold,
@@ -2122,7 +2204,9 @@ class _RemoveWorkerButtonState extends State<_RemoveWorkerButton> {
           ),
         ),
         content: Text(
-          AppLocalizations.of(context)!.removeWorkerConfirmation(widget.contract.workerName ?? AppLocalizations.of(context)!.worker),
+          AppLocalizations.of(context)!.removeWorkerConfirmation(
+            widget.contract.workerName ?? AppLocalizations.of(context)!.worker,
+          ),
           style: TextStyle(
             color: widget.isDark ? Colors.white70 : Colors.black54,
             fontSize: 14,
@@ -2148,7 +2232,10 @@ class _RemoveWorkerButtonState extends State<_RemoveWorkerButton> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: Text(AppLocalizations.of(context)!.remove, style: const TextStyle(color: Colors.white)),
+            child: Text(
+              AppLocalizations.of(context)!.remove,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -2164,7 +2251,9 @@ class _RemoveWorkerButtonState extends State<_RemoveWorkerButton> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            success ? AppLocalizations.of(context)!.workerRemovedSuccessfully : AppLocalizations.of(context)!.failedToRemoveWorker,
+            success
+                ? AppLocalizations.of(context)!.workerRemovedSuccessfully
+                : AppLocalizations.of(context)!.failedToRemoveWorker,
           ),
           backgroundColor: success ? Colors.green.shade700 : Colors.redAccent,
         ),
@@ -2339,93 +2428,95 @@ Widget _shimmerList(bool isDark) {
 String _translateSalaryTypeLabel(BuildContext context, String label) {
   final l10n = AppLocalizations.of(context)!;
   switch (label.toLowerCase()) {
-    case 'monthly': return l10n.monthly;
-    case 'hourly': return l10n.hourly;
+    case 'monthly':
+      return l10n.monthly;
+    case 'hourly':
+      return l10n.hourly;
     case 'per task':
-    case 'per_task': return l10n.perTask;
+    case 'per_task':
+      return l10n.perTask;
     default:
       return label;
-    }
   }
+}
 
-  String _translateSkill(BuildContext context, String skill) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (skill.toLowerCase()) {
-      case 'watering':
-        return l10n.watering;
-      case 'harvesting':
-        return l10n.harvesting;
-      case 'planting':
-        return l10n.planting;
-      case 'animal care':
-      case 'animalcare':
-        return l10n.animalCare;
-      case 'machine operation':
-      case 'machineoperation':
-        return l10n.machineOperation;
-      case 'soil management':
-      case 'soilmanagement':
-        return l10n.soilManagement;
-      case 'structure installation':
-      case 'structureinstallation':
-        return l10n.structureInstallation;
-      case 'quality inspection':
-      case 'qualityinspection':
-        return l10n.qualityInspection;
-      case 'crop monitoring':
-      case 'cropmonitoring':
-        return l10n.cropMonitoring;
-      case 'pest control':
-      case 'pestcontrol':
-        return l10n.pestControl;
-      default:
-        return skill;
-    }
+String _translateSkill(BuildContext context, String skill) {
+  final l10n = AppLocalizations.of(context)!;
+  switch (skill.toLowerCase()) {
+    case 'watering':
+      return l10n.watering;
+    case 'harvesting':
+      return l10n.harvesting;
+    case 'planting':
+      return l10n.planting;
+    case 'animal care':
+    case 'animalcare':
+      return l10n.animalCare;
+    case 'machine operation':
+    case 'machineoperation':
+      return l10n.machineOperation;
+    case 'soil management':
+    case 'soilmanagement':
+      return l10n.soilManagement;
+    case 'structure installation':
+    case 'structureinstallation':
+      return l10n.structureInstallation;
+    case 'quality inspection':
+    case 'qualityinspection':
+      return l10n.qualityInspection;
+    case 'crop monitoring':
+    case 'cropmonitoring':
+      return l10n.cropMonitoring;
+    case 'pest control':
+    case 'pestcontrol':
+      return l10n.pestControl;
+    default:
+      return skill;
   }
+}
 
-  String _translateContractStatus(BuildContext context, String status) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (status.toLowerCase()) {
-      case 'active':
-        return l10n.activeUpper;
-      case 'pending':
-      case 'hiring_pending':
-        return l10n.pendingUpper;
-      case 'negotiating':
-      case 'negotiation_pending':
-        return l10n.negotiatingUpper;
-      case 'counter-offer':
-      case 'negotiation_countered':
-        return l10n.counterOfferUpper;
-      case 'declined':
-      case 'hiring_declined':
-        return l10n.declinedUpper;
-      case 'awaiting payment':
-      case 'payment_pending':
-        return l10n.pendingUpper;
-      case 'suspended':
-        return l10n.suspendedUpper;
-      case 'expired':
-        return l10n.expiredUpper;
-      default:
-        return status;
-    }
+String _translateContractStatus(BuildContext context, String status) {
+  final l10n = AppLocalizations.of(context)!;
+  switch (status.toLowerCase()) {
+    case 'active':
+      return l10n.activeUpper;
+    case 'pending':
+    case 'hiring_pending':
+      return l10n.pendingUpper;
+    case 'negotiating':
+    case 'negotiation_pending':
+      return l10n.negotiatingUpper;
+    case 'counter-offer':
+    case 'negotiation_countered':
+      return l10n.counterOfferUpper;
+    case 'declined':
+    case 'hiring_declined':
+      return l10n.declinedUpper;
+    case 'awaiting payment':
+    case 'payment_pending':
+      return l10n.pendingUpper;
+    case 'suspended':
+      return l10n.suspendedUpper;
+    case 'expired':
+      return l10n.expiredUpper;
+    default:
+      return status;
   }
+}
 
-  String _translateProofStatus(BuildContext context, String status) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (status.toLowerCase()) {
-      case 'pending':
-        return l10n.pendingUpper;
-      case 'verified':
-      case 'approved':
-        return l10n.verifiedUpper;
-      case 'rejected':
-        return l10n.rejectedUpper;
-      case 'expired':
-        return l10n.expiredUpper;
-      default:
-        return status;
-    }
+String _translateProofStatus(BuildContext context, String status) {
+  final l10n = AppLocalizations.of(context)!;
+  switch (status.toLowerCase()) {
+    case 'pending':
+      return l10n.pendingUpper;
+    case 'verified':
+    case 'approved':
+      return l10n.verifiedUpper;
+    case 'rejected':
+      return l10n.rejectedUpper;
+    case 'expired':
+      return l10n.expiredUpper;
+    default:
+      return status;
   }
-
+}

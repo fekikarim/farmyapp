@@ -30,7 +30,9 @@ class PlacedItem {
       positionX: json['position_x'] ?? 0,
       positionY: json['position_y'] ?? 0,
       isActive: json['is_active'] ?? false,
-      placedAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
+      placedAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : DateTime.now(),
       details: json['details'],
     );
   }

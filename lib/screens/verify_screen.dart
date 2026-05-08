@@ -49,7 +49,9 @@ class _VerifyScreenState extends State<VerifyScreen> {
     } else if (mounted) {
       final user = authProvider.user;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => WelcomeScreen(role: user?.role ?? 'customer')),
+        MaterialPageRoute(
+          builder: (context) => WelcomeScreen(role: user?.role ?? 'customer'),
+        ),
       );
     }
   }
@@ -68,15 +70,28 @@ class _VerifyScreenState extends State<VerifyScreen> {
         child: Stack(
           children: [
             // Background Decorative Blobs
-            Positioned(top: -100, right: -50, child: _buildBlob(theme, 300, 0.05)),
-            Positioned(bottom: -80, left: -40, child: _buildBlob(theme, 200, 0.03)),
+            Positioned(
+              top: -100,
+              right: -50,
+              child: _buildBlob(theme, 300, 0.05),
+            ),
+            Positioned(
+              bottom: -80,
+              left: -40,
+              child: _buildBlob(theme, 200, 0.03),
+            ),
 
             SafeArea(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: Container(
                   width: double.infinity,
-                  constraints: BoxConstraints(minHeight: size.height - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom),
+                  constraints: BoxConstraints(
+                    minHeight:
+                        size.height -
+                        MediaQuery.of(context).padding.top -
+                        MediaQuery.of(context).padding.bottom,
+                  ),
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Center(
                     child: AnimationLimiter(
@@ -90,15 +105,28 @@ class _VerifyScreenState extends State<VerifyScreen> {
                           ),
                           children: [
                             const SizedBox(height: 40),
-                            Hero(tag: 'app_logo', child: Image.asset('assets/logo-no-bg.png', height: 100)),
+                            Hero(
+                              tag: 'app_logo',
+                              child: Image.asset(
+                                'assets/logo-no-bg.png',
+                                height: 100,
+                              ),
+                            ),
                             const SizedBox(height: 40),
                             Text(
                               AppLocalizations.of(context)!.verifyEmailTitle,
-                              style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w900, letterSpacing: -1),
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -1,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 16),
-                            _buildEmailSubtitle(context, user?.email ?? "your email", theme),
+                            _buildEmailSubtitle(
+                              context,
+                              user?.email ?? "your email",
+                              theme,
+                            ),
                             const SizedBox(height: 48),
 
                             // Hidden Input + Visible OTP Display
@@ -116,7 +144,10 @@ class _VerifyScreenState extends State<VerifyScreen> {
                                     showCursor: false,
                                     cursorColor: Colors.transparent,
                                     autofocus: true,
-                                    style: const TextStyle(color: Colors.transparent, fontSize: 1),
+                                    style: const TextStyle(
+                                      color: Colors.transparent,
+                                      fontSize: 1,
+                                    ),
                                     decoration: const InputDecoration(
                                       counterText: "",
                                       border: InputBorder.none,
@@ -125,13 +156,18 @@ class _VerifyScreenState extends State<VerifyScreen> {
                                       errorBorder: InputBorder.none,
                                       disabledBorder: InputBorder.none,
                                     ),
-                                    onChanged: (val) => _onOtpChanged(val, authProvider),
+                                    onChanged: (val) =>
+                                        _onOtpChanged(val, authProvider),
                                   ),
                                 ),
                                 IgnorePointer(
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: List.generate(_otpLength, (index) => _buildOTPBox(context, index)),
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: List.generate(
+                                      _otpLength,
+                                      (index) => _buildOTPBox(context, index),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -175,31 +211,73 @@ class _VerifyScreenState extends State<VerifyScreen> {
       width: 48,
       height: 60,
       decoration: BoxDecoration(
-        color: hasChar || isFocused ? theme.colorScheme.primary.withValues(alpha: 0.05) : theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        color: hasChar || isFocused
+            ? theme.colorScheme.primary.withValues(alpha: 0.05)
+            : theme.colorScheme.onSurface.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
-          color: isFocused ? theme.colorScheme.primary : (hasChar ? theme.colorScheme.primary.withValues(alpha: 0.3) : Colors.transparent),
+          color: isFocused
+              ? theme.colorScheme.primary
+              : (hasChar
+                    ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                    : Colors.transparent),
           width: 2,
         ),
-        boxShadow: isFocused ? [BoxShadow(color: theme.colorScheme.primary.withValues(alpha: 0.2), blurRadius: 10, offset: const Offset(0, 4))] : [],
+        boxShadow: isFocused
+            ? [
+                BoxShadow(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : [],
       ),
       child: Center(
-        child: Text(char, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900, color: theme.colorScheme.onSurface)),
+        child: Text(
+          char,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w900,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildBlob(ThemeData theme, double size, double alpha) {
-    return Container(width: size, height: size, decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: alpha), shape: BoxShape.circle));
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary.withValues(alpha: alpha),
+        shape: BoxShape.circle,
+      ),
+    );
   }
 
-  Widget _buildEmailSubtitle(BuildContext context, String email, ThemeData theme) {
+  Widget _buildEmailSubtitle(
+    BuildContext context,
+    String email,
+    ThemeData theme,
+  ) {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
         text: "We sent a 6-digit verification code to\n",
-        style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface.withValues(alpha: 0.5), height: 1.5),
-        children: [TextSpan(text: email, style: TextStyle(color: theme.colorScheme.onSurface, fontWeight: FontWeight.bold))],
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+          height: 1.5,
+        ),
+        children: [
+          TextSpan(
+            text: email,
+            style: TextStyle(
+              color: theme.colorScheme.onSurface,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -214,12 +292,27 @@ class _VerifyScreenState extends State<VerifyScreen> {
         style: ElevatedButton.styleFrom(
           backgroundColor: theme.colorScheme.primary,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           elevation: 0,
         ),
         child: authProvider.isLoading
-            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-            : Text(AppLocalizations.of(context)!.verifyAccount.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : Text(
+                AppLocalizations.of(context)!.verifyAccount.toUpperCase(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                ),
+              ),
       ),
     );
   }
@@ -228,23 +321,40 @@ class _VerifyScreenState extends State<VerifyScreen> {
     final theme = Theme.of(context);
     return Center(
       child: InkWell(
-        onTap: authProvider.isLoading ? null : () async {
-          final success = await authProvider.resendVerificationCode();
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(success ? AppLocalizations.of(context)!.newVerificationCodeSent : AppLocalizations.of(context)!.failedToSendCode),
-                backgroundColor: success ? Colors.green : Colors.red,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            );
-          }
-        },
+        onTap: authProvider.isLoading
+            ? null
+            : () async {
+                final success = await authProvider.resendVerificationCode();
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        success
+                            ? AppLocalizations.of(
+                                context,
+                              )!.newVerificationCodeSent
+                            : AppLocalizations.of(context)!.failedToSendCode,
+                      ),
+                      backgroundColor: success ? Colors.green : Colors.red,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+                }
+              },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Text(AppLocalizations.of(context)!.resendNewCode, style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 14)),
+          child: Text(
+            AppLocalizations.of(context)!.resendNewCode,
+            style: TextStyle(
+              color: theme.colorScheme.primary,
+              fontWeight: FontWeight.w900,
+              fontSize: 14,
+            ),
+          ),
         ),
       ),
     );
@@ -254,8 +364,18 @@ class _VerifyScreenState extends State<VerifyScreen> {
     return Center(
       child: TextButton(
         onPressed: () => Navigator.of(context).pushReplacementNamed('/login'),
-        style: TextButton.styleFrom(foregroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.4), splashFactory: NoSplash.splashFactory),
-        child: Text(AppLocalizations.of(context)!.backToLogin.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 0.5, fontSize: 12)),
+        style: TextButton.styleFrom(
+          foregroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+          splashFactory: NoSplash.splashFactory,
+        ),
+        child: Text(
+          AppLocalizations.of(context)!.backToLogin.toUpperCase(),
+          style: const TextStyle(
+            fontWeight: FontWeight.w900,
+            letterSpacing: 0.5,
+            fontSize: 12,
+          ),
+        ),
       ),
     );
   }
@@ -264,12 +384,30 @@ class _VerifyScreenState extends State<VerifyScreen> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: theme.colorScheme.error.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20), border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.2))),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.error.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: theme.colorScheme.error.withValues(alpha: 0.2),
+        ),
+      ),
       child: Row(
         children: [
-          Icon(Icons.error_outline_rounded, color: theme.colorScheme.error, size: 20),
+          Icon(
+            Icons.error_outline_rounded,
+            color: theme.colorScheme.error,
+            size: 20,
+          ),
           const SizedBox(width: 12),
-          Expanded(child: Text(message, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error, fontWeight: FontWeight.bold))),
+          Expanded(
+            child: Text(
+              message,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.error,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         ],
       ),
     );

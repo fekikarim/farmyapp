@@ -76,8 +76,10 @@ class _PostJobModalState extends State<PostJobModal> {
         status: JobRequestStatus.open,
       );
 
-      final success = await context.read<JobRequestProvider>().createJobRequest(job);
-      
+      final success = await context.read<JobRequestProvider>().createJobRequest(
+        job,
+      );
+
       if (!mounted) return;
 
       if (success) {
@@ -182,7 +184,7 @@ class _PostJobModalState extends State<PostJobModal> {
                 ],
               ),
               const SizedBox(height: 24),
-              
+
               _buildSectionTitle(AppLocalizations.of(context)!.selectLand),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
@@ -195,10 +197,15 @@ class _PostJobModalState extends State<PostJobModal> {
                 items: landProvider.myLands.map((land) {
                   return DropdownMenuItem(
                     value: land.id,
-                    child: Text(land.name, style: const TextStyle(fontSize: 15)),
+                    child: Text(
+                      land.name,
+                      style: const TextStyle(fontSize: 15),
+                    ),
                   );
                 }).toList(),
-                validator: (val) => val == null ? AppLocalizations.of(context)!.selectLandError : null,
+                validator: (val) => val == null
+                    ? AppLocalizations.of(context)!.selectLandError
+                    : null,
                 onChanged: (val) => setState(() => _selectedLandId = val),
               ),
               const SizedBox(height: 20),
@@ -230,8 +237,10 @@ class _PostJobModalState extends State<PostJobModal> {
                 ),
                 style: const TextStyle(fontSize: 15),
                 validator: (val) {
-                  if (val == null || val.isEmpty) return 'Please enter a description';
-                  if (val.length < 10) return 'Description must be at least 10 characters';
+                  if (val == null || val.isEmpty)
+                    return 'Please enter a description';
+                  if (val.length < 10)
+                    return 'Description must be at least 10 characters';
                   return null;
                 },
               ),
@@ -243,7 +252,9 @@ class _PostJobModalState extends State<PostJobModal> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSectionTitle(AppLocalizations.of(context)!.salaryTND),
+                        _buildSectionTitle(
+                          AppLocalizations.of(context)!.salaryTND,
+                        ),
                         const SizedBox(height: 8),
                         TextFormField(
                           controller: _salaryController,
@@ -256,7 +267,8 @@ class _PostJobModalState extends State<PostJobModal> {
                           validator: (val) {
                             if (val != null && val.isNotEmpty) {
                               final price = double.tryParse(val);
-                              if (price == null || price <= 0) return 'Invalid amount';
+                              if (price == null || price <= 0)
+                                return 'Invalid amount';
                             }
                             return null;
                           },
@@ -269,7 +281,9 @@ class _PostJobModalState extends State<PostJobModal> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSectionTitle(AppLocalizations.of(context)!.duration),
+                        _buildSectionTitle(
+                          AppLocalizations.of(context)!.duration,
+                        ),
                         const SizedBox(height: 8),
                         TextFormField(
                           controller: _durationController,
@@ -330,14 +344,26 @@ class _PostJobModalState extends State<PostJobModal> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: _skills.map((skill) => Chip(
-                  label: Text(skill, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
-                  onDeleted: () => setState(() => _skills.remove(skill)),
-                  backgroundColor: Colors.green.withOpacity(0.1),
-                  deleteIconColor: Colors.redAccent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  side: BorderSide(color: Colors.green.withOpacity(0.2)),
-                )).toList(),
+                children: _skills
+                    .map(
+                      (skill) => Chip(
+                        label: Text(
+                          skill,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        onDeleted: () => setState(() => _skills.remove(skill)),
+                        backgroundColor: Colors.green.withOpacity(0.1),
+                        deleteIconColor: Colors.redAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        side: BorderSide(color: Colors.green.withOpacity(0.2)),
+                      ),
+                    )
+                    .toList(),
               ),
               const SizedBox(height: 40),
 
@@ -351,7 +377,9 @@ class _PostJobModalState extends State<PostJobModal> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
                       elevation: 0,
                     ),
                     child: _isSubmitting
@@ -365,7 +393,10 @@ class _PostJobModalState extends State<PostJobModal> {
                           )
                         : Text(
                             AppLocalizations.of(context)!.postJob,
-                            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                   ),
                 ),
@@ -389,11 +420,16 @@ class _PostJobModalState extends State<PostJobModal> {
     );
   }
 
-  InputDecoration _buildInputDecoration({required String hint, IconData? prefixIcon}) {
+  InputDecoration _buildInputDecoration({
+    required String hint,
+    IconData? prefixIcon,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return InputDecoration(
       hintText: hint,
-      prefixIcon: prefixIcon != null ? Icon(prefixIcon, size: 20, color: Colors.green) : null,
+      prefixIcon: prefixIcon != null
+          ? Icon(prefixIcon, size: 20, color: Colors.green)
+          : null,
       filled: true,
       fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
       border: OutlineInputBorder(

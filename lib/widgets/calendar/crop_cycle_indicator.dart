@@ -42,9 +42,7 @@ class CropCycleIndicator extends StatelessWidget {
       decoration: BoxDecoration(
         color: isOutlined ? null : color,
         shape: BoxShape.circle,
-        border: isOutlined
-            ? Border.all(color: color, width: 2)
-            : null,
+        border: isOutlined ? Border.all(color: color, width: 2) : null,
         boxShadow: !isOutlined
             ? [
                 BoxShadow(
@@ -58,10 +56,7 @@ class CropCycleIndicator extends StatelessWidget {
     );
 
     if (showTooltip) {
-      return Tooltip(
-        message: tooltip,
-        child: indicator,
-      );
+      return Tooltip(message: tooltip, child: indicator);
     }
 
     return indicator;
@@ -85,7 +80,7 @@ class CropCycleBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = cycle.getStatusColor(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       height: height,
       decoration: BoxDecoration(
@@ -106,7 +101,7 @@ class CropCycleBar extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             // Label
             if (showLabel)
               Center(
@@ -114,10 +109,12 @@ class CropCycleBar extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      cycle.assetCategory == 'tree' ? Icons.forest : Icons.local_florist,
+                      cycle.assetCategory == 'tree'
+                          ? Icons.forest
+                          : Icons.local_florist,
                       size: 14,
-                      color: cycle.progressPercentage > 0.5 
-                          ? Colors.white 
+                      color: cycle.progressPercentage > 0.5
+                          ? Colors.white
                           : color,
                     ),
                     const SizedBox(width: 4),
@@ -126,8 +123,8 @@ class CropCycleBar extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: cycle.progressPercentage > 0.5 
-                            ? Colors.white 
+                        color: cycle.progressPercentage > 0.5
+                            ? Colors.white
                             : color,
                       ),
                     ),
@@ -157,7 +154,7 @@ class CropCycleTimeline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final totalDays = endDate.difference(startDate).inDays;
-    
+
     return Container(
       height: 60,
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -170,24 +167,22 @@ class CropCycleTimeline extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border(
-                      right: BorderSide(
-                        color: Colors.black.withOpacity(0.05),
-                      ),
+                      right: BorderSide(color: Colors.black.withOpacity(0.05)),
                     ),
                   ),
                 ),
               );
             }),
           ),
-          
+
           // Cycle bars
           ...cycles.map((cycle) {
             final daysFromStart = cycle.placedAt.difference(startDate).inDays;
             final growthDays = cycle.growthDays ?? cycle.cycleDays;
-            
+
             final left = (daysFromStart / totalDays).clamp(0.0, 1.0);
             final width = (growthDays / totalDays).clamp(0.0, 1.0 - left);
-            
+
             return Positioned(
               left: left * MediaQuery.of(context).size.width,
               top: cycles.indexOf(cycle) * 20.0,
@@ -241,11 +236,7 @@ class DayCropIndicators extends StatelessWidget {
         runSpacing: 2,
         alignment: WrapAlignment.center,
         children: items.take(8).map((item) {
-          return CropCycleIndicator(
-            item: item,
-            size: 8,
-            showTooltip: true,
-          );
+          return CropCycleIndicator(item: item, size: 8, showTooltip: true);
         }).toList(),
       ),
     );

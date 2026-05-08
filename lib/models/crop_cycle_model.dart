@@ -9,23 +9,23 @@ class CropCycle {
   final String assetCategory;
   final String variantName;
   final String? iconUrl;
-  
+
   // Planting info
   final DateTime placedAt;
   final int? growthDays; // From VegetationVariant attributes.growth_days
   final int cycleDays; // From asset_productions.cycle_days
   final bool isPerennial;
-  
+
   // Production info
   final String? productName;
   final double? ratePerCycle;
   final bool onHarvestOnly;
-  
+
   // Current status
   final CropCycleStatus status;
   final DateTime? lastHarvestedAt;
   final int harvestCount;
-  
+
   // Computed
   final List<DateTime>? upcomingHarvests;
 
@@ -50,40 +50,47 @@ class CropCycle {
   });
 
   factory CropCycle.fromJson(Map<String, dynamic> json) {
-    final placedAt = json['placed_at'] != null 
-        ? DateTime.parse(json['placed_at']) 
+    final placedAt = json['placed_at'] != null
+        ? DateTime.parse(json['placed_at'])
         : DateTime.now();
-    
-    final growthDays = json['growth_days'] ?? json['attributes']?['growth_days'];
+
+    final growthDays =
+        json['growth_days'] ?? json['attributes']?['growth_days'];
     final cycleDays = json['cycle_days'] ?? 30;
-    final isPerennial = json['is_perennial'] ?? json['attributes']?['is_perennial'] ?? false;
-    
+    final isPerennial =
+        json['is_perennial'] ?? json['attributes']?['is_perennial'] ?? false;
+
     return CropCycle(
       id: json['id']?.toString() ?? '',
       landId: json['land_id']?.toString() ?? '',
       variantId: json['variant_id']?.toString() ?? '',
       assetCategory: json['asset_category']?.toString() ?? 'vegetation',
-      variantName: json['variant_name']?.toString() ?? 
-                  json['variant']?['variant_code']?.toString() ?? 
-                  'Unknown Crop',
+      variantName:
+          json['variant_name']?.toString() ??
+          json['variant']?['variant_code']?.toString() ??
+          'Unknown Crop',
       iconUrl: json['icon_url'] ?? json['variant']?['image_url'],
       placedAt: placedAt,
-      growthDays: growthDays != null ? int.tryParse(growthDays.toString()) : null,
+      growthDays: growthDays != null
+          ? int.tryParse(growthDays.toString())
+          : null,
       cycleDays: int.tryParse(cycleDays.toString()) ?? 30,
-      isPerennial: isPerennial is bool ? isPerennial : (isPerennial.toString() == 'true'),
+      isPerennial: isPerennial is bool
+          ? isPerennial
+          : (isPerennial.toString() == 'true'),
       productName: json['product_name']?.toString(),
-      ratePerCycle: json['rate_per_cycle'] != null 
-          ? double.tryParse(json['rate_per_cycle'].toString()) 
+      ratePerCycle: json['rate_per_cycle'] != null
+          ? double.tryParse(json['rate_per_cycle'].toString())
           : null,
       onHarvestOnly: json['on_harvest_only'] ?? true,
       status: _parseStatus(json['status']?.toString()),
-      lastHarvestedAt: json['last_harvested_at'] != null 
-          ? DateTime.tryParse(json['last_harvested_at']) 
+      lastHarvestedAt: json['last_harvested_at'] != null
+          ? DateTime.tryParse(json['last_harvested_at'])
           : null,
       harvestCount: json['harvest_count'] ?? 0,
       upcomingHarvests: _calculateUpcomingHarvests(
-        placedAt, 
-        growthDays != null ? int.tryParse(growthDays.toString()) : null, 
+        placedAt,
+        growthDays != null ? int.tryParse(growthDays.toString()) : null,
         int.tryParse(cycleDays.toString()) ?? 30,
         isPerennial is bool ? isPerennial : (isPerennial.toString() == 'true'),
       ),
@@ -105,21 +112,21 @@ class CropCycle {
   }
 
   static List<DateTime>? _calculateUpcomingHarvests(
-    DateTime placedAt, 
-    int? growthDays, 
+    DateTime placedAt,
+    int? growthDays,
     int cycleDays,
     bool isPerennial,
   ) {
     final now = DateTime.now();
     final List<DateTime> harvests = [];
-    
+
     if (growthDays == null) {
       // Use cycleDays as fallback
       final firstHarvest = placedAt.add(Duration(days: cycleDays));
       if (firstHarvest.isAfter(now)) {
         harvests.add(firstHarvest);
       }
-      
+
       // For perennials, add future cycles
       if (isPerennial && harvests.isNotEmpty) {
         for (int i = 1; i < 4; i++) {
@@ -130,7 +137,7 @@ class CropCycle {
       // Use growthDays for first harvest
       final firstHarvest = placedAt.add(Duration(days: growthDays));
       harvests.add(firstHarvest);
-      
+
       // For perennials, subsequent harvests use cycleDays
       if (isPerennial) {
         for (int i = 1; i < 4; i++) {
@@ -138,7 +145,7 @@ class CropCycle {
         }
       }
     }
-    
+
     return harvests.isEmpty ? null : harvests;
   }
 
@@ -166,10 +173,10 @@ class CropCycle {
     if (upcomingHarvests == null || upcomingHarvests!.isEmpty) return 0.0;
     final next = nextHarvest ?? upcomingHarvests!.first;
     final lastHarvest = lastHarvestedAt ?? placedAt;
-    
+
     final totalDuration = next.difference(lastHarvest).inDays;
     final elapsed = DateTime.now().difference(lastHarvest).inDays;
-    
+
     if (totalDuration <= 0) return 1.0;
     return (elapsed / totalDuration).clamp(0.0, 1.0);
   }
@@ -185,40 +192,45 @@ class CropCycle {
   bool spansDate(DateTime date) {
     // Check if date is between placed date and any harvest date
     final startOfDay = DateTime(date.year, date.month, date.day);
-    
+
     // Must be after planting
     final plantingDay = DateTime(placedAt.year, placedAt.month, placedAt.day);
     if (startOfDay.isBefore(plantingDay)) return false;
-    
+
     // Check if it falls on any harvest period
     if (upcomingHarvests != null) {
       for (final harvest in upcomingHarvests!) {
         final harvestDay = DateTime(harvest.year, harvest.month, harvest.day);
         if (_isSameDay(startOfDay, harvestDay)) return true;
-        
+
         // For perennials, check if date falls between harvests
         if (isPerennial && startOfDay.isBefore(harvestDay)) {
           // Check if within a cycle period
           final daysSincePlanting = startOfDay.difference(plantingDay).inDays;
           final cycleNumber = daysSincePlanting ~/ cycleDays;
-          final expectedHarvest = plantingDay.add(Duration(days: cycleDays * (cycleNumber + 1)));
-          
-          if (_isSameDay(startOfDay, expectedHarvest) || 
-              (startOfDay.isAfter(plantingDay.add(Duration(days: cycleDays * cycleNumber))) &&
-               startOfDay.isBefore(expectedHarvest))) {
+          final expectedHarvest = plantingDay.add(
+            Duration(days: cycleDays * (cycleNumber + 1)),
+          );
+
+          if (_isSameDay(startOfDay, expectedHarvest) ||
+              (startOfDay.isAfter(
+                    plantingDay.add(Duration(days: cycleDays * cycleNumber)),
+                  ) &&
+                  startOfDay.isBefore(expectedHarvest))) {
             return true;
           }
         }
       }
     }
-    
+
     // For single harvest crops, check if before harvest
     if (!isPerennial && upcomingHarvests?.isNotEmpty == true) {
       final harvest = upcomingHarvests!.first;
       final harvestDay = DateTime(harvest.year, harvest.month, harvest.day);
-      return startOfDay.isBefore(harvestDay) || _isSameDay(startOfDay, harvestDay);
+      return startOfDay.isBefore(harvestDay) ||
+          _isSameDay(startOfDay, harvestDay);
     }
-    
+
     return false;
   }
 
@@ -268,11 +280,7 @@ class CropCycle {
   }
 }
 
-enum CropCycleStatus {
-  growing,
-  ready,
-  completed,
-}
+enum CropCycleStatus { growing, ready, completed }
 
 extension CropCycleStatusExtension on CropCycleStatus {
   String getLabel() {

@@ -9,14 +9,14 @@ class CropPlan {
   final String variantName;
   final String? iconUrl;
   final String assetCategory;
-  
+
   // Planning dates
   final DateTime plannedPlantingDate;
   final DateTime? expectedHarvestDate;
   final int? cycleDays;
   final int? growthDays;
   final bool isPerennial;
-  
+
   // Status and notes
   final CropPlanStatus status;
   final String? notes;
@@ -42,38 +42,40 @@ class CropPlan {
   });
 
   factory CropPlan.fromJson(Map<String, dynamic> json) {
-    final plannedDate = json['planned_planting_date'] != null 
-        ? DateTime.parse(json['planned_planting_date']) 
+    final plannedDate = json['planned_planting_date'] != null
+        ? DateTime.parse(json['planned_planting_date'])
         : DateTime.now();
-    
+
     return CropPlan(
       id: json['id']?.toString(),
       landId: json['land_id']?.toString() ?? '',
       variantId: json['variant_id']?.toString() ?? '',
-      variantName: json['variant_name']?.toString() ?? 
-                   json['variant']?['variant_code']?.toString() ?? 
-                   'Unknown Crop',
+      variantName:
+          json['variant_name']?.toString() ??
+          json['variant']?['variant_code']?.toString() ??
+          'Unknown Crop',
       iconUrl: json['icon_url'] ?? json['variant']?['image_url'],
       assetCategory: json['asset_category']?.toString() ?? 'vegetation',
       plannedPlantingDate: plannedDate,
-      expectedHarvestDate: json['expected_harvest_date'] != null 
-          ? DateTime.tryParse(json['expected_harvest_date']) 
+      expectedHarvestDate: json['expected_harvest_date'] != null
+          ? DateTime.tryParse(json['expected_harvest_date'])
           : null,
-      cycleDays: json['cycle_days'] != null 
-          ? int.tryParse(json['cycle_days'].toString()) 
+      cycleDays: json['cycle_days'] != null
+          ? int.tryParse(json['cycle_days'].toString())
           : null,
-      growthDays: json['growth_days'] != null 
-          ? int.tryParse(json['growth_days'].toString()) 
+      growthDays: json['growth_days'] != null
+          ? int.tryParse(json['growth_days'].toString())
           : null,
-      isPerennial: json['is_perennial'] == true || 
-                   json['attributes']?['is_perennial'] == true,
+      isPerennial:
+          json['is_perennial'] == true ||
+          json['attributes']?['is_perennial'] == true,
       status: _parseStatus(json['status']?.toString()),
       notes: json['notes']?.toString(),
-      createdAt: json['createdAt'] != null 
-          ? DateTime.tryParse(json['createdAt']) 
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'])
           : null,
-      completedAt: json['completed_at'] != null 
-          ? DateTime.tryParse(json['completed_at']) 
+      completedAt: json['completed_at'] != null
+          ? DateTime.tryParse(json['completed_at'])
           : null,
     );
   }
@@ -96,8 +98,8 @@ class CropPlan {
 
   /// Compute expected harvest date from planting date and growth/cycle days
   static DateTime? computeHarvestDate(
-    DateTime plantingDate, 
-    int? growthDays, 
+    DateTime plantingDate,
+    int? growthDays,
     int? cycleDays,
   ) {
     final days = growthDays ?? cycleDays ?? 30;
@@ -107,13 +109,13 @@ class CropPlan {
   /// Create a copy with computed harvest date
   CropPlan withComputedHarvestDate() {
     if (expectedHarvestDate != null) return this;
-    
+
     final computed = computeHarvestDate(
-      plannedPlantingDate, 
-      growthDays, 
+      plannedPlantingDate,
+      growthDays,
       cycleDays,
     );
-    
+
     return CropPlan(
       id: id,
       landId: landId,
@@ -139,8 +141,8 @@ class CropPlan {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final plantingDay = DateTime(
-      plannedPlantingDate.year, 
-      plannedPlantingDate.month, 
+      plannedPlantingDate.year,
+      plannedPlantingDate.month,
       plannedPlantingDate.day,
     );
     return plantingDay.isBefore(today);
@@ -149,9 +151,9 @@ class CropPlan {
   /// Check if plan is for today
   bool get isToday {
     final now = DateTime.now();
-    return plannedPlantingDate.year == now.year && 
-           plannedPlantingDate.month == now.month && 
-           plannedPlantingDate.day == now.day;
+    return plannedPlantingDate.year == now.year &&
+        plannedPlantingDate.month == now.month &&
+        plannedPlantingDate.day == now.day;
   }
 
   /// Days until planting (negative if overdue)
@@ -159,8 +161,8 @@ class CropPlan {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final plantingDay = DateTime(
-      plannedPlantingDate.year, 
-      plannedPlantingDate.month, 
+      plannedPlantingDate.year,
+      plannedPlantingDate.month,
       plannedPlantingDate.day,
     );
     return plantingDay.difference(today).inDays;
@@ -170,16 +172,16 @@ class CropPlan {
   bool spansDate(DateTime date) {
     final startOfDay = DateTime(date.year, date.month, date.day);
     final plantingDay = DateTime(
-      plannedPlantingDate.year, 
-      plannedPlantingDate.month, 
+      plannedPlantingDate.year,
+      plannedPlantingDate.month,
       plannedPlantingDate.day,
     );
-    
+
     // For planned status, only show on planting date
     if (status == CropPlanStatus.planned) {
       return _isSameDay(startOfDay, plantingDay);
     }
-    
+
     // For active status, show from planting to harvest
     if (status == CropPlanStatus.active && expectedHarvestDate != null) {
       final harvestDay = DateTime(
@@ -187,10 +189,12 @@ class CropPlan {
         expectedHarvestDate!.month,
         expectedHarvestDate!.day,
       );
-      return (startOfDay.isAfter(plantingDay) || _isSameDay(startOfDay, plantingDay)) &&
-             (startOfDay.isBefore(harvestDay) || _isSameDay(startOfDay, harvestDay));
+      return (startOfDay.isAfter(plantingDay) ||
+              _isSameDay(startOfDay, plantingDay)) &&
+          (startOfDay.isBefore(harvestDay) ||
+              _isSameDay(startOfDay, harvestDay));
     }
-    
+
     return false;
   }
 
@@ -208,7 +212,7 @@ class CropPlan {
       if (iconUrl != null) 'icon_url': iconUrl,
       'asset_category': assetCategory,
       'planned_planting_date': plannedPlantingDate.toIso8601String(),
-      if (expectedHarvestDate != null) 
+      if (expectedHarvestDate != null)
         'expected_harvest_date': expectedHarvestDate!.toIso8601String(),
       if (cycleDays != null) 'cycle_days': cycleDays,
       if (growthDays != null) 'growth_days': growthDays,
@@ -270,12 +274,7 @@ class CropPlan {
   }
 }
 
-enum CropPlanStatus {
-  planned,
-  active,
-  completed,
-  cancelled,
-}
+enum CropPlanStatus { planned, active, completed, cancelled }
 
 extension CropPlanStatusExtension on CropPlanStatus {
   String getLabel() {

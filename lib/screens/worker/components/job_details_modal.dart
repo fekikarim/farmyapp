@@ -13,7 +13,7 @@ class JobDetailsModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.9,
@@ -55,7 +55,10 @@ class JobDetailsModal extends StatelessWidget {
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.green.withOpacity(0.2), width: 2),
+                          border: Border.all(
+                            color: Colors.green.withOpacity(0.2),
+                            width: 2,
+                          ),
                         ),
                         child: FarmyAvatar(
                           imageUrl: job.land?.ownerProfilePicture,
@@ -79,7 +82,11 @@ class JobDetailsModal extends StatelessWidget {
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                Icon(Icons.location_on_outlined, size: 14, color: Colors.grey.shade500),
+                                Icon(
+                                  Icons.location_on_outlined,
+                                  size: 14,
+                                  color: Colors.grey.shade500,
+                                ),
                                 const SizedBox(width: 4),
                                 Text(
                                   job.land?.name ?? 'Unknown Land',
@@ -100,17 +107,22 @@ class JobDetailsModal extends StatelessWidget {
 
                   // Job Stats Grid
                   _buildStatsGrid(context, isDark),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Job Description Section
-                  _buildSectionTitle(context, AppLocalizations.of(context)!.description),
+                  _buildSectionTitle(
+                    context,
+                    AppLocalizations.of(context)!.description,
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     job.description,
                     style: TextStyle(
                       fontSize: 16,
-                      color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
+                      color: isDark
+                          ? Colors.grey.shade300
+                          : Colors.grey.shade700,
                       height: 1.6,
                       letterSpacing: 0.2,
                     ),
@@ -126,50 +138,67 @@ class JobDetailsModal extends StatelessWidget {
                       job.land!.description!,
                       style: TextStyle(
                         fontSize: 16,
-                        color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                        color: isDark
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade600,
                         height: 1.6,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
                     const SizedBox(height: 32),
                   ],
-                  
+
                   // Required Skills
-                  if (job.requiredSkills != null && job.requiredSkills!.isNotEmpty) ...[
-                    _buildSectionTitle(context, AppLocalizations.of(context)!.requiredSkills),
+                  if (job.requiredSkills != null &&
+                      job.requiredSkills!.isNotEmpty) ...[
+                    _buildSectionTitle(
+                      context,
+                      AppLocalizations.of(context)!.requiredSkills,
+                    ),
                     const SizedBox(height: 12),
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
-                      children: job.requiredSkills!.map((skill) => Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.08),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.green.withOpacity(0.15)),
-                        ),
-                        child: Text(
-                          skill,
-                          style: const TextStyle(
-                            color: Colors.green,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      )).toList(),
+                      children: job.requiredSkills!
+                          .map(
+                            (skill) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.green.withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.green.withOpacity(0.15),
+                                ),
+                              ),
+                              child: Text(
+                                skill,
+                                style: const TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
                     ),
                     const SizedBox(height: 32),
                   ],
 
                   // Farmer Profile Preview Card
                   _buildFarmerPreview(context, isDark),
-                  
+
                   const SizedBox(height: 40),
-                  
+
                   // Action Button
                   Consumer<JobApplicationProvider>(
                     builder: (context, applicationProvider, child) {
-                      final hasApplied = applicationProvider.myApplications.any((a) => a.jobId == job.id);
+                      final hasApplied = applicationProvider.myApplications.any(
+                        (a) => a.jobId == job.id,
+                      );
 
                       return SizedBox(
                         width: double.infinity,
@@ -179,54 +208,79 @@ class JobDetailsModal extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: (hasApplied ? Colors.grey : Colors.green).withOpacity(0.3),
+                                color: (hasApplied ? Colors.grey : Colors.green)
+                                    .withOpacity(0.3),
                                 blurRadius: 15,
                                 offset: const Offset(0, 8),
                               ),
                             ],
                           ),
                           child: ElevatedButton(
-                            onPressed: (applicationProvider.isLoading || hasApplied) 
-                              ? null 
-                              : () async {
-                                final success = await applicationProvider.applyToJob(job.id);
-                                if (context.mounted) {
-                                  if (success) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Application submitted successfully!'),
-                                        backgroundColor: Colors.green,
-                                      ),
-                                    );
-                                    Navigator.pop(context);
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(applicationProvider.error ?? 'Failed to apply'),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
+                            onPressed:
+                                (applicationProvider.isLoading || hasApplied)
+                                ? null
+                                : () async {
+                                    final success = await applicationProvider
+                                        .applyToJob(job.id);
+                                    if (context.mounted) {
+                                      if (success) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Application submitted successfully!',
+                                            ),
+                                            backgroundColor: Colors.green,
+                                          ),
+                                        );
+                                        Navigator.pop(context);
+                                      } else {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              applicationProvider.error ??
+                                                  'Failed to apply',
+                                            ),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: hasApplied ? Colors.grey.shade300 : Colors.green,
-                              disabledBackgroundColor: hasApplied ? Colors.grey.shade800 : Colors.green.withOpacity(0.6),
+                              backgroundColor: hasApplied
+                                  ? Colors.grey.shade300
+                                  : Colors.green,
+                              disabledBackgroundColor: hasApplied
+                                  ? Colors.grey.shade800
+                                  : Colors.green.withOpacity(0.6),
                               foregroundColor: Colors.white,
                               disabledForegroundColor: Colors.white70,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               elevation: 0,
                             ),
                             child: applicationProvider.isLoading
-                              ? const CircularProgressIndicator(color: Colors.white)
-                              : Text(
-                                  hasApplied ? 'Applied' : 'Apply for this Job',
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-                                ),
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : Text(
+                                    hasApplied
+                                        ? 'Applied'
+                                        : 'Apply for this Job',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
                           ),
                         ),
                       );
-                    }
+                    },
                   ),
                   const SizedBox(height: 20),
                 ],
@@ -264,10 +318,16 @@ class JobDetailsModal extends StatelessWidget {
                 context,
                 Icons.payments_outlined,
                 AppLocalizations.of(context)!.salaryTND,
-                job.salary != null ? '${job.salary!.toStringAsFixed(0)}' : 'N/A',
+                job.salary != null
+                    ? '${job.salary!.toStringAsFixed(0)}'
+                    : 'N/A',
               ),
             ),
-            VerticalDivider(color: Colors.grey.withOpacity(0.2), indent: 8, endIndent: 8),
+            VerticalDivider(
+              color: Colors.grey.withOpacity(0.2),
+              indent: 8,
+              endIndent: 8,
+            ),
             Expanded(
               child: _buildStatItem(
                 context,
@@ -276,7 +336,11 @@ class JobDetailsModal extends StatelessWidget {
                 job.duration ?? 'Long-term',
               ),
             ),
-            VerticalDivider(color: Colors.grey.withOpacity(0.2), indent: 8, endIndent: 8),
+            VerticalDivider(
+              color: Colors.grey.withOpacity(0.2),
+              indent: 8,
+              endIndent: 8,
+            ),
             Expanded(
               child: _buildStatItem(
                 context,
@@ -291,7 +355,12 @@ class JobDetailsModal extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(BuildContext context, IconData icon, String label, String value) {
+  Widget _buildStatItem(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     return Column(
       children: [
         Icon(icon, size: 24, color: Colors.green),
@@ -308,10 +377,7 @@ class JobDetailsModal extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-          ),
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
           textAlign: TextAlign.center,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -326,7 +392,9 @@ class JobDetailsModal extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? Colors.white.withOpacity(0.03) : Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+        border: Border.all(
+          color: isDark ? Colors.white10 : Colors.grey.shade200,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -352,7 +420,7 @@ class JobDetailsModal extends StatelessWidget {
                     radius: 28,
                     displayName: job.land?.ownerName ?? 'Farmer',
                   );
-                }
+                },
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -382,7 +450,11 @@ class JobDetailsModal extends StatelessWidget {
                   color: Colors.green.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.verified_user_outlined, size: 20, color: Colors.green),
+                child: const Icon(
+                  Icons.verified_user_outlined,
+                  size: 20,
+                  color: Colors.green,
+                ),
               ),
             ],
           ),
@@ -391,7 +463,11 @@ class JobDetailsModal extends StatelessWidget {
             children: [
               _buildFarmerBadge(Icons.star, '4.9', Colors.amber),
               const SizedBox(width: 12),
-              _buildFarmerBadge(Icons.assignment_turned_in, '12 Jobs', Colors.blue),
+              _buildFarmerBadge(
+                Icons.assignment_turned_in,
+                '12 Jobs',
+                Colors.blue,
+              ),
             ],
           ),
         ],

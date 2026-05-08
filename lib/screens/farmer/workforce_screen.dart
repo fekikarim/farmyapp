@@ -58,7 +58,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
     final workerProv = context.read<WorkerProvider>();
     final lifecycleProv = context.read<WorkerLifecycleProvider>();
     final jobProv = context.read<JobRequestProvider>();
-    
+
     await Future.wait([
       workerProv.loadLandWorkers(widget.landId),
       lifecycleProv.loadInvitationsByLand(widget.landId),
@@ -171,7 +171,9 @@ class _WorkforceScreenState extends State<WorkforceScreen>
           color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: comingSoon ? Colors.grey.shade300 : color.withValues(alpha: 0.3),
+            color: comingSoon
+                ? Colors.grey.shade300
+                : color.withValues(alpha: 0.3),
           ),
         ),
         child: Row(
@@ -193,7 +195,9 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                     title,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: comingSoon ? Colors.grey : (isDark ? Colors.white : AppTheme.lightTextPrimary),
+                      color: comingSoon
+                          ? Colors.grey
+                          : (isDark ? Colors.white : AppTheme.lightTextPrimary),
                     ),
                   ),
                   Text(
@@ -250,9 +254,13 @@ class _WorkforceScreenState extends State<WorkforceScreen>
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.05) : theme.cardColor,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.05)
+              : theme.cardColor,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+          border: Border.all(
+            color: isDark ? Colors.white10 : Colors.grey.shade200,
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
@@ -267,7 +275,10 @@ class _WorkforceScreenState extends State<WorkforceScreen>
               imageUrl: worker.workerProfilePicture,
               radius: 24,
               displayName: worker.workerName,
-              border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3), width: 1.5),
+              border: Border.all(
+                color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                width: 1.5,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -275,7 +286,8 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    worker.workerName ?? AppLocalizations.of(context)!.unknownWorker,
+                    worker.workerName ??
+                        AppLocalizations.of(context)!.unknownWorker,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -286,18 +298,27 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.blue.withValues(alpha: 0.15) : Colors.blue.shade50,
+                          color: isDark
+                              ? Colors.blue.withValues(alpha: 0.15)
+                              : Colors.blue.shade50,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
+                          border: Border.all(
+                            color: Colors.blue.withValues(alpha: 0.2),
+                          ),
                         ),
                         child: Text(
                           worker.role,
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: isDark ? Colors.blue.shade300 : Colors.blue.shade700,
+                            color: isDark
+                                ? Colors.blue.shade300
+                                : Colors.blue.shade700,
                           ),
                         ),
                       ),
@@ -311,7 +332,9 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white38 : AppTheme.lightTextSecondary,
+                      color: isDark
+                          ? Colors.white38
+                          : AppTheme.lightTextSecondary,
                     ),
                   ),
                 ],
@@ -343,7 +366,7 @@ class _WorkforceScreenState extends State<WorkforceScreen>
     final workerProvider = context.watch<WorkerProvider>();
     final lifecycleProvider = context.watch<WorkerLifecycleProvider>();
     final isDark = theme.brightness == Brightness.dark;
-    
+
     final stats = workerProvider.workforceStats;
     final workers = workerProvider.landWorkers;
     final isLoadingWorkers = workerProvider.landWorkersLoading;
@@ -352,14 +375,18 @@ class _WorkforceScreenState extends State<WorkforceScreen>
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.workforceLandName(widget.landName)),
+        title: Text(
+          AppLocalizations.of(context)!.workforceLandName(widget.landName),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
           labelColor: AppTheme.primaryColor,
-          unselectedLabelColor: isDark ? Colors.white38 : AppTheme.lightTextSecondary,
+          unselectedLabelColor: isDark
+              ? Colors.white38
+              : AppTheme.lightTextSecondary,
           indicatorColor: AppTheme.primaryColor,
           indicatorWeight: 3,
           tabs: [
@@ -375,7 +402,10 @@ class _WorkforceScreenState extends State<WorkforceScreen>
         icon: const Icon(Icons.add, color: Colors.white),
         label: Text(
           AppLocalizations.of(context)!.addWorker,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: FadeTransition(
@@ -417,7 +447,11 @@ class _WorkforceScreenState extends State<WorkforceScreen>
             ),
             RefreshIndicator(
               onRefresh: _refreshAll,
-              child: _buildInvitationsTab(lifecycleProvider, isDark, isLoadingInvitations),
+              child: _buildInvitationsTab(
+                lifecycleProvider,
+                isDark,
+                isLoadingInvitations,
+              ),
             ),
           ],
         ),
@@ -434,7 +468,11 @@ class _WorkforceScreenState extends State<WorkforceScreen>
           const SizedBox(height: 16),
           Text(
             AppLocalizations.of(context)!.noWorkersYet,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -494,12 +532,21 @@ class _WorkforceScreenState extends State<WorkforceScreen>
               children: [
                 Text(
                   invitation.workerName ?? 'Worker',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? Colors.white : AppTheme.lightTextPrimary),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: isDark ? Colors.white : AppTheme.lightTextPrimary,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   invitation.message ?? 'Hiring invitation',
-                  style: TextStyle(fontSize: 12, color: isDark ? Colors.white38 : AppTheme.lightTextSecondary),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark
+                        ? Colors.white38
+                        : AppTheme.lightTextSecondary,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -517,14 +564,21 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                 ),
                 child: const Text(
                   'PENDING',
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.amber),
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.amber,
+                  ),
                 ),
               ),
               const SizedBox(height: 4),
               if (timeLeft.isNotEmpty)
                 Text(
                   timeLeft,
-                  style: TextStyle(fontSize: 10, color: isDark ? Colors.white24 : Colors.grey.shade500),
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: isDark ? Colors.white24 : Colors.grey.shade500,
+                  ),
                 ),
             ],
           ),
@@ -533,7 +587,11 @@ class _WorkforceScreenState extends State<WorkforceScreen>
     );
   }
 
-  Widget _buildSectionHeader(String title, String count, {VoidCallback? onAction}) {
+  Widget _buildSectionHeader(
+    String title,
+    String count, {
+    VoidCallback? onAction,
+  }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     return Padding(
@@ -545,7 +603,12 @@ class _WorkforceScreenState extends State<WorkforceScreen>
             children: [
               Text(
                 title,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: isDark ? Colors.white : AppTheme.lightTextPrimary),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
+                  color: isDark ? Colors.white : AppTheme.lightTextPrimary,
+                ),
               ),
               const SizedBox(width: 8),
               Container(
@@ -556,7 +619,11 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                 ),
                 child: Text(
                   count,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.primaryColor,
+                  ),
                 ),
               ),
             ],
@@ -564,7 +631,13 @@ class _WorkforceScreenState extends State<WorkforceScreen>
           if (onAction != null)
             TextButton(
               onPressed: onAction,
-              child: const Text('View All', style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryColor)),
+              child: const Text(
+                'View All',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
             ),
         ],
       ),
@@ -607,14 +680,23 @@ class _WorkforceScreenState extends State<WorkforceScreen>
           const SizedBox(width: 4),
           Text(
             label,
-            style: TextStyle(color: color, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+            style: TextStyle(
+              color: color,
+              fontSize: 9,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.5,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatsDashboard(Map<String, dynamic> stats, bool isLoading, bool isDark) {
+  Widget _buildStatsDashboard(
+    Map<String, dynamic> stats,
+    bool isLoading,
+    bool isDark,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GridView.count(
@@ -625,16 +707,46 @@ class _WorkforceScreenState extends State<WorkforceScreen>
         mainAxisSpacing: 12,
         childAspectRatio: 1.15, // Adjusted to prevent bottom overflow
         children: [
-          _buildStatCard('Active', '${stats['active'] ?? 0}', Icons.people_rounded, AppTheme.primaryColor, isDark),
-          _buildStatCard('Suspended', '${stats['suspended'] ?? 0}', Icons.pause_circle_outline, Colors.orange, isDark),
-          _buildStatCard('Monthly Cost', '${stats['monthlyCost'] ?? 0} TND', Icons.payments_outlined, Colors.blue, isDark),
-          _buildStatCard('Avg Productivity', '${stats['avgProductivity'] ?? 0}%', Icons.trending_up_rounded, Colors.purple, isDark),
+          _buildStatCard(
+            'Active',
+            '${stats['active'] ?? 0}',
+            Icons.people_rounded,
+            AppTheme.primaryColor,
+            isDark,
+          ),
+          _buildStatCard(
+            'Suspended',
+            '${stats['suspended'] ?? 0}',
+            Icons.pause_circle_outline,
+            Colors.orange,
+            isDark,
+          ),
+          _buildStatCard(
+            'Monthly Cost',
+            '${stats['monthlyCost'] ?? 0} TND',
+            Icons.payments_outlined,
+            Colors.blue,
+            isDark,
+          ),
+          _buildStatCard(
+            'Avg Productivity',
+            '${stats['avgProductivity'] ?? 0}%',
+            Icons.trending_up_rounded,
+            Colors.purple,
+            isDark,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildStatCard(String label, String value, IconData icon, Color color, bool isDark) {
+  Widget _buildStatCard(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    bool isDark,
+  ) {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16), // Slightly reduced padding
@@ -642,7 +754,9 @@ class _WorkforceScreenState extends State<WorkforceScreen>
         color: isDark ? Colors.white.withValues(alpha: 0.05) : theme.cardColor,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: isDark ? color.withValues(alpha: 0.15) : color.withValues(alpha: 0.1),
+          color: isDark
+              ? color.withValues(alpha: 0.15)
+              : color.withValues(alpha: 0.1),
           width: 1.5,
         ),
         boxShadow: [
@@ -659,15 +773,12 @@ class _WorkforceScreenState extends State<WorkforceScreen>
           Positioned(
             right: -15,
             top: -15,
-            child: Icon(
-              icon,
-              color: color.withValues(alpha: 0.05),
-              size: 70,
-            ),
+            child: Icon(icon, color: color.withValues(alpha: 0.05), size: 70),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
+            mainAxisAlignment:
+                MainAxisAlignment.center, // Center content vertically
             children: [
               Container(
                 padding: const EdgeInsets.all(6),
@@ -699,7 +810,9 @@ class _WorkforceScreenState extends State<WorkforceScreen>
                     fontSize: 9,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 0.5,
-                    color: isDark ? Colors.white38 : AppTheme.lightTextSecondary,
+                    color: isDark
+                        ? Colors.white38
+                        : AppTheme.lightTextSecondary,
                   ),
                 ),
               ),
@@ -713,10 +826,14 @@ class _WorkforceScreenState extends State<WorkforceScreen>
   Widget _buildJobRequestsTab(bool isDark) {
     final theme = Theme.of(context);
     final jobProvider = context.watch<JobRequestProvider>();
-    final jobs = jobProvider.allJobs.where((j) => j.landId == widget.landId).toList();
+    final jobs = jobProvider.allJobs
+        .where((j) => j.landId == widget.landId)
+        .toList();
 
     if (jobProvider.isLoading && jobs.isEmpty) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor));
+      return const Center(
+        child: CircularProgressIndicator(color: AppTheme.primaryColor),
+      );
     }
 
     if (jobs.isEmpty) {
@@ -747,33 +864,65 @@ class _WorkforceScreenState extends State<WorkforceScreen>
       decoration: BoxDecoration(
         color: isDark ? Colors.white.withValues(alpha: 0.05) : theme.cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade100),
+        border: Border.all(
+          color: isDark ? Colors.white10 : Colors.grey.shade100,
+        ),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.all(20),
-        title: Text(job.title, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: isDark ? Colors.white : AppTheme.lightTextPrimary)),
+        title: Text(
+          job.title,
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+            color: isDark ? Colors.white : AppTheme.lightTextPrimary,
+          ),
+        ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
-            Text(job.description, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: isDark ? Colors.white38 : AppTheme.lightTextSecondary)),
+            Text(
+              job.description,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: isDark ? Colors.white38 : AppTheme.lightTextSecondary,
+              ),
+            ),
             const SizedBox(height: 16),
             Row(
               children: [
-                _buildMiniBadge(Icons.payments_outlined, '${job.salary ?? 0} TND', AppTheme.primaryColor),
+                _buildMiniBadge(
+                  Icons.payments_outlined,
+                  '${job.salary ?? 0} TND',
+                  AppTheme.primaryColor,
+                ),
                 const SizedBox(width: 16),
-                _buildMiniBadge(Icons.timer_outlined, job.duration ?? 'Not set', Colors.blue),
+                _buildMiniBadge(
+                  Icons.timer_outlined,
+                  job.duration ?? 'Not set',
+                  Colors.blue,
+                ),
               ],
             ),
           ],
         ),
         trailing: Container(
-          decoration: BoxDecoration(color: AppTheme.primaryColor, borderRadius: BorderRadius.circular(12)),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: IconButton(
             icon: const Icon(Icons.people_outline_rounded, color: Colors.white),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => ManageApplicationsScreen(jobId: job.id, jobTitle: job.title)),
+              MaterialPageRoute(
+                builder: (_) => ManageApplicationsScreen(
+                  jobId: job.id,
+                  jobTitle: job.title,
+                ),
+              ),
             ),
           ),
         ),
@@ -786,16 +935,27 @@ class _WorkforceScreenState extends State<WorkforceScreen>
       children: [
         Icon(icon, size: 14, color: color),
         const SizedBox(width: 4),
-        Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+        ),
       ],
     );
   }
 
-  Widget _buildInvitationsTab(WorkerLifecycleProvider lifecycle, bool isDark, bool isLoading) {
-    final pending = lifecycle.pendingInvitations.where((i) => i.landId == widget.landId).toList();
+  Widget _buildInvitationsTab(
+    WorkerLifecycleProvider lifecycle,
+    bool isDark,
+    bool isLoading,
+  ) {
+    final pending = lifecycle.pendingInvitations
+        .where((i) => i.landId == widget.landId)
+        .toList();
 
     if (isLoading && pending.isEmpty) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor));
+      return const Center(
+        child: CircularProgressIndicator(color: AppTheme.primaryColor),
+      );
     }
 
     if (pending.isEmpty) {
@@ -843,24 +1003,54 @@ class _WorkforceScreenState extends State<WorkforceScreen>
           children: [
             Container(
               padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(color: AppTheme.primaryColor.withValues(alpha: 0.05), shape: BoxShape.circle),
-              child: Icon(icon, size: 48, color: AppTheme.primaryColor.withValues(alpha: 0.4)),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryColor.withValues(alpha: 0.05),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 48,
+                color: AppTheme.primaryColor.withValues(alpha: 0.4),
+              ),
             ),
             const SizedBox(height: 24),
-            Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: isDark ? Colors.white : AppTheme.lightTextPrimary)),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+                color: isDark ? Colors.white : AppTheme.lightTextPrimary,
+              ),
+            ),
             const SizedBox(height: 12),
-            Text(subtitle, textAlign: TextAlign.center, style: TextStyle(color: isDark ? Colors.white38 : AppTheme.lightTextSecondary, height: 1.5)),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isDark ? Colors.white38 : AppTheme.lightTextSecondary,
+                height: 1.5,
+              ),
+            ),
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: onPressed,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 elevation: 0,
               ),
-              child: Text(buttonLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
+              child: Text(
+                buttonLabel,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
@@ -890,12 +1080,24 @@ class _WorkforceScreenState extends State<WorkforceScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
-                Text(message, style: TextStyle(fontSize: 12, color: Colors.red.shade400)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+                Text(
+                  message,
+                  style: TextStyle(fontSize: 12, color: Colors.red.shade400),
+                ),
               ],
             ),
           ),
-          IconButton(onPressed: onRetry, icon: const Icon(Icons.refresh, color: Colors.red)),
+          IconButton(
+            onPressed: onRetry,
+            icon: const Icon(Icons.refresh, color: Colors.red),
+          ),
         ],
       ),
     );
@@ -906,14 +1108,21 @@ class _WorkforceScreenState extends State<WorkforceScreen>
       baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
       highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
       child: Column(
-        children: List.generate(3, (index) => Container(
-          height: 80,
-          margin: const EdgeInsets.only(bottom: 12),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
-        )),
+        children: List.generate(
+          3,
+          (index) => Container(
+            height: 80,
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildInvitationsListShimmer(bool isDark) => _buildWorkersListShimmer(isDark);
+  Widget _buildInvitationsListShimmer(bool isDark) =>
+      _buildWorkersListShimmer(isDark);
 }

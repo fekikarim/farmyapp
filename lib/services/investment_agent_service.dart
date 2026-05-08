@@ -3,7 +3,11 @@ import 'auth_service.dart';
 
 class InvestmentAgentService {
   /// Gets investment recommendations/chat from the backend AI agent
-  Future<Map<String, dynamic>?> getRecommendations(String preferences, {String? sessionId, Map<String, dynamic>? userContext}) async {
+  Future<Map<String, dynamic>?> getRecommendations(
+    String preferences, {
+    String? sessionId,
+    Map<String, dynamic>? userContext,
+  }) async {
     try {
       final response = await AuthService.authenticatedRequest(
         'POST',
@@ -48,7 +52,9 @@ class InvestmentAgentService {
     try {
       final response = await AuthService.authenticatedRequest(
         'GET',
-        Uri.parse('${AuthService.baseUrl}/api/v1/investment-agent/session/$sessionId'),
+        Uri.parse(
+          '${AuthService.baseUrl}/api/v1/investment-agent/session/$sessionId',
+        ),
       );
 
       if (response.statusCode == 200) {
@@ -66,7 +72,9 @@ class InvestmentAgentService {
     try {
       final response = await AuthService.authenticatedRequest(
         'DELETE',
-        Uri.parse('${AuthService.baseUrl}/api/v1/investment-agent/session/$sessionId'),
+        Uri.parse(
+          '${AuthService.baseUrl}/api/v1/investment-agent/session/$sessionId',
+        ),
       );
       return response.statusCode == 200;
     } catch (e) {

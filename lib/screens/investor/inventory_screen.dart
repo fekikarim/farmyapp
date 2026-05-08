@@ -6,7 +6,8 @@ class InvestorInventoryScreen extends StatefulWidget {
   const InvestorInventoryScreen({super.key});
 
   @override
-  State<InvestorInventoryScreen> createState() => _InvestorInventoryScreenState();
+  State<InvestorInventoryScreen> createState() =>
+      _InvestorInventoryScreenState();
 }
 
 class _InvestorInventoryScreenState extends State<InvestorInventoryScreen> {
@@ -35,84 +36,109 @@ class _InvestorInventoryScreenState extends State<InvestorInventoryScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.myInventory, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          AppLocalizations.of(context)!.myInventory,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
-              ? Center(child: Text(AppLocalizations.of(context)!.noItemsFound, style: const TextStyle(color: Colors.white54)))
-              : ListView.builder(
+          ? Center(
+              child: Text(
+                AppLocalizations.of(context)!.noItemsFound,
+                style: const TextStyle(color: Colors.white54),
+              ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _items.length,
+              itemBuilder: (context, index) {
+                final item = _items[index];
+                final request = item['request'] ?? {};
+                final land = item['land'] ?? {};
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.all(16),
-                  itemCount: _items.length,
-                  itemBuilder: (context, index) {
-                    final item = _items[index];
-                    final request = item['request'] ?? {};
-                    final land = item['land'] ?? {};
-                    
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.white10),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: Colors.black26,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.inventory_2,
+                          color: Colors.greenAccent,
+                        ),
                       ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 60, height: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.black26, 
-                              borderRadius: BorderRadius.circular(12)
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _translateCategory(
+                                context,
+                                request['asset_category']?.toString() ?? '',
+                              ).toUpperCase(),
+                              style: const TextStyle(
+                                color: Colors.greenAccent,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                              ),
                             ),
-                            child: const Icon(Icons.inventory_2, color: Colors.greenAccent),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            const SizedBox(height: 4),
+                            Text(
+                              request['variant_id'] ??
+                                  AppLocalizations.of(context)!.unknownItem,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
                               children: [
-                                Text(
-                                  _translateCategory(context, request['asset_category']?.toString() ?? '').toUpperCase(),
-                                  style: const TextStyle(
-                                    color: Colors.greenAccent,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1,
-                                  ),
+                                const Icon(
+                                  Icons.landscape,
+                                  color: Colors.white38,
+                                  size: 14,
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(width: 4),
                                 Text(
-                                  request['variant_id'] ?? AppLocalizations.of(context)!.unknownItem,
+                                  land['name'] ??
+                                      AppLocalizations.of(context)!.unknownLand,
                                   style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white54,
+                                    fontSize: 13,
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.landscape, color: Colors.white38, size: 14),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      land['name'] ?? AppLocalizations.of(context)!.unknownLand,
-                                      style: const TextStyle(color: Colors.white54, fontSize: 13),
-                                    ),
-                                  ],
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    );
-                  },
-                ),
+                    ],
+                  ),
+                );
+              },
+            ),
     );
   }
+
   String _translateCategory(BuildContext context, String category) {
     final l10n = AppLocalizations.of(context)!;
     switch (category.toLowerCase()) {

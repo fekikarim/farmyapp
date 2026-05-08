@@ -9,7 +9,11 @@ class GameEdgePanelOverlay extends StatefulWidget {
   final Widget child;
   final bool forceHide;
 
-  const GameEdgePanelOverlay({super.key, required this.child, this.forceHide = false});
+  const GameEdgePanelOverlay({
+    super.key,
+    required this.child,
+    this.forceHide = false,
+  });
 
   @override
   State<GameEdgePanelOverlay> createState() => _GameEdgePanelOverlayState();
@@ -101,7 +105,7 @@ class _GameEdgePanelOverlayState extends State<GameEdgePanelOverlay>
               onTap: _closePanel,
               behavior: HitTestBehavior.opaque,
               child: Container(
-                color: Colors.black.withValues(alpha:0.02),
+                color: Colors.black.withValues(alpha: 0.02),
               ), // very faint shadow
             ),
           ),
@@ -162,22 +166,22 @@ class _GameEdgePanelOverlayState extends State<GameEdgePanelOverlay>
                                 bottomLeft: Radius.circular(24),
                               ),
                               border: Border.all(
-                                color: Colors.greenAccent.withValues(alpha:
-                                  0.3 + 0.4 * pulse,
+                                color: Colors.greenAccent.withValues(
+                                  alpha: 0.3 + 0.4 * pulse,
                                 ),
                                 width: 1.5,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.greenAccent.withValues(alpha:
-                                    0.2 + 0.4 * pulse,
+                                  color: Colors.greenAccent.withValues(
+                                    alpha: 0.2 + 0.4 * pulse,
                                   ),
                                   blurRadius: 8 + 8 * pulse,
                                   spreadRadius: 1 + 2 * pulse,
                                   offset: const Offset(-2, 0),
                                 ),
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha:0.3),
+                                  color: Colors.black.withValues(alpha: 0.3),
                                   blurRadius: 4,
                                   offset: const Offset(-2, 2),
                                 ),
@@ -188,7 +192,7 @@ class _GameEdgePanelOverlayState extends State<GameEdgePanelOverlay>
                                 scale: 1.0 + 0.15 * pulse,
                                 child: Icon(
                                   Icons.videogame_asset_rounded,
-                                  color: Colors.white.withValues(alpha:0.95),
+                                  color: Colors.white.withValues(alpha: 0.95),
                                   size: 18,
                                 ),
                               ),
@@ -210,7 +214,7 @@ class _GameEdgePanelOverlayState extends State<GameEdgePanelOverlay>
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha:0.12),
+                            color: Colors.black.withValues(alpha: 0.12),
                             blurRadius: 10,
                             offset: const Offset(
                               -4,
@@ -259,17 +263,19 @@ class _GameEdgePanelOverlayState extends State<GameEdgePanelOverlay>
                                         color:
                                             Theme.of(context).brightness ==
                                                 Brightness.dark
-                                            ? Colors.white.withValues(alpha:0.05)
+                                            ? Colors.white.withValues(
+                                                alpha: 0.05,
+                                              )
                                             : Colors.grey.shade50,
                                         border: Border.all(
                                           color: Theme.of(
                                             context,
-                                          ).dividerColor.withValues(alpha:0.1),
+                                          ).dividerColor.withValues(alpha: 0.1),
                                         ),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black.withValues(alpha:
-                                              0.08,
+                                            color: Colors.black.withValues(
+                                              alpha: 0.08,
                                             ),
                                             blurRadius: 6,
                                             offset: const Offset(0, 2),

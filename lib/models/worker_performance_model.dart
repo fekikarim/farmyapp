@@ -33,15 +33,21 @@ class WorkerPerformance {
       totalTasksCompleted: json['totalTasksCompleted'] ?? 0,
       verifiedProofs: json['verifiedProofs'] ?? 0,
       rejectedProofs: json['rejectedProofs'] ?? 0,
-      verificationSuccessRate: (json['verificationSuccessRate'] as num?)?.toDouble() ?? 0.0,
-      averageCompletionTimeMinutes: (json['averageCompletionTimeMinutes'] as num?)?.toDouble(),
+      verificationSuccessRate:
+          (json['verificationSuccessRate'] as num?)?.toDouble() ?? 0.0,
+      averageCompletionTimeMinutes:
+          (json['averageCompletionTimeMinutes'] as num?)?.toDouble(),
       performanceScore: json['performanceScore'] ?? 0,
-      landIds: (json['landIds'] as List<dynamic>?)
-          ?.map((e) => e.toString())
-          .toList() ?? [],
-      landNames: (json['landNames'] as List<dynamic>?)
-          ?.map((e) => e.toString())
-          .toList() ?? [],
+      landIds:
+          (json['landIds'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      landNames:
+          (json['landNames'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
     );
   }
 
@@ -102,9 +108,11 @@ class PerformanceSummary {
   factory PerformanceSummary.fromJson(Map<String, dynamic> json) {
     return PerformanceSummary(
       totalWorkers: json['totalWorkers'] ?? 0,
-      averagePerformanceScore: (json['averagePerformanceScore'] as num?)?.toInt() ?? 0,
+      averagePerformanceScore:
+          (json['averagePerformanceScore'] as num?)?.toInt() ?? 0,
       totalTasksCompleted: json['totalTasksCompleted'] ?? 0,
-      overallVerificationRate: (json['overallVerificationRate'] as num?)?.toDouble() ?? 0.0,
+      overallVerificationRate:
+          (json['overallVerificationRate'] as num?)?.toDouble() ?? 0.0,
     );
   }
 
@@ -122,16 +130,16 @@ class WorkerPerformanceResponse {
   final List<WorkerPerformance> workers;
   final PerformanceSummary summary;
 
-  WorkerPerformanceResponse({
-    required this.workers,
-    required this.summary,
-  });
+  WorkerPerformanceResponse({required this.workers, required this.summary});
 
   factory WorkerPerformanceResponse.fromJson(Map<String, dynamic> json) {
     return WorkerPerformanceResponse(
-      workers: (json['workers'] as List<dynamic>?)
-          ?.map((e) => WorkerPerformance.fromJson(e as Map<String, dynamic>))
-          .toList() ??
+      workers:
+          (json['workers'] as List<dynamic>?)
+              ?.map(
+                (e) => WorkerPerformance.fromJson(e as Map<String, dynamic>),
+              )
+              .toList() ??
           [],
       summary: PerformanceSummary.fromJson(
         json['summary'] as Map<String, dynamic>? ?? {},
@@ -143,8 +151,8 @@ class WorkerPerformanceResponse {
 /// Performance tiers for visual indicators
 enum PerformanceTier {
   excellent, // 80-100
-  good,      // 50-79
-  poor,      // 0-49
+  good, // 50-79
+  poor, // 0-49
 }
 
 /// Sort criteria for worker performance list

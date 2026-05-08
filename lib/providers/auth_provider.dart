@@ -4,7 +4,6 @@ import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/notification_service.dart';
 
-
 class AuthProvider with ChangeNotifier {
   User? _user;
   bool _isLoading = false;
@@ -46,7 +45,7 @@ class AuthProvider with ChangeNotifier {
       // 2. Proactively check server health, but don't hard-block if it's just a transient issue
       // and we have internet. This avoids the "No Internet" screen when the device is online.
       await AuthService.checkServerHealth();
-      
+
       final hasRefreshToken = await AuthService.getAccessToken() != null;
       if (hasRefreshToken) {
         // Try to refresh tokens first
@@ -54,14 +53,14 @@ class AuthProvider with ChangeNotifier {
         if (refreshSuccess) {
           // Sync profile from server to ensure latest data (role, name, etc.)
           final userProfile = await AuthService.fetchProfile();
-            if (userProfile != null) {
-              _user = userProfile;
-            } else {
-              // If profile fetch fails but refresh succeeded, try to use local data as fallback
-              _user = await AuthService.getUser();
-            }
-            // Sync push token
-            PushNotificationService.syncTokenWithBackend();
+          if (userProfile != null) {
+            _user = userProfile;
+          } else {
+            // If profile fetch fails but refresh succeeded, try to use local data as fallback
+            _user = await AuthService.getUser();
+          }
+          // Sync push token
+          PushNotificationService.syncTokenWithBackend();
         } else {
           // If refresh fails, session is truly dead
           await AuthService.logout();
@@ -84,7 +83,7 @@ class AuthProvider with ChangeNotifier {
         if (connectivityResult.contains(ConnectivityResult.none)) {
           _hasConnectionError = true;
         } else {
-          // Internet is UP, but server is DOWN. 
+          // Internet is UP, but server is DOWN.
           // We can just log it and stay on Login screen or show a different error.
           print('Server is unreachable despite active internet connection.');
         }

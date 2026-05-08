@@ -47,7 +47,7 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          
+
           // Header
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -57,9 +57,9 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
                 const SizedBox(width: 8),
                 Text(
                   AppLocalizations.of(context)!.myLandsTitle,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 IconButton(
@@ -76,8 +76,8 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : myRentals.isEmpty
-                    ? _buildEmptyState()
-                    : _buildLandGrid(myRentals),
+                ? _buildEmptyState()
+                : _buildLandGrid(myRentals),
           ),
         ],
       ),
@@ -89,7 +89,11 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.landscape_outlined, size: 60, color: Theme.of(context).disabledColor),
+          Icon(
+            Icons.landscape_outlined,
+            size: 60,
+            color: Theme.of(context).disabledColor,
+          ),
           const SizedBox(height: 16),
           Text(
             AppLocalizations.of(context)!.noLandsFound,
@@ -136,7 +140,7 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).brightness == Brightness.dark 
+            color: Theme.of(context).brightness == Brightness.dark
                 ? Colors.black.withOpacity(0.3)
                 : Colors.black.withOpacity(0.05),
             blurRadius: 10,
@@ -153,22 +157,22 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-            GestureDetector(
-              onTap: () {
-                // Determine if we should allow playing (e.g. only if active/owned)
-                // For now, allow all.
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => GameScreen(land: land),
+                GestureDetector(
+                  onTap: () {
+                    // Determine if we should allow playing (e.g. only if active/owned)
+                    // For now, allow all.
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GameScreen(land: land),
+                      ),
+                    );
+                  },
+                  child: Image.asset(
+                    'assets/game_images/default_farm_collectionView.jpg',
+                    fit: BoxFit.cover,
                   ),
-                );
-              },
-              child: Image.asset(
-                'assets/game_images/default_farm_collectionView.jpg',
-                fit: BoxFit.cover,
-              ),
-            ),
+                ),
                 Positioned(
                   top: 8,
                   right: 8,
@@ -178,7 +182,9 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surface.withOpacity(0.9),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -205,7 +211,7 @@ class _MyLandsBottomSheetState extends State<MyLandsBottomSheet> {
               ],
             ),
           ),
-          
+
           // Info
           Padding(
             padding: const EdgeInsets.all(12),

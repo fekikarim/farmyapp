@@ -31,7 +31,10 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
       _error = null;
     });
     try {
-      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final baseUrl = dotenv.get(
+        'API_BASE_URL',
+        fallback: 'http://192.168.0.133:3001',
+      );
       final response = await AuthService.authenticatedRequest(
         'GET',
         Uri.parse('$baseUrl/api/v1/tasks/me'),
@@ -66,7 +69,10 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
         builder: (c) => const Center(child: CircularProgressIndicator()),
       );
 
-      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final baseUrl = dotenv.get(
+        'API_BASE_URL',
+        fallback: 'http://192.168.0.133:3001',
+      );
       final response = await AuthService.authenticatedRequest(
         'POST',
         Uri.parse('$baseUrl/api/v1/tasks/$taskId/complete'),
@@ -79,10 +85,13 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.taskCompletedSuccess), backgroundColor: Colors.green),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.taskCompletedSuccess),
+            backgroundColor: Colors.green,
+          ),
         );
         _fetchMyTasks(); // Refresh list
-        
+
         // Refresh available jobs as finishing tasks might unlock new opportunities
         if (mounted) {
           final jobProvider = context.read<JobRequestProvider>();
@@ -96,7 +105,12 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
       if (mounted) {
         if (Navigator.canPop(context)) Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.errorWithPrefix(e.toString())), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.errorWithPrefix(e.toString()),
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -105,9 +119,9 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).user;
-    
+
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
@@ -121,107 +135,151 @@ class _WorkerTasksScreenState extends State<WorkerTasksScreen> {
         elevation: 0,
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _fetchMyTasks,
-          )
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _fetchMyTasks),
         ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
-              : _tasks.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.check_circle_outline, size: 80, color: theme.colorScheme.primary.withValues(alpha: 0.5)),
-                          const SizedBox(height: 16),
-                          Text(
-                            AppLocalizations.of(context)!.noPendingTasks,
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.textTheme.bodyLarge?.color,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            AppLocalizations.of(context)!.availableForAssignments,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _fetchMyTasks,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _tasks.length,
-                        itemBuilder: (context, index) {
-                          final task = _tasks[index];
-                          final bool isCompleted = task['status'] == 'completed' || task['status'] == 'verified';
-                          
-                          return Card(
-                            elevation: 2,
-                            margin: const EdgeInsets.only(bottom: 12),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        task['title'] ?? AppLocalizations.of(context)!.taskLabel,
-                                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                      ),
-                                      Chip(
-                                        label: Text(
-                                          task['status']?.toUpperCase() ?? AppLocalizations.of(context)!.unknownCaps,
-                                          style: TextStyle(color: isCompleted ? Colors.green.shade700 : Theme.of(context).colorScheme.primary, fontSize: 10, fontWeight: FontWeight.bold),
-                                        ),
-                                        backgroundColor: isCompleted ? Colors.green.shade50 : Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  if (task['description'] != null)
-                                    Text(task['description'], style: TextStyle(color: Colors.grey.shade700)),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.monetization_on, size: 16, color: Colors.green.shade600),
-                                      const SizedBox(width: 4),
-                                      Text('${task['reward'] ?? 0} HBAR', style: const TextStyle(fontWeight: FontWeight.bold)),
-                                      const SizedBox(width: 16),
-                                      Icon(Icons.schedule, size: 16, color: Colors.blue.shade600),
-                                      const SizedBox(width: 4),
-                                      Text('${task['time_required_minutes'] ?? 0} ${AppLocalizations.of(context)!.minsSuffix}'),
-                                    ],
-                                  ),
-                                  if (!isCompleted) ...[
-                                    const SizedBox(height: 16),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: ElevatedButton.icon(
-                                        onPressed: () => _completeTask(task['id']),
-                                        icon: const Icon(Icons.done_all),
-                                        style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
-                                        label: Text(AppLocalizations.of(context)!.markAsComplete),
-                                      ),
-                                    ),
-                                  ]
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+          ? Center(
+              child: Text(_error!, style: const TextStyle(color: Colors.red)),
+            )
+          : _tasks.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.check_circle_outline,
+                    size: 80,
+                    color: theme.colorScheme.primary.withValues(alpha: 0.5),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    AppLocalizations.of(context)!.noPendingTasks,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.textTheme.bodyLarge?.color,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalizations.of(context)!.availableForAssignments,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.textTheme.bodyMedium?.color?.withValues(
+                        alpha: 0.6,
                       ),
                     ),
+                  ),
+                ],
+              ),
+            )
+          : RefreshIndicator(
+              onRefresh: _fetchMyTasks,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: _tasks.length,
+                itemBuilder: (context, index) {
+                  final task = _tasks[index];
+                  final bool isCompleted =
+                      task['status'] == 'completed' ||
+                      task['status'] == 'verified';
+
+                  return Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                task['title'] ??
+                                    AppLocalizations.of(context)!.taskLabel,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Chip(
+                                label: Text(
+                                  task['status']?.toUpperCase() ??
+                                      AppLocalizations.of(context)!.unknownCaps,
+                                  style: TextStyle(
+                                    color: isCompleted
+                                        ? Colors.green.shade700
+                                        : Theme.of(context).colorScheme.primary,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                backgroundColor: isCompleted
+                                    ? Colors.green.shade50
+                                    : Theme.of(context).colorScheme.primary
+                                          .withValues(alpha: 0.12),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          if (task['description'] != null)
+                            Text(
+                              task['description'],
+                              style: TextStyle(color: Colors.grey.shade700),
+                            ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.monetization_on,
+                                size: 16,
+                                color: Colors.green.shade600,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${task['reward'] ?? 0} HBAR',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Icon(
+                                Icons.schedule,
+                                size: 16,
+                                color: Colors.blue.shade600,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${task['time_required_minutes'] ?? 0} ${AppLocalizations.of(context)!.minsSuffix}',
+                              ),
+                            ],
+                          ),
+                          if (!isCompleted) ...[
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: () => _completeTask(task['id']),
+                                icon: const Icon(Icons.done_all),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  foregroundColor: Colors.white,
+                                ),
+                                label: Text(
+                                  AppLocalizations.of(context)!.markAsComplete,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
     );
   }
 }

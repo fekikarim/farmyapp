@@ -23,8 +23,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   String _formatErrorMessage(String error) {
     final lowerError = error.toLowerCase();
-    if (lowerError.contains('not found')) return 'No account found with this email.';
-    if (lowerError.contains('connection refused') || lowerError.contains('failed to connect')) return 'Unable to connect to the server.';
+    if (lowerError.contains('not found'))
+      return 'No account found with this email.';
+    if (lowerError.contains('connection refused') ||
+        lowerError.contains('failed to connect'))
+      return 'Unable to connect to the server.';
     if (lowerError.contains('timeout')) return 'Connection timed out.';
     return error.length > 80 ? '${error.substring(0, 80)}...' : error;
   }
@@ -34,8 +37,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     _dismissKeyboard();
     setState(() => _errorMessage = null);
 
-    final error = await authProvider.forgotPassword(_emailController.text.trim());
-    
+    final error = await authProvider.forgotPassword(
+      _emailController.text.trim(),
+    );
+
     if (!mounted) return;
 
     if (error == null) {
@@ -70,15 +75,28 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         child: Stack(
           children: [
             // Decorative background blobs
-            Positioned(top: -100, right: -100, child: _buildBlob(theme.colorScheme.primary, 300, 0.08)),
-            Positioned(bottom: -150, left: -100, child: _buildBlob(theme.colorScheme.secondary, 400, 0.05)),
+            Positioned(
+              top: -100,
+              right: -100,
+              child: _buildBlob(theme.colorScheme.primary, 300, 0.08),
+            ),
+            Positioned(
+              bottom: -150,
+              left: -100,
+              child: _buildBlob(theme.colorScheme.secondary, 400, 0.05),
+            ),
 
             SafeArea(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: Container(
                   width: double.infinity,
-                  constraints: BoxConstraints(minHeight: size.height - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom),
+                  constraints: BoxConstraints(
+                    minHeight:
+                        size.height -
+                        MediaQuery.of(context).padding.top -
+                        MediaQuery.of(context).padding.bottom,
+                  ),
                   padding: const EdgeInsets.symmetric(horizontal: 28),
                   child: Center(
                     child: AnimationLimiter(
@@ -92,20 +110,35 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ),
                           children: [
                             const SizedBox(height: 20),
-                            Hero(tag: 'app_logo', child: Image.asset('assets/logo-no-bg.png', height: 90)),
+                            Hero(
+                              tag: 'app_logo',
+                              child: Image.asset(
+                                'assets/logo-no-bg.png',
+                                height: 90,
+                              ),
+                            ),
                             const SizedBox(height: 30),
                             Text(
                               AppLocalizations.of(context)!.forgotPasswordTitle,
-                              style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w900, letterSpacing: -1),
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -1,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 12),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
                               child: Text(
-                                AppLocalizations.of(context)!.forgotPasswordSubtitle,
+                                AppLocalizations.of(
+                                  context,
+                                )!.forgotPasswordSubtitle,
                                 style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                  color: theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.6,
+                                  ),
                                   height: 1.5,
                                 ),
                                 textAlign: TextAlign.center,
@@ -154,18 +187,36 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(color: color.withValues(alpha: alpha), shape: BoxShape.circle),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: alpha),
+        shape: BoxShape.circle,
+      ),
     );
   }
 
-  Widget _buildInputField(BuildContext context, {required TextEditingController controller, required String label, required IconData icon, String? Function(String?)? validator, TextInputType? keyboardType}) {
+  Widget _buildInputField(
+    BuildContext context, {
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+  }) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 6),
-          child: Text(label.toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1, color: theme.colorScheme.primary.withValues(alpha: 0.7))),
+          child: Text(
+            label.toUpperCase(),
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1,
+              color: theme.colorScheme.primary.withValues(alpha: 0.7),
+            ),
+          ),
         ),
         TextFormField(
           controller: controller,
@@ -176,10 +227,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             prefixIcon: Icon(icon, size: 18, color: theme.colorScheme.primary),
             filled: true,
             fillColor: theme.colorScheme.onSurface.withValues(alpha: 0.05),
-            contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: theme.colorScheme.onSurface.withValues(alpha: 0.05))),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.3), width: 2)),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 14,
+              horizontal: 16,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide(
+                color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                width: 2,
+              ),
+            ),
           ),
         ),
       ],
@@ -196,12 +264,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         style: ElevatedButton.styleFrom(
           backgroundColor: theme.colorScheme.primary,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           elevation: 0,
         ),
         child: authProvider.isLoading
-            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-            : Text(AppLocalizations.of(context)!.sendResetCode.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : Text(
+                AppLocalizations.of(context)!.sendResetCode.toUpperCase(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                ),
+              ),
       ),
     );
   }
@@ -232,16 +315,25 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.error.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: theme.colorScheme.error.withValues(alpha: 0.2),
+        ),
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline_rounded, color: theme.colorScheme.error, size: 20),
+          Icon(
+            Icons.error_outline_rounded,
+            color: theme.colorScheme.error,
+            size: 20,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               message,
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error, fontWeight: FontWeight.bold),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.error,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],

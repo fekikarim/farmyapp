@@ -22,12 +22,16 @@ class JobCard extends StatelessWidget {
         border: Border.all(
           color: hasHighMatch
               ? Colors.green.withOpacity(0.4)
-              : (isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05)),
+              : (isDark
+                    ? Colors.white.withOpacity(0.05)
+                    : Colors.black.withOpacity(0.05)),
           width: hasHighMatch ? 1.5 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.04),
+            color: isDark
+                ? Colors.black.withOpacity(0.2)
+                : Colors.black.withOpacity(0.04),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),
@@ -59,7 +63,9 @@ class JobCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: hasHighMatch ? Colors.green.withOpacity(0.3) : Colors.transparent,
+                          color: hasHighMatch
+                              ? Colors.green.withOpacity(0.3)
+                              : Colors.transparent,
                           width: 1.5,
                         ),
                       ),
@@ -86,7 +92,11 @@ class JobCard extends StatelessWidget {
                           const SizedBox(height: 2),
                           Row(
                             children: [
-                              Icon(Icons.location_on_outlined, size: 12, color: Colors.grey.shade500),
+                              Icon(
+                                Icons.location_on_outlined,
+                                size: 12,
+                                color: Colors.grey.shade500,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 job.land?.name ?? 'Unknown Land',
@@ -117,35 +127,49 @@ class JobCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 18),
-                
+
                 // Skills & Budget Row
                 Row(
                   children: [
                     Expanded(
                       child: Wrap(
                         spacing: 8,
-                        children: (job.requiredSkills ?? []).take(2).map((skill) => Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            skill,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                            ),
-                          ),
-                        )).toList(),
+                        children: (job.requiredSkills ?? [])
+                            .take(2)
+                            .map(
+                              (skill) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? Colors.white.withOpacity(0.05)
+                                      : Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  skill,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: isDark
+                                        ? Colors.grey.shade400
+                                        : Colors.grey.shade600,
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
                       ),
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          job.salary != null ? '${job.salary!.toStringAsFixed(0)} TND' : 'Negotiable',
+                          job.salary != null
+                              ? '${job.salary!.toStringAsFixed(0)} TND'
+                              : 'Negotiable',
                           style: const TextStyle(
                             fontWeight: FontWeight.w900,
                             color: Colors.green,

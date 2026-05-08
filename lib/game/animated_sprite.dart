@@ -68,15 +68,15 @@ class _AnimatedSpriteState extends State<AnimatedSprite> {
     while (hasMoreFrames && frameIndex < maxFrames) {
       final String framePath = '$fullBasePath/image$frameIndex.png';
       final ImageProvider provider = AssetImage(framePath);
-      
+
       try {
-        // We need to check if asset exists. 
+        // We need to check if asset exists.
         // In Flutter, checking asset existence is tricky without platform channels or looking at AssetManifest.
         // For simplicity, we assume images are named image0, image1... and we try to load them.
-        
+
         final completer = Completer<void>();
         final stream = provider.resolve(const ImageConfiguration());
-        
+
         late ImageStreamListener listener;
         listener = ImageStreamListener(
           (ImageInfo info, bool synchronousCall) {
@@ -89,7 +89,7 @@ class _AnimatedSpriteState extends State<AnimatedSprite> {
           },
         );
         stream.addListener(listener);
-        
+
         await completer.future;
         _frames.add(provider);
         frameIndex++;

@@ -18,9 +18,21 @@ class DeliveryStatusFilter extends StatelessWidget {
     return [
       (null, l10n.filterAll, Icons.list_alt_rounded),
       (DeliveryStatus.orderCreated, l10n.filterNew, Icons.fiber_new_rounded),
-      (DeliveryStatus.confirmed, l10n.filterConfirmed, Icons.check_circle_outline_rounded),
-      (DeliveryStatus.preparing, l10n.filterPreparing, Icons.inventory_2_rounded),
-      (DeliveryStatus.outForDelivery, l10n.filterInTransit, Icons.local_shipping_rounded),
+      (
+        DeliveryStatus.confirmed,
+        l10n.filterConfirmed,
+        Icons.check_circle_outline_rounded,
+      ),
+      (
+        DeliveryStatus.preparing,
+        l10n.filterPreparing,
+        Icons.inventory_2_rounded,
+      ),
+      (
+        DeliveryStatus.outForDelivery,
+        l10n.filterInTransit,
+        Icons.local_shipping_rounded,
+      ),
       (DeliveryStatus.delivered, l10n.filterDelivered, Icons.verified_rounded),
       (DeliveryStatus.cancelled, l10n.filterCancelled, Icons.cancel_rounded),
     ];

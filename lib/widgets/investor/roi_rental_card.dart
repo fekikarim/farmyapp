@@ -5,11 +5,7 @@ class RoiRentalCard extends StatelessWidget {
   final RoiRentalBreakdown rental;
   final VoidCallback onTap;
 
-  const RoiRentalCard({
-    super.key,
-    required this.rental,
-    required this.onTap,
-  });
+  const RoiRentalCard({super.key, required this.rental, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +28,9 @@ class RoiRentalCard extends StatelessWidget {
             ),
           ],
           border: Border.all(
-            color: isProfitable ? Colors.green.withValues(alpha: 0.3) : Colors.red.withValues(alpha: 0.3),
+            color: isProfitable
+                ? Colors.green.withValues(alpha: 0.3)
+                : Colors.red.withValues(alpha: 0.3),
             width: 1.5,
           ),
         ),
@@ -53,15 +51,22 @@ class RoiRentalCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: isProfitable ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
+                    color: isProfitable
+                        ? Colors.green.withValues(alpha: 0.1)
+                        : Colors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     '${rental.roiPercentage > 0 ? '+' : ''}${rental.roiPercentage.toStringAsFixed(1)}%',
                     style: TextStyle(
-                      color: isProfitable ? Colors.green.shade700 : Colors.red.shade700,
+                      color: isProfitable
+                          ? Colors.green.shade700
+                          : Colors.red.shade700,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -84,10 +89,11 @@ class RoiRentalCard extends StatelessWidget {
                   child: _buildMetric(
                     context,
                     title: 'Revenue',
-                    value: '${rental.totalRevenueWithProducts.toStringAsFixed(2)} TND',
+                    value:
+                        '${rental.totalRevenueWithProducts.toStringAsFixed(2)} TND',
                     icon: Icons.attach_money,
                     color: Colors.blue.shade600,
-                    badge: rental.productRevenue > 0 
+                    badge: rental.productRevenue > 0
                         ? '+${rental.productRevenue.toStringAsFixed(0)} from products'
                         : null,
                   ),
@@ -98,7 +104,10 @@ class RoiRentalCard extends StatelessWidget {
             if (rental.productRevenue > 0) ...[
               const SizedBox(height: 10),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -140,7 +149,9 @@ class RoiRentalCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                color: theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
+                ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -155,7 +166,9 @@ class RoiRentalCard extends StatelessWidget {
                   Text(
                     '${isProfitable ? '+' : ''}${rental.netProfit.toStringAsFixed(2)} TND',
                     style: TextStyle(
-                      color: isProfitable ? Colors.green.shade700 : Colors.red.shade700,
+                      color: isProfitable
+                          ? Colors.green.shade700
+                          : Colors.red.shade700,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -169,7 +182,14 @@ class RoiRentalCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMetric(BuildContext context, {required String title, required String value, required IconData icon, required Color color, String? badge}) {
+  Widget _buildMetric(
+    BuildContext context, {
+    required String title,
+    required String value,
+    required IconData icon,
+    required Color color,
+    String? badge,
+  }) {
     final theme = Theme.of(context);
     return Row(
       children: [

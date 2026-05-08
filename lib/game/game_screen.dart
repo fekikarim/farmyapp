@@ -58,7 +58,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   final Set<String> _warnedMissingWorkerSpriteSets = <String>{};
 
   // GlobalKey to access IsometricMap for camera follow synchronization
-  final GlobalKey<IsometricMapState> _isometricMapKey = GlobalKey<IsometricMapState>();
+  final GlobalKey<IsometricMapState> _isometricMapKey =
+      GlobalKey<IsometricMapState>();
 
   @override
   void initState() {
@@ -100,7 +101,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     }
     // Debug: log stick values periodically
     if (_stickVec.dx != 0 || _stickVec.dy != 0) {
-      debugPrint('[GameTick] stick=(${_stickVec.dx.toStringAsFixed(2)}, ${_stickVec.dy.toStringAsFixed(2)}) dt=$dt');
+      debugPrint(
+        '[GameTick] stick=(${_stickVec.dx.toStringAsFixed(2)}, ${_stickVec.dy.toStringAsFixed(2)}) dt=$dt',
+      );
     }
     gp.applyJoystickInput(_stickVec.dx, _stickVec.dy, dt);
     // Sync camera follow at 60fps for smooth tracking
@@ -567,7 +570,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         ? Colors.blue
         : Colors.orange;
 
-    final String categoryLabel = _translateCategory(context, category).toUpperCase();
+    final String categoryLabel = _translateCategory(
+      context,
+      category,
+    ).toUpperCase();
 
     showModalBottomSheet(
       context: context,
@@ -718,8 +724,16 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                     spacing: 10,
                     runSpacing: 8,
                     children: [
-                      _statChip(Icons.grid_3x3, AppLocalizations.of(context)!.position, '($x, $y)'),
-                      _statChip(Icons.aspect_ratio, AppLocalizations.of(context)!.size, '${fw}×$fh ${AppLocalizations.of(context)!.tiles}'),
+                      _statChip(
+                        Icons.grid_3x3,
+                        AppLocalizations.of(context)!.position,
+                        '($x, $y)',
+                      ),
+                      _statChip(
+                        Icons.aspect_ratio,
+                        AppLocalizations.of(context)!.size,
+                        '${fw}×$fh ${AppLocalizations.of(context)!.tiles}',
+                      ),
                       if (variant?['base_price'] != null)
                         _statChip(
                           Icons.monetization_on_outlined,
@@ -1018,7 +1032,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                             ? _handlePlacement
                             : null,
                         icon: const Icon(Icons.check),
-                        label: Text(AppLocalizations.of(context)!.confirmButton),
+                        label: Text(
+                          AppLocalizations.of(context)!.confirmButton,
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.greenAccent,
                           foregroundColor: Colors.black,
@@ -1361,7 +1377,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                       _stickVec = vec;
                       // Debug: log joystick input
                       if (vec.dx != 0 || vec.dy != 0) {
-                        debugPrint('[Joystick] vec=(${vec.dx.toStringAsFixed(2)}, ${vec.dy.toStringAsFixed(2)})');
+                        debugPrint(
+                          '[Joystick] vec=(${vec.dx.toStringAsFixed(2)}, ${vec.dy.toStringAsFixed(2)})',
+                        );
                       }
                     },
                   ),
@@ -1397,6 +1415,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     ]);
     super.dispose();
   }
+
   String _translateCategory(BuildContext context, String category) {
     final l10n = AppLocalizations.of(context)!;
     switch (category.toLowerCase()) {

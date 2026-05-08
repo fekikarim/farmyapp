@@ -23,19 +23,13 @@ class NoInternetScreen extends StatelessWidget {
               const SizedBox(height: 24),
               Text(
                 AppLocalizations.of(context)!.noInternetConnection,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               Text(
                 AppLocalizations.of(context)!.noInternetDescription,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
               const SizedBox(height: 32),
               ElevatedButton.icon(

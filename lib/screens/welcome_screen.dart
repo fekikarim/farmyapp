@@ -15,7 +15,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-
   @override
   void dispose() {
     _pageController.dispose();
@@ -211,7 +210,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     shadowColor: AppTheme.primaryColor.withOpacity(0.4),
                   ),
                   child: Text(
-                    _currentPage == pages.length - 1 ? l10n.finish : l10n.continueText,
+                    _currentPage == pages.length - 1
+                        ? l10n.finish
+                        : l10n.continueText,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

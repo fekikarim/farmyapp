@@ -28,7 +28,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.confirmPurchase),
         content: Text(
-          AppLocalizations.of(context)!.buyProductConfirmation(product.title, product.price),
+          AppLocalizations.of(
+            context,
+          )!.buyProductConfirmation(product.title, product.price),
         ),
         actions: [
           TextButton(
@@ -76,7 +78,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
             padding: const EdgeInsets.only(right: 16.0),
             child: Center(
               child: Text(
-                AppLocalizations.of(context)!.creditsCount(walletProvider.credits.toStringAsFixed(2)),
+                AppLocalizations.of(
+                  context,
+                )!.creditsCount(walletProvider.credits.toStringAsFixed(2)),
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -154,7 +158,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                AppLocalizations.of(context)!.priceCountCredits(product.price),
+                                AppLocalizations.of(
+                                  context,
+                                )!.priceCountCredits(product.price),
                                 style: TextStyle(
                                   color: Theme.of(context).primaryColor,
                                   fontWeight: FontWeight.bold,
@@ -181,7 +187,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
-                                  child: Text(AppLocalizations.of(context)!.buyNow),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.buyNow,
+                                  ),
                                 ),
                               ),
                             ],

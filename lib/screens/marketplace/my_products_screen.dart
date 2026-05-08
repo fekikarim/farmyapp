@@ -29,7 +29,11 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.deleteProduct),
-        content: Text(AppLocalizations.of(context)!.deleteProductConfirmation(product.title)),
+        content: Text(
+          AppLocalizations.of(
+            context,
+          )!.deleteProductConfirmation(product.title),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -54,7 +58,9 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            success ? AppLocalizations.of(context)!.productDeleted : AppLocalizations.of(context)!.failedToDeleteProduct,
+            success
+                ? AppLocalizations.of(context)!.productDeleted
+                : AppLocalizations.of(context)!.failedToDeleteProduct,
           ),
         ),
       );
@@ -79,14 +85,20 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => InvestmentAgentScreen(
-                    initialMessage: AppLocalizations.of(context)!.analyzeInventoryPrompt,
+                    initialMessage: AppLocalizations.of(
+                      context,
+                    )!.analyzeInventoryPrompt,
                     initialContext: {
-                      'inventory': products.myProducts.map((p) => {
-                        'title': p.title,
-                        'price': p.price,
-                        'quantity': p.quantity,
-                        'status': p.status.name,
-                      }).toList(),
+                      'inventory': products.myProducts
+                          .map(
+                            (p) => {
+                              'title': p.title,
+                              'price': p.price,
+                              'quantity': p.quantity,
+                              'status': p.status.name,
+                            },
+                          )
+                          .toList(),
                     },
                   ),
                 ),
@@ -149,10 +161,14 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                             child: SubscriptionLimitBar(
                               limitKey: 'product_limit',
                               currentCount: productProvider.myProducts.length,
-                              label: AppLocalizations.of(context)!.productListingsUsed,
+                              label: AppLocalizations.of(
+                                context,
+                              )!.productListingsUsed,
                               icon: Icons.inventory_2_outlined,
                               accentColor: Colors.green,
-                              upgradePlanName: AppLocalizations.of(context)!.upgradePlanName,
+                              upgradePlanName: AppLocalizations.of(
+                                context,
+                              )!.upgradePlanName,
                             ),
                           );
                         }
@@ -306,7 +322,9 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    AppLocalizations.of(context)!.imageUnavailable,
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.imageUnavailable,
                                     style: TextStyle(
                                       color: theme.disabledColor,
                                       fontSize: 12,
@@ -534,6 +552,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
       ),
     );
   }
+
   String _getStatusLabel(BuildContext context, ProductStatus status) {
     final l10n = AppLocalizations.of(context)!;
     switch (status) {

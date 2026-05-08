@@ -305,7 +305,8 @@ class _MandatoryPricingScreenState extends State<MandatoryPricingScreen>
         }
       } else if (mounted) {
         _showErrorSnack(
-          e.error.localizedMessage ?? AppLocalizations.of(context)!.paymentCancelled,
+          e.error.localizedMessage ??
+              AppLocalizations.of(context)!.paymentCancelled,
           isWarning: true,
         );
       }
@@ -891,7 +892,10 @@ class _PlanCard extends StatelessWidget {
                         color: isRecommended ? Colors.orange : accentColor,
                       ),
                     if (plan.isFree)
-                      _Badge(label: AppLocalizations.of(context)!.alwaysFree, color: Colors.teal),
+                      _Badge(
+                        label: AppLocalizations.of(context)!.alwaysFree,
+                        color: Colors.teal,
+                      ),
                   ],
                 ),
               ],
@@ -922,7 +926,9 @@ class _PlanCard extends StatelessWidget {
               textBaseline: TextBaseline.alphabetic,
               children: [
                 Text(
-                  plan.isFree ? AppLocalizations.of(context)!.freeLabel : '\$${price.toStringAsFixed(2)}',
+                  plan.isFree
+                      ? AppLocalizations.of(context)!.freeLabel
+                      : '\$${price.toStringAsFixed(2)}',
                   style: TextStyle(
                     fontSize: plan.isFree ? 30 : 36,
                     fontWeight: FontWeight.w900,
@@ -933,7 +939,9 @@ class _PlanCard extends StatelessWidget {
                 if (!plan.isFree) ...[
                   const SizedBox(width: 4),
                   Text(
-                    cycle == 'monthly' ? AppLocalizations.of(context)!.monthlySuffix : AppLocalizations.of(context)!.yearlySuffix,
+                    cycle == 'monthly'
+                        ? AppLocalizations.of(context)!.monthlySuffix
+                        : AppLocalizations.of(context)!.yearlySuffix,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: isDark ? Colors.white38 : Colors.black38,
                       fontSize: 13,
@@ -1159,8 +1167,12 @@ class _PaymentSheet extends StatelessWidget {
                 subtitle: isWalletLoading
                     ? AppLocalizations.of(context)!.loadingBalance
                     : isSufficient
-                    ? AppLocalizations.of(context)!.balanceStatusSuccess(credits.toStringAsFixed(2))
-                    : AppLocalizations.of(context)!.balanceStatusInsufficient(credits.toStringAsFixed(2)),
+                    ? AppLocalizations.of(
+                        context,
+                      )!.balanceStatusSuccess(credits.toStringAsFixed(2))
+                    : AppLocalizations.of(
+                        context,
+                      )!.balanceStatusInsufficient(credits.toStringAsFixed(2)),
                 isSufficient: !isWalletLoading && isSufficient,
                 isLoading: isWalletLoading,
                 onTap: onPayWithCredits,

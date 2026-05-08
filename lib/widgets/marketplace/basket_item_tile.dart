@@ -122,7 +122,9 @@ class BasketItemTile extends StatelessWidget {
                       ),
                       const Spacer(),
                       Text(
-                        AppLocalizations.of(context)!.priceTnd(item.subtotal.toStringAsFixed(2)),
+                        AppLocalizations.of(
+                          context,
+                        )!.priceTnd(item.subtotal.toStringAsFixed(2)),
                         style: TextStyle(
                           color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w800,
@@ -156,11 +158,7 @@ class _QuantityButton extends StatelessWidget {
   final VoidCallback? onTap;
   final ThemeData theme;
 
-  const _QuantityButton({
-    required this.icon,
-    this.onTap,
-    required this.theme,
-  });
+  const _QuantityButton({required this.icon, this.onTap, required this.theme});
 
   @override
   Widget build(BuildContext context) {

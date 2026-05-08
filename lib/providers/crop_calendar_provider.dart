@@ -11,7 +11,7 @@ class CropCalendarProvider with ChangeNotifier {
   List<CropCycle> _cropCycles = [];
   List<CropPlan> _cropPlans = [];
   List<Land> _lands = [];
-  
+
   // State
   String? _selectedLandId;
   CalendarViewMode _viewMode = CalendarViewMode.month;
@@ -40,21 +40,21 @@ class CropCalendarProvider with ChangeNotifier {
   // Computed: Get items for specific date
   List<dynamic> getItemsForDate(DateTime date) {
     final List<dynamic> items = [];
-    
+
     // Add crop cycles that span this date
     for (final cycle in _cropCycles) {
       if (cycle.spansDate(date)) {
         items.add(cycle);
       }
     }
-    
+
     // Add crop plans that span this date
     for (final plan in _cropPlans) {
       if (plan.spansDate(date) && plan.status != CropPlanStatus.cancelled) {
         items.add(plan);
       }
     }
-    
+
     return items;
   }
 
@@ -62,41 +62,48 @@ class CropCalendarProvider with ChangeNotifier {
   List<CropCycle> get upcomingHarvests {
     final now = DateTime.now();
     final thirtyDaysFromNow = now.add(const Duration(days: 30));
-    
+
     return _cropCycles.where((cycle) {
       final nextHarvest = cycle.nextHarvest;
       if (nextHarvest == null) return false;
-      return nextHarvest.isAfter(now) && 
-             nextHarvest.isBefore(thirtyDaysFromNow) ||
-             cycle.isReadyForHarvest;
-    }).toList()
-      ..sort((a, b) {
-        final aDate = a.nextHarvest ?? DateTime.now();
-        final bDate = b.nextHarvest ?? DateTime.now();
-        return aDate.compareTo(bDate);
-      });
+      return nextHarvest.isAfter(now) &&
+              nextHarvest.isBefore(thirtyDaysFromNow) ||
+          cycle.isReadyForHarvest;
+    }).toList()..sort((a, b) {
+      final aDate = a.nextHarvest ?? DateTime.now();
+      final bDate = b.nextHarvest ?? DateTime.now();
+      return aDate.compareTo(bDate);
+    });
   }
 
   // Computed: Active crops (currently growing)
   List<CropCycle> get activeCrops {
-    return _cropCycles.where((cycle) => 
-      cycle.status == CropCycleStatus.growing || 
-      cycle.status == CropCycleStatus.ready
-    ).toList();
+    return _cropCycles
+        .where(
+          (cycle) =>
+              cycle.status == CropCycleStatus.growing ||
+              cycle.status == CropCycleStatus.ready,
+        )
+        .toList();
   }
 
   // Computed: Ready to harvest
   List<CropCycle> get readyToHarvest {
-    return _cropCycles.where((cycle) => 
-      cycle.isReadyForHarvest || cycle.status == CropCycleStatus.ready
-    ).toList();
+    return _cropCycles
+        .where(
+          (cycle) =>
+              cycle.isReadyForHarvest || cycle.status == CropCycleStatus.ready,
+        )
+        .toList();
   }
 
   // Computed: Overdue plans
   List<CropPlan> get overduePlans {
-    return _cropPlans.where((plan) => 
-      plan.status == CropPlanStatus.planned && plan.isOverdue
-    ).toList();
+    return _cropPlans
+        .where(
+          (plan) => plan.status == CropPlanStatus.planned && plan.isOverdue,
+        )
+        .toList();
   }
 
   // Computed: Today's tasks
@@ -107,9 +114,11 @@ class CropCalendarProvider with ChangeNotifier {
 
   // Computed: Planned crops (future planting)
   List<CropPlan> get plannedCrops {
-    return _cropPlans.where((plan) => 
-      plan.status == CropPlanStatus.planned && !plan.isOverdue
-    ).toList()
+    return _cropPlans
+        .where(
+          (plan) => plan.status == CropPlanStatus.planned && !plan.isOverdue,
+        )
+        .toList()
       ..sort((a, b) => a.plannedPlantingDate.compareTo(b.plannedPlantingDate));
   }
 
@@ -142,11 +151,7 @@ class CropCalendarProvider with ChangeNotifier {
 
   void goToPrevious() {
     if (_viewMode == CalendarViewMode.month) {
-      _currentDate = DateTime(
-        _currentDate.year, 
-        _currentDate.month - 1, 
-        1,
-      );
+      _currentDate = DateTime(_currentDate.year, _currentDate.month - 1, 1);
     } else {
       _currentDate = DateTime(_currentDate.year - 1, 1, 1);
     }
@@ -155,11 +160,7 @@ class CropCalendarProvider with ChangeNotifier {
 
   void goToNext() {
     if (_viewMode == CalendarViewMode.month) {
-      _currentDate = DateTime(
-        _currentDate.year, 
-        _currentDate.month + 1, 
-        1,
-      );
+      _currentDate = DateTime(_currentDate.year, _currentDate.month + 1, 1);
     } else {
       _currentDate = DateTime(_currentDate.year + 1, 1, 1);
     }
@@ -175,17 +176,17 @@ class CropCalendarProvider with ChangeNotifier {
   Future<void> loadCropData(String landId) async {
     _setLoading(true);
     _error = null;
-    
+
     try {
       // Load crop cycles and plans in parallel
       final results = await Future.wait([
         CropCalendarService.fetchCropCycles(landId),
         CropCalendarService.fetchCropPlans(landId),
       ]);
-      
+
       _cropCycles = results[0] as List<CropCycle>;
       _cropPlans = results[1] as List<CropPlan>;
-      
+
       _setLoading(false);
     } catch (e) {
       _error = e.toString();
@@ -195,17 +196,17 @@ class CropCalendarProvider with ChangeNotifier {
 
   Future<void> loadAllLandsData() async {
     if (_lands.isEmpty) return;
-    
+
     _setLoading(true);
     _error = null;
-    
+
     try {
       final landIds = _lands.map((l) => l.id).toList();
       final allCycles = await CropCalendarService.fetchAllCropCycles(landIds);
-      
+
       // Flatten all cycles
       _cropCycles = allCycles.values.expand((list) => list).toList();
-      
+
       // Load plans for all lands
       final allPlans = <CropPlan>[];
       for (final landId in landIds) {
@@ -213,7 +214,7 @@ class CropCalendarProvider with ChangeNotifier {
         allPlans.addAll(plans);
       }
       _cropPlans = allPlans;
-      
+
       _setLoading(false);
     } catch (e) {
       _error = e.toString();
@@ -232,16 +233,16 @@ class CropCalendarProvider with ChangeNotifier {
   // Crop Plan CRUD
   Future<bool> addCropPlan(CropPlan plan) async {
     _setLoading(true);
-    
+
     try {
       final created = await CropCalendarService.createCropPlan(plan);
-      
+
       if (created != null) {
         _cropPlans.add(created);
         _setLoading(false);
         return true;
       }
-      
+
       _error = 'Failed to create crop plan';
       _setLoading(false);
       return false;
@@ -254,15 +255,15 @@ class CropCalendarProvider with ChangeNotifier {
 
   Future<bool> updateCropPlan(CropPlan plan) async {
     if (plan.id == null) return false;
-    
+
     _setLoading(true);
-    
+
     try {
       final updated = await CropCalendarService.updateCropPlan(
-        plan.id!, 
+        plan.id!,
         plan.toJson(),
       );
-      
+
       if (updated != null) {
         final index = _cropPlans.indexWhere((p) => p.id == plan.id);
         if (index != -1) {
@@ -272,7 +273,7 @@ class CropCalendarProvider with ChangeNotifier {
         _setLoading(false);
         return true;
       }
-      
+
       _error = 'Failed to update crop plan';
       _setLoading(false);
       return false;
@@ -285,16 +286,16 @@ class CropCalendarProvider with ChangeNotifier {
 
   Future<bool> deleteCropPlan(String id) async {
     _setLoading(true);
-    
+
     try {
       final success = await CropCalendarService.deleteCropPlan(id);
-      
+
       if (success) {
         _cropPlans.removeWhere((p) => p.id == id);
         _setLoading(false);
         return true;
       }
-      
+
       _error = 'Failed to delete crop plan';
       _setLoading(false);
       return false;
@@ -308,7 +309,7 @@ class CropCalendarProvider with ChangeNotifier {
   Future<bool> activatePlan(String id) async {
     try {
       final updated = await CropCalendarService.activateCropPlan(id);
-      
+
       if (updated != null) {
         final index = _cropPlans.indexWhere((p) => p.id == id);
         if (index != -1) {
@@ -327,7 +328,7 @@ class CropCalendarProvider with ChangeNotifier {
   Future<bool> completePlan(String id) async {
     try {
       final updated = await CropCalendarService.completeCropPlan(id);
-      
+
       if (updated != null) {
         final index = _cropPlans.indexWhere((p) => p.id == id);
         if (index != -1) {
@@ -358,11 +359,7 @@ class CropCalendarProvider with ChangeNotifier {
   String getLandName(String landId) {
     final land = _lands.firstWhere(
       (l) => l.id == landId,
-      orElse: () => Land(
-        id: landId, 
-        ownerId: '', 
-        name: 'Unknown Land',
-      ),
+      orElse: () => Land(id: landId, ownerId: '', name: 'Unknown Land'),
     );
     return land.name;
   }

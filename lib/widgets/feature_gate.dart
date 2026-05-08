@@ -66,7 +66,9 @@ class FeatureGate extends StatelessWidget {
       builder: (ctx) {
         final l10n = AppLocalizations.of(context)!;
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Row(
             children: [
               const Icon(Icons.lock_outline, color: Colors.amber, size: 28),

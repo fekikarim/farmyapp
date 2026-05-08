@@ -145,7 +145,9 @@ class _VendorDeliveryDashboardState extends State<VendorDeliveryDashboard> {
                         ),
                         if (provider.pagination != null)
                           Text(
-                            AppLocalizations.of(context)!.totalCount(provider.pagination!.total.toString()),
+                            AppLocalizations.of(context)!.totalCount(
+                              provider.pagination!.total.toString(),
+                            ),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurface.withOpacity(
                                 0.4,

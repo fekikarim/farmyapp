@@ -349,23 +349,25 @@ class FarmerDashboardData {
           : HeroMetrics.empty(),
       alerts: json['alerts'] != null
           ? (json['alerts'] as List<dynamic>)
-              .map((e) => SmartAlert.fromJson(e as Map<String, dynamic>))
-              .toList()
+                .map((e) => SmartAlert.fromJson(e as Map<String, dynamic>))
+                .toList()
           : [],
       lands: json['lands'] != null
           ? (json['lands'] as List<dynamic>)
-              .map((e) => LandOperational.fromJson(e as Map<String, dynamic>))
-              .toList()
+                .map((e) => LandOperational.fromJson(e as Map<String, dynamic>))
+                .toList()
           : [],
       workers: json['workers'] != null
           ? (json['workers'] as List<dynamic>)
-              .map((e) => ActiveWorker.fromJson(e as Map<String, dynamic>))
-              .toList()
+                .map((e) => ActiveWorker.fromJson(e as Map<String, dynamic>))
+                .toList()
           : [],
       aiSessions: json['aiSessions'] != null
           ? (json['aiSessions'] as List<dynamic>)
-              .map((e) => AISessionPreview.fromJson(e as Map<String, dynamic>))
-              .toList()
+                .map(
+                  (e) => AISessionPreview.fromJson(e as Map<String, dynamic>),
+                )
+                .toList()
           : [],
     );
   }

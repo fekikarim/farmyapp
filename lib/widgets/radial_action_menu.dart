@@ -20,6 +20,7 @@ class RadialActionMenu extends StatefulWidget {
   final List<RadialMenuAction> actions;
   final Function(String actionId) onActionSelected;
   final VoidCallback onDismiss;
+
   /// Distance from center to the middle of each button (= circle outline radius)
   final double radius;
 
@@ -95,30 +96,39 @@ class _RadialActionMenuState extends State<RadialActionMenu>
 
               // ── Dismiss button + action buttons on the ring ──────────────
               for (int i = 0; i < total; i++) ...[
-                Builder(builder: (context) {
-                  // Start at top (-π/2) and go clockwise
-                  final double angle = -pi / 2 + step * i;
-                  final double dx = cos(angle) * widget.radius * _scale.value;
-                  final double dy = sin(angle) * widget.radius * _scale.value;
+                Builder(
+                  builder: (context) {
+                    // Start at top (-π/2) and go clockwise
+                    final double angle = -pi / 2 + step * i;
+                    final double dx = cos(angle) * widget.radius * _scale.value;
+                    final double dy = sin(angle) * widget.radius * _scale.value;
 
-                  final bool isDismiss = (i == 0);
-                  final RadialMenuAction? action =
-                      isDismiss ? null : widget.actions[i - 1];
+                    final bool isDismiss = (i == 0);
+                    final RadialMenuAction? action = isDismiss
+                        ? null
+                        : widget.actions[i - 1];
 
-                  return Positioned(
-                    left: canvasR + dx - btnRadius,
-                    top: canvasR + dy - btnRadius,
-                    child: Transform.scale(
-                      scale: _scale.value,
-                      child: _CircleButton(
-                        icon: isDismiss ? Icons.close : action!.icon,
-                        color: isDismiss ? Colors.redAccent : action!.backgroundColor,
-                        tooltip: isDismiss ? AppLocalizations.of(context)!.closeTip : action!.tooltip,
-                        onTap: isDismiss ? _dismiss : () => _select(action!.id),
+                    return Positioned(
+                      left: canvasR + dx - btnRadius,
+                      top: canvasR + dy - btnRadius,
+                      child: Transform.scale(
+                        scale: _scale.value,
+                        child: _CircleButton(
+                          icon: isDismiss ? Icons.close : action!.icon,
+                          color: isDismiss
+                              ? Colors.redAccent
+                              : action!.backgroundColor,
+                          tooltip: isDismiss
+                              ? AppLocalizations.of(context)!.closeTip
+                              : action!.tooltip,
+                          onTap: isDismiss
+                              ? _dismiss
+                              : () => _select(action!.id),
+                        ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  },
+                ),
               ],
             ],
           ),

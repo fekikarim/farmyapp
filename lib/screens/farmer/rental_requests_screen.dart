@@ -48,6 +48,7 @@ class _FarmerRentalRequestsScreenState
       }
     }
   }
+
   String _translateCategory(BuildContext context, String category) {
     final l10n = AppLocalizations.of(context)!;
     switch (category.toLowerCase()) {
@@ -184,7 +185,9 @@ class _FarmerRentalRequestsScreenState
                     maxLength: 500,
                     enabled: !isSubmitting,
                     decoration: InputDecoration(
-                      hintText: AppLocalizations.of(context)!.enterRejectionReason,
+                      hintText: AppLocalizations.of(
+                        context,
+                      )!.enterRejectionReason,
                       filled: true,
                       fillColor: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white.withOpacity(0.05)
@@ -214,7 +217,9 @@ class _FarmerRentalRequestsScreenState
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return AppLocalizations.of(context)!.pleaseEnterRejectionReason;
+                        return AppLocalizations.of(
+                          context,
+                        )!.pleaseEnterRejectionReason;
                       }
                       if (value.trim().length < 5) {
                         return AppLocalizations.of(context)!.reasonTooShort;
@@ -566,7 +571,8 @@ class _FarmerRentalRequestsScreenState
 
     final investorName = _getInvestorDisplayName(user);
     final avatarUrl = _getInvestorAvatar(user);
-    final itemName = itemDetails['name'] ?? AppLocalizations.of(context)!.unknownItem;
+    final itemName =
+        itemDetails['name'] ?? AppLocalizations.of(context)!.unknownItem;
     final variantName = itemDetails['variant_name'] ?? '';
     final itemImage = itemDetails['image_url'];
     final landName = land['name'] ?? AppLocalizations.of(context)!.unknownLand;
@@ -763,7 +769,10 @@ class _FarmerRentalRequestsScreenState
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            _translateCategory(context, assetCategory.toString()).toUpperCase(),
+                            _translateCategory(
+                              context,
+                              assetCategory.toString(),
+                            ).toUpperCase(),
                             style: TextStyle(
                               color: Colors.orange.shade600,
                               fontSize: 10,
@@ -1286,6 +1295,7 @@ class _LocalAssetImageState extends State<_LocalAssetImage>
       ],
     );
   }
+
   String _translateCategory(BuildContext context, String category) {
     final l10n = AppLocalizations.of(context)!;
     switch (category.toLowerCase()) {

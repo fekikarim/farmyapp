@@ -16,16 +16,18 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
   Future<void> _verify() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final error = await authProvider.verify2faLogin(_codeController.text);
-    
+
     if (error == null) {
       if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil('/main', (route) => false);
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/main', (route) => false);
       }
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error)));
       }
     }
   }
@@ -54,7 +56,9 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
                     const SizedBox(height: 24),
                     Text(
                       AppLocalizations.of(context)!.verificationRequired,
-                      style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -67,7 +71,9 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
                         textSelectionTheme: TextSelectionThemeData(
                           cursorColor: theme.colorScheme.primary,
                           selectionHandleColor: theme.colorScheme.primary,
-                          selectionColor: theme.colorScheme.primary.withOpacity(0.3),
+                          selectionColor: theme.colorScheme.primary.withOpacity(
+                            0.3,
+                          ),
                         ),
                       ),
                       child: TextField(
@@ -89,18 +95,26 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
                           ),
                           counterText: '',
                           filled: true,
-                          fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                          fillColor: theme.colorScheme.surfaceVariant
+                              .withOpacity(0.3),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+                            borderSide: BorderSide(
+                              color: theme.colorScheme.outline.withOpacity(0.2),
+                            ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.2)),
+                            borderSide: BorderSide(
+                              color: theme.colorScheme.outline.withOpacity(0.2),
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                            borderSide: BorderSide(
+                              color: theme.colorScheme.primary,
+                              width: 2,
+                            ),
                           ),
                         ),
                       ),
@@ -112,15 +126,20 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
                         onPressed: isLoading ? null : _verify,
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
-                        child: isLoading 
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                            ) 
-                          : Text(AppLocalizations.of(context)!.verify),
+                        child: isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Text(AppLocalizations.of(context)!.verify),
                       ),
                     ),
                     TextButton(

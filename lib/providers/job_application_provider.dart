@@ -7,7 +7,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class JobApplicationProvider with ChangeNotifier {
   List<JobApplication> _myApplications = [];
-  Map<String, List<JobApplication>> _jobApplications = {}; // jobId -> applications
+  Map<String, List<JobApplication>> _jobApplications =
+      {}; // jobId -> applications
   bool _isLoading = false;
   String? _error;
 
@@ -55,7 +56,7 @@ class JobApplicationProvider with ChangeNotifier {
       final token = await AuthService.getAccessToken();
       final url = '$_baseUrl/api/v1/job-applications/$jobId/applications';
       print('📡 Fetching applications for job $jobId: $url');
-      
+
       final response = await http.get(
         Uri.parse(url),
         headers: {'Authorization': 'Bearer $token'},
@@ -66,7 +67,9 @@ class JobApplicationProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        _jobApplications[jobId] = data.map((j) => JobApplication.fromJson(j)).toList();
+        _jobApplications[jobId] = data
+            .map((j) => JobApplication.fromJson(j))
+            .toList();
       } else {
         _error = 'Failed to load applications: ${response.statusCode}';
       }
@@ -111,7 +114,11 @@ class JobApplicationProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> updateApplicationStatus(String applicationId, String jobId, JobApplicationStatus status) async {
+  Future<bool> updateApplicationStatus(
+    String applicationId,
+    String jobId,
+    JobApplicationStatus status,
+  ) async {
     _isLoading = true;
     notifyListeners();
 

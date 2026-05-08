@@ -22,7 +22,7 @@ class _CreateFeedbackScreenState extends State<CreateFeedbackScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
+
   FeedbackCategory _selectedCategory = FeedbackCategory.general;
   FeedbackPriority _selectedPriority = FeedbackPriority.medium;
 
@@ -58,7 +58,10 @@ class _CreateFeedbackScreenState extends State<CreateFeedbackScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(context.read<FeedbackProvider>().error ?? 'Failed to submit feedback'),
+            content: Text(
+              context.read<FeedbackProvider>().error ??
+                  'Failed to submit feedback',
+            ),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),
@@ -96,7 +99,7 @@ class _CreateFeedbackScreenState extends State<CreateFeedbackScreen> {
               ),
             ),
           ),
-          
+
           SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Form(
@@ -133,7 +136,8 @@ class _CreateFeedbackScreenState extends State<CreateFeedbackScreen> {
                     controller: _titleController,
                     hint: 'Short summary...',
                     icon: Icons.topic_outlined,
-                    validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
+                    validator: (val) =>
+                        (val == null || val.isEmpty) ? 'Required' : null,
                   ),
                   const SizedBox(height: 24),
 
@@ -144,7 +148,8 @@ class _CreateFeedbackScreenState extends State<CreateFeedbackScreen> {
                     controller: _descriptionController,
                     hint: 'Provide as much detail as possible...',
                     maxLines: 6,
-                    validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
+                    validator: (val) =>
+                        (val == null || val.isEmpty) ? 'Required' : null,
                   ),
                   const SizedBox(height: 24),
 
@@ -163,14 +168,20 @@ class _CreateFeedbackScreenState extends State<CreateFeedbackScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.colorScheme.primary,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                         elevation: 0,
                       ),
                       child: feedbackProvider.isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
                           : const Text(
                               'SUBMIT REPORT',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1),
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1,
+                              ),
                             ),
                     ),
                   ),
@@ -202,7 +213,9 @@ class _CreateFeedbackScreenState extends State<CreateFeedbackScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+        border: Border.all(
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+        ),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<FeedbackCategory>(
@@ -213,7 +226,10 @@ class _CreateFeedbackScreenState extends State<CreateFeedbackScreen> {
           items: FeedbackCategory.values.map((cat) {
             return DropdownMenuItem(
               value: cat,
-              child: Text(cat.displayName, style: const TextStyle(fontWeight: FontWeight.w600)),
+              child: Text(
+                cat.displayName,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
             );
           }).toList(),
           onChanged: (val) {
@@ -247,11 +263,15 @@ class _CreateFeedbackScreenState extends State<CreateFeedbackScreen> {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: theme.colorScheme.onSurface.withValues(alpha: 0.05)),
+          borderSide: BorderSide(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
+          borderSide: BorderSide(
+            color: theme.colorScheme.primary.withValues(alpha: 0.3),
+          ),
         ),
       ),
     );
@@ -263,10 +283,18 @@ class _CreateFeedbackScreenState extends State<CreateFeedbackScreen> {
         final isSelected = _selectedPriority == prio;
         Color color;
         switch (prio) {
-          case FeedbackPriority.low: color = Colors.green; break;
-          case FeedbackPriority.medium: color = Colors.blue; break;
-          case FeedbackPriority.high: color = Colors.orange; break;
-          case FeedbackPriority.critical: color = Colors.red; break;
+          case FeedbackPriority.low:
+            color = Colors.green;
+            break;
+          case FeedbackPriority.medium:
+            color = Colors.blue;
+            break;
+          case FeedbackPriority.high:
+            color = Colors.orange;
+            break;
+          case FeedbackPriority.critical:
+            color = Colors.red;
+            break;
         }
 
         return Expanded(
@@ -278,7 +306,9 @@ class _CreateFeedbackScreenState extends State<CreateFeedbackScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
-                  color: isSelected ? color.withValues(alpha: 0.15) : theme.colorScheme.onSurface.withValues(alpha: 0.05),
+                  color: isSelected
+                      ? color.withValues(alpha: 0.15)
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(
                     color: isSelected ? color : Colors.transparent,

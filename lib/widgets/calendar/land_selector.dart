@@ -8,20 +8,16 @@ class LandSelector extends StatelessWidget {
   final bool showAllOption;
   final VoidCallback? onChanged;
 
-  const LandSelector({
-    super.key,
-    this.showAllOption = true,
-    this.onChanged,
-  });
+  const LandSelector({super.key, this.showAllOption = true, this.onChanged});
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CropCalendarProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     final lands = provider.lands;
     final selectedLandId = provider.selectedLandId;
-    
+
     if (lands.isEmpty) {
       return Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -47,7 +43,7 @@ class LandSelector extends StatelessWidget {
 
     // Build dropdown items
     final List<DropdownMenuItem<String>> items = [];
-    
+
     if (showAllOption) {
       items.add(
         DropdownMenuItem(
@@ -76,50 +72,54 @@ class LandSelector extends StatelessWidget {
         ),
       );
     }
-    
-    items.addAll(lands.map((land) {
-      return DropdownMenuItem(
-        value: land.id,
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: AppTheme.secondaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(6),
+
+    items.addAll(
+      lands.map((land) {
+        return DropdownMenuItem(
+          value: land.id,
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: AppTheme.secondaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(
+                  Icons.location_on,
+                  size: 16,
+                  color: AppTheme.secondaryColor,
+                ),
               ),
-              child: Icon(
-                Icons.location_on,
-                size: 16,
-                color: AppTheme.secondaryColor,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    land.name,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    '${land.gridWidth}x${land.gridHeight} tiles',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark ? Colors.white.withOpacity(0.5) : Colors.black.withOpacity(0.5),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      land.name,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                    Text(
+                      '${land.gridWidth}x${land.gridHeight} tiles',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isDark
+                            ? Colors.white.withOpacity(0.5)
+                            : Colors.black.withOpacity(0.5),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      );
-    }));
+            ],
+          ),
+        );
+      }),
+    );
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -128,7 +128,9 @@ class LandSelector extends StatelessWidget {
         color: isDark ? Colors.white.withOpacity(0.05) : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.12),
+          color: isDark
+              ? Colors.white.withOpacity(0.12)
+              : Colors.black.withOpacity(0.12),
         ),
         boxShadow: [
           BoxShadow(
@@ -165,19 +167,16 @@ class LandSelector extends StatelessWidget {
 class LandSelectorChips extends StatelessWidget {
   final VoidCallback? onChanged;
 
-  const LandSelectorChips({
-    super.key,
-    this.onChanged,
-  });
+  const LandSelectorChips({super.key, this.onChanged});
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CropCalendarProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     final lands = provider.lands;
     final selectedLandId = provider.selectedLandId;
-    
+
     if (lands.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -204,14 +203,16 @@ class LandSelectorChips extends StatelessWidget {
                   }
                 },
                 selectedColor: AppTheme.primaryColor,
-                backgroundColor: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
+                backgroundColor: isDark
+                    ? Colors.white.withOpacity(0.1)
+                    : Colors.black.withOpacity(0.05),
               ),
             );
           }
-          
+
           final land = lands[index - 1];
           final isSelected = selectedLandId == land.id;
-          
+
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ChoiceChip(
@@ -224,8 +225,10 @@ class LandSelectorChips extends StatelessWidget {
                 }
               },
               selectedColor: AppTheme.secondaryColor,
-              backgroundColor: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
-              avatar: isSelected 
+              backgroundColor: isDark
+                  ? Colors.white.withOpacity(0.1)
+                  : Colors.black.withOpacity(0.05),
+              avatar: isSelected
                   ? const Icon(Icons.check, size: 16)
                   : const Icon(Icons.location_on, size: 16),
             ),

@@ -302,13 +302,15 @@ class AuthService {
       print('🍎 Apple Sign-In: Starting authentication flow');
       print('🍎 Apple Sign-In: API Base URL: $_baseUrl');
       print('🍎 Apple Sign-In: Platform: ${Platform.operatingSystem}');
-      
+
       // Check if running on iOS/macOS
       if (!kIsWeb && !Platform.isIOS && !Platform.isMacOS) {
-        print('🍎 Apple Sign-In: Not on iOS/macOS, button should not be visible');
+        print(
+          '🍎 Apple Sign-In: Not on iOS/macOS, button should not be visible',
+        );
         throw Exception('Apple Sign-In is only available on iOS and macOS');
       }
-      
+
       // Generate nonce for security
       final rawNonce = _generateNonce();
       final nonce = _sha256ofString(rawNonce);
@@ -329,7 +331,9 @@ class AuthService {
       print('🍎 Apple Sign-In: Given name: ${credential.givenName}');
       print('🍎 Apple Sign-In: Family name: ${credential.familyName}');
       print('🍎 Apple Sign-In: State: ${credential.state}');
-      print('🍎 Apple Sign-In: Authorization code: ${credential.authorizationCode}');
+      print(
+        '🍎 Apple Sign-In: Authorization code: ${credential.authorizationCode}',
+      );
 
       // Extract identity token
       final idToken = credential.identityToken;
@@ -337,7 +341,9 @@ class AuthService {
         print('🍎 Apple Sign-In Error: No identity token received');
         throw Exception('Apple Sign-In failed: No identity token received');
       }
-      print('🍎 Apple Sign-In: Identity token received (${idToken.length} chars)');
+      print(
+        '🍎 Apple Sign-In: Identity token received (${idToken.length} chars)',
+      );
 
       // Prepare user info for new accounts
       Map<String, dynamic>? userInfo;
@@ -363,7 +369,9 @@ class AuthService {
           if (userInfo != null) 'profile': userInfo,
         }),
       );
-      print('🍎 Apple Sign-In: Backend response received - Status: ${response.statusCode}');
+      print(
+        '🍎 Apple Sign-In: Backend response received - Status: ${response.statusCode}',
+      );
 
       if (response.statusCode == 200) {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
@@ -374,34 +382,46 @@ class AuthService {
         return authResponse;
       } else {
         final body = jsonDecode(response.body);
-        final errorMsg = body['message'] ?? body['error'] ?? 'Apple authentication failed';
-        print('🍎 Apple Sign-In: Error: Backend returned ${response.statusCode} - $errorMsg');
+        final errorMsg =
+            body['message'] ?? body['error'] ?? 'Apple authentication failed';
+        print(
+          '🍎 Apple Sign-In: Error: Backend returned ${response.statusCode} - $errorMsg',
+        );
         print('🍎 Apple Sign-In: Response body: ${response.body}');
         throw Exception(errorMsg);
       }
     } on SignInWithAppleAuthorizationException catch (e) {
-      print('🍎 Apple Sign-In Authorization Exception: ${e.code} - ${e.message}');
+      print(
+        '🍎 Apple Sign-In Authorization Exception: ${e.code} - ${e.message}',
+      );
       print('🍎 Apple Sign-In: Authorization Error Code: ${e.code}');
-      
+
       // Handle all cancellation scenarios
-      final isCancelled = e.code == AuthorizationErrorCode.canceled || 
-          (e.code == AuthorizationErrorCode.unknown && (
-            (e.message?.toLowerCase().contains('canceled') == true) ||
-            (e.message?.toLowerCase().contains('cancelled') == true) ||
-            (e.message?.toLowerCase().contains('user canceled') == true)
-          ));
+      final isCancelled =
+          e.code == AuthorizationErrorCode.canceled ||
+          (e.code == AuthorizationErrorCode.unknown &&
+              ((e.message?.toLowerCase().contains('canceled') == true) ||
+                  (e.message?.toLowerCase().contains('cancelled') == true) ||
+                  (e.message?.toLowerCase().contains('user canceled') ==
+                      true)));
 
       if (isCancelled) {
-        print('🍎 Apple Sign-In: User cancelled (detected from error code or message)');
+        print(
+          '🍎 Apple Sign-In: User cancelled (detected from error code or message)',
+        );
         return null; // User cancelled
       }
-      
-      print('🍎 Apple Sign-In Error: Authentication failed with code ${e.code} and message: ${e.message}');
+
+      print(
+        '🍎 Apple Sign-In Error: Authentication failed with code ${e.code} and message: ${e.message}',
+      );
       throw Exception('Apple Sign-In failed: ${e.message}');
     } on http.ClientException catch (e) {
       print('🍎 Apple Sign-In Network Error: $e');
       print('🍎 Apple Sign-In: Network Error Type: ${e.runtimeType}');
-      throw Exception('Unable to connect to server. Please check your internet connection.');
+      throw Exception(
+        'Unable to connect to server. Please check your internet connection.',
+      );
     } catch (e, stackTrace) {
       print('🍎 Apple Sign-In Error: $e');
       print('🍎 Apple Sign-In: Error Type: ${e.runtimeType}');

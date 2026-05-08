@@ -31,7 +31,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
   final InvestmentAgentService _agentService = InvestmentAgentService();
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _chatScrollController = ScrollController();
-  
+
   List<Map<String, dynamic>> _messages = [];
   List<dynamic> _availableFarms = [];
   Map<String, dynamic>? _lastTools;
@@ -107,7 +107,11 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     _scrollToBottom();
 
     try {
-      final result = await _agentService.getRecommendations(text, sessionId: _sessionId, userContext: userContext);
+      final result = await _agentService.getRecommendations(
+        text,
+        sessionId: _sessionId,
+        userContext: userContext,
+      );
       if (result != null && mounted) {
         setState(() {
           _sessionId = result['sessionId'];
@@ -121,7 +125,9 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.failedReachAnalyst)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.failedReachAnalyst),
+          ),
         );
       }
     } finally {
@@ -146,10 +152,12 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.strategicPortfolioAnalystTitle),
+        title: Text(
+          AppLocalizations.of(context)!.strategicPortfolioAnalystTitle,
+        ),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -160,7 +168,10 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
           Consumer<AuthProvider>(
             builder: (context, auth, _) => Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 margin: const EdgeInsets.only(right: 8),
                 decoration: BoxDecoration(
                   color: Colors.green.withOpacity(0.12),
@@ -170,7 +181,11 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.monetization_on, color: Colors.green, size: 14),
+                    const Icon(
+                      Icons.monetization_on,
+                      color: Colors.green,
+                      size: 14,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       '${auth.user?.credits.toStringAsFixed(2) ?? "0.00"}',
@@ -203,7 +218,7 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
               });
             },
             tooltip: AppLocalizations.of(context)!.newSessionTooltip,
-          )
+          ),
         ],
       ),
       endDrawer: _buildHistoryDrawer(),
@@ -233,7 +248,11 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
             child: Center(
               child: Text(
                 AppLocalizations.of(context)!.investmentStrategyChroniclesTitle,
-                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -246,10 +265,19 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                 final date = DateTime.parse(session['createdAt']);
                 return ListTile(
                   leading: const Icon(Icons.history_edu),
-                  title: Text(session['title'] ?? AppLocalizations.of(context)!.strategySessionDefault, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  title: Text(
+                    session['title'] ??
+                        AppLocalizations.of(context)!.strategySessionDefault,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   subtitle: Text(DateFormat('MMM d, HH:mm').format(date)),
                   trailing: IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      color: Colors.redAccent,
+                      size: 18,
+                    ),
                     onPressed: () => _deleteSession(session['id']),
                   ),
                   onTap: () => _loadSession(session['id']),
@@ -270,7 +298,11 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.auto_graph, size: 64, color: Theme.of(context).primaryColor.withOpacity(0.5)),
+            Icon(
+              Icons.auto_graph,
+              size: 64,
+              color: Theme.of(context).primaryColor.withOpacity(0.5),
+            ),
             const SizedBox(height: 24),
             Text(
               AppLocalizations.of(context)!.welcomeStrategicAnalysis,
@@ -296,21 +328,32 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
       itemBuilder: (context, index) {
         final msg = _messages[index];
         final isUser = msg['role'] == 'user';
-        
+
         return Column(
-          crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: isUser
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
           children: [
             Container(
-              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.85),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.85,
+              ),
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.symmetric(vertical: 4),
               decoration: BoxDecoration(
-                color: isUser ? Theme.of(context).primaryColor : Theme.of(context).cardColor,
+                color: isUser
+                    ? Theme.of(context).primaryColor
+                    : Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
-                border: isUser ? null : Border.all(color: Colors.grey.withOpacity(0.2)),
+                border: isUser
+                    ? null
+                    : Border.all(color: Colors.grey.withOpacity(0.2)),
               ),
               child: isUser
-                  ? Text(msg['content'], style: const TextStyle(color: Colors.white))
+                  ? Text(
+                      msg['content'],
+                      style: const TextStyle(color: Colors.white),
+                    )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -323,13 +366,24 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                             }
                           },
                           styleSheet: MarkdownStyleSheet(
-                            p: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 13, height: 1.4),
-                            a: TextStyle(color: Theme.of(context).primaryColor, decoration: TextDecoration.underline, fontWeight: FontWeight.bold),
+                            p: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge?.color,
+                              fontSize: 13,
+                              height: 1.4,
+                            ),
+                            a: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         if (index == _messages.length - 1 && !isUser) ...[
                           if (_lastTools != null) _buildLiveToolsRow(),
-                          if (_availableFarms.isNotEmpty) _buildFarmSuggestions(),
+                          if (_availableFarms.isNotEmpty)
+                            _buildFarmSuggestions(),
                         ],
                       ],
                     ),
@@ -365,14 +419,22 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
       }
     }
 
-    String weatherDisplay = weather?['temp'] ?? weather?['temperature'] ?? '24°C';
+    String weatherDisplay =
+        weather?['temp'] ?? weather?['temperature'] ?? '24°C';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12.0),
-          child: Text(AppLocalizations.of(context)!.consultedLiveData, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.blueAccent)),
+          child: Text(
+            AppLocalizations.of(context)!.consultedLiveData,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 11,
+              color: Colors.blueAccent,
+            ),
+          ),
         ),
         Row(
           children: [
@@ -381,8 +443,9 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
               icon: Icons.trending_up,
               data: marketDisplay,
               onTap: () {
-                 _messageController.text = "Explain the current market trend for Wheat and Corn.";
-              }
+                _messageController.text =
+                    "Explain the current market trend for Wheat and Corn.";
+              },
             ),
             const SizedBox(width: 8),
             _buildSmallToolCard(
@@ -390,8 +453,9 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
               icon: Icons.wb_sunny_outlined,
               data: weatherDisplay,
               onTap: () {
-                 _messageController.text = "Tell me more about the weather forecast for my region.";
-              }
+                _messageController.text =
+                    "Tell me more about the weather forecast for my region.";
+              },
             ),
           ],
         ),
@@ -399,7 +463,12 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     );
   }
 
-  Widget _buildSmallToolCard({required String title, required IconData icon, required String data, required VoidCallback onTap}) {
+  Widget _buildSmallToolCard({
+    required String title,
+    required IconData icon,
+    required String data,
+    required VoidCallback onTap,
+  }) {
     return Expanded(
       child: InkWell(
         onTap: onTap,
@@ -420,8 +489,12 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      title, 
-                      style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                      title,
+                      style: const TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blueAccent,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
@@ -429,7 +502,10 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                       height: 16,
                       child: Marquee(
                         text: data,
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
                         scrollAxis: Axis.horizontal,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         blankSpace: 40.0,
@@ -458,7 +534,14 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12.0),
-          child: Text(AppLocalizations.of(context)!.suggestedRealEstate, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.green)),
+          child: Text(
+            AppLocalizations.of(context)!.suggestedRealEstate,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 11,
+              color: Colors.green,
+            ),
+          ),
         ),
         SizedBox(
           height: 125,
@@ -481,7 +564,9 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                       final landObj = Land.fromJson(farm['fullData']);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => LandDetailsScreen(land: landObj)),
+                        MaterialPageRoute(
+                          builder: (_) => LandDetailsScreen(land: landObj),
+                        ),
                       );
                     }
                   },
@@ -491,15 +576,41 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(farm['name'] ?? AppLocalizations.of(context)!.unknownFarm, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text(
+                          farm['name'] ??
+                              AppLocalizations.of(context)!.unknownFarm,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         const SizedBox(height: 4),
-                        Text('${farm['price'] ?? '0'} ${AppLocalizations.of(context)!.tndPerMeter}', style: const TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold)),
+                        Text(
+                          '${farm['price'] ?? '0'} ${AppLocalizations.of(context)!.tndPerMeter}',
+                          style: const TextStyle(
+                            color: Colors.green,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         const Spacer(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(farm['weatherRiskScore'] ?? 'N/A', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                            const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.green),
+                            Text(
+                              farm['weatherRiskScore'] ?? 'N/A',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 12,
+                              color: Colors.green,
+                            ),
                           ],
                         ),
                       ],
@@ -520,7 +631,13 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: theme.cardColor,
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
       child: SafeArea(
         child: Row(
@@ -531,10 +648,16 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
                 decoration: InputDecoration(
                   hintText: AppLocalizations.of(context)!.enterPreferencesHint,
                   hintStyle: const TextStyle(fontSize: 14),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide.none,
+                  ),
                   filled: true,
                   fillColor: theme.scaffoldBackgroundColor,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
                 ),
                 onSubmitted: (_) => _sendMessage(),
               ),
@@ -566,7 +689,9 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
               Navigator.pop(context); // Remove loading
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => LandDetailsScreen(land: land)),
+                MaterialPageRoute(
+                  builder: (_) => LandDetailsScreen(land: land),
+                ),
               );
             }
           } catch (e) {
@@ -581,7 +706,9 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
           _showAssetInfoSheet(category, variantId);
         }
       } else if (uri.host == 'worker') {
-        final workerId = uri.pathSegments.isNotEmpty ? uri.pathSegments[0] : null;
+        final workerId = uri.pathSegments.isNotEmpty
+            ? uri.pathSegments[0]
+            : null;
         if (workerId != null) {
           _showWorkerInfoSheet(workerId);
         }
@@ -620,23 +747,45 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
             return Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
               ),
               padding: const EdgeInsets.all(24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  Text(AppLocalizations.of(context)!.laborMarketLabel, style: const TextStyle(color: Colors.blueAccent, fontSize: 10, fontWeight: FontWeight.bold)),
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.laborMarketLabel,
+                    style: const TextStyle(
+                      color: Colors.blueAccent,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  if (bio.isNotEmpty) Text(bio, style: const TextStyle(fontSize: 14)),
+                  if (bio.isNotEmpty)
+                    Text(bio, style: const TextStyle(fontSize: 14)),
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      _statChip(AppLocalizations.of(context)!.rateLabel, '$rate TND/hr'),
+                      _statChip(
+                        AppLocalizations.of(context)!.rateLabel,
+                        '$rate TND/hr',
+                      ),
                       const SizedBox(width: 8),
-                      _statChip(AppLocalizations.of(context)!.ratingLabel, '$rating/5.0'),
+                      _statChip(
+                        AppLocalizations.of(context)!.ratingLabel,
+                        '$rating/5.0',
+                      ),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -658,7 +807,10 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
 
   Future<Map<String, dynamic>?> _fetchWorkerDetails(String workerId) async {
     try {
-      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final baseUrl = dotenv.get(
+        'API_BASE_URL',
+        fallback: 'http://192.168.0.133:3001',
+      );
       final response = await AuthService.authenticatedRequest(
         'GET',
         Uri.parse('$baseUrl/api/v1/worker-profile/$workerId'),
@@ -688,32 +840,57 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
             final variant = snap.data;
             if (variant == null) return const SizedBox();
 
-            final String name = variant['type']?['name'] ?? variant['variant_code'] ?? 'Item';
+            final String name =
+                variant['type']?['name'] ?? variant['variant_code'] ?? 'Item';
             final String description = variant['type']?['description'] ?? '';
-            final Map<String, dynamic> attrs = Map<String, dynamic>.from(variant['attributes'] ?? {});
+            final Map<String, dynamic> attrs = Map<String, dynamic>.from(
+              variant['attributes'] ?? {},
+            );
 
             return Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
               ),
               padding: const EdgeInsets.all(24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  Text(category.toUpperCase(), style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    category.toUpperCase(),
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
                   const SizedBox(height: 12),
-                  if (description.isNotEmpty) Text(description, style: const TextStyle(fontSize: 14)),
+                  if (description.isNotEmpty)
+                    Text(description, style: const TextStyle(fontSize: 14)),
                   const SizedBox(height: 16),
-                  Text(AppLocalizations.of(context)!.specificationsLabel, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  Text(
+                    AppLocalizations.of(context)!.specificationsLabel,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
                     children: [
-                      _statChip(AppLocalizations.of(context)!.priceLabel, variant['base_price'].toString()),
-                      for (var attr in attrs.entries) _statChip(attr.key, attr.value.toString()),
+                      _statChip(
+                        AppLocalizations.of(context)!.priceLabel,
+                        variant['base_price'].toString(),
+                      ),
+                      for (var attr in attrs.entries)
+                        _statChip(attr.key, attr.value.toString()),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -740,9 +917,15 @@ class _InvestmentAgentScreenState extends State<InvestmentAgentScreen> {
     );
   }
 
-  Future<Map<String, dynamic>?> _fetchVariantDetails(String category, String variantId) async {
+  Future<Map<String, dynamic>?> _fetchVariantDetails(
+    String category,
+    String variantId,
+  ) async {
     try {
-      final baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://192.168.0.133:3001');
+      final baseUrl = dotenv.get(
+        'API_BASE_URL',
+        fallback: 'http://192.168.0.133:3001',
+      );
       final response = await AuthService.authenticatedRequest(
         'GET',
         Uri.parse('$baseUrl/api/v1/assets/$category/variants/$variantId'),

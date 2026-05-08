@@ -8,16 +8,13 @@ import '../../theme/app_theme.dart';
 class CropLegend extends StatelessWidget {
   final bool compact;
 
-  const CropLegend({
-    super.key,
-    this.compact = false,
-  });
+  const CropLegend({super.key, this.compact = false});
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
-    
+
     final items = [
       _LegendItem(
         color: CropCycleStatus.growing.color,
@@ -46,7 +43,9 @@ class CropLegend extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.03),
+          color: isDark
+              ? Colors.white.withOpacity(0.05)
+              : Colors.black.withOpacity(0.03),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Wrap(
@@ -62,20 +61,14 @@ class CropLegend extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? Colors.white.withOpacity(0.05) : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark ? Colors.white12 : Colors.black12,
-        ),
+        border: Border.all(color: isDark ? Colors.white12 : Colors.black12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                Icons.palette,
-                size: 16,
-                color: AppTheme.primaryColor,
-              ),
+              Icon(Icons.palette, size: 16, color: AppTheme.primaryColor),
               const SizedBox(width: 8),
               Text(
                 l10n.legendTitle,
@@ -104,16 +97,13 @@ class CropLegend extends StatelessWidget {
           decoration: BoxDecoration(
             color: item.isOutlined ? null : item.color,
             shape: BoxShape.circle,
-            border: item.isOutlined 
+            border: item.isOutlined
                 ? Border.all(color: item.color, width: 2)
                 : null,
           ),
         ),
         const SizedBox(width: 6),
-        Text(
-          item.label,
-          style: const TextStyle(fontSize: 12),
-        ),
+        Text(item.label, style: const TextStyle(fontSize: 12)),
       ],
     );
   }
@@ -127,26 +117,19 @@ class CropLegend extends StatelessWidget {
             width: 24,
             height: 24,
             decoration: BoxDecoration(
-              color: item.isOutlined ? item.color.withOpacity(0.1) : item.color.withOpacity(0.2),
+              color: item.isOutlined
+                  ? item.color.withOpacity(0.1)
+                  : item.color.withOpacity(0.2),
               borderRadius: BorderRadius.circular(6),
-              border: item.isOutlined 
-                  ? Border.all(color: item.color)
-                  : null,
+              border: item.isOutlined ? Border.all(color: item.color) : null,
             ),
-            child: Icon(
-              item.icon,
-              size: 14,
-              color: item.color,
-            ),
+            child: Icon(item.icon, size: 14, color: item.color),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               item.label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
           ),
           Container(
@@ -155,7 +138,7 @@ class CropLegend extends StatelessWidget {
             decoration: BoxDecoration(
               color: item.isOutlined ? null : item.color,
               shape: BoxShape.circle,
-              border: item.isOutlined 
+              border: item.isOutlined
                   ? Border.all(color: item.color, width: 2)
                   : null,
             ),
@@ -194,7 +177,7 @@ class _ExpandableLegendState extends State<ExpandableLegend> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       margin: const EdgeInsets.all(16),
@@ -209,9 +192,7 @@ class _ExpandableLegendState extends State<ExpandableLegend> {
           ),
         ],
       ),
-      child: _isExpanded 
-          ? _buildExpanded() 
-          : _buildCollapsed(),
+      child: _isExpanded ? _buildExpanded() : _buildCollapsed(),
     );
   }
 
@@ -225,11 +206,7 @@ class _ExpandableLegendState extends State<ExpandableLegend> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.palette,
-              size: 16,
-              color: AppTheme.primaryColor,
-            ),
+            Icon(Icons.palette, size: 16, color: AppTheme.primaryColor),
             const SizedBox(width: 8),
             Text(
               l10n.legendTitle,
@@ -240,11 +217,7 @@ class _ExpandableLegendState extends State<ExpandableLegend> {
               ),
             ),
             const SizedBox(width: 4),
-            Icon(
-              Icons.expand_more,
-              size: 16,
-              color: AppTheme.primaryColor,
-            ),
+            Icon(Icons.expand_more, size: 16, color: AppTheme.primaryColor),
           ],
         ),
       ),
@@ -266,11 +239,7 @@ class _ExpandableLegendState extends State<ExpandableLegend> {
               children: [
                 Row(
                   children: [
-                    Icon(
-                      Icons.palette,
-                      size: 16,
-                      color: AppTheme.primaryColor,
-                    ),
+                    Icon(Icons.palette, size: 16, color: AppTheme.primaryColor),
                     const SizedBox(width: 8),
                     Text(
                       AppLocalizations.of(context)!.legendTitle,
@@ -282,11 +251,7 @@ class _ExpandableLegendState extends State<ExpandableLegend> {
                     ),
                   ],
                 ),
-                Icon(
-                  Icons.expand_less,
-                  size: 20,
-                  color: AppTheme.primaryColor,
-                ),
+                Icon(Icons.expand_less, size: 20, color: AppTheme.primaryColor),
               ],
             ),
           ),

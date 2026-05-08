@@ -16,8 +16,9 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        context.read<JobApplicationProvider>().fetchMyApplications());
+    Future.microtask(
+      () => context.read<JobApplicationProvider>().fetchMyApplications(),
+    );
   }
 
   @override
@@ -60,15 +61,19 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.description_outlined,
-                      size: 64, color: Colors.grey.withValues(alpha: 0.5)),
+                  Icon(
+                    Icons.description_outlined,
+                    size: 64,
+                    color: Colors.grey.withValues(alpha: 0.5),
+                  ),
                   const SizedBox(height: 16),
                   const Text(
                     'No applications yet',
                     style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   const Text('Start applying to jobs to track them here.'),
@@ -110,9 +115,7 @@ class _ApplicationCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: theme.dividerColor.withValues(alpha: 0.1),
-        ),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -183,7 +186,9 @@ class _ApplicationCard extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            DateFormat('MMM dd, yyyy').format(application.createdAt),
+                            DateFormat(
+                              'MMM dd, yyyy',
+                            ).format(application.createdAt),
                             style: const TextStyle(
                               fontWeight: FontWeight.w500,
                               fontSize: 14,
@@ -214,7 +219,8 @@ class _ApplicationCard extends StatelessWidget {
                         ),
                     ],
                   ),
-                  if (application.notes != null && application.notes!.isNotEmpty) ...[
+                  if (application.notes != null &&
+                      application.notes!.isNotEmpty) ...[
                     const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.all(8),

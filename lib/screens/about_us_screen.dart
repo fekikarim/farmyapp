@@ -20,7 +20,10 @@ class AboutUsScreen extends StatelessWidget {
             pinned: true,
             centerTitle: true,
             flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+              titlePadding: const EdgeInsets.symmetric(
+                horizontal: 48,
+                vertical: 16,
+              ),
               title: Text(
                 l10n.aboutUs,
                 style: const TextStyle(
@@ -38,10 +41,7 @@ class AboutUsScreen extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      AppTheme.primaryColor,
-                      AppTheme.secondaryColor,
-                    ],
+                    colors: [AppTheme.primaryColor, AppTheme.secondaryColor],
                   ),
                 ),
                 child: Center(
@@ -111,7 +111,11 @@ class AboutUsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAboutSection(BuildContext context, AppLocalizations l10n, bool isDark) {
+  Widget _buildAboutSection(
+    BuildContext context,
+    AppLocalizations l10n,
+    bool isDark,
+  ) {
     return _SectionWrapper(
       title: l10n.aboutFarmyTitle,
       child: Column(
@@ -131,7 +135,11 @@ class AboutUsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMissionVisionCard(BuildContext context, AppLocalizations l10n, bool isDark) {
+  Widget _buildMissionVisionCard(
+    BuildContext context,
+    AppLocalizations l10n,
+    bool isDark,
+  ) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -151,9 +159,9 @@ class AboutUsScreen extends StatelessWidget {
               const SizedBox(width: 12),
               Text(
                 l10n.missionTitle,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -174,9 +182,9 @@ class AboutUsScreen extends StatelessWidget {
               const SizedBox(width: 12),
               Text(
                 l10n.visionTitle,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -245,7 +253,9 @@ class AboutUsScreen extends StatelessWidget {
             runSpacing: 16,
             children: teamMembers.map((member) {
               return SizedBox(
-                width: isWide ? (constraints.maxWidth - 32) / 2 : double.infinity,
+                width: isWide
+                    ? (constraints.maxWidth - 32) / 2
+                    : double.infinity,
                 child: TeamMemberCard(member: member),
               );
             }).toList(),
@@ -277,13 +287,15 @@ class AboutUsScreen extends StatelessWidget {
 
     return _SectionWrapper(
       title: l10n.faqTitle,
-      child: Column(
-        children: faqs.map((faq) => FAQItem(faq: faq)).toList(),
-      ),
+      child: Column(children: faqs.map((faq) => FAQItem(faq: faq)).toList()),
     );
   }
 
-  Widget _buildFooter(BuildContext context, AppLocalizations l10n, ThemeData theme) {
+  Widget _buildFooter(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
     return Center(
       child: Column(
         children: [
@@ -387,7 +399,11 @@ class _TeamMemberCardState extends State<TeamMemberCard> {
   }
 
   String _getInitials(String name) {
-    return name.split(' ').map((n) => n.isNotEmpty ? n[0] : '').join('').toUpperCase();
+    return name
+        .split(' ')
+        .map((n) => n.isNotEmpty ? n[0] : '')
+        .join('')
+        .toUpperCase();
   }
 
   @override
@@ -492,7 +508,8 @@ class _TeamMemberCardState extends State<TeamMemberCard> {
                             tooltip: 'LinkedIn',
                           ),
                         ],
-                        if (widget.member.portfolio != null && widget.member.portfolio!.isNotEmpty) ...[
+                        if (widget.member.portfolio != null &&
+                            widget.member.portfolio!.isNotEmpty) ...[
                           const SizedBox(width: 8),
                           _SocialIconButton(
                             icon: Icons.language,
@@ -542,11 +559,7 @@ class _SocialIconButton extends StatelessWidget {
               color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
-              icon,
-              size: 16,
-              color: color,
-            ),
+            child: Icon(icon, size: 16, color: color),
           ),
         ),
       ),

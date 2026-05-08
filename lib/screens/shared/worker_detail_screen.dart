@@ -30,7 +30,9 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WorkerProvider>().loadWorkerPerformance(widget.workerProfile.userId);
+      context.read<WorkerProvider>().loadWorkerPerformance(
+        widget.workerProfile.userId,
+      );
     });
   }
 
@@ -54,7 +56,10 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Performance Analytics Section
-                  _buildSectionTitle(AppLocalizations.of(context)!.performance, isDark),
+                  _buildSectionTitle(
+                    AppLocalizations.of(context)!.performance,
+                    isDark,
+                  ),
                   const SizedBox(height: 16),
                   if (isLoading && stats.isEmpty)
                     _buildPerformanceShimmer(isDark)
@@ -64,23 +69,38 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
                   const SizedBox(height: 32),
 
                   // Skills Section
-                  _buildSectionTitle(AppLocalizations.of(context)!.skills, isDark),
+                  _buildSectionTitle(
+                    AppLocalizations.of(context)!.skills,
+                    isDark,
+                  ),
                   const SizedBox(height: 12),
-                  _buildSkillsList(context, widget.workerProfile.skills, isDark),
+                  _buildSkillsList(
+                    context,
+                    widget.workerProfile.skills,
+                    isDark,
+                  ),
 
                   const SizedBox(height: 32),
 
                   // About Section
-                  if (widget.workerProfile.bio != null && widget.workerProfile.bio!.isNotEmpty) ...[
-                    _buildSectionTitle(AppLocalizations.of(context)!.about, isDark),
+                  if (widget.workerProfile.bio != null &&
+                      widget.workerProfile.bio!.isNotEmpty) ...[
+                    _buildSectionTitle(
+                      AppLocalizations.of(context)!.about,
+                      isDark,
+                    ),
                     const SizedBox(height: 12),
                     _buildAboutCard(widget.workerProfile.bio!, isDark),
                     const SizedBox(height: 32),
                   ],
 
                   // Activity Summary
-                  if (stats.isNotEmpty && (stats['landNames'] as List?)?.isNotEmpty == true) ...[
-                    _buildSectionTitle(AppLocalizations.of(context)!.activeLands, isDark),
+                  if (stats.isNotEmpty &&
+                      (stats['landNames'] as List?)?.isNotEmpty == true) ...[
+                    _buildSectionTitle(
+                      AppLocalizations.of(context)!.activeLands,
+                      isDark,
+                    ),
                     const SizedBox(height: 12),
                     _buildLandsSummary(stats['landNames'], isDark),
                     const SizedBox(height: 32),
@@ -107,7 +127,10 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
       stretch: true,
       backgroundColor: Colors.green.shade800,
       flexibleSpace: FlexibleSpaceBar(
-        stretchModes: const [StretchMode.zoomBackground, StretchMode.blurBackground],
+        stretchModes: const [
+          StretchMode.zoomBackground,
+          StretchMode.blurBackground,
+        ],
         background: Stack(
           fit: StackFit.expand,
           children: [
@@ -135,7 +158,10 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 2,
+                      ),
                     ),
                     child: Hero(
                       tag: 'worker_avatar_${widget.workerProfile.userId}',
@@ -153,25 +179,43 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        widget.workerProfile.userName ?? AppLocalizations.of(context)!.worker,
-                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                        widget.workerProfile.userName ??
+                            AppLocalizations.of(context)!.worker,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                       if (widget.workerProfile.isVerified) ...[
                         const SizedBox(width: 8),
-                        const Icon(Icons.verified, color: Colors.white, size: 22),
+                        const Icon(
+                          Icons.verified,
+                          color: Colors.white,
+                          size: 22,
+                        ),
                       ],
                     ],
                   ),
                   const SizedBox(height: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      AppLocalizations.of(context)!.amountPerHour(widget.workerProfile.hourlyRate.toStringAsFixed(0)),
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+                      AppLocalizations.of(context)!.amountPerHour(
+                        widget.workerProfile.hourlyRate.toStringAsFixed(0),
+                      ),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
@@ -183,7 +227,11 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
     );
   }
 
-  Widget _buildPerformanceGrid(BuildContext context, Map<String, dynamic> stats, bool isDark) {
+  Widget _buildPerformanceGrid(
+    BuildContext context,
+    Map<String, dynamic> stats,
+    bool isDark,
+  ) {
     final successRate = (stats['verificationSuccessRate'] ?? 0.0) as double;
     final completed = (stats['totalTasksCompleted'] ?? 0) as int;
     final score = (stats['performanceScore'] ?? 0) as int;
@@ -218,7 +266,11 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
             color: isDark ? Colors.grey.shade800 : Colors.white,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
-              BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
             ],
           ),
           child: Column(
@@ -229,11 +281,17 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
                 children: [
                   Text(
                     AppLocalizations.of(context)!.overallPerformance,
-                    style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
                   ),
                   Text(
                     '$score/100',
-                    style: TextStyle(fontWeight: FontWeight.w800, color: Colors.green.shade600),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: Colors.green.shade600,
+                    ),
                   ),
                 ],
               ),
@@ -244,7 +302,9 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
                   value: score / 100,
                   minHeight: 8,
                   backgroundColor: Colors.green.withValues(alpha: 0.1),
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green.shade500),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Colors.green.shade500,
+                  ),
                 ),
               ),
             ],
@@ -254,7 +314,14 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
     );
   }
 
-  Widget _buildMetricCard(BuildContext context, String label, String value, IconData icon, Color color, bool isDark) {
+  Widget _buildMetricCard(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    bool isDark,
+  ) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -262,7 +329,11 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
           color: isDark ? Colors.grey.shade800 : Colors.white,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
           ],
         ),
         child: Column(
@@ -270,31 +341,59 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
           children: [
             Icon(icon, color: color, size: 24),
             const SizedBox(height: 12),
-            Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87)),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade500,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSkillsList(BuildContext context, List<String> skills, bool isDark) {
+  Widget _buildSkillsList(
+    BuildContext context,
+    List<String> skills,
+    bool isDark,
+  ) {
     return Wrap(
       spacing: 10,
       runSpacing: 10,
-      children: skills.map((skill) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: isDark ? Colors.green.withValues(alpha: 0.1) : Colors.green.shade50,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
-        ),
-        child: Text(
-          _translateSkill(context, skill),
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green.shade700, fontSize: 13),
-        ),
-      )).toList(),
+      children: skills
+          .map(
+            (skill) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.green.withValues(alpha: 0.1)
+                    : Colors.green.shade50,
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
+              ),
+              child: Text(
+                _translateSkill(context, skill),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green.shade700,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          )
+          .toList(),
     );
   }
 
@@ -309,7 +408,11 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
       ),
       child: Text(
         bio,
-        style: TextStyle(fontSize: 15, height: 1.6, color: isDark ? Colors.white70 : Colors.black87),
+        style: TextStyle(
+          fontSize: 15,
+          height: 1.6,
+          color: isDark ? Colors.white70 : Colors.black87,
+        ),
       ),
     );
   }
@@ -318,7 +421,9 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.blue.withValues(alpha: 0.05) : Colors.blue.shade50,
+        color: isDark
+            ? Colors.blue.withValues(alpha: 0.05)
+            : Colors.blue.shade50,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.blue.withValues(alpha: 0.1)),
       ),
@@ -329,7 +434,11 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
           Expanded(
             child: Text(
               landNames.join(', '),
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.blue.shade800),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.blue.shade800,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -347,13 +456,19 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
         onPressed: () => _inviteToLand(context),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.green.shade600,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
           elevation: 8,
           shadowColor: Colors.green.withValues(alpha: 0.3),
         ),
         child: Text(
           AppLocalizations.of(context)!.invite,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
     );
@@ -362,7 +477,11 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
   Widget _buildSectionTitle(String title, bool isDark) {
     return Text(
       title,
-      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: isDark ? Colors.white : Colors.black87),
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w900,
+        color: isDark ? Colors.white : Colors.black87,
+      ),
     );
   }
 
@@ -374,13 +493,35 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
         children: [
           Row(
             children: [
-              Expanded(child: Container(height: 100, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)))),
+              Expanded(
+                child: Container(
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
               const SizedBox(width: 12),
-              Expanded(child: Container(height: 100, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)))),
+              Expanded(
+                child: Container(
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
-          Container(height: 80, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20))),
+          Container(
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
         ],
       ),
     );
@@ -401,16 +542,25 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.invitationSentTo(widget.workerProfile.userName ?? "")),
+            content: Text(
+              AppLocalizations.of(
+                context,
+              )!.invitationSentTo(widget.workerProfile.userName ?? ""),
+            ),
             backgroundColor: Colors.green.shade700,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
         Navigator.of(context).pop(true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(provider.lastError ?? "Failed"), backgroundColor: Colors.redAccent),
+          SnackBar(
+            content: Text(provider.lastError ?? "Failed"),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     }
@@ -430,8 +580,14 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              AppLocalizations.of(context)!.inviteWorkerMessage(widget.workerProfile.userName ?? "", widget.landName ?? ""),
-              style: TextStyle(fontSize: 14, color: isDark ? Colors.white60 : Colors.black54),
+              AppLocalizations.of(context)!.inviteWorkerMessage(
+                widget.workerProfile.userName ?? "",
+                widget.landName ?? "",
+              ),
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark ? Colors.white60 : Colors.black54,
+              ),
             ),
             const SizedBox(height: 20),
             TextField(
@@ -440,18 +596,34 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.optionalMessageHint,
                 filled: true,
-                fillColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade100,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                fillColor: isDark
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : Colors.grey.shade100,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(context)!.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(AppLocalizations.of(context)!.cancel),
+          ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, controller.text),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-            child: Text(AppLocalizations.of(context)!.sendInvite, style: const TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              AppLocalizations.of(context)!.sendInvite,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -461,13 +633,23 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
   String _translateSkill(BuildContext context, String skill) {
     final l10n = AppLocalizations.of(context)!;
     switch (skill.toLowerCase()) {
-      case 'watering': return l10n.watering;
-      case 'harvesting': return l10n.harvesting;
-      case 'planting': return l10n.planting;
-      case 'animal care': case 'animal_care': return l10n.animalCare;
-      case 'machine operation': case 'machine_operation': return l10n.machineOperation;
-      case 'soil management': case 'soil_management': return l10n.soilManagement;
-      default: return skill;
+      case 'watering':
+        return l10n.watering;
+      case 'harvesting':
+        return l10n.harvesting;
+      case 'planting':
+        return l10n.planting;
+      case 'animal care':
+      case 'animal_care':
+        return l10n.animalCare;
+      case 'machine operation':
+      case 'machine_operation':
+        return l10n.machineOperation;
+      case 'soil management':
+      case 'soil_management':
+        return l10n.soilManagement;
+      default:
+        return skill;
     }
   }
 }

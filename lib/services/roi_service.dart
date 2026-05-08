@@ -10,7 +10,7 @@ import 'auth_service.dart';
 class RoiService {
   static const Duration _timeout = Duration(seconds: 30);
   static const int _maxRedirects = 5;
-  
+
   /// Fetch ROI dashboard with enhanced security and error handling
   Future<RoiDashboardData> getRoiDashboard() async {
     try {
@@ -30,8 +30,10 @@ class RoiService {
         );
       }
 
-      final uri = Uri.parse('${AuthService.baseUrl}/api/v1/investor/roi/dashboard');
-      
+      final uri = Uri.parse(
+        '${AuthService.baseUrl}/api/v1/investor/roi/dashboard',
+      );
+
       // Create request with timeout
       final request = http.Request('GET', uri);
       request.headers.addAll({
@@ -50,13 +52,13 @@ class RoiService {
       if (streamedResponse.isRedirect) {
         int redirectCount = 0;
         var currentResponse = response;
-        
-        while (currentResponse.statusCode >= 300 && 
-               currentResponse.statusCode < 400 && 
-               redirectCount < _maxRedirects) {
+
+        while (currentResponse.statusCode >= 300 &&
+            currentResponse.statusCode < 400 &&
+            redirectCount < _maxRedirects) {
           final location = currentResponse.headers['location'];
           if (location == null) break;
-          
+
           // Ensure redirect stays within our domain
           if (!_isSameDomain(location, uri)) {
             throw RoiException(
@@ -64,13 +66,15 @@ class RoiService {
               type: RoiErrorType.server,
             );
           }
-          
+
           redirectCount++;
           final redirectUri = Uri.parse(location);
           final redirectRequest = http.Request('GET', redirectUri);
           redirectRequest.headers.addAll(request.headers);
-          
-          final redirectStreamed = await redirectRequest.send().timeout(_timeout);
+
+          final redirectStreamed = await redirectRequest.send().timeout(
+            _timeout,
+          );
           currentResponse = await http.Response.fromStream(redirectStreamed);
         }
       }
@@ -131,18 +135,15 @@ class RoiService {
     } on RoiException {
       rethrow;
     } catch (e) {
-      throw RoiException(
-        'Unexpected error: $e',
-        type: RoiErrorType.unknown,
-      );
+      throw RoiException('Unexpected error: $e', type: RoiErrorType.unknown);
     }
   }
-  
+
   /// Parse and validate response
   RoiDashboardData _parseResponse(String body) {
     try {
       final data = json.decode(body);
-      
+
       // Validate required fields
       if (data is! Map<String, dynamic>) {
         throw RoiException(
@@ -150,9 +151,9 @@ class RoiService {
           type: RoiErrorType.server,
         );
       }
-      
+
       final dashboardData = RoiDashboardData.fromJson(data);
-      
+
       // Validate data integrity
       if (!dashboardData.overview.isValid) {
         throw RoiException(
@@ -160,7 +161,7 @@ class RoiService {
           type: RoiErrorType.server,
         );
       }
-      
+
       return dashboardData;
     } on RoiException {
       rethrow;
@@ -171,29 +172,29 @@ class RoiService {
       );
     }
   }
-  
+
   /// Validate JWT token format
   bool _isValidTokenFormat(String token) {
     // Basic JWT validation: should have 3 parts separated by dots
     final parts = token.split('.');
     if (parts.length != 3) return false;
-    
+
     // Check that each part is valid base64url
     for (final part in parts) {
       if (part.isEmpty) return false;
       // Base64url only contains alphanumeric, -, and _
       if (!RegExp(r'^[A-Za-z0-9_-]*$').hasMatch(part)) return false;
     }
-    
+
     return true;
   }
-  
+
   /// Check if redirect stays within same domain
   bool _isSameDomain(String redirectUrl, Uri originalUri) {
     try {
       final redirectUri = Uri.parse(redirectUrl);
       return redirectUri.host == originalUri.host ||
-             redirectUrl.startsWith('/'); // Relative redirects are OK
+          redirectUrl.startsWith('/'); // Relative redirects are OK
     } catch (e) {
       return false;
     }

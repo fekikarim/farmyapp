@@ -177,7 +177,9 @@ class SubscriptionLimitBar extends StatelessWidget {
                         Expanded(
                           child: Text(
                             AppLocalizations.of(context)!.upgradeForUnlimited(
-                              upgradePlanName != null ? ' to $upgradePlanName' : '',
+                              upgradePlanName != null
+                                  ? ' to $upgradePlanName'
+                                  : '',
                             ),
                             style: TextStyle(
                               color: color,

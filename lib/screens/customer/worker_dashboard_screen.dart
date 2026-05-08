@@ -133,7 +133,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                 color: const Color(0xFF10B981),
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
                   padding: const EdgeInsets.all(20),
                   children: [
                     if (workerProvider.profileError != null)
@@ -145,7 +147,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       ),
                     if (workerProvider.assignedLandsError != null)
                       _buildErrorBanner(
-                        title: AppLocalizations.of(context)!.assignedLandsUnavailable,
+                        title: AppLocalizations.of(
+                          context,
+                        )!.assignedLandsUnavailable,
                         message: workerProvider.assignedLandsError!,
                         isDark: isDark,
                         onRetry: () => workerProvider.loadAssignedLands(),
@@ -159,14 +163,18 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       ),
                     if (lifecycle.myInvitationsError != null)
                       _buildErrorBanner(
-                        title: AppLocalizations.of(context)!.invitationsUnavailable,
+                        title: AppLocalizations.of(
+                          context,
+                        )!.invitationsUnavailable,
                         message: lifecycle.myInvitationsError!,
                         isDark: isDark,
                         onRetry: () => lifecycle.loadMyInvitations(),
                       ),
                     if (lifecycle.myContractsError != null)
                       _buildErrorBanner(
-                        title: AppLocalizations.of(context)!.contractsUnavailable,
+                        title: AppLocalizations.of(
+                          context,
+                        )!.contractsUnavailable,
                         message: lifecycle.myContractsError!,
                         isDark: isDark,
                         onRetry: () => lifecycle.loadMyContracts(),
@@ -178,7 +186,6 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                         isDark: isDark,
                         onRetry: () => lifecycle.loadMyProofs(),
                       ),
-
 
                     // Quick Stats
                     GridView.count(
@@ -205,7 +212,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                         ),
                         _statWidget(
                           AppLocalizations.of(context)!.escrowBalance,
-                          AppLocalizations.of(context)!.amountPrefix(_getPendingBalance(lifecycle)),
+                          AppLocalizations.of(
+                            context,
+                          )!.amountPrefix(_getPendingBalance(lifecycle)),
                           Icons.account_balance_wallet,
                           Colors.purple,
                           isDark,
@@ -255,7 +264,11 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       const SizedBox(height: 16),
 
                     // Assigned Lands
-                    _sectionHeader(AppLocalizations.of(context)!.assignedLands, Icons.landscape, isDark),
+                    _sectionHeader(
+                      AppLocalizations.of(context)!.assignedLands,
+                      Icons.landscape,
+                      isDark,
+                    ),
                     const SizedBox(height: 12),
                     if (lands.isEmpty)
                       _emptyState(
@@ -313,7 +326,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    AppLocalizations.of(context)!.failedToLoadContracts,
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.failedToLoadContracts,
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 13,
@@ -499,7 +514,11 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                                   onPressed: () {
                                     // Could navigate to a full history screen later
                                   },
-                                  child: Text(AppLocalizations.of(context)!.viewAllHistory),
+                                  child: Text(
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.viewAllHistory,
+                                  ),
                                 ),
                               ),
                             const SizedBox(height: 16),
@@ -535,7 +554,11 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     ),
 
                     // Active Tasks
-                    _sectionHeader(AppLocalizations.of(context)!.activeTasks, Icons.task, isDark),
+                    _sectionHeader(
+                      AppLocalizations.of(context)!.activeTasks,
+                      Icons.task,
+                      isDark,
+                    ),
                     const SizedBox(height: 12),
                     if (tasks.isEmpty)
                       _emptyState(
@@ -554,7 +577,6 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
             ),
     );
   }
-
 
   Widget _buildEscrowBalanceCard(
     WorkerLifecycleProvider lifecycle,
@@ -610,21 +632,29 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            AppLocalizations.of(context)!.escrowBalance.toUpperCase(),
+                            AppLocalizations.of(
+                              context,
+                            )!.escrowBalance.toUpperCase(),
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w900,
                               letterSpacing: 1,
-                              color: isDark ? Colors.white.withValues(alpha: 0.6) : Colors.deepPurple.shade700,
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.6)
+                                  : Colors.deepPurple.shade700,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            AppLocalizations.of(context)!.amountPrefix(pending.toStringAsFixed(2)),
+                            AppLocalizations.of(
+                              context,
+                            )!.amountPrefix(pending.toStringAsFixed(2)),
                             style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.w900,
-                              color: isDark ? Colors.white : Colors.deepPurple.shade900,
+                              color: isDark
+                                  ? Colors.white
+                                  : Colors.deepPurple.shade900,
                               letterSpacing: -1,
                             ),
                           ),
@@ -635,23 +665,36 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                 ),
                 const SizedBox(height: 20),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.amber.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.amber.withValues(alpha: 0.2)),
+                    border: Border.all(
+                      color: Colors.amber.withValues(alpha: 0.2),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.info_outline_rounded, color: Colors.amber, size: 16),
+                      const Icon(
+                        Icons.info_outline_rounded,
+                        color: Colors.amber,
+                        size: 16,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          AppLocalizations.of(context)!.fundsReleasedAfterVerification,
+                          AppLocalizations.of(
+                            context,
+                          )!.fundsReleasedAfterVerification,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: isDark ? Colors.amber.shade200 : Colors.amber.shade900,
+                            color: isDark
+                                ? Colors.amber.shade200
+                                : Colors.amber.shade900,
                           ),
                         ),
                       ),
@@ -720,7 +763,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
             style: TextStyle(
               fontSize: 8.5,
               fontWeight: FontWeight.w900,
-              color: isDark ? Colors.white.withValues(alpha: 0.4) : color.shade700,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.4)
+                  : color.shade700,
               letterSpacing: 0.5,
             ),
             textAlign: TextAlign.center,
@@ -766,9 +811,22 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
               ),
             ),
             const SizedBox(height: 40),
-            Container(height: 30, width: 200, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10))),
+            Container(
+              height: 30,
+              width: 200,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
             const SizedBox(height: 20),
-            Container(height: 150, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24))),
+            Container(
+              height: 150,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+              ),
+            ),
           ],
         ),
       ),
@@ -795,7 +853,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
               fontSize: 12,
               fontWeight: FontWeight.w900,
               letterSpacing: 1,
-              color: isDark ? Colors.white.withValues(alpha: 0.6) : Colors.grey.shade700,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.6)
+                  : Colors.grey.shade700,
             ),
           ),
         ],
@@ -849,7 +909,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
         color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade200,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.grey.shade200,
           width: 1.5,
         ),
         boxShadow: [
@@ -884,7 +946,11 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       color: const Color(0xFF10B981).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Icon(Icons.landscape_rounded, color: Color(0xFF10B981), size: 24),
+                    child: const Icon(
+                      Icons.landscape_rounded,
+                      color: Color(0xFF10B981),
+                      size: 24,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -895,7 +961,8 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                           children: [
                             Expanded(
                               child: Text(
-                                land.landName ?? AppLocalizations.of(context)!.land,
+                                land.landName ??
+                                    AppLocalizations.of(context)!.land,
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: -0.5,
@@ -906,12 +973,16 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                               width: 8,
                               height: 8,
                               decoration: BoxDecoration(
-                                color: land.isActive ? Colors.green : Colors.grey,
+                                color: land.isActive
+                                    ? Colors.green
+                                    : Colors.grey,
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   if (land.isActive)
                                     BoxShadow(
-                                      color: Colors.green.withValues(alpha: 0.4),
+                                      color: Colors.green.withValues(
+                                        alpha: 0.4,
+                                      ),
                                       blurRadius: 4,
                                       spreadRadius: 1,
                                     ),
@@ -935,13 +1006,19 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                             const SizedBox(width: 8),
                             Text(
                               '•',
-                              style: TextStyle(color: Colors.grey.withValues(alpha: 0.5)),
+                              style: TextStyle(
+                                color: Colors.grey.withValues(alpha: 0.5),
+                              ),
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              AppLocalizations.of(context)!.amountPerMonth(land.salary.toStringAsFixed(0)),
+                              AppLocalizations.of(
+                                context,
+                              )!.amountPerMonth(land.salary.toStringAsFixed(0)),
                               style: theme.textTheme.labelMedium?.copyWith(
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                                color: theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.5,
+                                ),
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -953,14 +1030,18 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                             Icon(
                               Icons.person_pin_rounded,
                               size: 14,
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.3,
+                              ),
                             ),
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
                                 farmerName,
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                                  color: theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.4,
+                                  ),
                                   fontWeight: FontWeight.w600,
                                 ),
                                 maxLines: 1,
@@ -970,13 +1051,21 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                             if (relationStatus != null)
                               Container(
                                 margin: const EdgeInsets.only(left: 8),
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                                  color: theme.colorScheme.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
-                                  _translateContractStatus(context, relationStatus).toUpperCase(),
+                                  _translateContractStatus(
+                                    context,
+                                    relationStatus,
+                                  ).toUpperCase(),
                                   style: TextStyle(
                                     fontSize: 8,
                                     fontWeight: FontWeight.w900,
@@ -1018,7 +1107,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
         color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade200,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.grey.shade200,
           width: 1.5,
         ),
         boxShadow: [
@@ -1064,7 +1155,10 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.orange.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
@@ -1074,13 +1168,18 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,
-                                color: isDark ? Colors.orange.shade300 : Colors.orange.shade900,
+                                color: isDark
+                                    ? Colors.orange.shade300
+                                    : Colors.orange.shade900,
                               ),
                             ),
                           ),
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.green.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
@@ -1090,7 +1189,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,
-                                color: isDark ? Colors.green.shade300 : Colors.green.shade900,
+                                color: isDark
+                                    ? Colors.green.shade300
+                                    : Colors.green.shade900,
                               ),
                             ),
                           ),
@@ -1100,13 +1201,19 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    _translateTaskStatus(context, task.statusLabel).toUpperCase(),
+                    _translateTaskStatus(
+                      context,
+                      task.statusLabel,
+                    ).toUpperCase(),
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w900,
@@ -1171,7 +1278,10 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.invitationFrom(invitation.farmerName ?? AppLocalizations.of(context)!.farmer),
+                      AppLocalizations.of(context)!.invitationFrom(
+                        invitation.farmerName ??
+                            AppLocalizations.of(context)!.farmer,
+                      ),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -1180,7 +1290,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     ),
                     if (invitation.landName != null)
                       Text(
-                        AppLocalizations.of(context)!.landWithColon(invitation.landName ?? ""),
+                        AppLocalizations.of(
+                          context,
+                        )!.landWithColon(invitation.landName ?? ""),
                         style: TextStyle(
                           fontSize: 12,
                           color: isDark
@@ -1299,13 +1411,13 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
     final isApproved = invitation.isApproved;
     final isDeclined = invitation.isDeclined;
     final theme = Theme.of(context);
-    
+
     final statusColor = isApproved
         ? Colors.green
         : isDeclined
         ? Colors.red
         : Colors.grey;
-        
+
     final statusLabel = isApproved
         ? AppLocalizations.of(context)!.approvedUpper
         : isDeclined
@@ -1352,7 +1464,8 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        invitation.farmerName ?? AppLocalizations.of(context)!.farmer,
+                        invitation.farmerName ??
+                            AppLocalizations.of(context)!.farmer,
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w900,
                           letterSpacing: -0.2,
@@ -1360,9 +1473,12 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        invitation.landName ?? AppLocalizations.of(context)!.land,
+                        invitation.landName ??
+                            AppLocalizations.of(context)!.land,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -1370,7 +1486,10 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
@@ -1435,7 +1554,10 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
               ],
             ),
           ),
-          TextButton(onPressed: onRetry, child: Text(AppLocalizations.of(context)!.retry)),
+          TextButton(
+            onPressed: onRetry,
+            child: Text(AppLocalizations.of(context)!.retry),
+          ),
         ],
       ),
     );
@@ -1505,7 +1627,8 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    contract.investorName ?? AppLocalizations.of(context)!.investor,
+                    contract.investorName ??
+                        AppLocalizations.of(context)!.investor,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
@@ -1514,7 +1637,13 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    AppLocalizations.of(context)!.amountPerType(contract.salaryAmount.toStringAsFixed(0), _translateSalaryTypeLabel(context, contract.salaryTypeLabel)),
+                    AppLocalizations.of(context)!.amountPerType(
+                      contract.salaryAmount.toStringAsFixed(0),
+                      _translateSalaryTypeLabel(
+                        context,
+                        contract.salaryTypeLabel,
+                      ),
+                    ),
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark
@@ -1590,7 +1719,11 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                         color: statusColor.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(Icons.work_rounded, color: statusColor, size: 24),
+                      child: Icon(
+                        Icons.work_rounded,
+                        color: statusColor,
+                        size: 24,
+                      ),
                     ),
                     Positioned(
                       right: 0,
@@ -1602,7 +1735,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                           color: statusColor,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: isDark ? const Color(0xFF1F1F1F) : Colors.white,
+                            color: isDark
+                                ? const Color(0xFF1F1F1F)
+                                : Colors.white,
                             width: 2,
                           ),
                           boxShadow: [
@@ -1622,7 +1757,8 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        contract.investorName ?? AppLocalizations.of(context)!.investor,
+                        contract.investorName ??
+                            AppLocalizations.of(context)!.investor,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w900,
                           letterSpacing: -0.5,
@@ -1634,10 +1770,15 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                           Text(
                             AppLocalizations.of(context)!.amountPerType(
                               contract.salaryAmount.toStringAsFixed(0),
-                              _translateSalaryTypeLabel(context, contract.salaryTypeLabel),
+                              _translateSalaryTypeLabel(
+                                context,
+                                contract.salaryTypeLabel,
+                              ),
                             ),
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.5,
+                              ),
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -1650,7 +1791,10 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: statusColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
@@ -1667,9 +1811,13 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      AppLocalizations.of(context)!.untilDate(DateFormat('MMM d').format(contract.contractEndDate)),
+                      AppLocalizations.of(context)!.untilDate(
+                        DateFormat('MMM d').format(contract.contractEndDate),
+                      ),
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.3,
+                        ),
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                       ),
@@ -1744,7 +1892,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      proof.targetName ?? proof.landName ?? AppLocalizations.of(context)!.farmingActivity,
+                      proof.targetName ??
+                          proof.landName ??
+                          AppLocalizations.of(context)!.farmingActivity,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -1761,7 +1911,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                           ? AppLocalizations.of(context)!.requestExpired
                           : (proof.targetType == 'item'
                                 ? AppLocalizations.of(context)!.itemVerification
-                                : AppLocalizations.of(context)!.generalLandProof),
+                                : AppLocalizations.of(
+                                    context,
+                                  )!.generalLandProof),
                       style: TextStyle(
                         fontSize: 12,
                         color: isDark
@@ -1891,7 +2043,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      AppLocalizations.of(context)!.pleaseWaitAFewMoments,
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.pleaseWaitAFewMoments,
                                       style: TextStyle(
                                         color: isDark
                                             ? Colors.white38
@@ -1920,7 +2074,11 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                         if (error == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(AppLocalizations.of(context)!.proofSubmittedVerified),
+                              content: Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.proofSubmittedVerified,
+                              ),
                             ),
                           );
                           lifecycle.loadMyProofs();

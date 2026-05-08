@@ -1,1 +1,1 @@
-include: ../google_ml_kit/analysis_options.yaml
+include: package:flutter_lints/flutter.yaml

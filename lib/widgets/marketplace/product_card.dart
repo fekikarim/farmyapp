@@ -8,11 +8,7 @@ class ProductCard extends StatelessWidget {
   final Product product;
   final VoidCallback? onTap;
 
-  const ProductCard({
-    super.key,
-    required this.product,
-    this.onTap,
-  });
+  const ProductCard({super.key, required this.product, this.onTap});
 
   bool get _isOutOfStock =>
       product.quantity <= 0 || product.status != ProductStatus.available;
@@ -101,7 +97,9 @@ class ProductCard extends StatelessWidget {
                       left: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: product.quantity > 5
                               ? theme.colorScheme.primary
@@ -126,14 +124,15 @@ class ProductCard extends StatelessWidget {
                       right: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.primary,
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                              color:
-                                  theme.colorScheme.primary.withOpacity(0.4),
+                              color: theme.colorScheme.primary.withOpacity(0.4),
                               blurRadius: 8,
                             ),
                           ],
@@ -141,8 +140,11 @@ class ProductCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.shopping_basket,
-                                color: Colors.white, size: 12),
+                            const Icon(
+                              Icons.shopping_basket,
+                              color: Colors.white,
+                              size: 12,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               '×$qtyInBasket',
@@ -164,8 +166,10 @@ class ProductCard extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -201,16 +205,19 @@ class ProductCard extends StatelessWidget {
                                 ),
                                 padding: EdgeInsets.zero,
                               ),
-                              child: Text(AppLocalizations.of(context)!.unavailable,
-                                  style: const TextStyle(fontSize: 12)),
+                              child: Text(
+                                AppLocalizations.of(context)!.unavailable,
+                                style: const TextStyle(fontSize: 12),
+                              ),
                             )
                           : ElevatedButton.icon(
                               onPressed: () =>
                                   _handleAddToBasket(context, basket),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: inBasket
-                                    ? theme.colorScheme.primary
-                                        .withOpacity(0.15)
+                                    ? theme.colorScheme.primary.withOpacity(
+                                        0.15,
+                                      )
                                     : theme.colorScheme.primary,
                                 foregroundColor: inBasket
                                     ? theme.colorScheme.primary
@@ -229,9 +236,13 @@ class ProductCard extends StatelessWidget {
                                 size: 16,
                               ),
                               label: Text(
-                                inBasket ? AppLocalizations.of(context)!.addMore : AppLocalizations.of(context)!.addToBasket,
+                                inBasket
+                                    ? AppLocalizations.of(context)!.addMore
+                                    : AppLocalizations.of(context)!.addToBasket,
                                 style: const TextStyle(
-                                    fontSize: 11, fontWeight: FontWeight.w600),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                     ),
@@ -275,7 +286,9 @@ class ProductCard extends StatelessWidget {
                           product.title,
                           basket.getQuantityInBasket(product.id).toString(),
                         )
-                      : AppLocalizations.of(context)!.addedToBasket(product.title),
+                      : AppLocalizations.of(
+                          context,
+                        )!.addedToBasket(product.title),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -284,8 +297,9 @@ class ProductCard extends StatelessWidget {
           ),
           backgroundColor: Theme.of(context).colorScheme.primary,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -294,16 +308,16 @@ class ProductCard extends StatelessWidget {
         SnackBar(
           content: Row(
             children: [
-              Icon(Icons.warning_amber_rounded,
-                  color: Colors.white, size: 18),
+              Icon(Icons.warning_amber_rounded, color: Colors.white, size: 18),
               SizedBox(width: 8),
               Text(AppLocalizations.of(context)!.maximumStockReached),
             ],
           ),
           backgroundColor: Colors.orange.shade700,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           duration: const Duration(seconds: 2),
         ),
       );

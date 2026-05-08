@@ -112,7 +112,9 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                     controller: _descController,
                     maxLines: 2,
                     decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)!.descriptionOptional,
+                      labelText: AppLocalizations.of(
+                        context,
+                      )!.descriptionOptional,
                       filled: true,
                       fillColor: isDark
                           ? const Color(0xFF1C2333)
@@ -158,14 +160,18 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                           min: 0,
                           max: 200,
                           divisions: 20,
-                          label: AppLocalizations.of(context)!.rewardAmountTnd(_reward.toInt().toString()),
+                          label: AppLocalizations.of(
+                            context,
+                          )!.rewardAmountTnd(_reward.toInt().toString()),
                           activeColor: Colors.green.shade600,
                           onChanged: (val) =>
                               setSheetState(() => _reward = val),
                         ),
                       ),
                       Text(
-                        AppLocalizations.of(context)!.rewardAmountTnd(_reward.toInt().toString()),
+                        AppLocalizations.of(
+                          context,
+                        )!.rewardAmountTnd(_reward.toInt().toString()),
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ],
@@ -184,14 +190,18 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                           min: 5,
                           max: 180,
                           divisions: 35,
-                          label: AppLocalizations.of(context)!.minutesCount(_timeMinutes),
+                          label: AppLocalizations.of(
+                            context,
+                          )!.minutesCount(_timeMinutes),
                           activeColor: Colors.blue.shade600,
                           onChanged: (val) =>
                               setSheetState(() => _timeMinutes = val.toInt()),
                         ),
                       ),
                       Text(
-                        AppLocalizations.of(context)!.minutesCount(_timeMinutes),
+                        AppLocalizations.of(
+                          context,
+                        )!.minutesCount(_timeMinutes),
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ],
@@ -314,7 +324,9 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0D1117) : Colors.grey.shade50,
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.tasksForLand(widget.landName)),
+        title: Text(
+          AppLocalizations.of(context)!.tasksForLand(widget.landName),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         bottom: TabBar(
@@ -401,10 +413,14 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
                             currentCount: workerProvider.tasks
                                 .where((t) => !t.isCompleted && !t.isVerified)
                                 .length,
-                            label: AppLocalizations.of(context)!.activeTasksLabel,
+                            label: AppLocalizations.of(
+                              context,
+                            )!.activeTasksLabel,
                             icon: Icons.task_alt_rounded,
                             accentColor: Colors.green,
-                            upgradePlanName: AppLocalizations.of(context)!.farmerPro,
+                            upgradePlanName: AppLocalizations.of(
+                              context,
+                            )!.farmerPro,
                           ),
                         );
                       }
@@ -470,11 +486,21 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _taskInfo(Icons.category, _translateTaskType(context, task.typeLabel)),
-              _taskInfo(Icons.timer, AppLocalizations.of(context)!.minutesCount(task.timeRequiredMinutes)),
+              _taskInfo(
+                Icons.category,
+                _translateTaskType(context, task.typeLabel),
+              ),
+              _taskInfo(
+                Icons.timer,
+                AppLocalizations.of(
+                  context,
+                )!.minutesCount(task.timeRequiredMinutes),
+              ),
               _taskInfo(
                 Icons.monetization_on,
-                AppLocalizations.of(context)!.rewardAmountTnd(task.reward.toStringAsFixed(0)),
+                AppLocalizations.of(
+                  context,
+                )!.rewardAmountTnd(task.reward.toStringAsFixed(0)),
               ),
             ],
           ),
@@ -624,25 +650,38 @@ class _TaskBoardScreenState extends State<TaskBoardScreen>
   String _translateTaskType(BuildContext context, String type) {
     final l10n = AppLocalizations.of(context)!;
     switch (type.toLowerCase()) {
-      case 'water': return l10n.water;
-      case 'harvest': return l10n.harvest;
-      case 'feed': return l10n.feed;
-      case 'install': return l10n.install;
-      case 'verify': return l10n.verify;
-      case 'maintenance': return l10n.maintenance;
-      default: return type;
+      case 'water':
+        return l10n.water;
+      case 'harvest':
+        return l10n.harvest;
+      case 'feed':
+        return l10n.feed;
+      case 'install':
+        return l10n.install;
+      case 'verify':
+        return l10n.verify;
+      case 'maintenance':
+        return l10n.maintenance;
+      default:
+        return type;
     }
   }
 
   String _translateTaskStatus(BuildContext context, String status) {
     final l10n = AppLocalizations.of(context)!;
     switch (status.toLowerCase()) {
-      case 'open': return l10n.open;
-      case 'assigned': return l10n.assigned;
-      case 'in_progress': return l10n.inProgress;
-      case 'completed': return l10n.completed;
-      case 'verified': return l10n.verified;
-      default: return status;
+      case 'open':
+        return l10n.open;
+      case 'assigned':
+        return l10n.assigned;
+      case 'in_progress':
+        return l10n.inProgress;
+      case 'completed':
+        return l10n.completed;
+      case 'verified':
+        return l10n.verified;
+      default:
+        return status;
     }
   }
 }

@@ -32,9 +32,7 @@ class _ManageJobsScreenState extends State<ManageJobsScreen> {
         child: Column(
           children: [
             _buildAdvancedHeader(context, isDark),
-            Expanded(
-              child: _buildJobsList(provider),
-            ),
+            Expanded(child: _buildJobsList(provider)),
           ],
         ),
       ),
@@ -51,8 +49,11 @@ class _ManageJobsScreenState extends State<ManageJobsScreen> {
             children: [
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back_ios_new_rounded, 
-                  color: isDark ? Colors.white : Colors.black, size: 20),
+                icon: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: isDark ? Colors.white : Colors.black,
+                  size: 20,
+                ),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),
@@ -105,16 +106,20 @@ class _ManageJobsScreenState extends State<ManageJobsScreen> {
                 color: Colors.green.withOpacity(0.05),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.work_outline_rounded,
-                  size: 80, color: Colors.green.withOpacity(0.2)),
+              child: Icon(
+                Icons.work_outline_rounded,
+                size: 80,
+                color: Colors.green.withOpacity(0.2),
+              ),
             ),
             const SizedBox(height: 24),
             const Text(
               'No jobs posted yet',
               style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.grey),
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: Colors.grey,
+              ),
             ),
             const SizedBox(height: 12),
             Padding(
@@ -122,10 +127,7 @@ class _ManageJobsScreenState extends State<ManageJobsScreen> {
               child: Text(
                 'Start hiring professional workers by posting your first job request.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey.shade500,
-                  height: 1.5,
-                ),
+                style: TextStyle(color: Colors.grey.shade500, height: 1.5),
               ),
             ),
           ],
@@ -148,9 +150,7 @@ class _ManageJobsScreenState extends State<ManageJobsScreen> {
               duration: const Duration(milliseconds: 600),
               child: SlideAnimation(
                 verticalOffset: 50.0,
-                child: FadeInAnimation(
-                  child: _JobManagementCard(job: job),
-                ),
+                child: FadeInAnimation(child: _JobManagementCard(job: job)),
               ),
             );
           },
@@ -216,7 +216,11 @@ class _JobManagementCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      Icon(Icons.location_on_outlined, size: 14, color: Colors.grey.shade500),
+                      Icon(
+                        Icons.location_on_outlined,
+                        size: 14,
+                        color: Colors.grey.shade500,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         job.land?.name ?? 'Unknown Land',
@@ -231,9 +235,17 @@ class _JobManagementCard extends StatelessWidget {
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      _buildQuickStat(context, Icons.payments_outlined, '${job.salary ?? 0} TND'),
+                      _buildQuickStat(
+                        context,
+                        Icons.payments_outlined,
+                        '${job.salary ?? 0} TND',
+                      ),
                       const SizedBox(width: 24),
-                      _buildQuickStat(context, Icons.timer_outlined, job.duration ?? 'N/A'),
+                      _buildQuickStat(
+                        context,
+                        Icons.timer_outlined,
+                        job.duration ?? 'N/A',
+                      ),
                     ],
                   ),
                 ],
@@ -242,9 +254,13 @@ class _JobManagementCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               decoration: BoxDecoration(
-                color: isDark ? Colors.white.withOpacity(0.03) : Colors.grey.shade50,
+                color: isDark
+                    ? Colors.white.withOpacity(0.03)
+                    : Colors.grey.shade50,
                 border: Border(
-                  top: BorderSide(color: isDark ? Colors.white10 : Colors.grey.shade100),
+                  top: BorderSide(
+                    color: isDark ? Colors.white10 : Colors.grey.shade100,
+                  ),
                 ),
               ),
               child: Row(
@@ -263,20 +279,25 @@ class _JobManagementCard extends StatelessWidget {
                         );
                       },
                       icon: const Icon(Icons.people_outline_rounded, size: 20),
-                      label: const Text('Applications', style: TextStyle(fontWeight: FontWeight.w800)),
+                      label: const Text(
+                        'Applications',
+                        style: TextStyle(fontWeight: FontWeight.w800),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   _buildIconButton(
-                    context, 
-                    Icons.edit_outlined, 
+                    context,
+                    Icons.edit_outlined,
                     Colors.blue,
                     () => _showEditModal(context),
                   ),
@@ -296,16 +317,18 @@ class _JobManagementCard extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           value,
-          style: const TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 15,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
         ),
       ],
     );
   }
 
-  Widget _buildIconButton(BuildContext context, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildIconButton(
+    BuildContext context,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(

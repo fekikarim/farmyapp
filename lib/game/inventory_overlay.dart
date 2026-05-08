@@ -11,11 +11,7 @@ class InventoryOverlay extends StatefulWidget {
   final String? initialLandId;
   final Function(dynamic item)? onPlaceItem;
 
-  const InventoryOverlay({
-    super.key,
-    this.initialLandId,
-    this.onPlaceItem,
-  });
+  const InventoryOverlay({super.key, this.initialLandId, this.onPlaceItem});
 
   @override
   State<InventoryOverlay> createState() => _InventoryOverlayState();
@@ -233,7 +229,10 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                             return DropdownMenuItem<LandRental>(
                               value: land,
                               child: Text(
-                                land.land?.name ?? AppLocalizations.of(context)!.unknownLandFallback,
+                                land.land?.name ??
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.unknownLandFallback,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             );
@@ -327,7 +326,9 @@ class _InventoryOverlayState extends State<InventoryOverlay>
         final item = filteredItems[index];
         final land = item['land'] ?? {};
         final details = item['details'] ?? {};
-        final rawStatus = (item['status'] ?? 'PENDING').toString().toUpperCase();
+        final rawStatus = (item['status'] ?? 'PENDING')
+            .toString()
+            .toUpperCase();
         final bool isPlaced = item['placed_item'] != null;
 
         return GestureDetector(
@@ -395,18 +396,25 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                         Positioned(
                           top: 10,
                           left: 10,
-                          child: _buildHederaBadge(item['hedera_transaction_id'].toString()),
+                          child: _buildHederaBadge(
+                            item['hedera_transaction_id'].toString(),
+                          ),
                         ),
                       if (isPlaced)
                         Positioned.fill(
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.black.withOpacity(0.5),
-                              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(16),
+                              ),
                             ),
                             child: Center(
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.blueAccent.withOpacity(0.9),
                                   borderRadius: BorderRadius.circular(4),
@@ -444,8 +452,13 @@ class _InventoryOverlayState extends State<InventoryOverlay>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _translateCategory(context, (details['name'] ?? item['asset_category'] ?? 'Item').toString())
-                                  .toUpperCase(),
+                              _translateCategory(
+                                context,
+                                (details['name'] ??
+                                        item['asset_category'] ??
+                                        'Item')
+                                    .toString(),
+                              ).toUpperCase(),
                               style: const TextStyle(
                                 color: Color(0xFF4ADE80), // Green-400
                                 fontSize: 11,
@@ -601,7 +614,9 @@ class _InventoryOverlayState extends State<InventoryOverlay>
           SnackBar(
             backgroundColor: const Color(0xFF1A1A2E),
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             content: Row(
               children: [
                 const Icon(Icons.verified, color: Color(0xFF9B59B6), size: 16),
@@ -626,7 +641,10 @@ class _InventoryOverlayState extends State<InventoryOverlay>
             decoration: BoxDecoration(
               color: const Color(0xFF1A1A2E).withOpacity(0.85),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFF9B59B6).withOpacity(0.6), width: 1),
+              border: Border.all(
+                color: const Color(0xFF9B59B6).withOpacity(0.6),
+                width: 1,
+              ),
             ),
             child: const Row(
               mainAxisSize: MainAxisSize.min,
@@ -764,25 +782,29 @@ class _InventoryOverlayState extends State<InventoryOverlay>
               const SizedBox(height: 24),
               _buildActionButton(
                 context,
-                isPlaced ? AppLocalizations.of(context)!.alreadyPlaced
-                    : (isMatchingLand ? AppLocalizations.of(context)!.addToLand
-                        : AppLocalizations.of(context)!.wrongLand),
+                isPlaced
+                    ? AppLocalizations.of(context)!.alreadyPlaced
+                    : (isMatchingLand
+                          ? AppLocalizations.of(context)!.addToLand
+                          : AppLocalizations.of(context)!.wrongLand),
                 Icons.landscape_rounded,
-              (isMatchingLand && !isPlaced)
-                  ? () {
-                      Navigator.pop(context); // Close sheet
-                      if (widget.onPlaceItem != null) {
-                        Navigator.pop(context); // Close inventory
-                        widget.onPlaceItem!(item);
-                      } else {
-                        _showComingSoonDialog(context);
+                (isMatchingLand && !isPlaced)
+                    ? () {
+                        Navigator.pop(context); // Close sheet
+                        if (widget.onPlaceItem != null) {
+                          Navigator.pop(context); // Close inventory
+                          widget.onPlaceItem!(item);
+                        } else {
+                          _showComingSoonDialog(context);
+                        }
                       }
-                    }
-                  : null, // Disabled
-              isPrimary: isMatchingLand && !isPlaced,
-                subtitle: isPlaced 
+                    : null, // Disabled
+                isPrimary: isMatchingLand && !isPlaced,
+                subtitle: isPlaced
                     ? 'This item is already on the map.'
-                    : (isMatchingLand ? null : 'This item belongs to another land.'),
+                    : (isMatchingLand
+                          ? null
+                          : 'This item belongs to another land.'),
               ),
               const SizedBox(height: 12),
               _buildActionButton(
@@ -887,7 +909,10 @@ class _InventoryOverlayState extends State<InventoryOverlay>
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF0F172A),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(AppLocalizations.of(context)!.comingSoonTitle, style: const TextStyle(color: Colors.white)),
+        title: Text(
+          AppLocalizations.of(context)!.comingSoonTitle,
+          style: const TextStyle(color: Colors.white),
+        ),
         content: Text(
           AppLocalizations.of(context)!.comingSoonDesc,
           style: const TextStyle(color: Colors.white70),
@@ -895,7 +920,10 @@ class _InventoryOverlayState extends State<InventoryOverlay>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.okButton, style: const TextStyle(color: Color(0xFF4ADE80))),
+            child: Text(
+              AppLocalizations.of(context)!.okButton,
+              style: const TextStyle(color: Color(0xFF4ADE80)),
+            ),
           ),
         ],
       ),
