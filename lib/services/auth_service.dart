@@ -199,6 +199,14 @@ class AuthService {
         final googleSignIn = _googleSignInInstance;
         if (googleSignIn == null) return null;
 
+        // Force sign out to ensure a fresh ID token and account picker every time.
+        // This resolves the issue where it doesn't work on the first attempt due to stale cached tokens.
+        try {
+          await googleSignIn.signOut();
+        } catch (e) {
+          print('Optional sign-out failed: $e');
+        }
+
         final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
         if (googleUser == null) return null;
 
