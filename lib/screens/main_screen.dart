@@ -11,6 +11,7 @@ import 'customer/home_screen.dart';
 import 'customer/subscriptions_screen.dart';
 import 'customer/marketplace_screen.dart';
 import 'customer/worker_dashboard_screen.dart';
+import 'settings/notifications_screen.dart';
 
 // Farmer Screens
 import 'farmer/farmer_operational_dashboard.dart';
@@ -138,7 +139,7 @@ class _MainScreenState extends State<MainScreen> {
         screens = [
           const CustomerHomeScreen(),
           const CustomerMarketplaceScreen(),
-          const SubscriptionsScreen(),
+          const NotificationsScreen(),
           const SettingsScreen(),
         ];
         items = [
@@ -153,9 +154,9 @@ class _MainScreenState extends State<MainScreen> {
             label: AppLocalizations.of(context)!.marketplace,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.subscriptions_outlined),
-            activeIcon: Icon(Icons.subscriptions),
-            label: AppLocalizations.of(context)!.subscriptions,
+            icon: Icon(Icons.notifications_outlined),
+            activeIcon: Icon(Icons.notifications),
+            label: AppLocalizations.of(context)!.notifications,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings_outlined),
