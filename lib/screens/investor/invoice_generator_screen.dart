@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
+import 'package:farmyapp/l10n/app_localizations.dart';
 import '../../services/invoice_service.dart';
 import '../../services/invoice_preview_service.dart';
 
@@ -111,7 +112,7 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
 
   Future<void> _generatePdf() async {
     if (_selectedTypes.isEmpty) {
-      _showSnack('Select at least one activity type.', isError: true);
+      _showSnack(AppLocalizations.of(context)!.selectActivityTypeWarning, isError: true);
       return;
     }
     setState(() => _generatingPdf = true);
@@ -200,6 +201,7 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
   }
 
   Widget _buildContent(BuildContext context, ThemeData theme, bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         _buildHeader(context, theme, isDark),
@@ -210,15 +212,15 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSectionLabel(theme, isDark, 'DATE RANGE'),
+                _buildSectionLabel(theme, isDark, l10n.dateRangeUpper.toUpperCase()),
                 const SizedBox(height: 8),
                 _buildDateRangeCard(context, theme, isDark),
                 const SizedBox(height: 24),
-                _buildSectionLabel(theme, isDark, 'ACTIVITY TYPES'),
+                _buildSectionLabel(theme, isDark, l10n.activityTypesUpper.toUpperCase()),
                 const SizedBox(height: 10),
                 _buildTypeChips(theme, isDark),
                 const SizedBox(height: 24),
-                _buildSectionLabel(theme, isDark, 'PREVIEW'),
+                _buildSectionLabel(theme, isDark, l10n.previewUpper.toUpperCase()),
                 const SizedBox(height: 10),
                 _buildPreviewCard(context, theme, isDark),
                 const SizedBox(height: 32),
@@ -259,11 +261,11 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('INVOICE GENERATOR', style: TextStyle(
+              Text(AppLocalizations.of(context)!.invoiceGenerator.toUpperCase(), style: TextStyle(
                 color: theme.textTheme.bodyLarge?.color, fontWeight: FontWeight.w900,
                 fontSize: 14, letterSpacing: 1.5,
               )),
-              Text('Blockchain-verified PDF', style: TextStyle(
+              Text(AppLocalizations.of(context)!.blockchainVerifiedPdf, style: TextStyle(
                 color: isDark ? _accent.withOpacity(0.7) : theme.textTheme.bodySmall?.color?.withOpacity(0.7), fontSize: 11,
               )),
             ],
@@ -309,9 +311,9 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
               color: isDark ? Colors.white.withOpacity(0.05) : Colors.transparent,
               child: Row(
                 children: [
-                  Expanded(child: _dateBox(theme, isDark, 'FROM', _range.start)),
+                  Expanded(child: _dateBox(theme, isDark, AppLocalizations.of(context)!.fromUpper, _range.start)),
                   Container(width: 1, height: 40, color: isDark ? _primary.withOpacity(0.3) : _primary.withOpacity(0.1)),
-                  Expanded(child: _dateBox(theme, isDark, 'TO', _range.end)),
+                  Expanded(child: _dateBox(theme, isDark, AppLocalizations.of(context)!.toUpper, _range.end)),
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.all(8),
@@ -348,10 +350,11 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
 
   // ── Type chips ────────────────────────────────────────────────────────────────
   Widget _buildTypeChips(ThemeData theme, bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     final chips = [
-      {'key': 'land_rental', 'label': '🌿 Land Rentals', 'color': _green},
-      {'key': 'item_purchase', 'label': '🎮 Asset Purchases', 'color': _primary},
-      {'key': 'product_purchase', 'label': '🛍️ Products', 'color': const Color(0xFF60A5FA)},
+      {'key': 'land_rental', 'label': l10n.landRentals, 'color': _green},
+      {'key': 'item_purchase', 'label': l10n.assetPurchases, 'color': _primary},
+      {'key': 'product_purchase', 'label': l10n.products, 'color': const Color(0xFF60A5FA)},
     ];
 
     return Wrap(
@@ -441,10 +444,10 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
                     ? Row(children: [
                         const Icon(Icons.info_outline, color: Color(0xFFF87171), size: 18),
                         const SizedBox(width: 8),
-                        Expanded(child: Text('Could not load preview', style: const TextStyle(color: Color(0xFFF87171)))),
+                        Expanded(child: Text(AppLocalizations.of(context)!.couldNotLoadPreview, style: const TextStyle(color: Color(0xFFF87171)))),
                       ])
                     : _preview == null
-                        ? Text('Select types to see a preview.',
+                        ? Text(AppLocalizations.of(context)!.selectTypesToSeePreview,
                             style: TextStyle(color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5)))
                         : Column(
                             children: [
@@ -452,7 +455,7 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
                                 children: [
                                   const Icon(Icons.analytics_outlined, color: _primary, size: 18),
                                   const SizedBox(width: 8),
-                                  Text('SUMMARY', style: TextStyle(
+                                  Text(AppLocalizations.of(context)!.summaryUpper.toUpperCase(), style: TextStyle(
                                     color: isDark ? _accent.withOpacity(0.7) : _primary.withOpacity(0.8),
                                     fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.2,
                                   )),
@@ -461,13 +464,13 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
                               const SizedBox(height: 14),
                               Row(
                                 children: [
-                                  _statPill(theme, isDark, _preview!.recordCount.toString(), 'Records', Icons.link_rounded, _primary),
+                                  _statPill(theme, isDark, _preview!.recordCount.toString(), AppLocalizations.of(context)!.records, Icons.link_rounded, _primary),
                                   const SizedBox(width: 12),
                                   _statPill(
                                     theme,
                                     isDark,
                                     '\$${_preview!.totalAmount.toStringAsFixed(2)}',
-                                    'Total (USD)',
+                                    AppLocalizations.of(context)!.totalUsd,
                                     Icons.attach_money_rounded,
                                     _green,
                                   ),
@@ -526,10 +529,11 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
   }
 
   String _typeLabel(String type) {
+    final l10n = AppLocalizations.of(context)!;
     switch (type) {
-      case 'land_rental': return '🌿 Land Rentals';
-      case 'item_purchase': return '🎮 Asset Purchases';
-      case 'product_purchase': return '🛍️ Product Purchases';
+      case 'land_rental': return l10n.landRentals;
+      case 'item_purchase': return l10n.assetPurchases;
+      case 'product_purchase': return l10n.productPurchases;
       default: return type;
     }
   }
@@ -546,8 +550,8 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
         icon: const Icon(Icons.picture_as_pdf_rounded),
         label: Text(
           _preview != null && _preview!.recordCount == 0
-              ? 'No Records in Range'
-              : 'Generate PDF Invoice',
+              ? AppLocalizations.of(context)!.noRecordsInRange
+              : AppLocalizations.of(context)!.generatePdfInvoice,
           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
         ),
         style: ElevatedButton.styleFrom(
@@ -585,11 +589,11 @@ class _InvoiceGeneratorScreenState extends State<InvoiceGeneratorScreen>
             ),
           ),
           const SizedBox(height: 24),
-          Text('Generating your invoice...', style: TextStyle(
+          Text(AppLocalizations.of(context)!.generatingInvoice, style: TextStyle(
             color: theme.textTheme.bodyLarge?.color, fontSize: 16, fontWeight: FontWeight.w600,
           )),
           const SizedBox(height: 8),
-          Text('Fetching blockchain records', style: TextStyle(
+          Text(AppLocalizations.of(context)!.fetchingBlockchainRecords, style: TextStyle(
             color: theme.textTheme.bodySmall?.color, fontSize: 12,
           )),
         ],

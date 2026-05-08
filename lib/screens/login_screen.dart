@@ -32,10 +32,11 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
 
   String _formatErrorMessage(String error) {
     final lowerError = error.toLowerCase();
-    if (error.contains('AuthorizationError error 1001') || lowerError.contains('canceled')) return 'Sign in was cancelled.';
-    if (lowerError.contains('connection refused') || lowerError.contains('failed to connect')) return 'Unable to connect to the server.';
-    if (lowerError.contains('timeout')) return 'Connection timed out.';
-    if (error.contains('401') || lowerError.contains('unauthorized')) return 'Authentication failed. Check your credentials.';
+    final l10n = AppLocalizations.of(context)!;
+    if (error.contains('AuthorizationError error 1001') || lowerError.contains('canceled')) return l10n.signInWasCancelled;
+    if (lowerError.contains('connection refused') || lowerError.contains('failed to connect')) return l10n.unableToConnect;
+    if (lowerError.contains('timeout')) return l10n.connectionTimeout;
+    if (error.contains('401') || lowerError.contains('unauthorized')) return l10n.authFailed;
     return error.length > 100 ? '${error.substring(0, 100)}...' : error;
   }
 
@@ -193,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                         
                         // Title
                         Text(
-                          "$providerName Login Failed",
+                          AppLocalizations.of(context)!.loginFailedWithProvider(providerName),
                           style: const TextStyle(
                             fontWeight: FontWeight.w900,
                             letterSpacing: -1.5,
@@ -341,7 +342,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                       icon: Icon(_obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20),
                                       onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                                     ),
-                                    validator: (val) => FieldValidators.required(val, 'Password'),
+                                    validator: (val) => FieldValidators.required(val, AppLocalizations.of(context)!.password),
                                   ),
                                   Align(
                                     alignment: Alignment.centerRight,

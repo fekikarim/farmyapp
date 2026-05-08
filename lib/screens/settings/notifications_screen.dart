@@ -75,7 +75,7 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = "Failed to load notifications. Please try again.";
+          _error = AppLocalizations.of(context)!.failedToLoadNotifications;
           _isLoading = false;
         });
       }
@@ -261,9 +261,9 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
                               elevation: 8,
                               shadowColor: Theme.of(context).primaryColor.withValues(alpha: 0.5),
                             ),
-                            child: const Text(
-                              'CLOSE',
-                              style: TextStyle(
+                            child: Text(
+                              AppLocalizations.of(context)!.close.toUpperCase(),
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: 2,
                               ),
@@ -338,7 +338,7 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Stay Updated',
+                          AppLocalizations.of(context)!.stayUpdated,
                           style: theme.textTheme.bodyLarge?.copyWith(
                             color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                             fontWeight: FontWeight.w600,
@@ -346,7 +346,7 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Alerts',
+                          AppLocalizations.of(context)!.alerts,
                           style: theme.textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.w900,
                             letterSpacing: -1.5,
@@ -546,7 +546,7 @@ class NotificationsScreenState extends State<NotificationsScreen> with SingleTic
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: _loadNotifications,
-            child: const Text('RETRY'),
+            child: Text(AppLocalizations.of(context)!.retry.toUpperCase()),
           ),
         ],
       ),

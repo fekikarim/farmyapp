@@ -2575,7 +2575,7 @@ abstract class AppLocalizations {
   /// No description provided for @fetchingBlockchainRecords.
   ///
   /// In en, this message translates to:
-  /// **'Fetching blockchain records...'**
+  /// **'Fetching blockchain records'**
   String get fetchingBlockchainRecords;
 
   /// No description provided for @fetchingSpatialData.
@@ -5219,7 +5219,7 @@ abstract class AppLocalizations {
   /// No description provided for @products.
   ///
   /// In en, this message translates to:
-  /// **'Products'**
+  /// **'🛍️ Products'**
   String get products;
 
   /// No description provided for @profileCompleteness.
@@ -5723,7 +5723,7 @@ abstract class AppLocalizations {
   /// No description provided for @retry.
   ///
   /// In en, this message translates to:
-  /// **'Retry'**
+  /// **'RETRY'**
   String get retry;
 
   /// No description provided for @retryButton.
@@ -6719,7 +6719,7 @@ abstract class AppLocalizations {
   /// No description provided for @tryAgain.
   ///
   /// In en, this message translates to:
-  /// **'Please try again'**
+  /// **'Try Again'**
   String get tryAgain;
 
   /// No description provided for @tryAgainUpper.
@@ -6899,7 +6899,7 @@ abstract class AppLocalizations {
   /// No description provided for @unsavedChangesDesc.
   ///
   /// In en, this message translates to:
-  /// **'You have unsaved changes. Do you want to discard them?'**
+  /// **'You have unsaved changes. Do you want to discard them and leave?'**
   String get unsavedChangesDesc;
 
   /// No description provided for @unsavedChangesTitle.
@@ -6923,7 +6923,7 @@ abstract class AppLocalizations {
   /// No description provided for @unverified.
   ///
   /// In en, this message translates to:
-  /// **'Unverified'**
+  /// **'UNVERIFIED'**
   String get unverified;
 
   /// No description provided for @updateBasket.
@@ -7115,7 +7115,7 @@ abstract class AppLocalizations {
   /// No description provided for @verified.
   ///
   /// In en, this message translates to:
-  /// **'Verified'**
+  /// **'VERIFIED'**
   String get verified;
 
   /// No description provided for @verifiedSeller.
@@ -8659,6 +8659,444 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{score}% Match'**
   String skillsMatch(int score);
+
+  /// No description provided for @signInWasCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in was cancelled.'**
+  String get signInWasCancelled;
+
+  /// No description provided for @unableToConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to connect to the server.'**
+  String get unableToConnect;
+
+  /// No description provided for @connectionTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection timed out.'**
+  String get connectionTimeout;
+
+  /// No description provided for @authFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication failed. Check your credentials.'**
+  String get authFailed;
+
+  /// No description provided for @loginFailedWithProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'{provider} Login Failed'**
+  String loginFailedWithProvider(String provider);
+
+  /// No description provided for @savingProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving profile…'**
+  String get savingProfile;
+
+  /// No description provided for @newReport.
+  ///
+  /// In en, this message translates to:
+  /// **'New Report'**
+  String get newReport;
+
+  /// No description provided for @seeAllLands.
+  ///
+  /// In en, this message translates to:
+  /// **'See All Lands'**
+  String get seeAllLands;
+
+  /// No description provided for @rentPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Rent Paid'**
+  String get rentPaid;
+
+  /// No description provided for @itemPurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Purchases'**
+  String get itemPurchases;
+
+  /// No description provided for @workerSalaries.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker Salaries'**
+  String get workerSalaries;
+
+  /// No description provided for @baseRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Base Revenue'**
+  String get baseRevenue;
+
+  /// No description provided for @totalRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Revenue'**
+  String get totalRevenue;
+
+  /// No description provided for @feedbackSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback submitted successfully!'**
+  String get feedbackSubmitted;
+
+  /// No description provided for @jobUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Job request updated successfully!'**
+  String get jobUpdatedSuccess;
+
+  /// No description provided for @candidateStatusSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Candidate {status} successfully'**
+  String candidateStatusSuccess(String status);
+
+  /// No description provided for @loadingDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading dashboard...'**
+  String get loadingDashboard;
+
+  /// No description provided for @welcomeBackWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back, ready to work?'**
+  String get welcomeBackWorker;
+
+  /// No description provided for @tasksToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks Today'**
+  String get tasksToday;
+
+  /// No description provided for @monthlyEarnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Earnings'**
+  String get monthlyEarnings;
+
+  /// No description provided for @newInvitation.
+  ///
+  /// In en, this message translates to:
+  /// **'New Invitation'**
+  String get newInvitation;
+
+  /// No description provided for @tasksPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks Pending'**
+  String get tasksPending;
+
+  /// No description provided for @ordersThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders this month'**
+  String get ordersThisMonth;
+
+  /// No description provided for @creditsBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Credits Balance'**
+  String get creditsBalance;
+
+  /// No description provided for @shopMarketplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop Marketplace'**
+  String get shopMarketplace;
+
+  /// No description provided for @commercialFinances.
+  ///
+  /// In en, this message translates to:
+  /// **'Commercial & Finances'**
+  String get commercialFinances;
+
+  /// No description provided for @invoiceGenerator.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice Generator'**
+  String get invoiceGenerator;
+
+  /// No description provided for @professionalTools.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional Tools'**
+  String get professionalTools;
+
+  /// No description provided for @manageJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Jobs'**
+  String get manageJobs;
+
+  /// No description provided for @helpSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get helpSupport;
+
+  /// No description provided for @helpCenterReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Help Center & Reports'**
+  String get helpCenterReports;
+
+  /// No description provided for @stayUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay Updated'**
+  String get stayUpdated;
+
+  /// No description provided for @alerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get alerts;
+
+  /// No description provided for @failedToLoadNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load notifications. Please try again.'**
+  String get failedToLoadNotifications;
+
+  /// No description provided for @personalInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Information'**
+  String get personalInformation;
+
+  /// No description provided for @buildTrustProfileHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Build trust with a complete Farmy profile'**
+  String get buildTrustProfileHint;
+
+  /// No description provided for @profileCompletenessHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete profiles build trust and improve marketplace visibility.'**
+  String get profileCompletenessHint;
+
+  /// No description provided for @changeCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Change cover'**
+  String get changeCover;
+
+  /// No description provided for @updateCoverImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Update cover image'**
+  String get updateCoverImage;
+
+  /// No description provided for @uploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading…'**
+  String get uploading;
+
+  /// No description provided for @latestProfileSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest profile synced. Your unsaved edits were kept locally.'**
+  String get latestProfileSynced;
+
+  /// No description provided for @profileUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile was not updated. Please try again.'**
+  String get profileUpdateFailed;
+
+  /// No description provided for @farmyMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Farmy Member'**
+  String get farmyMember;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @blockchainVerifiedPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Blockchain-verified PDF'**
+  String get blockchainVerifiedPdf;
+
+  /// No description provided for @dateRangeUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'DATE RANGE'**
+  String get dateRangeUpper;
+
+  /// No description provided for @fromUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get fromUpper;
+
+  /// No description provided for @toUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get toUpper;
+
+  /// No description provided for @activityTypesUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'ACTIVITY TYPES'**
+  String get activityTypesUpper;
+
+  /// No description provided for @landRentals.
+  ///
+  /// In en, this message translates to:
+  /// **'🌿 Land Rentals'**
+  String get landRentals;
+
+  /// No description provided for @assetPurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'🎮 Asset Purchases'**
+  String get assetPurchases;
+
+  /// No description provided for @previewUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get previewUpper;
+
+  /// No description provided for @summaryUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get summaryUpper;
+
+  /// No description provided for @records.
+  ///
+  /// In en, this message translates to:
+  /// **'Records'**
+  String get records;
+
+  /// No description provided for @totalUsd.
+  ///
+  /// In en, this message translates to:
+  /// **'Total (USD)'**
+  String get totalUsd;
+
+  /// No description provided for @generatePdfInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate PDF Invoice'**
+  String get generatePdfInvoice;
+
+  /// No description provided for @generatingInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating your invoice...'**
+  String get generatingInvoice;
+
+  /// No description provided for @selectActivityTypeWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one activity type.'**
+  String get selectActivityTypeWarning;
+
+  /// No description provided for @noRecordsInRange.
+  ///
+  /// In en, this message translates to:
+  /// **'No Records in Range'**
+  String get noRecordsInRange;
+
+  /// No description provided for @couldNotLoadPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load preview'**
+  String get couldNotLoadPreview;
+
+  /// No description provided for @selectTypesToSeePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Select types to see a preview.'**
+  String get selectTypesToSeePreview;
+
+  /// No description provided for @productPurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'🛍️ Product Purchases'**
+  String get productPurchases;
+
+  /// No description provided for @professionalFarmerDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional / Farmer Details'**
+  String get professionalFarmerDetails;
+
+  /// No description provided for @farmLocations.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm locations'**
+  String get farmLocations;
+
+  /// No description provided for @separateMultipleValues.
+  ///
+  /// In en, this message translates to:
+  /// **'Separate multiple values with commas.'**
+  String get separateMultipleValues;
+
+  /// No description provided for @productionTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'Production types'**
+  String get productionTypes;
+
+  /// No description provided for @productionTypesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: vegetables, trees, dairy'**
+  String get productionTypesHint;
+
+  /// No description provided for @workforceSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Workforce size'**
+  String get workforceSize;
+
+  /// No description provided for @preferredHiringTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred hiring types'**
+  String get preferredHiringTypes;
+
+  /// No description provided for @investmentFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'Investment focus'**
+  String get investmentFocus;
+
+  /// No description provided for @riskProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Risk profile'**
+  String get riskProfile;
+
+  /// No description provided for @preferredRegions.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred regions'**
+  String get preferredRegions;
+
+  /// No description provided for @involvementLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Involvement level'**
+  String get involvementLevel;
 }
 
 class _AppLocalizationsDelegate

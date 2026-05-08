@@ -149,7 +149,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
           _completenessScore =
               updatedUser.profile?.completenessScore ?? _estimateCompleteness();
           _syncWarning =
-              'Latest profile synced. Your unsaved edits were kept locally.';
+              AppLocalizations.of(context)!.latestProfileSynced;
           _isLoadingProfile = false;
         });
       } else {
@@ -382,7 +382,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
       final updatedUser = await AuthService.updateProfile(updates);
       if (!mounted) return;
       if (updatedUser == null)
-        throw Exception('Profile was not updated. Please try again.');
+        throw Exception(AppLocalizations.of(context)!.profileUpdateFailed);
 
       context.read<AuthProvider>().setUser(updatedUser);
       _hydrateFromUser(updatedUser, resetUnsaved: true);
@@ -496,7 +496,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
       await _syncAfterMediaUpload();
       if (!mounted) return;
       _showSnack(
-        cover ? 'Cover image updated.' : l10n.profilePictureUpdated,
+        cover ? AppLocalizations.of(context)!.updateCoverImage : AppLocalizations.of(context)!.profilePictureUpdated,
         isError: false,
       );
     } catch (e) {
@@ -558,7 +558,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
               const SizedBox(height: 18),
               Text(
                 cover
-                    ? 'Update cover image'
+                    ? AppLocalizations.of(context)!.updateCoverImage
                     : AppLocalizations.of(context)!.changeProfilePicture,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w900,
@@ -687,7 +687,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     final user = _currentUser;
     final profile = user?.profile;
     final name = _nameController.text.trim().isEmpty
-        ? 'Farmy Member'
+        ? AppLocalizations.of(context)!.farmyMember
         : _nameController.text.trim();
     return Container(
       height: 260,
@@ -723,7 +723,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
               top: 14,
               right: 14,
               child: _mediaButton(
-                label: _isUploadingCover ? 'Uploading…' : 'Change cover',
+                label: _isUploadingCover ? AppLocalizations.of(context)!.uploading : AppLocalizations.of(context)!.changeCover,
                 icon: Icons.wallpaper_rounded,
                 busy: _isUploadingCover,
                 onTap: () => _pickAndUploadImage(cover: true),
@@ -789,10 +789,10 @@ class _EditProfileScreenState extends State<EditProfileScreen>
                           ),
                         ),
                         const SizedBox(height: 5),
-                        Text(
-                          _headlineController.text.trim().isEmpty
-                              ? 'Build trust with a complete Farmy profile'
-                              : _headlineController.text.trim(),
+                          Text(
+                            _headlineController.text.trim().isEmpty
+                                ? AppLocalizations.of(context)!.buildTrustProfileHint
+                                : _headlineController.text.trim(),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -957,7 +957,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Complete profiles build trust and improve marketplace visibility.',
+                  AppLocalizations.of(context)!.profileCompletenessHint,
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
@@ -988,7 +988,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     final compact = MediaQuery.sizeOf(context).width < 560;
     return _sectionCard(
       theme,
-      title: 'Personal Information',
+      title: AppLocalizations.of(context)!.personalInformation,
       icon: Icons.person_rounded,
       child: Column(
         children: [
@@ -1067,7 +1067,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
       theme,
       title: role == 'investor'
           ? AppLocalizations.of(context)!.investorDetailsTitle
-          : 'Professional / Farmer Details',
+          : AppLocalizations.of(context)!.professionalFarmerDetails,
       icon: Icons.eco_rounded,
       child: Column(
         children: [
@@ -1096,35 +1096,35 @@ class _EditProfileScreenState extends State<EditProfileScreen>
             ),
             _buildTextField(
               controller: _farmLocationsController,
-              label: 'Farm locations',
+              label: AppLocalizations.of(context)!.farmLocations,
               icon: Icons.map_rounded,
-              helperText: 'Separate multiple values with commas.',
+              helperText: AppLocalizations.of(context)!.separateMultipleValues,
             ),
             _buildTextField(
               controller: _productionTypesController,
-              label: 'Production types',
+              label: AppLocalizations.of(context)!.productionTypes,
               icon: Icons.grass_rounded,
-              helperText: 'Example: vegetables, trees, dairy',
+              helperText: AppLocalizations.of(context)!.productionTypesHint,
             ),
             _buildTextField(
               controller: _workforceSizeController,
-              label: 'Workforce size',
+              label: AppLocalizations.of(context)!.workforceSize,
               icon: Icons.groups_rounded,
               maxLength: 80,
             ),
             _buildTextField(
               controller: _preferredHiringTypesController,
-              label: 'Preferred hiring types',
+              label: AppLocalizations.of(context)!.preferredHiringTypes,
               icon: Icons.handshake_rounded,
-              helperText: 'Separate multiple values with commas.',
+              helperText: AppLocalizations.of(context)!.separateMultipleValues,
             ),
           ],
           if (role == 'investor') ...[
             _buildTextField(
               controller: _investmentFocusController,
-              label: 'Investment focus',
+              label: AppLocalizations.of(context)!.investmentFocus,
               icon: Icons.trending_up_rounded,
-              helperText: 'Separate multiple values with commas.',
+              helperText: AppLocalizations.of(context)!.separateMultipleValues,
             ),
             _buildTextField(
               controller: _budgetRangeController,
@@ -1135,19 +1135,19 @@ class _EditProfileScreenState extends State<EditProfileScreen>
             ),
             _buildTextField(
               controller: _riskProfileController,
-              label: 'Risk profile',
+              label: AppLocalizations.of(context)!.riskProfile,
               icon: Icons.shield_rounded,
               maxLength: 80,
             ),
             _buildTextField(
               controller: _preferredRegionsController,
-              label: 'Preferred regions',
+              label: AppLocalizations.of(context)!.preferredRegions,
               icon: Icons.travel_explore_rounded,
-              helperText: 'Separate multiple values with commas.',
+              helperText: AppLocalizations.of(context)!.separateMultipleValues,
             ),
             _buildTextField(
               controller: _involvementLevelController,
-              label: 'Involvement level',
+              label: AppLocalizations.of(context)!.involvementLevel,
               icon: Icons.manage_accounts_rounded,
               maxLength: 80,
             ),

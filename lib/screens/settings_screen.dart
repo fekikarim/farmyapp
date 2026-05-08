@@ -108,7 +108,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               // 2. Commercial & Finances
               const SizedBox(height: 24),
-              _buildSectionTitle(theme, 'Commercial & Finances'),
+              _buildSectionTitle(theme, AppLocalizations.of(context)!.commercialFinances),
               _buildSettingsGroup(
                 context,
                 children: [
@@ -136,7 +136,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _buildSettingsTile(
                     context,
                     icon: Icons.receipt_long_rounded,
-                    title: 'Invoice Generator',
+                    title: AppLocalizations.of(context)!.invoiceGenerator,
                     trailing: _buildFormatBadge('PDF', Colors.red),
                     onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const InvoiceGeneratorScreen())),
                   ),
@@ -152,7 +152,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               // 3. Role Management
               const SizedBox(height: 24),
-              _buildSectionTitle(theme, 'Professional Tools'),
+              _buildSectionTitle(theme, AppLocalizations.of(context)!.professionalTools),
               _buildSettingsGroup(
                 context,
                 children: [
@@ -188,7 +188,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _buildSettingsTile(
                       context,
                       icon: Icons.work_outline_rounded,
-                      title: 'Manage Jobs',
+                      title: AppLocalizations.of(context)!.manageJobs,
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ManageJobsScreen())),
                     ),
                   if (['farmer', 'investor', 'admin'].contains(user?.role.toLowerCase()))
@@ -243,14 +243,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               // 5. Support
               const SizedBox(height: 24),
-              _buildSectionTitle(theme, 'Help & Support'),
+              _buildSectionTitle(theme, AppLocalizations.of(context)!.helpSupport),
               _buildSettingsGroup(
                 context,
                 children: [
                   _buildSettingsTile(
                     context,
                     icon: Icons.support_agent_rounded,
-                    title: 'Help Center & Reports',
+                    title: AppLocalizations.of(context)!.helpCenterReports,
                     onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FeedbackListScreen())),
                   ),
                   _buildSettingsTile(
@@ -352,10 +352,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       children: [
         _buildRoleChip(context, label: _getRoleLabel(context, user.role).toUpperCase(), color: theme.colorScheme.primary),
         if (workerProvider.myProfile != null && user.role == 'customer')
-          _buildRoleChip(context, label: 'WORKER', color: Colors.blue),
+          _buildRoleChip(context, label: AppLocalizations.of(context)!.worker.toUpperCase(), color: Colors.blue),
         _buildRoleChip(
           context,
-          label: user.isVerified ? 'VERIFIED' : 'UNVERIFIED',
+          label: user.isVerified ? AppLocalizations.of(context)!.verified : AppLocalizations.of(context)!.unverified,
           color: user.isVerified ? Colors.green : Colors.orange,
         ),
       ],

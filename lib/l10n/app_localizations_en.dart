@@ -1372,7 +1372,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get feed => 'Feed';
 
   @override
-  String get fetchingBlockchainRecords => 'Fetching blockchain records...';
+  String get fetchingBlockchainRecords => 'Fetching blockchain records';
 
   @override
   String get fetchingSpatialData => 'Fetching precise spatial data...';
@@ -2820,7 +2820,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Get a deep analysis of your current production overhead, potential yield, and profit-maximization strategies powered by AI.';
 
   @override
-  String get products => 'Products';
+  String get products => '🛍️ Products';
 
   @override
   String get profileCompleteness => 'Profile Completeness';
@@ -3100,7 +3100,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get responseCopied => 'Response copied to clipboard.';
 
   @override
-  String get retry => 'Retry';
+  String get retry => 'RETRY';
 
   @override
   String get retryButton => 'Retry';
@@ -3637,7 +3637,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tryAdjustingFilters => 'Try adjusting filters';
 
   @override
-  String get tryAgain => 'Please try again';
+  String get tryAgain => 'Try Again';
 
   @override
   String get tryAgainUpper => 'TRY AGAIN';
@@ -3736,7 +3736,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unsavedChangesDesc =>
-      'You have unsaved changes. Do you want to discard them?';
+      'You have unsaved changes. Do you want to discard them and leave?';
 
   @override
   String get unsavedChangesTitle => 'Unsaved Changes';
@@ -3752,7 +3752,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get unverified => 'Unverified';
+  String get unverified => 'UNVERIFIED';
 
   @override
   String get updateBasket => 'Update Basket';
@@ -3864,7 +3864,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verificationSuccessful => 'Verification successful';
 
   @override
-  String get verified => 'Verified';
+  String get verified => 'VERIFIED';
 
   @override
   String get verifiedSeller => 'Verified Seller';
@@ -4677,4 +4677,232 @@ class AppLocalizationsEn extends AppLocalizations {
   String skillsMatch(int score) {
     return '$score% Match';
   }
+
+  @override
+  String get signInWasCancelled => 'Sign in was cancelled.';
+
+  @override
+  String get unableToConnect => 'Unable to connect to the server.';
+
+  @override
+  String get connectionTimeout => 'Connection timed out.';
+
+  @override
+  String get authFailed => 'Authentication failed. Check your credentials.';
+
+  @override
+  String loginFailedWithProvider(String provider) {
+    return '$provider Login Failed';
+  }
+
+  @override
+  String get savingProfile => 'Saving profile…';
+
+  @override
+  String get newReport => 'New Report';
+
+  @override
+  String get seeAllLands => 'See All Lands';
+
+  @override
+  String get rentPaid => 'Rent Paid';
+
+  @override
+  String get itemPurchases => 'Item Purchases';
+
+  @override
+  String get workerSalaries => 'Worker Salaries';
+
+  @override
+  String get baseRevenue => 'Base Revenue';
+
+  @override
+  String get totalRevenue => 'Total Revenue';
+
+  @override
+  String get feedbackSubmitted => 'Feedback submitted successfully!';
+
+  @override
+  String get jobUpdatedSuccess => 'Job request updated successfully!';
+
+  @override
+  String candidateStatusSuccess(String status) {
+    return 'Candidate $status successfully';
+  }
+
+  @override
+  String get loadingDashboard => 'Loading dashboard...';
+
+  @override
+  String get welcomeBackWorker => 'Welcome back, ready to work?';
+
+  @override
+  String get tasksToday => 'Tasks Today';
+
+  @override
+  String get monthlyEarnings => 'Monthly Earnings';
+
+  @override
+  String get newInvitation => 'New Invitation';
+
+  @override
+  String get tasksPending => 'Tasks Pending';
+
+  @override
+  String get ordersThisMonth => 'Orders this month';
+
+  @override
+  String get creditsBalance => 'Credits Balance';
+
+  @override
+  String get shopMarketplace => 'Shop Marketplace';
+
+  @override
+  String get commercialFinances => 'Commercial & Finances';
+
+  @override
+  String get invoiceGenerator => 'Invoice Generator';
+
+  @override
+  String get professionalTools => 'Professional Tools';
+
+  @override
+  String get manageJobs => 'Manage Jobs';
+
+  @override
+  String get helpSupport => 'Help & Support';
+
+  @override
+  String get helpCenterReports => 'Help Center & Reports';
+
+  @override
+  String get stayUpdated => 'Stay Updated';
+
+  @override
+  String get alerts => 'Alerts';
+
+  @override
+  String get failedToLoadNotifications =>
+      'Failed to load notifications. Please try again.';
+
+  @override
+  String get personalInformation => 'Personal Information';
+
+  @override
+  String get buildTrustProfileHint =>
+      'Build trust with a complete Farmy profile';
+
+  @override
+  String get profileCompletenessHint =>
+      'Complete profiles build trust and improve marketplace visibility.';
+
+  @override
+  String get changeCover => 'Change cover';
+
+  @override
+  String get updateCoverImage => 'Update cover image';
+
+  @override
+  String get uploading => 'Uploading…';
+
+  @override
+  String get latestProfileSynced =>
+      'Latest profile synced. Your unsaved edits were kept locally.';
+
+  @override
+  String get profileUpdateFailed =>
+      'Profile was not updated. Please try again.';
+
+  @override
+  String get farmyMember => 'Farmy Member';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get blockchainVerifiedPdf => 'Blockchain-verified PDF';
+
+  @override
+  String get dateRangeUpper => 'DATE RANGE';
+
+  @override
+  String get fromUpper => 'From';
+
+  @override
+  String get toUpper => 'To';
+
+  @override
+  String get activityTypesUpper => 'ACTIVITY TYPES';
+
+  @override
+  String get landRentals => '🌿 Land Rentals';
+
+  @override
+  String get assetPurchases => '🎮 Asset Purchases';
+
+  @override
+  String get previewUpper => 'Preview';
+
+  @override
+  String get summaryUpper => 'Summary';
+
+  @override
+  String get records => 'Records';
+
+  @override
+  String get totalUsd => 'Total (USD)';
+
+  @override
+  String get generatePdfInvoice => 'Generate PDF Invoice';
+
+  @override
+  String get generatingInvoice => 'Generating your invoice...';
+
+  @override
+  String get selectActivityTypeWarning => 'Select at least one activity type.';
+
+  @override
+  String get noRecordsInRange => 'No Records in Range';
+
+  @override
+  String get couldNotLoadPreview => 'Could not load preview';
+
+  @override
+  String get selectTypesToSeePreview => 'Select types to see a preview.';
+
+  @override
+  String get productPurchases => '🛍️ Product Purchases';
+
+  @override
+  String get professionalFarmerDetails => 'Professional / Farmer Details';
+
+  @override
+  String get farmLocations => 'Farm locations';
+
+  @override
+  String get separateMultipleValues => 'Separate multiple values with commas.';
+
+  @override
+  String get productionTypes => 'Production types';
+
+  @override
+  String get productionTypesHint => 'Example: vegetables, trees, dairy';
+
+  @override
+  String get workforceSize => 'Workforce size';
+
+  @override
+  String get preferredHiringTypes => 'Preferred hiring types';
+
+  @override
+  String get investmentFocus => 'Investment focus';
+
+  @override
+  String get riskProfile => 'Risk profile';
+
+  @override
+  String get preferredRegions => 'Preferred regions';
+
+  @override
+  String get involvementLevel => 'Involvement level';
 }

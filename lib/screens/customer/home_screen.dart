@@ -93,6 +93,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> with RouteAware
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final workerProvider = context.watch<WorkerProvider>();
     final isVerifiedWorker = workerProvider.isVerifiedWorker;
 
@@ -104,9 +105,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> with RouteAware
             children: [
               const CircularProgressIndicator(),
               const SizedBox(height: 16),
-              const Text(
-                'Loading dashboard...',
-                style: TextStyle(color: Colors.grey),
+              Text(
+                l10n.loadingDashboard,
+                style: const TextStyle(color: Colors.grey),
               ),
             ],
           ),
@@ -169,7 +170,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> with RouteAware
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Welcome back, ready to work?',
+                            l10n.welcomeBackWorker,
                             style: theme.textTheme.bodyLarge?.copyWith(
                               color: theme.colorScheme.onSurface.withOpacity(0.6),
                             ),
@@ -194,7 +195,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> with RouteAware
                     Expanded(
                       child: _buildKpiCard(
                         context,
-                        title: 'Tasks Today',
+                        title: l10n.tasksToday,
                         value: '${todayTasks.length}',
                         icon: Icons.task_alt,
                         color: Colors.blue,
@@ -205,7 +206,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> with RouteAware
                     Expanded(
                       child: _buildKpiCard(
                         context,
-                        title: 'Monthly Earnings',
+                        title: l10n.monthlyEarnings,
                         value: '\$${monthlyEarnings.toStringAsFixed(2)}',
                         icon: Icons.trending_up,
                         color: Colors.green,
@@ -219,7 +220,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> with RouteAware
                   width: double.infinity,
                   child: _buildKpiCard(
                     context,
-                    title: 'Escrow Balance',
+                    title: l10n.escrowBalance,
                     value: '\$${pendingBalance.toStringAsFixed(2)}',
                     icon: Icons.lock_outline,
                     color: Colors.purple,
@@ -751,8 +752,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> with RouteAware
                     Align(
                       alignment: Alignment.bottomRight,
                       child: Text(
-                        ' ${l10n.dailyInspiration}',
-                        style: theme.textTheme.bodySmall?.copyWith(
+                        l10n.profileCompletenessHint,
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           color: Colors.white.withOpacity(0.8),
                           fontStyle: FontStyle.italic,
                         ),
@@ -1281,9 +1282,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> with RouteAware
             return _buildAvatarLoading(theme);
           },
           errorBuilder: (context, error, stackTrace) {
-            // Log error for debugging but don't crash
-            debugPrint('Profile image failed to load: $resolvedUrl - $error');
-            return _buildAvatarFallback(theme, displayName);
+            throw Exception(AppLocalizations.of(context)!.profileUpdateFailed);
           },
         ),
       ),

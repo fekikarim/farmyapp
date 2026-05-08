@@ -1174,7 +1174,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get escrowBalance => 'Solde du séquestre';
+  String get escrowBalance => 'Solde bloqué';
 
   @override
   String get estimatedDelivery => 'Livraison estimée';
@@ -1399,7 +1399,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get fetchingBlockchainRecords =>
-      'Récupération des enregistrements blockchain...';
+      'Récupération des enregistrements blockchain';
 
   @override
   String get fetchingSpatialData =>
@@ -2871,7 +2871,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Obtenez une analyse approfondie de vos frais généraux de production, de votre rendement potentiel et des stratégies de maximisation des profits alimentées par l\'IA.';
 
   @override
-  String get products => 'Produits';
+  String get products => '🛍️ Produits';
 
   @override
   String get profileCompleteness => 'Complétude du profil';
@@ -3153,7 +3153,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get responseCopied => 'Réponse copiée dans le presse-papiers.';
 
   @override
-  String get retry => 'Réessayer';
+  String get retry => 'RÉESSAYER';
 
   @override
   String get retryButton => 'Réessayer';
@@ -3698,7 +3698,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tryAdjustingFilters => 'Essayez d\'ajuster les filtres';
 
   @override
-  String get tryAgain => 'Veuillez réessayer';
+  String get tryAgain => 'Réessayer';
 
   @override
   String get tryAgainUpper => 'RÉESSAYER';
@@ -3799,7 +3799,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get unsavedChangesDesc =>
-      'Vous avez des modifications non enregistrées. Voulez-vous les abandonner ?';
+      'Vous avez des modifications non enregistrées. Voulez-vous les ignorer et quitter ?';
 
   @override
   String get unsavedChangesTitle => 'Modifications non enregistrées';
@@ -3815,7 +3815,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get unverified => 'Non vérifié';
+  String get unverified => 'NON VÉRIFIÉ';
 
   @override
   String get updateBasket => 'Mettre à jour le panier';
@@ -3929,7 +3929,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get verificationSuccessful => 'Vérification réussie';
 
   @override
-  String get verified => 'Vérifié';
+  String get verified => 'VÉRIFIÉ';
 
   @override
   String get verifiedSeller => 'Vendeur Vérifié';
@@ -4753,4 +4753,238 @@ class AppLocalizationsFr extends AppLocalizations {
   String skillsMatch(int score) {
     return '$score% de correspondance';
   }
+
+  @override
+  String get signInWasCancelled => 'La connexion a été annulée.';
+
+  @override
+  String get unableToConnect => 'Impossible de se connecter au serveur.';
+
+  @override
+  String get connectionTimeout => 'Délai de connexion dépassé.';
+
+  @override
+  String get authFailed =>
+      'Échec de l’authentification. Vérifiez vos identifiants.';
+
+  @override
+  String loginFailedWithProvider(String provider) {
+    return 'Échec de la connexion $provider';
+  }
+
+  @override
+  String get savingProfile => 'Enregistrement du profil…';
+
+  @override
+  String get newReport => 'Nouveau rapport';
+
+  @override
+  String get seeAllLands => 'Voir tous les terrains';
+
+  @override
+  String get rentPaid => 'Loyer payé';
+
+  @override
+  String get itemPurchases => 'Achats d’articles';
+
+  @override
+  String get workerSalaries => 'Salaires des ouvriers';
+
+  @override
+  String get baseRevenue => 'Revenu de base';
+
+  @override
+  String get totalRevenue => 'Revenu total';
+
+  @override
+  String get feedbackSubmitted => 'Commentaires envoyés avec succès!';
+
+  @override
+  String get jobUpdatedSuccess => 'Demande d’emploi mise à jour avec succès!';
+
+  @override
+  String candidateStatusSuccess(String status) {
+    return 'Candidat $status avec succès';
+  }
+
+  @override
+  String get loadingDashboard => 'Chargement du tableau de bord...';
+
+  @override
+  String get welcomeBackWorker => 'Bon retour, prêt à travailler ?';
+
+  @override
+  String get tasksToday => 'Tâches aujourd’hui';
+
+  @override
+  String get monthlyEarnings => 'Gains mensuels';
+
+  @override
+  String get newInvitation => 'Nouvelle invitation';
+
+  @override
+  String get tasksPending => 'Tâches en attente';
+
+  @override
+  String get ordersThisMonth => 'Commandes ce mois-ci';
+
+  @override
+  String get creditsBalance => 'Solde de crédits';
+
+  @override
+  String get shopMarketplace => 'Acheter au Marché';
+
+  @override
+  String get commercialFinances => 'Commerce & Finances';
+
+  @override
+  String get invoiceGenerator => 'Générateur de factures';
+
+  @override
+  String get professionalTools => 'Outils professionnels';
+
+  @override
+  String get manageJobs => 'Gérer les emplois';
+
+  @override
+  String get helpSupport => 'Aide & Support';
+
+  @override
+  String get helpCenterReports => 'Centre d’aide & rapports';
+
+  @override
+  String get stayUpdated => 'Restez informé';
+
+  @override
+  String get alerts => 'Alertes';
+
+  @override
+  String get failedToLoadNotifications =>
+      'Échec du chargement des notifications. Veuillez réessayer.';
+
+  @override
+  String get personalInformation => 'Informations personnelles';
+
+  @override
+  String get buildTrustProfileHint =>
+      'Instaurez la confiance avec un profil Farmy complet';
+
+  @override
+  String get profileCompletenessHint =>
+      'Les profils complets instaurent la confiance et améliorent la visibilité sur le marché.';
+
+  @override
+  String get changeCover => 'Changer la couverture';
+
+  @override
+  String get updateCoverImage => 'Mettre à jour l’image de couverture';
+
+  @override
+  String get uploading => 'Téléchargement…';
+
+  @override
+  String get latestProfileSynced =>
+      'Dernier profil synchronisé. Vos modifications non enregistrées ont été conservées localement.';
+
+  @override
+  String get profileUpdateFailed =>
+      'Le profil n’a pas été mis à jour. Veuillez réessayer.';
+
+  @override
+  String get farmyMember => 'Membre Farmy';
+
+  @override
+  String get close => 'Fermer';
+
+  @override
+  String get blockchainVerifiedPdf => 'PDF vérifié par Blockchain';
+
+  @override
+  String get dateRangeUpper => 'PLAGE DE DATES';
+
+  @override
+  String get fromUpper => 'De';
+
+  @override
+  String get toUpper => 'À';
+
+  @override
+  String get activityTypesUpper => 'TYPES D’ACTIVITÉ';
+
+  @override
+  String get landRentals => '🌿 Locations de terres';
+
+  @override
+  String get assetPurchases => '🎮 Achats d’actifs';
+
+  @override
+  String get previewUpper => 'Aperçu';
+
+  @override
+  String get summaryUpper => 'Résumé';
+
+  @override
+  String get records => 'Enregistrements';
+
+  @override
+  String get totalUsd => 'Total (USD)';
+
+  @override
+  String get generatePdfInvoice => 'Générer la facture PDF';
+
+  @override
+  String get generatingInvoice => 'Génération de votre facture...';
+
+  @override
+  String get selectActivityTypeWarning =>
+      'Sélectionnez au moins un type d’activité.';
+
+  @override
+  String get noRecordsInRange => 'Aucun enregistrement dans la plage';
+
+  @override
+  String get couldNotLoadPreview => 'Impossible de charger l’aperçu';
+
+  @override
+  String get selectTypesToSeePreview =>
+      'Sélectionnez des types pour voir un aperçu.';
+
+  @override
+  String get productPurchases => '🛍️ Achats de produits';
+
+  @override
+  String get professionalFarmerDetails =>
+      'Détails professionnels / Agriculteur';
+
+  @override
+  String get farmLocations => 'Emplacements des fermes';
+
+  @override
+  String get separateMultipleValues =>
+      'Séparez les valeurs multiples par des virgules.';
+
+  @override
+  String get productionTypes => 'Types de production';
+
+  @override
+  String get productionTypesHint =>
+      'Exemple : légumes, arbres, produits laitiers';
+
+  @override
+  String get workforceSize => 'Taille de l’effectif';
+
+  @override
+  String get preferredHiringTypes => 'Types d’embauche préférés';
+
+  @override
+  String get investmentFocus => 'Focus d’investissement';
+
+  @override
+  String get riskProfile => 'Profil de risque';
+
+  @override
+  String get preferredRegions => 'Régions préférées';
+
+  @override
+  String get involvementLevel => 'Niveau d’implication';
 }
