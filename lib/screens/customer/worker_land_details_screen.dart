@@ -1,7 +1,9 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import '../../models/land_model.dart';
 import '../../models/land_worker_model.dart';
 import '../../models/worker_contract_model.dart';
@@ -108,13 +110,36 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
 
     if (_isLoading && _land == null) {
       return Scaffold(
-        backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
+        backgroundColor: isDark ? const Color(0xFF121212) : Colors.grey.shade50,
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.landDetails),
+          title: Text(AppLocalizations.of(context)!.landDetails, style: const TextStyle(fontWeight: FontWeight.w900)),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        body: const Center(child: CircularProgressIndicator()),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                  color: Colors.green.shade600,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green.shade400),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                AppLocalizations.of(context)!.loading,
+                style: TextStyle(
+                  color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
@@ -201,11 +226,15 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
     final center = _resolveCenter(boundaries);
 
     return Scaffold(
-      backgroundColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
+      backgroundColor: isDark ? const Color(0xFF121212) : Colors.grey.shade50,
       appBar: AppBar(
-        title: Text(land?.name ?? widget.assignment.landName ?? AppLocalizations.of(context)!.landDetails),
+        title: Text(
+          land?.name ?? widget.assignment.landName ?? AppLocalizations.of(context)!.landDetails,
+          style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: -0.5),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        centerTitle: true,
         actions: [
           if (_isLoading)
             Padding(
@@ -273,17 +302,17 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
               farmerUserId: farmerUserId,
               relationStatus: relationStatus,
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
 
             _buildStatusStatsCard(isDark, relationStatus),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
 
             _buildMapSection(
               isDark: isDark,
               center: center,
               boundaries: boundaries,
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
 
             _buildDetailsSection(
               isDark: isDark,
@@ -338,108 +367,146 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
     required String? farmerUserId,
     required String relationStatus,
   }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: () => _openFarmerProfile(farmerUserId),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isDark ? Colors.grey.shade800 : Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
+    final theme = Theme.of(context);
+    final statusColor = Colors.blue;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade200,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: Colors.green.withOpacity(0.14),
-                backgroundImage: farmerPicture != null
-                    ? NetworkImage(farmerPicture)
-                    : null,
-                child: farmerPicture == null
-                    ? Icon(Icons.person, color: Colors.green.shade700)
-                    : null,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => _openFarmerProfile(farmerUserId),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
                   children: [
-                    Text(
-                      farmerName,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: isDark ? Colors.white : Colors.black87,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    Stack(
+                      children: [
+                        Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                              width: 2,
+                            ),
+                          ),
+                          child: CircleAvatar(
+                            radius: 26,
+                            backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
+                            backgroundImage: farmerPicture != null
+                                ? NetworkImage(farmerPicture)
+                                : null,
+                            child: farmerPicture == null
+                                ? Icon(Icons.person_rounded, color: theme.colorScheme.primary, size: 28)
+                                : null,
+                          ),
+                        ),
+                        Positioned(
+                          right: 0,
+                          bottom: 0,
+                          child: Container(
+                            width: 14,
+                            height: 14,
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isDark ? const Color(0xFF1F1F1F) : Colors.white,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                          AppLocalizations.of(context)!.farmerInfoSyncedFromAssignment,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark
-                            ? Colors.grey.shade400
-                            : Colors.grey.shade600,
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            farmerName,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -0.5,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            AppLocalizations.of(context)!.farmerInfoSyncedFromAssignment,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            AppLocalizations.of(context)!.tapToViewProfile,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                        ],
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      AppLocalizations.of(context)!.tapToViewProfile,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: isDark
-                            ? Colors.green.shade300
-                            : Colors.green.shade700,
-                      ),
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: statusColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            _translateContractStatus(context, relationStatus).toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
+                              color: statusColor,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                          size: 20,
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-              Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      _translateContractStatus(context, relationStatus),
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: isDark
-                            ? Colors.blue.shade300
-                            : Colors.blue.shade700,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Icon(
-                    Icons.chevron_right_rounded,
-                    color: isDark ? Colors.grey.shade500 : Colors.grey.shade500,
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -447,51 +514,71 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
   }
 
   Widget _buildStatusStatsCard(bool isDark, String relationStatus) {
+    final theme = Theme.of(context);
     final role = widget.assignment.role;
     final salary = widget.assignment.salary;
     final status = widget.assignment.status;
 
     return Container(
-      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade800 : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade200,
+          width: 1.5,
+        ),
       ),
-      child: Wrap(
-        spacing: 12,
-        runSpacing: 12,
-        children: [
-          _chip(Icons.work_outline, _translateRole(context, role).toUpperCase(), isDark),
-          _chip(
-            Icons.payments_outlined,
-            AppLocalizations.of(context)!.amountPerMonth(salary.toStringAsFixed(0)),
-            isDark,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              alignment: WrapAlignment.center,
+              children: [
+                _chip(Icons.work_rounded, _translateRole(context, role).toUpperCase(), isDark, theme.colorScheme.primary),
+                _chip(
+                  Icons.payments_rounded,
+                  AppLocalizations.of(context)!.amountPerMonth(salary.toStringAsFixed(0)),
+                  isDark,
+                  Colors.green,
+                ),
+                _chip(Icons.bolt_rounded, _translateAssignmentStatus(context, status).toUpperCase(), isDark, Colors.orange),
+                _chip(Icons.link_rounded, _translateContractStatus(context, relationStatus).toUpperCase(), isDark, Colors.blue),
+              ],
+            ),
           ),
-          _chip(Icons.bolt_outlined, _translateAssignmentStatus(context, status).toUpperCase(), isDark),
-          _chip(Icons.link, _translateContractStatus(context, relationStatus).toUpperCase(), isDark),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _chip(IconData icon, String text, bool isDark) {
+  Widget _chip(IconData icon, String text, bool isDark, Color accentColor) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.06) : Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(10),
+        color: accentColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: accentColor.withValues(alpha: 0.2),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: Colors.green.shade600),
-          const SizedBox(width: 6),
+          Icon(icon, size: 14, color: accentColor),
+          const SizedBox(width: 8),
           Text(
             text,
             style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.grey.shade200 : Colors.grey.shade800,
+              fontSize: 10,
+              fontWeight: FontWeight.w900,
+              color: isDark ? accentColor.withValues(alpha: 0.9) : accentColor.withValues(alpha: 0.8),
+              letterSpacing: 0.5,
             ),
           ),
         ],
@@ -504,11 +591,16 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
     required LatLng center,
     required List<LatLng>? boundaries,
   }) {
+    final theme = Theme.of(context);
     return Container(
-      height: 220,
+      height: 240,
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade800 : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade200,
+          width: 1.5,
+        ),
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
@@ -520,17 +612,28 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
             ),
             children: [
               TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.farmy.app',
+                tileBuilder: isDark ? (context, tileWidget, tile) {
+                  return ColorFiltered(
+                    colorFilter: const ColorFilter.matrix([
+                      -1.0, 0.0, 0.0, 0.0, 255.0,
+                      0.0, -1.0, 0.0, 0.0, 255.0,
+                      0.0, 0.0, -1.0, 0.0, 255.0,
+                      0.0, 0.0, 0.0, 1.0, 0.0,
+                    ]),
+                    child: tileWidget,
+                  );
+                } : null,
               ),
               if (boundaries != null && boundaries.isNotEmpty)
                 PolygonLayer(
                   polygons: [
                     Polygon(
                       points: boundaries,
-                      color: Colors.green.withOpacity(0.2),
-                      borderColor: Colors.green.shade700,
-                      borderStrokeWidth: 3,
+                      color: Colors.green.withValues(alpha: 0.3),
+                      borderColor: Colors.green.shade600,
+                      borderStrokeWidth: 4,
                       isFilled: true,
                     ),
                   ],
@@ -538,20 +641,37 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
             ],
           ),
           Positioned(
-            top: 12,
-            left: 12,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.65),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                AppLocalizations.of(context)!.landBoundary,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 11,
+            top: 16,
+            left: 16,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.1),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.map_rounded, color: Colors.green.shade400, size: 14),
+                      const SizedBox(width: 8),
+                      Text(
+                        AppLocalizations.of(context)!.landBoundary.toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 9,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -566,71 +686,103 @@ class _WorkerLandDetailsScreenState extends State<WorkerLandDetailsScreen> {
     required Land? land,
     required LandWorker assignment,
   }) {
+    final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade800 : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade200,
+          width: 1.5,
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            AppLocalizations.of(context)!.landInformation,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: isDark ? Colors.white : Colors.black87,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(Icons.info_outline_rounded, color: theme.colorScheme.primary, size: 20),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      AppLocalizations.of(context)!.landInformation,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                _detailRow(AppLocalizations.of(context)!.name, land?.name ?? assignment.landName ?? '-', theme),
+                _detailRow(
+                  AppLocalizations.of(context)!.description,
+                  land?.description ?? AppLocalizations.of(context)!.noDescriptionAvailable,
+                  theme,
+                ),
+                _detailRow(
+                  AppLocalizations.of(context)!.grid,
+                  land != null ? '${land.gridWidth} x ${land.gridHeight}' : '-',
+                  theme,
+                ),
+                _detailRow(
+                  AppLocalizations.of(context)!.area,
+                  land != null
+                      ? AppLocalizations.of(context)!.squareMeters((land.gridWidth * land.gridHeight).toInt())
+                      : '-',
+                  theme,
+                ),
+                _detailRow(AppLocalizations.of(context)!.assignmentRole, _translateRole(context, assignment.role), theme),
+                _detailRow(
+                  AppLocalizations.of(context)!.salary,
+                  AppLocalizations.of(context)!.salaryPerMonth(assignment.salary.toStringAsFixed(0)),
+                  theme,
+                ),
+                _detailRow(AppLocalizations.of(context)!.assignmentStatus, _translateAssignmentStatus(context, assignment.status), theme),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
-          _detailRow(AppLocalizations.of(context)!.name, land?.name ?? assignment.landName ?? '-'),
-          _detailRow(
-            AppLocalizations.of(context)!.description,
-            land?.description ?? AppLocalizations.of(context)!.noDescriptionAvailable,
-          ),
-          _detailRow(
-            AppLocalizations.of(context)!.grid,
-            land != null ? '${land.gridWidth} x ${land.gridHeight}' : '-',
-          ),
-          _detailRow(
-            AppLocalizations.of(context)!.area,
-            land != null
-                ? AppLocalizations.of(context)!.squareMeters((land.gridWidth * land.gridHeight).toInt())
-                : '-',
-          ),
-          _detailRow(AppLocalizations.of(context)!.assignmentRole, _translateRole(context, assignment.role)),
-          _detailRow(
-            AppLocalizations.of(context)!.salary,
-            AppLocalizations.of(context)!.salaryPerMonth(assignment.salary.toStringAsFixed(0)),
-          ),
-          _detailRow(AppLocalizations.of(context)!.assignmentStatus, _translateAssignmentStatus(context, assignment.status)),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _detailRow(String label, String value) {
+  Widget _detailRow(String label, String value, ThemeData theme) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 120,
+            width: 130,
             child: Text(
               label,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.2,
               ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: theme.colorScheme.onSurface,
+              ),
             ),
           ),
         ],
