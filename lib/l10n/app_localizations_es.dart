@@ -2849,7 +2849,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Obtén un análisis profundo de tus costos de producción, rendimiento potencial y estrategias de maximización de ganancias impulsadas por IA.';
 
   @override
-  String get products => '🛍️ Productos';
+  String get products => 'Productos';
 
   @override
   String get profileCompleteness => 'Integridad del perfil';
@@ -4921,7 +4921,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Seleccione tipos para ver una vista previa.';
 
   @override
-  String get productPurchases => '🛍️ Compras de productos';
+  String get productPurchases => 'Compras de productos';
 
   @override
   String get professionalFarmerDetails => 'Detalles profesionales / Agricultor';

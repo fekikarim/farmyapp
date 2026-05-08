@@ -2871,7 +2871,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Obtenez une analyse approfondie de vos frais généraux de production, de votre rendement potentiel et des stratégies de maximisation des profits alimentées par l\'IA.';
 
   @override
-  String get products => '🛍️ Produits';
+  String get products => 'Produits';
 
   @override
   String get profileCompleteness => 'Complétude du profil';
@@ -4950,7 +4950,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Sélectionnez des types pour voir un aperçu.';
 
   @override
-  String get productPurchases => '🛍️ Achats de produits';
+  String get productPurchases => 'Achats de produits';
 
   @override
   String get professionalFarmerDetails =>

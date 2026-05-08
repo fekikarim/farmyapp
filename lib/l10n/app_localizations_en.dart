@@ -2820,7 +2820,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Get a deep analysis of your current production overhead, potential yield, and profit-maximization strategies powered by AI.';
 
   @override
-  String get products => '🛍️ Products';
+  String get products => 'Products';
 
   @override
   String get profileCompleteness => 'Profile Completeness';
@@ -4871,7 +4871,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectTypesToSeePreview => 'Select types to see a preview.';
 
   @override
-  String get productPurchases => '🛍️ Product Purchases';
+  String get productPurchases => 'Product Purchases';
 
   @override
   String get professionalFarmerDetails => 'Professional / Farmer Details';

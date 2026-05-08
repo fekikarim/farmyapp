@@ -5219,7 +5219,7 @@ abstract class AppLocalizations {
   /// No description provided for @products.
   ///
   /// In en, this message translates to:
-  /// **'🛍️ Products'**
+  /// **'Products'**
   String get products;
 
   /// No description provided for @profileCompleteness.
@@ -9029,7 +9029,7 @@ abstract class AppLocalizations {
   /// No description provided for @productPurchases.
   ///
   /// In en, this message translates to:
-  /// **'🛍️ Product Purchases'**
+  /// **'Product Purchases'**
   String get productPurchases;
 
   /// No description provided for @professionalFarmerDetails.
