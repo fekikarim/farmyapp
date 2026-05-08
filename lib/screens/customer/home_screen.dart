@@ -535,16 +535,19 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> with RouteAware
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(right: 16),
-        width: 90,
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        width: 100,
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isDark ? color.shade900.withValues(alpha: 0.3) : color.shade50,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isDark ? color.shade900.withValues(alpha: 0.5) : color.shade100),
+          color: isDark ? color.withValues(alpha: 0.1) : color.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: color.withValues(alpha: isDark ? 0.2 : 0.15),
+            width: 1.5,
+          ),
           boxShadow: [
             BoxShadow(
-              color: color.withValues(alpha: isDark ? 0.05 : 0.1),
-              blurRadius: 8,
+              color: color.withValues(alpha: 0.1),
+              blurRadius: 10,
               offset: const Offset(0, 4),
             ),
           ],
@@ -555,22 +558,24 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> with RouteAware
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isDark ? Colors.grey.shade800 : Colors.white,
+                color: color.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: color.withValues(alpha: isDark ? 0 : 0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
-              child: Icon(icon, size: 24, color: isDark ? color.shade200 : color.shade700),
+              child: Icon(
+                icon, 
+                size: 26, 
+                color: isDark ? color.shade200 : color.shade700,
+              ),
             ),
             const SizedBox(height: 12),
             Text(
               label, 
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? Colors.white : color.shade900),
+              style: TextStyle(
+                fontWeight: FontWeight.w900, 
+                fontSize: 12, 
+                color: isDark ? Colors.white : color.shade900,
+                letterSpacing: 0.2,
+              ),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
