@@ -25,6 +25,7 @@ import 'settings/notifications_screen.dart';
 import 'investor/my_investments_screen.dart';
 import 'customer/my_orders_screen.dart';
 import 'farmer/manage_jobs_screen.dart';
+import 'settings/feedback_list_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -691,6 +692,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const AboutUsScreen()),
+                ),
+              ),
+
+              _buildSectionTitle(theme, 'Support & Feedback'),
+              _buildSettingsTile(
+                context,
+                icon: Icons.support_agent_outlined,
+                title: 'Help Center & Reports',
+                subtitle: 'Report issues or suggest improvements',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const FeedbackListScreen()),
                 ),
               ),
 
