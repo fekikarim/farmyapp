@@ -24,6 +24,21 @@ enum FeedbackCategory {
       case general: return 'General Feedback';
     }
   }
+
+  String get backendValue {
+    switch (this) {
+      case bug: return 'bug';
+      case featureRequest: return 'feature_request';
+      case productReport: return 'product_report';
+      case landReport: return 'land_report';
+      case workerReport: return 'worker_report';
+      case paymentIssue: return 'payment_issue';
+      case walletIssue: return 'wallet_issue';
+      case marketplaceIssue: return 'marketplace_issue';
+      case abuse: return 'abuse';
+      case general: return 'general';
+    }
+  }
 }
 
 enum FeedbackStatus {
@@ -117,7 +132,7 @@ class FeedbackModel {
     return {
       'title': title,
       'description': description,
-      'category': category.name,
+      'category': category.backendValue,
       'priority': priority.name,
       'related_entity_id': relatedEntityId,
       'related_entity_type': relatedEntityType,

@@ -19,13 +19,19 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _initData();
   }
 
-  void _loadData() {
+  void _initData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<FeedbackProvider>().fetchMyFeedbacks();
+      final provider = context.read<FeedbackProvider>();
+      provider.initSocketListeners();
+      provider.fetchMyFeedbacks();
     });
+  }
+
+  Future<void> _handleRefresh() async {
+    await context.read<FeedbackProvider>().fetchMyFeedbacks(silent: true);
   }
 
   @override
@@ -36,48 +42,76 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      body: CustomScrollView(
-        slivers: [
-          // Modern Translucent AppBar
-          SliverAppBar(
-            expandedHeight: 120.0,
-            floating: false,
-            pinned: true,
-            stretch: true,
-            backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.8),
-            elevation: 0,
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: Text(
-                'Help Center',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                ),
+      body: RefreshIndicator(
+        onRefresh: _handleRefresh,
+        edgeOffset: 120,
+        color: theme.colorScheme.primary,
+        backgroundColor: theme.colorScheme.surface,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          slivers: [
+            // Modern Translucent AppBar
+            SliverAppBar(
+              expandedHeight: 140.0,
+              floating: false,
+              pinned: true,
+              stretch: true,
+              backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.9),
+              elevation: 0,
+              leading: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded),
               ),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      theme.colorScheme.primary.withValues(alpha: 0.1),
-                      theme.colorScheme.surface,
-                    ],
+              flexibleSpace: FlexibleSpaceBar(
+                centerTitle: true,
+                title: Text(
+                  'Help Center',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.5,
                   ),
+                ),
+                background: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            theme.colorScheme.primary.withValues(alpha: 0.15),
+                            theme.colorScheme.surface,
+                          ],
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 40,
+                      right: -20,
+                      child: Icon(
+                        Icons.support_agent_rounded,
+                        size: 150,
+                        color: theme.colorScheme.primary.withValues(alpha: 0.05),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
 
-          // Content
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            sliver: _buildBody(context, feedbackProvider),
-          ),
-        ],
+            // Content
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              sliver: _buildBody(context, feedbackProvider),
+            ),
+            
+            // Bottom Spacing for FAB
+            const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          ],
+        ),
       ),
       floatingActionButton: _buildFab(context),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -106,9 +140,9 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
           final feedback = provider.myFeedbacks[index];
           return AnimationConfiguration.staggeredList(
             position: index,
-            duration: const Duration(milliseconds: 375),
+            duration: const Duration(milliseconds: 400),
             child: SlideAnimation(
-              verticalOffset: 50.0,
+              verticalOffset: 30.0,
               child: FadeInAnimation(
                 child: _buildFeedbackCard(context, feedback),
               ),
@@ -121,19 +155,18 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
   }
 
   Widget _buildShimmerLoading() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      enabled: true,
-      child: Column(
-        children: List.generate(
-          5,
-          (index) => Container(
+    return Column(
+      children: List.generate(
+        4,
+        (index) => Shimmer.fromColors(
+          baseColor: Colors.grey.withValues(alpha: 0.1),
+          highlightColor: Colors.grey.withValues(alpha: 0.05),
+          child: Container(
             margin: const EdgeInsets.only(bottom: 16),
             height: 120,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(24),
             ),
           ),
         ),
@@ -157,8 +190,8 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
           ),
           const SizedBox(height: 24),
           Text(
-            'Oops! Something went wrong',
-            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            'Sync Failed',
+            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 12),
           Padding(
@@ -173,11 +206,11 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
           ),
           const SizedBox(height: 32),
           ElevatedButton.icon(
-            onPressed: _loadData,
+            onPressed: () => context.read<FeedbackProvider>().fetchMyFeedbacks(),
             icon: const Icon(Icons.refresh_rounded),
-            label: const Text('Try Again'),
+            label: const Text('RETRY CONNECTION'),
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
           ),
@@ -192,29 +225,16 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.05),
-                  shape: BoxShape.circle,
-                ),
-              ),
-              Icon(
-                Icons.forum_outlined,
-                size: 80,
-                color: theme.colorScheme.primary.withValues(alpha: 0.3),
-              ),
-            ],
+          Icon(
+            Icons.auto_stories_outlined,
+            size: 80,
+            color: theme.colorScheme.primary.withValues(alpha: 0.2),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           Text(
-            'No reports yet',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
+            'Your story starts here',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w900,
               color: theme.colorScheme.onSurface,
             ),
           ),
@@ -222,28 +242,12 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 50),
             child: Text(
-              'Your bug reports and feature requests will appear here once submitted.',
+              'Share your feedback, report bugs, or request features to help us build the best version of Farmy.',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 height: 1.5,
               ),
-            ),
-          ),
-          const SizedBox(height: 40),
-          ElevatedButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const CreateFeedbackScreen()),
-            ),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              elevation: 0,
-            ),
-            child: const Text(
-              'Create First Report',
-              style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -256,30 +260,31 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey[900]?.withValues(alpha: 0.7) : Colors.white,
+        color: isDark ? Colors.grey[900]?.withValues(alpha: 0.6) : Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: theme.colorScheme.primary.withValues(alpha: 0.1),
+          color: theme.colorScheme.primary.withValues(alpha: isDark ? 0.05 : 0.1),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.primary.withValues(alpha: 0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: InkWell(
             onTap: () {
-              // Show details or expand
+              // Details would go here
             },
+            borderRadius: BorderRadius.circular(24),
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -292,13 +297,13 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
                       Text(
                         DateFormat('MMM dd, hh:mm a').format(feedback.createdAt),
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
-                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -311,8 +316,8 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
                             Text(
                               feedback.title,
                               style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                height: 1.2,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -0.5,
                               ),
                             ),
                             const SizedBox(height: 6),
@@ -322,7 +327,8 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                                height: 1.4,
+                                height: 1.5,
+                                fontSize: 13,
                               ),
                             ),
                           ],
@@ -331,7 +337,7 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
                     ],
                   ),
                   if (feedback.adminNotes != null) ...[
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     _buildAdminResponse(context, feedback.adminNotes!),
                   ],
                 ],
@@ -349,11 +355,11 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
     switch (status) {
       case FeedbackStatus.pending:
         color = Colors.orange;
-        icon = Icons.hourglass_empty_rounded;
+        icon = Icons.access_time_rounded;
         break;
       case FeedbackStatus.inReview:
         color = Colors.blue;
-        icon = Icons.search_rounded;
+        icon = Icons.visibility_outlined;
         break;
       case FeedbackStatus.resolved:
         color = Colors.green;
@@ -361,15 +367,15 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
         break;
       case FeedbackStatus.rejected:
         color = Colors.red;
-        icon = Icons.cancel_outlined;
+        icon = Icons.block_flipped;
         break;
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(10),
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -379,7 +385,7 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
           Text(
             status.displayName.toUpperCase(),
             style: TextStyle(
-              fontSize: 9,
+              fontSize: 10,
               fontWeight: FontWeight.w900,
               color: color,
               letterSpacing: 0.5,
@@ -397,28 +403,33 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
 
     switch (category) {
       case FeedbackCategory.bug:
-        icon = Icons.bug_report_outlined;
+        icon = Icons.bug_report_rounded;
         color = Colors.redAccent;
         break;
       case FeedbackCategory.featureRequest:
-        icon = Icons.auto_awesome_outlined;
-        color = Colors.amber;
+        icon = Icons.rocket_launch_rounded;
+        color = Colors.deepPurpleAccent;
         break;
       case FeedbackCategory.paymentIssue:
       case FeedbackCategory.walletIssue:
-        icon = Icons.account_balance_wallet_outlined;
+        icon = Icons.account_balance_wallet_rounded;
+        color = Colors.green;
+        break;
+      case FeedbackCategory.abuse:
+        icon = Icons.report_problem_rounded;
+        color = Colors.orange;
         break;
       default:
-        icon = Icons.chat_bubble_outline_rounded;
+        icon = Icons.chat_bubble_rounded;
     }
 
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: Icon(icon, color: color, size: 20),
+      child: Icon(icon, color: color, size: 22),
     );
   }
 
@@ -428,13 +439,8 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            theme.colorScheme.primary.withValues(alpha: 0.05),
-            theme.colorScheme.primary.withValues(alpha: 0.1),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
+        color: theme.colorScheme.primary.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.1)),
       ),
       child: Column(
@@ -442,10 +448,10 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
         children: [
           Row(
             children: [
-              Icon(Icons.auto_fix_high_rounded, size: 16, color: theme.colorScheme.primary),
+              Icon(Icons.stars_rounded, size: 16, color: theme.colorScheme.primary),
               const SizedBox(width: 8),
               Text(
-                'OFFICIAL RESPONSE',
+                'OFFICIAL RESOLUTION',
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w900,
@@ -455,13 +461,13 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
             notes,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-              fontStyle: FontStyle.italic,
-              height: 1.4,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              height: 1.5,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -471,23 +477,27 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
 
   Widget _buildFab(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10, right: 10),
-      child: FloatingActionButton.extended(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const CreateFeedbackScreen()),
-        ),
-        elevation: 4,
-        highlightElevation: 8,
-        backgroundColor: theme.colorScheme.primary,
-        icon: const Icon(Icons.add_rounded, color: Colors.white),
-        label: const Text(
-          'NEW REPORT',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: SizedBox(
+        width: double.infinity,
+        height: 60,
+        child: ElevatedButton.icon(
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const CreateFeedbackScreen()),
+          ),
+          icon: const Icon(Icons.add_rounded, size: 28),
+          label: Text(
+            'SUBMIT NEW REPORT'.toUpperCase(),
+            style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1, fontSize: 14),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: theme.colorScheme.primary,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            elevation: 8,
+            shadowColor: theme.colorScheme.primary.withValues(alpha: 0.3),
           ),
         ),
       ),
