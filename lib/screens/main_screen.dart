@@ -57,6 +57,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   late int _currentIndex;
+  final GlobalKey<NotificationsScreenState> _notificationsKey = GlobalKey<NotificationsScreenState>();
 
   void _switchToTab(int index) {
     if (index == _currentIndex) return;
@@ -70,6 +71,13 @@ class _MainScreenState extends State<MainScreen> {
           context.read<JobRequestProvider>().fetchAllJobs();
           context.read<JobRequestProvider>().fetchRecommendedJobs();
         }
+      });
+    }
+
+    // Auto-refresh notifications when switching to that tab
+    if (index == 2 && role == 'customer') {
+      Future.microtask(() {
+        _notificationsKey.currentState?.refresh();
       });
     }
 
@@ -139,7 +147,7 @@ class _MainScreenState extends State<MainScreen> {
         screens = [
           const CustomerHomeScreen(),
           const CustomerMarketplaceScreen(),
-          const NotificationsScreen(),
+          NotificationsScreen(key: _notificationsKey),
           const SettingsScreen(),
         ];
         items = [
