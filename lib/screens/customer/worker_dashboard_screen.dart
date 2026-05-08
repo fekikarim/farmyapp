@@ -1,4 +1,6 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -122,12 +124,16 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
         elevation: 0,
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? _buildShimmerDashboard(isDark)
           : FadeTransition(
               opacity: _fadeAnim,
               child: RefreshIndicator(
                 onRefresh: _refreshDashboard,
+                edgeOffset: 20,
+                color: const Color(0xFF10B981),
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                   padding: const EdgeInsets.all(20),
                   children: [
                     if (workerProvider.profileError != null)
@@ -173,9 +179,6 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                         onRetry: () => lifecycle.loadMyProofs(),
                       ),
 
-                    // Profile Status Card
-                    if (profile != null) _buildProfileCard(profile, isDark),
-                    const SizedBox(height: 20),
 
                     // Quick Stats
                     GridView.count(
@@ -552,132 +555,6 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
     );
   }
 
-  Widget _buildProfileCard(dynamic profile, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            const Color(0xFF10B981), // Emerald 500
-            const Color(0xFF059669), // Emerald 600
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF10B981).withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.white.withOpacity(0.3),
-                width: 2,
-              ),
-            ),
-            child: CircleAvatar(
-              radius: 32,
-              backgroundColor: Colors.white.withOpacity(0.2),
-              backgroundImage: profile.userProfilePicture != null
-                  ? NetworkImage(profile.userProfilePicture!)
-                  : null,
-              child: profile.userProfilePicture == null
-                  ? const Icon(Icons.person, color: Colors.white, size: 32)
-                  : null,
-            ),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        profile.userName ?? AppLocalizations.of(context)!.worker,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 20,
-                          letterSpacing: -0.5,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    if (profile.isVerified)
-                      Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.check,
-                          color: Color(0xFF059669),
-                          size: 12,
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: profile.isVerified
-                        ? Colors.white.withOpacity(0.2)
-                        : Colors.amber.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.1),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        profile.isVerified
-                            ? Icons.verified_user_outlined
-                            : Icons.pending_outlined,
-                        color: Colors.white,
-                        size: 14,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        profile.isVerified
-                            ? AppLocalizations.of(context)!.verifiedWorker
-                            : AppLocalizations.of(context)!.pendingVerification,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildEscrowBalanceCard(
     WorkerLifecycleProvider lifecycle,
@@ -689,65 +566,102 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
         ) ??
         0.0;
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDark
-              ? [
-                  Colors.purple.shade900.withOpacity(0.4),
-                  Colors.deepPurple.shade900.withOpacity(0.3),
-                ]
-              : [Colors.purple.shade50, Colors.deepPurple.shade50],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.deepPurple.withValues(alpha: isDark ? 0.15 : 0.05),
+        borderRadius: BorderRadius.circular(28),
         border: Border.all(
-          color: isDark
-              ? Colors.purple.shade700.withOpacity(0.3)
-              : Colors.purple.shade200,
+          color: Colors.deepPurple.withValues(alpha: isDark ? 0.2 : 0.1),
+          width: 1.5,
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.account_balance_wallet,
-                color: Colors.purple.shade400,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                AppLocalizations.of(context)!.escrowBalance,
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15,
-                  color: isDark ? Colors.white : Colors.purple.shade800,
-                ),
-              ),
-              const Spacer(),
-              Text(
-                  AppLocalizations.of(context)!.amountPrefix(pending.toStringAsFixed(2)),
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 20,
-                  color: isDark ? Colors.white : Colors.purple.shade900,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            AppLocalizations.of(context)!.fundsReleasedAfterVerification,
-            style: TextStyle(
-              fontSize: 12,
-              color: isDark ? Colors.white54 : Colors.purple.shade400,
-              fontStyle: FontStyle.italic,
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.deepPurple.withValues(alpha: 0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.account_balance_wallet_rounded,
+                        color: Colors.deepPurpleAccent,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.escrowBalance.toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1,
+                              color: isDark ? Colors.white.withValues(alpha: 0.6) : Colors.deepPurple.shade700,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            AppLocalizations.of(context)!.amountPrefix(pending.toStringAsFixed(2)),
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w900,
+                              color: isDark ? Colors.white : Colors.deepPurple.shade900,
+                              letterSpacing: -1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.amber.withValues(alpha: 0.2)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.info_outline_rounded, color: Colors.amber, size: 16),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          AppLocalizations.of(context)!.fundsReleasedAfterVerification,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: isDark ? Colors.amber.shade200 : Colors.amber.shade900,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -764,56 +678,49 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
     String label,
     String value,
     IconData icon,
-    Color color,
+    MaterialColor color,
     bool isDark,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade800 : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: color.withValues(alpha: isDark ? 0.08 : 0.05),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.05) : Colors.transparent,
+          color: color.withValues(alpha: isDark ? 0.15 : 0.1),
+          width: 1.5,
         ),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: color, size: 22),
+            child: Icon(icon, color: color, size: 20),
           ),
-          const SizedBox(height: 12),
-          Flexible(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: isDark ? Colors.white : const Color(0xFF1F2937),
-                letterSpacing: -0.5,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          const SizedBox(height: 10),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: isDark ? Colors.white : color.shade900,
+              letterSpacing: -0.5,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             label.toUpperCase(),
             style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white54 : Colors.grey.shade500,
+              fontSize: 8.5,
+              fontWeight: FontWeight.w900,
+              color: isDark ? Colors.white.withValues(alpha: 0.4) : color.shade700,
               letterSpacing: 0.5,
             ),
             textAlign: TextAlign.center,
@@ -825,20 +732,74 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
     );
   }
 
-  Widget _sectionHeader(String title, IconData icon, bool isDark) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: Colors.green.shade600),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : Colors.black87,
-          ),
+  Widget _buildShimmerDashboard(bool isDark) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Shimmer.fromColors(
+        baseColor: isDark ? Colors.grey[800]! : Colors.grey[300]!,
+        highlightColor: isDark ? Colors.grey[700]! : Colors.grey[100]!,
+        child: Column(
+          children: [
+            Container(
+              height: 130,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+            const SizedBox(height: 20),
+            GridView.count(
+              crossAxisCount: 3,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              childAspectRatio: 0.85,
+              children: List.generate(
+                6,
+                (i) => Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
+            Container(height: 30, width: 200, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10))),
+            const SizedBox(height: 20),
+            Container(height: 150, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24))),
+          ],
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _sectionHeader(String title, IconData icon, bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: const Color(0xFF10B981).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, size: 16, color: const Color(0xFF10B981)),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            title.toUpperCase(),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1,
+              color: isDark ? Colors.white.withValues(alpha: 0.6) : Colors.grey.shade700,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -880,145 +841,163 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
                   : AppLocalizations.of(context)!.invitationExpired)
             : null);
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => WorkerLandDetailsScreen(assignment: land),
-            ),
-          );
-        },
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 10),
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: isDark ? Colors.grey.shade800 : Colors.white,
-            borderRadius: BorderRadius.circular(14),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
+    final theme = Theme.of(context);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade200,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade50,
-                  borderRadius: BorderRadius.circular(12),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => WorkerLandDetailsScreen(assignment: land),
                 ),
-                child: Icon(Icons.landscape, color: Colors.green.shade700),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      land.landName ?? AppLocalizations.of(context)!.land,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
-                          land.role,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: isDark
-                                ? Colors.blue.shade300
-                                : Colors.blue.shade600,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          AppLocalizations.of(context)!.amountPerMonth(land.salary.toStringAsFixed(0)),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: isDark
-                                ? Colors.grey.shade400
-                                : Colors.grey.shade500,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.person_outline,
-                          size: 12,
-                          color: isDark
-                              ? Colors.grey.shade500
-                              : Colors.grey.shade600,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            AppLocalizations.of(context)!.farmerWithColon(farmerName),
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: isDark
-                                  ? Colors.grey.shade400
-                                  : Colors.grey.shade600,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (relationStatus != null)
-                          Container(
-                            margin: const EdgeInsets.only(left: 8),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.blue.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              _translateContractStatus(context, relationStatus),
-                              style: TextStyle(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w600,
-                                color: isDark
-                                    ? Colors.blue.shade300
-                                    : Colors.blue.shade700,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Column(
+              );
+            },
+            borderRadius: BorderRadius.circular(24),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
                 children: [
                   Container(
-                    width: 10,
-                    height: 10,
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: land.isActive ? Colors.green : Colors.grey,
-                      shape: BoxShape.circle,
+                      color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(Icons.landscape_rounded, color: Color(0xFF10B981), size: 24),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                land.landName ?? AppLocalizations.of(context)!.land,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: land.isActive ? Colors.green : Colors.grey,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  if (land.isActive)
+                                    BoxShadow(
+                                      color: Colors.green.withValues(alpha: 0.4),
+                                      blurRadius: 4,
+                                      spreadRadius: 1,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Text(
+                              land.role.toUpperCase(),
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.5,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '•',
+                              style: TextStyle(color: Colors.grey.withValues(alpha: 0.5)),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              AppLocalizations.of(context)!.amountPerMonth(land.salary.toStringAsFixed(0)),
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.person_pin_rounded,
+                              size: 14,
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                farmerName,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (relationStatus != null)
+                              Container(
+                                margin: const EdgeInsets.only(left: 8),
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  _translateContractStatus(context, relationStatus).toUpperCase(),
+                                  style: TextStyle(
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.w900,
+                                    color: theme.colorScheme.primary,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(width: 12),
                   Icon(
                     Icons.chevron_right_rounded,
-                    color: isDark ? Colors.grey.shade500 : Colors.grey.shade500,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -1026,104 +1005,120 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
   }
 
   Widget _buildTaskCard(FarmTask task, bool isDark) {
+    final theme = Theme.of(context);
+    final statusColor = task.isCompleted
+        ? Colors.green
+        : task.isAssigned
+        ? Colors.blue
+        : Colors.grey;
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade800 : Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade200,
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Text(task.typeIcon, style: const TextStyle(fontSize: 26)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
               children: [
-                Text(
-                  task.title,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Text(
+                    task.typeIcon,
+                    style: const TextStyle(fontSize: 22),
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      task.typeLabel,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark
-                            ? Colors.grey.shade400
-                            : Colors.grey.shade600,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        task.title,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.2,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '⏱ ${task.timeRequiredMinutes}${AppLocalizations.of(context)!.min}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark
-                            ? Colors.grey.shade400
-                            : Colors.grey.shade500,
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '⏱ ${task.timeRequiredMinutes}${AppLocalizations.of(context)!.min}',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                color: isDark ? Colors.orange.shade300 : Colors.orange.shade900,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.green.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '💰 ${AppLocalizations.of(context)!.amountPrefix(task.reward.toStringAsFixed(0))}',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                color: isDark ? Colors.green.shade300 : Colors.green.shade900,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    _translateTaskStatus(context, task.statusLabel).toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w900,
+                      color: statusColor,
+                      letterSpacing: 0.5,
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '💰 ${AppLocalizations.of(context)!.amountPrefix(task.reward.toStringAsFixed(0))}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: isDark
-                            ? Colors.green.shade400
-                            : Colors.green.shade600,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: task.isCompleted
-                  ? (isDark
-                        ? Colors.green.withOpacity(0.15)
-                        : Colors.green.shade50)
-                  : (task.isAssigned
-                        ? (isDark
-                              ? Colors.blue.withOpacity(0.15)
-                              : Colors.blue.shade50)
-                        : (isDark
-                              ? Colors.grey.withOpacity(0.1)
-                              : Colors.grey.shade100)),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              _translateTaskStatus(context, task.statusLabel),
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: task.isCompleted
-                    ? (isDark ? Colors.green.shade300 : Colors.green.shade700)
-                    : (task.isAssigned
-                          ? (isDark
-                                ? Colors.blue.shade300
-                                : Colors.blue.shade700)
-                          : (isDark
-                                ? Colors.grey.shade400
-                                : Colors.grey.shade600)),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -1303,11 +1298,14 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
   Widget _buildInvitationStatusCard(WorkerInvitation invitation, bool isDark) {
     final isApproved = invitation.isApproved;
     final isDeclined = invitation.isDeclined;
+    final theme = Theme.of(context);
+    
     final statusColor = isApproved
         ? Colors.green
         : isDeclined
         ? Colors.red
         : Colors.grey;
+        
     final statusLabel = isApproved
         ? AppLocalizations.of(context)!.approvedUpper
         : isDeclined
@@ -1315,71 +1313,82 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
         : AppLocalizations.of(context)!.expiredUpper;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade800 : Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: statusColor.withOpacity(0.2)),
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: statusColor.withValues(alpha: isDark ? 0.2 : 0.1),
+          width: 1.5,
+        ),
       ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: statusColor.withOpacity(0.12),
-            child: Icon(
-              isApproved
-                  ? Icons.check_circle_outline
-                  : isDeclined
-                  ? Icons.cancel_outlined
-                  : Icons.timer_off_outlined,
-              color: statusColor,
-              size: 18,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
               children: [
-                Text(
-                  invitation.farmerName ?? AppLocalizations.of(context)!.farmer,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : Colors.black87,
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  child: Icon(
+                    isApproved
+                        ? Icons.check_circle_rounded
+                        : isDeclined
+                        ? Icons.cancel_rounded
+                        : Icons.timer_off_rounded,
+                    color: statusColor,
+                    size: 20,
+                  ),
                 ),
-                Text(
-                  invitation.landName ?? AppLocalizations.of(context)!.land,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        invitation.farmerName ?? AppLocalizations.of(context)!.farmer,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        invitation.landName ?? AppLocalizations.of(context)!.land,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    statusLabel.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w900,
+                      color: statusColor,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              statusLabel,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: statusColor,
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -1552,104 +1561,125 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen>
   }
 
   Widget _buildActiveContractCard(WorkerContract contract, bool isDark) {
+    final theme = Theme.of(context);
+    final statusColor = Colors.green;
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade800 : Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.green.withOpacity(0.2)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: statusColor.withValues(alpha: isDark ? 0.2 : 0.1),
+          width: 1.5,
+        ),
       ),
-      child: Row(
-        children: [
-          Stack(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: Colors.green.withOpacity(0.15),
-                child: Icon(Icons.work, color: Colors.green.shade600, size: 20),
-              ),
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: isDark ? Colors.grey.shade800 : Colors.white,
-                      width: 2,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
               children: [
-                Text(
-                  contract.investorName ?? AppLocalizations.of(context)!.investor,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: isDark ? Colors.white : Colors.black87,
+                Stack(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.work_rounded, color: statusColor, size: 24),
+                    ),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: statusColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isDark ? const Color(0xFF1F1F1F) : Colors.white,
+                            width: 2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: statusColor.withValues(alpha: 0.4),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        contract.investorName ?? AppLocalizations.of(context)!.investor,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.amountPerType(
+                              contract.salaryAmount.toStringAsFixed(0),
+                              _translateSalaryTypeLabel(context, contract.salaryTypeLabel),
+                            ),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  AppLocalizations.of(context)!.amountPerType(contract.salaryAmount.toStringAsFixed(0), _translateSalaryTypeLabel(context, contract.salaryTypeLabel)),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        AppLocalizations.of(context)!.activeLabelUpper,
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w900,
+                          color: statusColor,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      AppLocalizations.of(context)!.untilDate(DateFormat('MMM d').format(contract.contractEndDate)),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  AppLocalizations.of(context)!.activeLabelUpper,
-                  style: TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.green,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-              ...[
-                const SizedBox(height: 4),
-                Text(
-                  AppLocalizations.of(context)!.untilDate(DateFormat('MMM d').format(contract.contractEndDate)),
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: isDark ? Colors.grey.shade500 : Colors.grey.shade500,
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
