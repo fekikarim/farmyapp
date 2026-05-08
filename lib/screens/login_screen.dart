@@ -111,88 +111,151 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
     final theme = Theme.of(context);
     final providerName = provider.name[0].toUpperCase() + provider.name.substring(1);
     
+    // Brand Colors
+    final primaryColor = theme.colorScheme.primary;
+    final errorColor = theme.colorScheme.error;
+    
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
       barrierLabel: '',
-      barrierColor: Colors.black.withValues(alpha: 0.5),
-      transitionDuration: const Duration(milliseconds: 300),
+      barrierColor: Colors.black.withValues(alpha: 0.8), // Keep it dark for both modes
+      transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, anim1, anim2) => const SizedBox(),
       transitionBuilder: (context, anim1, anim2, child) {
+        final curve = Curves.elasticOut.transform(anim1.value);
         return Transform.scale(
-          scale: anim1.value,
+          scale: curve,
           child: Opacity(
-            opacity: anim1.value,
+            opacity: anim1.value.clamp(0.0, 1.0),
             child: Dialog(
               backgroundColor: Colors.transparent,
-              insetPadding: const EdgeInsets.symmetric(horizontal: 40),
+              elevation: 0,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 32),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(30),
+                borderRadius: BorderRadius.circular(35),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                  filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
                   child: Container(
-                    padding: const EdgeInsets.all(28),
+                    padding: const EdgeInsets.all(32),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.surface.withValues(alpha: 0.8),
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+                      color: const Color(0xFF1A1C19).withValues(alpha: 0.9), // Dark glass for both modes
+                      borderRadius: BorderRadius.circular(35),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        width: 2.0,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.4),
+                          blurRadius: 50,
+                          offset: const Offset(0, 20),
+                        ),
+                      ],
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          theme.colorScheme.error.withValues(alpha: 0.05),
-                          theme.colorScheme.surface.withValues(alpha: 0.05),
+                          errorColor.withValues(alpha: 0.2),
+                          const Color(0xFF1A1C19).withValues(alpha: 0.0),
                         ],
                       ),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        // Icon Section
                         Container(
-                          width: 64,
-                          height: 64,
+                          width: 86,
+                          height: 86,
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.error.withValues(alpha: 0.1),
+                            color: errorColor.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
-                            border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.2)),
+                            border: Border.all(
+                              color: errorColor.withValues(alpha: 0.4),
+                              width: 3,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: errorColor.withValues(alpha: 0.4),
+                                blurRadius: 25,
+                                spreadRadius: -5,
+                              ),
+                            ],
                           ),
-                          child: Icon(Icons.warning_amber_rounded, color: theme.colorScheme.error, size: 32),
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          "$providerName Login Failed",
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: -1,
-                            color: theme.colorScheme.onSurface,
+                          child: Icon(
+                            Icons.priority_high_rounded,
+                            color: errorColor,
+                            size: 46,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          message,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                            height: 1.5,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 32),
-                        SizedBox(
+                        
+                        // Title
+                        Text(
+                          "$providerName Login Failed",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -1.5,
+                            fontSize: 28,
+                            color: Colors.white, // White for both modes
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 18),
+                        
+                        // Message
+                        Text(
+                          message,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.9), // White for both modes
+                            height: 1.5,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 44),
+                        
+                        // Action Button with Brand Gradient
+                        Container(
                           width: double.infinity,
-                          height: 56,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(22),
+                            gradient: LinearGradient(
+                              colors: [
+                                primaryColor,
+                                primaryColor.withValues(alpha: 0.9),
+                              ],
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: primaryColor.withValues(alpha: 0.45),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
                           child: ElevatedButton(
                             onPressed: () => Navigator.pop(context),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: theme.colorScheme.onSurface,
-                              foregroundColor: theme.colorScheme.surface,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                              elevation: 0,
+                              backgroundColor: Colors.transparent,
+                              foregroundColor: Colors.white,
+                              shadowColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(22),
+                              ),
+                              padding: EdgeInsets.zero,
                             ),
                             child: Text(
                               AppLocalizations.of(context)!.ok.toUpperCase(),
-                              style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.5, fontSize: 13),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 2.2,
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -358,9 +421,9 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
             filled: true,
             fillColor: theme.colorScheme.onSurface.withValues(alpha: 0.05),
             contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: theme.colorScheme.onSurface.withValues(alpha: 0.05))),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.3), width: 2)),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: theme.colorScheme.onSurface.withValues(alpha: 0.05))),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.3), width: 2.5)),
           ),
         ),
       ],
@@ -452,13 +515,33 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
   Widget _buildErrorContainer(ThemeData theme, String message) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: theme.colorScheme.error.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(15), border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.2))),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.error.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.2), width: 1.5),
+      ),
       child: Row(
         children: [
-          Icon(Icons.error_outline_rounded, color: theme.colorScheme.error, size: 18),
-          const SizedBox(width: 12),
-          Expanded(child: Text(message, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error, fontWeight: FontWeight.bold))),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.error.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.error_outline_rounded, color: theme.colorScheme.error, size: 20),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              message,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.error,
+                fontWeight: FontWeight.w800,
+                height: 1.3,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -477,19 +560,33 @@ class _SocialButton extends StatelessWidget {
     final theme = Theme.of(context);
     return InkWell(
       onTap: isLoading ? null : onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(20),
       child: Container(
-        width: 56,
-        height: 56,
-        padding: const EdgeInsets.all(14),
+        width: 64,
+        height: 64,
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+            width: 1.5,
+          ),
         ),
         child: isLoading
-            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-            : Image.asset(icon, color: icon.contains('github') || icon.contains('apple') ? (theme.brightness == Brightness.dark ? Colors.white : Colors.black) : null),
+            ? const Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2.5),
+                ),
+              )
+            : Image.asset(
+                icon,
+                color: icon.contains('github') || icon.contains('apple') 
+                    ? (theme.brightness == Brightness.dark ? Colors.white : Colors.black) 
+                    : null,
+              ),
       ),
     );
   }
