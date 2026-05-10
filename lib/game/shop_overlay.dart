@@ -611,12 +611,13 @@ class _ShopOverlayState extends State<ShopOverlay>
 
       // Process Purchase
       final random = Random();
+      final land = selectedRental.land;
       final success = await ShopService.buyItem(
         landId: selectedRental.landId,
         variantId: variant.id,
         category: _currentCategory,
-        positionX: random.nextInt(10),
-        positionY: random.nextInt(10),
+        positionX: random.nextInt(max(1, land?.gridWidth ?? 10)),
+        positionY: random.nextInt(max(1, land?.gridHeight ?? 10)),
       );
 
       if (!mounted) return;
