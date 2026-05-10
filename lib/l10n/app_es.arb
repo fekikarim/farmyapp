@@ -2529,5 +2529,7 @@
   "investmentFocus": "Enfoque de inversión",
   "riskProfile": "Perfil de riesgo",
   "preferredRegions": "Regiones preferidas",
-  "involvementLevel": "Nivel de participación"
+  "involvementLevel": "Nivel de participación",
+  "selectPositionOnMap": "Por favor seleccione una posición en el mapa",
+  "invalidPlacementPosition": "Posición de colocación no válida. Por favor seleccione otro lugar."
 }

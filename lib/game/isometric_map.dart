@@ -1431,11 +1431,14 @@ class IsometricMapPainter extends CustomPainter {
     // when painting their bottom-most tile (highest depth).
     if (task.x != ox + fw - 1 || task.y != oy + fh - 1) return;
 
+    final bool isActive = task.cellData['is_active'] != false;
+
     // Trees are rendered from a curated set of single-PNG sprites rather than
     // animated frame folders. Route them through the static painter.
     if (task.cellData['category'] == 'tree') {
       final String path = _resolveTreeAsset(task.cellData);
-      _paintStaticTreeImage(canvas, task, path, fw: fw, fh: fh);
+      _paintStaticTreeImage(canvas, task, path,
+          fw: fw, fh: fh, opacity: isActive ? 1.0 : 0.5);
       return;
     }
 
@@ -1455,12 +1458,15 @@ class IsometricMapPainter extends CustomPainter {
       int maxFrames = assetManager.getFrameCount(spriteBase);
       if (maxFrames == 0) maxFrames = 24;
 
-      final bool isActive = task.cellData['is_active'] != false;
       assetManager.prefetchSpriteFrames(
         spriteBase,
         frameCountHint: maxFrames,
         prefetchCount: isActive ? 8 : 1,
       );
+
+      if (!isActive) {
+        canvas.saveLayer(null, Paint()..color = Colors.white.withOpacity(0.5));
+      }
 
       int hash = (task.x * 31 + task.y * 17);
       double adjustedTime = animationValue + (hash % 100) / 100.0;
@@ -1510,27 +1516,15 @@ class IsometricMapPainter extends CustomPainter {
         dx = task.isoX + cx + (tileWidth - w) / 2;
         dy = task.isoY + cy - h;
       }
-      if (isActive) {
-        paintImage(
-          canvas: canvas,
-          rect: Rect.fromLTWH(dx, dy, w, h),
-          image: img,
-          fit: BoxFit.contain,
-        );
-      } else {
-        // Disabled/pending: pure black silhouette, alpha preserved
-        paintImage(
-          canvas: canvas,
-          rect: Rect.fromLTWH(dx, dy, w, h),
-          image: img,
-          fit: BoxFit.contain,
-          colorFilter: const ColorFilter.matrix([
-            0, 0, 0, 0, 0, // R → 0
-            0, 0, 0, 0, 0, // G → 0
-            0, 0, 0, 0, 0, // B → 0
-            0, 0, 0, 1, 0, // A → original (keeps sprite shape)
-          ]),
-        );
+      paintImage(
+        canvas: canvas,
+        rect: Rect.fromLTWH(dx, dy, w, h),
+        image: img,
+        fit: BoxFit.contain,
+      );
+
+      if (!isActive) {
+        canvas.restore();
       }
       return;
     }

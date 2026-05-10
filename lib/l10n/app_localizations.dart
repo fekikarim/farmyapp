@@ -9097,6 +9097,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Involvement level'**
   String get involvementLevel;
+
+  /// No description provided for @selectPositionOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a position on the map'**
+  String get selectPositionOnMap;
+
+  /// No description provided for @invalidPlacementPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid placement position. Please select another spot.'**
+  String get invalidPlacementPosition;
 }
 
 class _AppLocalizationsDelegate

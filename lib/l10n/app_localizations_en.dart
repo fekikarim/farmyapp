@@ -4905,4 +4905,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get involvementLevel => 'Involvement level';
+
+  @override
+  String get selectPositionOnMap => 'Please select a position on the map';
+
+  @override
+  String get invalidPlacementPosition =>
+      'Invalid placement position. Please select another spot.';
 }

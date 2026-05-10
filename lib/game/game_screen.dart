@@ -470,10 +470,16 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   }
 
   bool _validatePlacement(int x, int y) {
-    if (_placementFootprint == null) return false;
+    if (_placementFootprint == null) {
+      debugPrint('[Placement] Footprint not loaded yet');
+      return false;
+    }
     final grid = _gridData?['matrix'] as List?;
     final playableMask = _gridData?['playable_mask'] as List?;
-    if (grid == null) return false;
+    if (grid == null) {
+      debugPrint('[Placement] Grid data is null');
+      return false;
+    }
 
     final squares = _placementFootprint!['squares'] as List;
     final int width = _gridData?['grid_width'] ?? widget.land.gridWidth;
@@ -483,10 +489,20 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       int tx = x + (sq['x'] as int);
       int ty = y + (sq['y'] as int);
 
-      if (tx < 0 || tx >= width || ty < 0 || ty >= height) return false;
-      if (!_isMaskCellPlayable(playableMask, tx, ty)) return false;
-      if (grid[ty][tx] != null) return false;
+      if (tx < 0 || tx >= width || ty < 0 || ty >= height) {
+        debugPrint('[Placement] Out of bounds: ($tx, $ty)');
+        return false;
+      }
+      if (!_isMaskCellPlayable(playableMask, tx, ty)) {
+        debugPrint('[Placement] Cell not playable: ($tx, $ty)');
+        return false;
+      }
+      if (grid[ty][tx] != null) {
+        debugPrint('[Placement] Cell occupied at ($tx, $ty) by ${grid[ty][tx]['id']}');
+        return false;
+      }
     }
+    debugPrint('[Placement] Position ($x, $y) is VALID');
     return true;
   }
 
@@ -824,12 +840,27 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _handlePlacement() async {
-    if (_placementItem == null ||
-        _pendingX == null ||
-        _pendingY == null ||
-        !_isPendingValid ||
-        _placingInFlight)
+    if (_placingInFlight) return;
+
+    if (_pendingX == null || _pendingY == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a position on the map'),
+          backgroundColor: Colors.orange,
+        ),
+      );
       return;
+    }
+
+    if (!_isPendingValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Invalid placement position. Please select another spot.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     final requestId = _placementItem!['id'];
     final x = _pendingX!;

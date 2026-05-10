@@ -4956,4 +4956,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get involvementLevel => 'Nivel de participación';
+
+  @override
+  String get selectPositionOnMap =>
+      'Por favor seleccione una posición en el mapa';
+
+  @override
+  String get invalidPlacementPosition =>
+      'Posición de colocación no válida. Por favor seleccione otro lugar.';
 }

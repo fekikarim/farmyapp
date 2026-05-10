@@ -2549,5 +2549,7 @@
   "investmentFocus": "Investment focus",
   "riskProfile": "Risk profile",
   "preferredRegions": "Preferred regions",
-  "involvementLevel": "Involvement level"
+  "involvementLevel": "Involvement level",
+  "selectPositionOnMap": "Please select a position on the map",
+  "invalidPlacementPosition": "Invalid placement position. Please select another spot."
 }

@@ -4987,4 +4987,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get involvementLevel => 'Niveau d’implication';
+
+  @override
+  String get selectPositionOnMap =>
+      'Veuillez sélectionner une position sur la carte';
+
+  @override
+  String get invalidPlacementPosition =>
+      'Position de placement non valide. Veuillez choisir un autre endroit.';
 }
